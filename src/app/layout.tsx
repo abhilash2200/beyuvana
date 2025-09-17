@@ -4,6 +4,10 @@ import "./globals.css";
 import Header from "@/components/common/header/Header";
 import Footer from "@/components/common/footer/Footer";
 import Offers from "@/components/common/Offers";
+import { AuthProvider } from "@/context/AuthProvider";
+import { CartProvider } from "@/context/CartProvider";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin"],
@@ -24,10 +28,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${beVietnamPro.variable} antialiased`}>
-        <Header />
-        <Offers />
-        {children}
-        <Footer />
+        <AuthProvider>
+          <CartProvider>
+            <Header />
+            <Offers />
+            <ToastContainer position="top-right" autoClose={3000} />
+            {children}
+            <Footer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -49,9 +49,9 @@ const page = () => {
       </section>
 
       <section className="py-10">
-        <div className="container mx-auto px-4">
+        {/* <div className="container mx-auto px-4"> */}
           <ProductsList />
-        </div>
+        {/* </div> */}
       </section>
 
       <section className="py-10">
