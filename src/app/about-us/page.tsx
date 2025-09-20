@@ -89,7 +89,7 @@ const page = () => {
           <div className='flex flex-wrap justify-between items-center'>
             <div className='w-full md:w-[48%]'>
               <div className='flex flex-col'>
-                <Image src="/assets/img/misison.pmg" width={463} height={406} alt="misison" />
+                <Image src="/assets/img/misison.png" width={463} height={406} alt="misison" className='mb-3' />
                 <h2 className='text-[#122014] font-[Grafiels] text-[25px]'>Mission</h2>
                 <p className='max-w-[80%]'>To empower every household with clean, affordable, plant-based nutrition—Helping people glow naturally, live energetically, and age gracefully, without ever compromising on quality or values.</p>
               </div>
@@ -97,7 +97,7 @@ const page = () => {
             <div className='w-1 h-96 border-r-1 border-dashed'></div>
             <div className='w-full md:w-[48%]'>
               <div className='flex flex-col'>
-                <Image src="/assets/img/vision.pmg" width={463} height={406} alt="vision" />
+                <Image src="/assets/img/vision.png" width={463} height={406} alt="vision" className='mb-3' />
                 <h2 className='text-[#122014] font-[Grafiels] text-[25px]'>Vision</h2>
                 <p className='max-w-[80%]'>To empower every household with clean, affordable, plant-based nutrition—Helping people glow naturally, live energetically, and age gracefully, without ever compromising on quality or values.</p>
               </div>
