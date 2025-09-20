@@ -45,7 +45,7 @@ const page = () => {
         <div className="container mx-auto px-4 relative z-10">
           <HeaderText textalign="text-center" heading="What is BEYUVANA?" textcolor="text-[#1A2819]" />
           <div className='flex items-center justify-center mb-4'>
-            <h3 className='text-white font-normal text-[20px] bg-[#122014] rounded-full px-10 py-4 font-[Grafiels]'><span className='text-[#DFC362]'>BEYUVANA</span> = Be + Yuvana = "Be Youthful. Be Alive. Be You."</h3>
+            <h3 className='text-white font-normal text-[20px] bg-[#122014] rounded-full px-10 py-4 font-[Grafiels]'><span className='text-[#DFC362]'>BEYUVANA</span> = Be + Yuvana = &ldquo;Be Youthful. Be Alive. Be You.&rdquo;</h3>
           </div>
           <div className='text-center flex flex-col items-center justify-center'>
             <p className='max-w-[1000px] mb-3'>We are a plant-based nutrition brand rooted in Indian heritage and powered by science. But we’re more than just anti-aging— We support your daily health, gut balance, glowing skin, energy, and inner wellness.</p>

@@ -46,7 +46,7 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
             */
 
             // 🔹 Signup API via helper
-            const data = await apiFetch<any>("/signup/v1", {
+            const data = await apiFetch<unknown>("/signup/v1", {
                 method: "POST",
                 body: JSON.stringify({
                     fullname: form.name,

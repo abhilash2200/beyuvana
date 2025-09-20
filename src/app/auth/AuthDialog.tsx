@@ -21,12 +21,11 @@ import {
 
 export default function AuthDialog() {
     const { user } = useAuth();
-    // const [step, setStep] = useState<"login" | "register" | "otp" | null>(null); 
-    // Temporarily we don't need OTP step
-    const [step, setStep] = useState<"login" | "register" | null>(null);
+    const [step, setStep] = useState<"login" | "register" | null>("login"); 
+    // default step = login
 
     return (
-        <Dialog onOpenChange={(o) => !o && setStep(null)}>
+        <Dialog onOpenChange={(o) => !o && setStep("login")}>
             <DialogTrigger asChild>
                 {user ? (
                     <DropdownMenu>
@@ -57,17 +56,17 @@ export default function AuthDialog() {
                         </DialogTitle>
                     </DialogHeader>
 
-                    <Tabs defaultValue="login" className="w-full">
+                    <Tabs value={step ?? "login"} onValueChange={(val) => setStep(val as "login" | "register")} className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
                             <TabsTrigger value="login">Login</TabsTrigger>
                             <TabsTrigger value="register">Register</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="login">
-                            <LoginForm /* onOtpSent={() => setStep("otp")} */ />
+                            <LoginForm />
                         </TabsContent>
                         <TabsContent value="register">
-                            <RegisterForm /* onOtpSent={() => setStep("otp")} */ />
+                            <RegisterForm />
                         </TabsContent>
                     </Tabs>
                 </DialogContent>
