@@ -21,7 +21,7 @@ const toxinItems: ToxinItem[] = [
 ];
 
 const CashBack: React.FC = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <div>

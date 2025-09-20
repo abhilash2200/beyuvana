@@ -15,7 +15,7 @@ import MobileNav from "./MobileNav";
 import RegisterForm from "@/app/auth/RegisterForm";
 import LoginForm from "@/app/auth/LoginForm";
 import { useAuth } from "@/context/AuthProvider";
-import { useCart } from "@/context/CartProvider";
+// import { useCart } from "@/context/CartProvider";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -35,7 +35,7 @@ import { TbUserSquareRounded } from "react-icons/tb";
 
 const Header = () => {
     const { user } = useAuth();
-    const { cartItems } = useCart();
+    // const { cartItems } = useCart();
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 

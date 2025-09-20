@@ -17,7 +17,8 @@ interface ProductReviewProps {
 }
 
 const ProductReview = ({ productId }: ProductReviewProps) => {
-    const { user, sessionKey } = useAuth();
+    // const { user, sessionKey } = useAuth();
+    const { user } = useAuth();
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState("");
     const [rating, setRating] = useState(0);

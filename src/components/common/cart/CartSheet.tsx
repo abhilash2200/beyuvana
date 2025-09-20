@@ -10,7 +10,7 @@ import DeliveryAddress from "../address/DeliveryAddress";
 import AddAddressSheet from "../address/AddAddressSheet";
 
 export default function CartSheet() {
-    const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, clearCart } = useCart();
+    const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity } = useCart();
     const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);

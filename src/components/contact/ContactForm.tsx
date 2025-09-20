@@ -32,7 +32,7 @@ const ContactForm: React.FC = () => {
     }
 
     const validate = () => {
-        let newErrors: Partial<FormData> = {}
+        const newErrors: Partial<FormData> = {}
 
         if (!formData.name.trim()) newErrors.name = "Name is required"
         if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
