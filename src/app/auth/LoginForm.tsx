@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import { apiFetch } from "@/lib/api";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 interface LoginFormProps {
     onClose?: () => void;
@@ -29,36 +30,37 @@ export default function LoginForm({ onClose }: LoginFormProps) {
         }
 
         try {
-            const data = await apiFetch<any>("/login/v1", {
+            const data = await apiFetch<unknown>("/login/v1", {
                 method: "POST",
                 body: JSON.stringify({ email: form.email, password: form.password }),
             });
 
             // 🔹 Normalize API response
+            const apiData = data as Record<string, unknown>;
             const rawUser =
-                data.user ||
-                data.data?.user ||
-                data.user_data ||
-                data.profile ||
-                data.data?.profile ||
-                data.data ||
-                data;
+                apiData.user ||
+                (apiData.data as Record<string, unknown>)?.user ||
+                apiData.user_data ||
+                apiData.profile ||
+                (apiData.data as Record<string, unknown>)?.profile ||
+                apiData.data ||
+                apiData;
 
             const normalizedUser = rawUser
                 ? {
-                    id: rawUser.id || rawUser.user_id || rawUser.userid || "",
-                    name: rawUser.name || rawUser.fullname || rawUser.username || "",
-                    email: rawUser.email || "",
-                    phone: rawUser.phone || rawUser.phonenumber || "",
+                    id: String((rawUser as Record<string, unknown>).id || (rawUser as Record<string, unknown>).user_id || (rawUser as Record<string, unknown>).userid || ""),
+                    name: String((rawUser as Record<string, unknown>).name || (rawUser as Record<string, unknown>).fullname || (rawUser as Record<string, unknown>).username || ""),
+                    email: String((rawUser as Record<string, unknown>).email || ""),
+                    phone: String((rawUser as Record<string, unknown>).phone || (rawUser as Record<string, unknown>).phonenumber || ""),
                 }
                 : null;
 
             const sessionKey =
-                data.session_key ||
-                data.data?.session_key ||
-                data.sessionKey ||
-                data.token ||
-                data.data?.token ||
+                apiData.session_key ||
+                (apiData.data as Record<string, unknown>)?.session_key ||
+                apiData.sessionKey ||
+                apiData.token ||
+                (apiData.data as Record<string, unknown>)?.token ||
                 null;
 
             if (!normalizedUser) {
@@ -70,11 +72,11 @@ export default function LoginForm({ onClose }: LoginFormProps) {
 
             // 🔹 Save user + session in context + localStorage
             setUser(normalizedUser);
-            if (sessionKey) setSessionKey(sessionKey);
+            if (sessionKey) setSessionKey(String(sessionKey));
 
             try {
                 localStorage.setItem("user", JSON.stringify(normalizedUser));
-                if (sessionKey) localStorage.setItem("session_key", sessionKey);
+                if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
             } catch (err) {
                 console.warn("Failed to save user in localStorage:", err);
             }
@@ -89,7 +91,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
 
             toast.success("Login successful!");
             onClose?.();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
             setError("Something went wrong. Please try again later.");
             toast.error("Login failed. Please try again.");
@@ -101,8 +103,10 @@ export default function LoginForm({ onClose }: LoginFormProps) {
     return (
         <div className="flex flex-col md:flex-row overflow-hidden">
             <div className="w-full md:w-1/2">
-                <img
+                <Image
                     src="/assets/img/login-img.png"
+                    width={491}
+                    height={780}
                     alt="Login Illustration"
                     className="w-full h-full object-cover"
                 />

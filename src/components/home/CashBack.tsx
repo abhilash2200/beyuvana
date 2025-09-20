@@ -5,11 +5,12 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import CashBackPopup from "./CashBackPopup";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface ToxinItem {
     img: string;
     text: string;
-    isButton?: boolean; // optional flag to mark button items
+    isButton?: boolean;
 }
 
 const toxinItems: ToxinItem[] = [
@@ -28,23 +29,25 @@ const CashBack: React.FC = () => {
                 {toxinItems.map((item, index) => (
                     <div
                         key={index}
-                        className={`w-[24%] ${index !== toxinItems.length - 1 ? "border-r border-black" : ""}`}
+                        className={`w-[50%] md:w-[24%] ${index !== toxinItems.length - 1 ? "md:border-r md:border-black" : ""}`}
                     >
                         <div className="flex gap-x-2 items-center justify-center">
                             <Image src={item.img} width={70} height={70} alt={item.text} />
                             {item.isButton ? (
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <Button className="whitespace-pre-line text-[#0C4B33] animate-glow">
+                                        <Button className="whitespace-pre-line text-[#0C4B33] md:text-[16px] text-[14px] animate-glow">
                                             {item.text}
                                         </Button>
                                     </DialogTrigger>
 
                                     <DialogContent className="bg-[#fff] border border-[#1E2C1E] text-black rounded-2xl w-[90%] max-w-[1000px]">
                                         <DialogHeader className="border-b border-[#1E2C1E">
+                                        <VisuallyHidden>
                                             <DialogTitle className="text-xl font-bold mb-3">
                                                 Money Back Guarantee
                                             </DialogTitle>
+                                        </VisuallyHidden>
                                         </DialogHeader>
 
                                         <div className="p-0">
@@ -53,7 +56,7 @@ const CashBack: React.FC = () => {
                                     </DialogContent>
                                 </Dialog>
                             ) : (
-                                <p className="whitespace-pre-line text-[#000]">{item.text}</p>
+                                <p className="whitespace-pre-line text-[#000] md:text-[16px] text-[14px]">{item.text}</p>
                             )}
                         </div>
                     </div>

@@ -62,30 +62,32 @@ const WhyNeed: React.FC = () => {
           pagination: true,
           breakpoints: {
             1024: { perPage: 2, gap: "1rem", padding: { left: "2rem", right: "2rem" } },
-            640: { perPage: 1, gap: "1rem", padding: { left: "1rem", right: "1rem" } },
+            640: { perPage: 2, gap: "1rem", padding: { left: "1rem", right: "1rem" } },
           },
+          classes: { pagination: "splide__pagination testpagination", page: "splide__pagination__page testpage", },
         }}
       >
         {items.map((item, idx) => (
           <SplideSlide key={idx}>
-            <div className="relative">
+            <div className="relative flex justify-center">
               <Image
                 src={item.img}
                 width={270}
                 height={650}
                 alt={item.title1}
-                className="rounded-lg"
+                className="rounded-lg object-contain md:w-full md:h-full w-[150px] h-auto"
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-2">
-                <h2 className="font-[Grafiels] text-[1.5vw] leading-tight">
+                <h2 className="font-[Grafiels] text-[18px] md:text-[28px] leading-tight">
                   {item.title1}
                 </h2>
-                <Plus className="w-8 h-8 my-1" strokeWidth={0.85} />
-                <h2 className="font-[Grafiels] text-[1.5vw] leading-tight">
+                <Plus className="w-8 h-8 my-1 sm:w-6 sm:h-6 xs:w-5 xs:h-5" strokeWidth={0.85} />
+                <h2 className="font-[Grafiels] text-[18px] md:text-[28px] leading-tight">
                   {item.title2}
                 </h2>
-                <hr className="w-20 my-2 border-white" />
-                <p className="text-[0.9vw] tracking-wide font-light whitespace-pre-line leading-relaxed">
+
+                <hr className="w-20 sm:w-16 xs:w-12 my-2 border-white" />
+                <p className="text-[14px] sm:text-[12px] xs:text-[11px] tracking-wide font-light whitespace-pre-line leading-relaxed">
                   {item.desc}
                 </p>
               </div>

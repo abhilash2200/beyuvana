@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 interface RegisterFormProps {
     onClose?: () => void;
@@ -71,8 +72,10 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
         <div className="flex flex-col md:flex-row overflow-hidden">
             {/* Left Image */}
             <div className="w-full md:w-1/2">
-                <img
+                <Image
                     src="/assets/img/login-img.png"
+                    width={491}
+                    height={780}
                     alt="Register Illustration"
                     className="w-full h-full object-cover"
                 />

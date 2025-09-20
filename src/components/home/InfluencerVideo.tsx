@@ -5,12 +5,12 @@ import "@splidejs/react-splide/css";
 
 const videos = [
   { src: "/assets/videos/influencer1.mp4", title: "Influencer 1" },
-//   { src: "/assets/videos/influencer2.mp4", title: "Influencer 2" },
-//   { src: "/assets/videos/influencer3.mp4", title: "Influencer 3" },
-//   { src: "/assets/videos/influencer4.mp4", title: "Influencer 4" },
-//   { src: "/assets/videos/influencer5.mp4", title: "Influencer 5" },
-//   { src: "/assets/videos/influencer6.mp4", title: "Influencer 6" },
-//   { src: "/assets/videos/influencer7.mp4", title: "Influencer 7" },
+  // { src: "/assets/videos/influencer2.mp4", title: "Influencer 2" },
+  // { src: "/assets/videos/influencer3.mp4", title: "Influencer 3" },
+  // { src: "/assets/videos/influencer4.mp4", title: "Influencer 4" },
+  // { src: "/assets/videos/influencer5.mp4", title: "Influencer 5" },
+  // { src: "/assets/videos/influencer6.mp4", title: "Influencer 6" },
+  // { src: "/assets/videos/influencer7.mp4", title: "Influencer 7" },
 ];
 
 const InfluencerVideo = () => {
@@ -27,6 +27,16 @@ const InfluencerVideo = () => {
           pauseOnHover: true,
           arrows: false,
           pagination: true,
+          breakpoints: {
+            1024: {
+              perPage: 2,
+              padding: { left: "1rem", right: "1rem" },
+            },
+            640: {
+              perPage: 1,
+              padding: { left: "0.5rem", right: "0.5rem" },
+            },
+          },
         }}
         className="custom-splide"
       >

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import React from "react";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
 
 interface ToxinItem {
   img: string;
@@ -18,18 +19,40 @@ const toxinItems: ToxinItem[] = [
 
 const Toxins: React.FC = () => {
   return (
-    <div className="flex flex-wrap justify-around">
-      {toxinItems.map((item, index) => (
-        <div
-          key={index}
-          className={`w-[19%] ${index !== toxinItems.length - 1 ? "border-r border-white" : ""}`}
-        >
-          <div className="flex gap-x-2 items-center justify-center">
-            <Image src={item.img} width={70} height={70} alt={item.text} />
-            <p className="whitespace-pre-line text-[#FFF]">{item.text}</p>
-          </div>
-        </div>
-      ))}
+    <div className="toxins-slider">
+      <Splide
+        options={{
+          type: "loop",
+          perPage: 5,
+          gap: "1rem",
+          pagination: false,
+          arrows: false,
+          autoplay: true,
+          interval: 2500,
+          pauseOnHover: false,
+          breakpoints: {
+            1280: { perPage: 4 },
+            1024: { perPage: 3 },
+            768: { perPage: 2 },
+            480: { perPage: 2 },
+          },
+        }}
+      >
+        {toxinItems.map((item, index) => (
+          <SplideSlide key={index}>
+            <div
+              className={`flex gap-x-2 items-center justify-center ${
+                index !== toxinItems.length - 1 ? "border-r border-white" : ""
+              }`}
+            >
+              <Image src={item.img} width={70} height={70} alt={item.text} />
+              <p className="whitespace-pre-line text-[#FFF] text-center">
+                {item.text}
+              </p>
+            </div>
+          </SplideSlide>
+        ))}
+      </Splide>
     </div>
   );
 };

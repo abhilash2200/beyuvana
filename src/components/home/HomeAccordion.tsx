@@ -41,7 +41,7 @@ const faqData: FaqItem[] = [
 
 const HomeAccordion: FC = () => {
     return (
-        <div className="w-full max-w-[80%] mx-auto">
+        <div className="w-full md:max-w-[80%] mx-auto">
             <Accordion type="single" collapsible defaultValue="item-1" className="space-y-3">
                 {faqData.map((item) => (
                     <AccordionItem key={item.id} value={item.id}>

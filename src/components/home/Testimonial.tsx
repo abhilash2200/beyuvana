@@ -65,6 +65,10 @@ const Testimonial: React.FC = () => {
           autoplay: false,
           arrows: true,
           pagination: true,
+          breakpoints: {
+            1024: { perPage: 2, gap: "1rem", padding: { left: "2rem", right: "2rem" } },
+            640: { perPage: 1, gap: "1rem", padding: { left: "1rem", right: "1rem" } },
+          },
           classes: { arrows: "splide__arrows testarrow", arrow: "splide__arrow testarrow-btn", next: "splide__arrow--next testarrow-next", prev: "splide__arrow--prev testarrow-prev", pagination: "splide__pagination testpagination", page: "splide__pagination__page testpage", },
         }}
       >
@@ -81,7 +85,7 @@ const Testimonial: React.FC = () => {
               <div className="flex flex-wrap items-center gap-x-4 mb-6">
                 <Image src={t.img} width={103} height={103} alt={t.name} />
                 <div className="flex flex-col gap-y-2">
-                  <h3 className="text-[#2D2D2D] text-[1.5vw] font-[Grafiels]">{t.name}</h3>
+                  <h3 className="text-[#2D2D2D] md:text-[30px] text-[25px] font-[Grafiels]">{t.name}</h3>
                   <div className="flex gap-1 text-yellow-500">
                     {Array.from({ length: 5 }).map((_, idx) => (
                       <Star
@@ -99,7 +103,7 @@ const Testimonial: React.FC = () => {
                   <p key={idx} className="mb-3 inline-block">{line}</p>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-x-2 items-center px-4">
+              <div className="flex flex-wrap gap-x-2 items-center md:px-4 px-0">
                 <Image
                   src={t.productimg}
                   width={48}
@@ -107,7 +111,7 @@ const Testimonial: React.FC = () => {
                   alt={t.name}
                   className="w-auto h-[65px]"
                 />
-                <p className="text-sm text-gray-500 max-w-[80%]">{t.dec}</p>
+                <p className="text-sm text-gray-500 max-w-[78%]">{t.dec}</p>
               </div>
             </div>
           </SplideSlide>

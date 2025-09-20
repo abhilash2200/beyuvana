@@ -6,20 +6,24 @@ import Image from "next/image";
 interface ContentItem {
     title: string;
     text: string;
+    icon: string; // 👈 icon add kiya
 }
 
 const leftContent: ContentItem[] = [
     {
         title: "Plant-Powered Formulations",
         text: "Developed with carefully selected botanicals, vitamins, and adaptogens.",
+        icon: "/assets/img/hand.png",
     },
     {
         title: "Science-Inspired",
         text: "Created using ingredients that are supported by nutritional research.",
+        icon: "/assets/img/bulb.png",
     },
     {
         title: "Clean & Transparent",
         text: "100% vegetarian, with no added sugar, no harmful chemicals, and no hidden additives.",
+        icon: "/assets/img/star.png",
     },
 ];
 
@@ -27,14 +31,17 @@ const rightContent: ContentItem[] = [
     {
         title: "Holistic Approach",
         text: "Designed to support overall wellness, balance, and daily vitality.",
+        icon: "/assets/img/lotus.png",
     },
     {
         title: "Trusted Quality",
         text: "Every batch is lab-tested for safety and purity before it reaches you.",
+        icon: "/assets/img/tick.png",
     },
     {
         title: "Commitment to Integrity",
         text: "Honest, clear, and mindful formulations made with your long-term well-being in mind.",
+        icon: "/assets/img/bowl.png",
     },
 ];
 
@@ -59,22 +66,33 @@ const floatingImages: FloatingImage[] = [
 const Choose: React.FC = () => {
     return (
         <div className="flex flex-wrap justify-between items-center gap-6 md:gap-0">
-            <div className="w-full md:w-[32%] pr-6 md:pr-10 flex flex-col items-end text-right space-y-6 gap-y-8">
+            {/* LEFT SIDE */}
+            <div className="w-full md:w-[32%] md:pr-10 flex flex-col items-end text-left md:text-right space-y-6 gap-y-6">
                 {leftContent.map((item, idx) => (
-                    <div key={idx} className="max-w-[20vw]">
-                        <h2 className="text-[#1A2819] font-[Grafiels] text-[1.1rem] md:text-[1.2vw] mb-1">
-                            {item.title}
-                        </h2>
-                        <p className="text-[#3B3B3B] font-light leading-tight">{item.text}</p>
+                    <div key={idx} className="w-full md:max-w-[20vw]">
+                        <div className="flex gap-x-3 items-start">
+                            {/* 👇 Show icon only on mobile */}
+                            <div className="block md:hidden shrink-0">
+                                <Image src={item.icon} width={80} height={80} alt={item.title} />
+                            </div>
+                            <div>
+                                <h2 className="text-[#1A2819] font-[Grafiels] text-[1.1rem] md:text-[1.2vw] mb-1">
+                                    {item.title}
+                                </h2>
+                                <p className="text-[#3B3B3B] font-light leading-tight">{item.text}</p>
+                            </div>
+                        </div>
                     </div>
                 ))}
             </div>
 
+            {/* CENTER VIDEO */}
             <div className="w-full md:w-[32%] flex justify-center relative">
+                {/* floating icons for desktop */}
                 {floatingImages.map((img, idx) => (
                     <div
                         key={idx}
-                        className="absolute z-10 transition-transform duration-300 hover:scale-110"
+                        className="absolute z-10 transition-transform duration-300 hover:scale-110 hidden md:block"
                         style={{
                             top: img.top,
                             bottom: img.bottom,
@@ -98,13 +116,22 @@ const Choose: React.FC = () => {
                 </div>
             </div>
 
-            <div className="w-full md:w-[32%] pl-6 md:pl-10 flex flex-col items-start text-left space-y-6 gap-y-8">
+            {/* RIGHT SIDE */}
+            <div className="w-full md:w-[32%] pl-0 md:pl-10 flex flex-col items-start text-left space-y-6 gap-y-6">
                 {rightContent.map((item, idx) => (
-                    <div key={idx} className="max-w-[20vw]">
-                        <h2 className="text-[#1A2819] font-[Grafiels] text-[1.1rem] md:text-[1.2vw] mb-1">
-                            {item.title}
-                        </h2>
-                        <p className="text-[#3B3B3B] font-light leading-tight">{item.text}</p>
+                    <div key={idx} className="w-full md:max-w-[20vw]">
+                        <div className="flex gap-x-3 items-start">
+                            {/* 👇 Show icon only on mobile */}
+                            <div className="block md:hidden shrink-0">
+                                <Image src={item.icon} width={80} height={80} alt={item.title} />
+                            </div>
+                            <div>
+                                <h2 className="text-[#1A2819] font-[Grafiels] text-[1.1rem] md:text-[1.2vw] mb-1">
+                                    {item.title}
+                                </h2>
+                                <p className="text-[#3B3B3B] font-light leading-tight">{item.text}</p>
+                            </div>
+                        </div>
                     </div>
                 ))}
             </div>

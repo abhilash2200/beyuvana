@@ -52,22 +52,25 @@ const ProductsList = () => {
         return (
           <div
             key={product.id}
-            className={`${index % 2 !== 0 ? "w-full bg-[#FAFAFA]" : ""}`}
+            className={`px-4 md:px-0 ${index % 2 !== 0 ? "w-full bg-[#FAFAFA]" : ""}`}
           >
             <div
               className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${index % 2 !== 0 ? "flex-row-reverse" : ""
                 }`}
             >
               <div className="w-full md:w-[28%]">
-                <Image
-                  src={product.mainImage}
-                  width={418}
-                  height={481}
-                  alt={product.name}
-                />
+                <div className="flex items-center justify-center">
+                  <Image
+                    src={product.mainImage}
+                    width={418}
+                    height={481}
+                    alt={product.name}
+                    className="w-[80%] md:w-full md:h-full object-cover"
+                  />
+                </div>
               </div>
               <div className="w-full md:w-[68%] flex flex-col gap-4">
-                <h2 className="text-[#1A2819] font-[Grafiels] text-[30px] leading-tight mb-2">{product.name}</h2>
+                <h2 className="text-[#1A2819] font-[Grafiels] md:text-[30px] text-[20px] leading-tight mb-2">{product.name}</h2>
                 {index === 0 && <div><p className="inline-flex border border-black rounded-[5px] py-2 px-2">{product.shortdescription}</p></div>}
                 <p>{product.description}</p>
                 {index === 1 && <div className="mb-3"><p className="">{product.descriptiontext}</p></div>}
@@ -79,13 +82,13 @@ const ProductsList = () => {
                       className={`w-[20%] ${i !== product.benefits.length - 1 ? "border-r border-black" : ""} pr-2`}
                     >
                       <Image src={b.img} width={83} height={83} alt={`Benefit ${i + 1}`} />
-                      <p>{b.text}</p>
+                      <p className="hidden md:block">{b.text}</p>
                     </div>
                   ))}
                 </div>
 
 
-                <div className="flex gap-2 items-center mt-2">
+                <div className="flex flex-wrap md:flex-row gap-2 items-center mt-2">
                   <p>Select<br />Pack:</p>
                   {packs.map((pack) => {
                     const isSelected = selectedPack === pack;
@@ -110,7 +113,7 @@ const ProductsList = () => {
                 </div>
 
 
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-2 justify-center md:justify-start">
                   <Button
                     onClick={() => handleShopNow(product)}
                     disabled={selectedPack !== 1}

@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, cloneElement, isValidElement } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import { apiFetch } from "@/lib/api";
 import { toast } from "react-toastify";
 
-export default function LogoutButton() {
+interface LogoutButtonProps {
+  children?: React.ReactNode;
+}
+
+export default function LogoutButton({ children }: LogoutButtonProps) {
   const { user, sessionKey, logout } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -39,6 +43,16 @@ export default function LogoutButton() {
       setLoading(false);
     }
   };
+
+  if (children && isValidElement(children)) {
+    return cloneElement(children as React.ReactElement<{ onClick?: (...args: unknown[]) => void; disabled?: boolean }>, {
+      onClick: (...args: unknown[]) => {
+        (children as React.ReactElement<{ onClick?: (...args: unknown[]) => void }>).props?.onClick?.(...args);
+        handleLogout();
+      },
+      disabled: loading || (children as React.ReactElement<{ disabled?: boolean }>).props?.disabled,
+    });
+  }
 
   return (
     <Button
