@@ -1,5 +1,10 @@
-"use client";
+"use client"
+import { Product } from "@/app/data/fallbackProducts";
+import ProductDetails from "./ProductDetails";
+import SelectPack from "./SelectPack";
+import ProductImg from "./ProductImg";
 
+<<<<<<< HEAD
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { useCart } from "@/context/CartProvider";
@@ -72,8 +77,26 @@ export const Product2Layout = ({ product }: { product: Product }) => {
               <ShoppingCart size={16} /> Add to Cart
             </Button>
           </div>
+=======
+export default function Product2Layout({ product }: { product: Product }) {
+  return (
+    <div className="container mx-auto px-4">
+      <div className="flex flex-wrap items-center justify-between gap-x-2">
+        <div className="w-full md:w-[30%]">
+          <ProductImg images={product.images} />
+        </div>
+        <div className="w-full md:w-[30%]">
+          <ProductDetails name={product.name} tagline={product.tagline} description={product.description} certificateImg={product.certificateImg} faq={product.faq} productId={product.id} />
+        </div>
+        <div className="w-full md:w-[30%]">
+          <SelectPack />
+>>>>>>> 8fa794b582e4143f064dbb03f32f3c865a2a9819
         </div>
       </div>
     </div>
   );
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> 8fa794b582e4143f064dbb03f32f3c865a2a9819
