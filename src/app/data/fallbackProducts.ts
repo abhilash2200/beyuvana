@@ -10,8 +10,8 @@ export interface Product {
   tagline?: string;
   description?: string;
   certificateImg?: string;
-  images: string[];    // gallery images
-  faq?: FaqItem[];     // optional FAQ
+  images: string[];
+  faq?: FaqItem[];
 }
 
 export const fallbackProducts: Product[] = [
