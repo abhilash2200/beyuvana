@@ -1,20 +1,22 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { fallbackProducts } from "../../data/fallbackProducts";
-import { productConfigs } from "../../data/productConfigs";
+import { products } from "@/app/data/fallbackProducts";
+import { Product1Layout } from "@/components/product/Product1Layout";
+import { Product2Layout } from "@/components/product/Product2Layout";
 
-const ProductDetailPage = () => {
-    const { id } = useParams();
-    const productId = Number(id);
+export default function ProductDetailPage() {
+  const params = useParams();
+  const id = params?.id;  // make sure id exists
 
-    const product = fallbackProducts.find(p => p.id === productId);
-    if (!product) return <p className="text-center py-10">Product not found!</p>;
+  if (!id) return <p className="text-center py-10">Invalid Product</p>;
 
-    const LayoutComponent = productConfigs[productId as keyof typeof productConfigs]?.layout;
-    if (!LayoutComponent) return <p className="text-center py-10">No layout found for this product</p>;
+  const product = products.find(p => p.id === id);
 
-    return <LayoutComponent product={product} />;
-};
+  if (!product) return <p className="text-center py-10">Product not found</p>;
 
-export default ProductDetailPage;
+  if (product.id === "collagen-powder") return <Product1Layout product={product} />;
+  if (product.id === "collagen-booster") return <Product2Layout product={product} />;
+
+  return <Product1Layout product={product} />;
+}
