@@ -59,12 +59,15 @@ const WhyNeed: React.FC = () => {
           interval: 4000,
           pauseOnHover: true,
           arrows: false,
-          pagination: true,
+          pagination: false,
           breakpoints: {
             1024: { perPage: 2, gap: "1rem", padding: { left: "2rem", right: "2rem" } },
-            640: { perPage: 2, gap: "1rem", padding: { left: "1rem", right: "1rem" } },
+            640: { perPage: 2, gap: "1rem", padding: { left: "1rem", right: "1rem" }, pagination: true },
           },
-          classes: { pagination: "splide__pagination testpagination", page: "splide__pagination__page testpage", },
+          classes: {
+            pagination: "splide__pagination testpagination",
+            page: "splide__pagination__page testpage",
+          },
         }}
       >
         {items.map((item, idx) => (

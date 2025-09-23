@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import { Star } from "lucide-react";
-import { useState } from "react";
 
 interface TestimonialItem {
   name: string;
@@ -51,9 +50,6 @@ const testimonials: TestimonialItem[] = [
 ];
 
 const Testimonial: React.FC = () => {
-  const defaultActive = 0;
-  const [activeIndex, setActiveIndex] = useState<number>(defaultActive);
-
   return (
     <div className="w-full mx-auto relative">
       <Splide
@@ -66,26 +62,37 @@ const Testimonial: React.FC = () => {
           arrows: true,
           pagination: true,
           breakpoints: {
-            1024: { perPage: 2, gap: "1rem", padding: { left: "2rem", right: "2rem" } },
-            640: { perPage: 1, gap: "1rem", padding: { left: "1rem", right: "1rem" } },
+            1024: {
+              perPage: 2,
+              gap: "1rem",
+              padding: { left: "2rem", right: "2rem" },
+            },
+            640: {
+              perPage: 1,
+              gap: "1rem",
+              padding: { left: "1px", right: "1px" },
+              arrows: false,
+            },
           },
-          classes: { arrows: "splide__arrows testarrow", arrow: "splide__arrow testarrow-btn", next: "splide__arrow--next testarrow-next", prev: "splide__arrow--prev testarrow-prev", pagination: "splide__pagination testpagination", page: "splide__pagination__page testpage", },
+          classes: {
+            arrows: "splide__arrows testarrow",
+            arrow: "splide__arrow testarrow-btn",
+            next: "splide__arrow--next testarrow-next",
+            prev: "splide__arrow--prev testarrow-prev",
+            pagination: "splide__pagination testpagination",
+            page: "splide__pagination__page testpage",
+          },
         }}
       >
         {testimonials.map((t, i) => (
           <SplideSlide key={i}>
-            <div
-              onMouseEnter={() => setActiveIndex(i)}
-              className={`px-6 h-auto py-14 rounded-2xl text-left border transition-all duration-300 ease-out
-                ${activeIndex === i
-                  ? "border-black bg-white shadow-lg"
-                  : "border-transparent bg-[#FFFDFD]"
-                }`}
-            >
+            <div className="px-6 h-auto md:py-14 rounded-2xl text-left transition-all duration-300 ease-out hover:border hover:border-black hover:bg-white hover:shadow-lg">
               <div className="flex flex-wrap items-center gap-x-4 mb-6">
                 <Image src={t.img} width={103} height={103} alt={t.name} />
                 <div className="flex flex-col gap-y-2">
-                  <h3 className="text-[#2D2D2D] md:text-[30px] text-[25px] font-[Grafiels]">{t.name}</h3>
+                  <h3 className="text-[#2D2D2D] md:text-[30px] text-[25px] font-[Grafiels]">
+                    {t.name}
+                  </h3>
                   <div className="flex gap-1 text-yellow-500">
                     {Array.from({ length: 5 }).map((_, idx) => (
                       <Star
@@ -100,7 +107,9 @@ const Testimonial: React.FC = () => {
               </div>
               <div className="text-[#3B3B3B] font-light text-[16px] italic mb-6">
                 {t.text.split("\n").map((line, idx) => (
-                  <p key={idx} className="mb-3 inline-block">{line}</p>
+                  <p key={idx} className="mb-3 inline-block">
+                    {line}
+                  </p>
                 ))}
               </div>
               <div className="flex flex-wrap gap-x-2 items-center md:px-4 px-0">

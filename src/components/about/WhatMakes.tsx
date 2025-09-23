@@ -33,11 +33,14 @@ const WhatMakes = () => {
                         640: { perPage: 1 },
                     },
                 }}
-                className="custom-splide"
+                classes={{
+                    pagination: "splide__pagination testpagination",
+                    page: "splide__pagination__page testpage",
+                }}
             >
                 {features.map((item, index) => (
                     <SplideSlide key={index}>
-                        <div className="flex flex-col items-center justify-center px-4 py-15 rounded-[30px] border bg-white text-center shadow-sm hover:border-0 hover:bg-[#F0FFF9] hover:shadow-none transition-all duration-100 ease-out">
+                        <div className="flex flex-col items-center justify-center px-4 md:py-15 py-10 rounded-[30px] border bg-white text-center shadow-sm hover:border-0 hover:bg-[#F0FFF9] hover:shadow-none transition-all duration-100 ease-out">
                             <Image
                                 src={item.img}
                                 alt={item.text}

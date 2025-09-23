@@ -59,20 +59,20 @@ const ContactForm: React.FC = () => {
     }
 
     return (
-        <section className="w-full max-w-xl mx-auto bg-[#F2FFF7] shadow-md">
+        <section className="w-full md:max-w-xl mx-auto bg-[#F2FFF7] shadow-md">
             <div className="bg-[#057A37] w-full p-4 leading-none">
                 <h2 className="text-2xl font-[Grafiels] text-[#FFF] text-left">
                     Enquire Online
                 </h2>
             </div>
 
-            <div className="px-8 py-6">
+            <div className="md:px-8 px-4 md:py-6 py-4">
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="flex flex-col gap-1">
                         <Input
                             id="name"
                             type="text"
-                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] rounded-[5px]"
+                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] md:rounded-[5px] rounded-[3px]"
                             placeholder="Full Name"
                             value={formData.name}
                             onChange={handleChange}
@@ -87,7 +87,7 @@ const ContactForm: React.FC = () => {
                         <Input
                             id="email"
                             type="email"
-                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] rounded-[5px]"
+                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] md:rounded-[5px] rounded-[3px]"
                             placeholder="Email Address"
                             value={formData.email}
                             onChange={handleChange}
@@ -102,7 +102,7 @@ const ContactForm: React.FC = () => {
                         <Input
                             id="phone"
                             type="tel"
-                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] rounded-[5px]"
+                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] md:rounded-[5px] rounded-[3px]"
                             placeholder="Phone Number"
                             value={formData.phone}
                             onChange={handleChange}
@@ -117,7 +117,7 @@ const ContactForm: React.FC = () => {
                         <Input
                             id="subject"
                             type="text"
-                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] rounded-[5px]"
+                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] md:rounded-[5px] rounded-[3px]"
                             placeholder="Subject"
                             value={formData.subject}
                             onChange={handleChange}
@@ -131,7 +131,7 @@ const ContactForm: React.FC = () => {
                     <div className="flex flex-col gap-1">
                         <Textarea
                             id="message"
-                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] rounded-[5px]"
+                            className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] md:rounded-[5px] rounded-[3px]"
                             placeholder="Your Message"
                             value={formData.message}
                             onChange={handleChange}
@@ -144,7 +144,7 @@ const ContactForm: React.FC = () => {
 
                     <Button
                         type="submit"
-                        className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-[5px]"
+                        className="w-full bg-[#057A37] hover:bg-green-700 text-white py-4 md:rounded-[5px] rounded-[3px]"
                         disabled={loading}
                     >
                         {loading ? "Sending..." : "Send Message"}

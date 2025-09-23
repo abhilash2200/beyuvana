@@ -11,12 +11,12 @@ const page = () => {
         <div className='container mx-auto px-4'>
           <div className='flex flex-wrap justify-between items-center'>
             <div className='w-full md:w-[60%]'>
-              <div className='flex flex-col gap-y-3 mb-5'>
+              <div className='flex flex-col mb-5'>
                 <HeaderText textalign="text-left" heading="Contact Us" textcolor="text-[#057A37]" />
-                <p className=''>At Beyuvana, we are committed to providing high-quality, plant-based collagen products that support your health and beauty goals. At Beyuvana, we are committed to providing high-quality, plant-based collagen</p>
+                <p className='mb-3'>At Beyuvana, we are committed to providing high-quality, plant-based collagen products that support your health and beauty goals. At Beyuvana, we are committed to providing high-quality, plant-based collagen</p>
                 <p>At Beyuvana, we are committed to providing high-quality, plant-based collagen </p>
               </div>
-              <div className='flex flex-wrap justify-between max-w-[60%]'>
+              <div className='flex flex-wrap justify-between w-full md:max-w-[60%] gap-y-4 mb-5'>
                 <div className="w-full md:w-[48%] flex flex-col gap-4">
                   <p className="font-semibold text-lg">Get in touch with us:</p>
                   <div className="flex flex-col gap-3">

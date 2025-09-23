@@ -41,12 +41,12 @@ const Toxins: React.FC = () => {
         {toxinItems.map((item, index) => (
           <SplideSlide key={index}>
             <div
-              className={`flex gap-x-2 items-center justify-center ${
+              className={`flex gap-x-2 items-center justify-center md:text-[18px] text-[16px] ${
                 index !== toxinItems.length - 1 ? "border-r border-white" : ""
               }`}
             >
               <Image src={item.img} width={70} height={70} alt={item.text} />
-              <p className="whitespace-pre-line text-[#FFF] text-center">
+              <p className="whitespace-pre-line text-[#FFF] text-center leading-tight">
                 {item.text}
               </p>
             </div>

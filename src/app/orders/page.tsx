@@ -5,6 +5,7 @@ import Image from "next/image"
 import { PiDotOutlineFill } from "react-icons/pi";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { FaChevronRight } from "react-icons/fa";
 
 interface Order {
   id: string;
@@ -103,7 +104,7 @@ const OrdersPage = () => {
                 <div className="w-full md:w-[40%]">
                   <div className="flex gap-3">
                     {/* Placeholder with Image inside */}
-                    <div className="w-28 h-28 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
+                    <div className="md:w-28 md:h-28 w-20 h-20 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
                       <Image
                         src={order.image}
                         width={120}
@@ -115,22 +116,27 @@ const OrdersPage = () => {
 
                     <div className="flex-1 flex flex-col justify-between">
                       <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
-                      <h2 className="font-[Grafiels] text-[18px] line-clamp-2 leading-tight mb-1 text-[#1A2819]">{order.productName}</h2>
-                      <p className="text-gray-600 text-[15px]">{order.description}</p>
+                      <h2 className="font-[Grafiels] md:text-[18px] text-[16px] md:line-clamp-2 line-clamp-1 leading-tight mb-1 text-[#1A2819]">{order.productName}</h2>
+                      <p className="text-gray-600 md:text-[15px] text-[13px] line-clamp-2">{order.description}</p>
+                    </div>
+                    <div className="flex items-center justify-center md:hidden">
+                      <span><FaChevronRight className="text-black" /></span>
                     </div>
                   </div>
 
                 </div>
 
                 {/* Price */}
-                <div className="w-full md:w-[20%]">
+                <div className="w-full md:w-[20%] hidden md:block">
                   <p className="font-semibold">₹{order.price.toFixed(2)}</p>
                 </div>
 
                 {/* Status */}
-                <div className="w-full md:w-[20%]">
+                <div className="w-full md:w-[20%] hidden md:block">
                   {getStatusUI(order.status, order.date)}
                 </div>
+
+
               </div>
             </Link>
           ))}

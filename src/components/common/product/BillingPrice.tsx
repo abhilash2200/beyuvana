@@ -13,15 +13,15 @@ interface BillingPriceProps {
 const BillingPrice = ({ userName, order }: BillingPriceProps) => {
     return (
         <div>
-            <div className="bg-green-50 px-6 py-10 rounded-[20px] shadow-sm space-y-4">
-                <h3 className="text-[18px] font-[Grafiels] text-[#1A2819]">Billing Information</h3>
-                <p className="text-sm text-gray-600 capitalize">
+            <div className="bg-green-50 md:px-6 px-4 md:py-10 py-6 rounded-[20px] shadow-sm space-y-4">
+                <h3 className="md:text-[18px] text-[16px] font-[Grafiels] text-[#1A2819]">Billing Information</h3>
+                <p className="md:text-sm text-[13px] text-gray-600 capitalize">
                     {userName} <br />
                     {order.address}
                 </p>
 
-                <div className="mt-4 space-y-1 text-sm text-gray-700">
-                    <h3 className="text-[18px] font-[Grafiels] text-[#1A2819]">Order Summary</h3>
+                <div className="mt-4 space-y-1 md:text-sm text-[13px] text-gray-700">
+                    <h3 className="md:text-[18px] text-[16px] font-[Grafiels] text-[#1A2819]">Order Summary</h3>
                     <div className="flex justify-between"><span>Bag Price</span><span>₹{order.bagPrice.toFixed(2)}</span></div>
                     <div className="flex justify-between"><span>Discounted Price</span><span>- ₹{order.discount.toFixed(2)}</span></div>
                     <div className="flex justify-between"><span>Delivery Price</span><span>₹{order.deliveryPrice.toFixed(2)}</span></div>

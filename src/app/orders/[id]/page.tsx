@@ -109,15 +109,15 @@ const OrderDetailPage = () => {
         <div className="container mx-auto px-4 py-8 space-y-10">
             {/* Top Section: Back */}
             <div className="flex items-center justify-between mb-4">
-                <Button variant="default" onClick={() => router.back()}>
-                    ← Back
+                <Button variant="default" onClick={() => router.back()} className="text-black font-normal hover:bg-gray-100 hover:text-black">
+                    ← Back To Orders
                 </Button>
             </div>
 
             {/* Product Section */}
-            <div className="flex flex-col md:flex-row items-center gap-6 border-b pb-6">
+            <div className="flex flex-col md:flex-row items-center gap-6 border-b md:pb-6 pb-4">
                 <div className="flex gap-4 flex-1">
-                    <div className="relative">
+                    <div className="relative md:w-28 md:h-28 w-20 h-20">
                         <Image
                             src={order.productImage}
                             alt={order.productName}
@@ -127,16 +127,16 @@ const OrderDetailPage = () => {
                         />
                     </div>
 
-                    <div className="flex-1 flex flex-col justify-between">
+                    <div className="flex-1 flex flex-col justify-between md:text-[18px] text-[16px]">
                         <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
-                        <h2 className="font-[Grafiels] text-[18px] line-clamp-2 leading-tight mb-2 text-[#1A2819]">{order.productName}</h2>
-                        <p className="text-gray-600 text-[15px] mb-1">Quantity: {order.quantity}</p>
-                        <p className="text-gray-600 text-[15px] max-w-[70%] line-clamp-2">{order.shortdecs}</p>
+                        <h2 className="font-[Grafiels] md:text-[18px] text-[13px] md:line-clamp-2 line-clamp-1 leading-tight md:mb-2 text-[#1A2819]">{order.productName}</h2>
+                        <p className="text-gray-600 md:text-[15px] text-[12px] md:mb-1 mb-0">Quantity: {order.quantity}</p>
+                        <p className="text-gray-600 md:text-[15px] text-[13px] md:max-w-[70%] md:line-clamp-2 line-clamp-1">{order.shortdecs}</p>
                     </div>
                 </div>
-                <div>
+                <div className="md:block hidden">
                     <p className={`font-semibold ${getStatusColor(order.status)}`}>{order.status}</p>
-                    <div className="flex items-center gap-2 text-gray-700">
+                    <div className="flex items-center gap-2 text-gray-700 md:text-[18px] text-[16px]">
                         <PiFilePdfBold size={22} />
                         <span className="text-sm">Invoice</span>
                     </div>
@@ -144,14 +144,14 @@ const OrderDetailPage = () => {
             </div>
 
             {/* Product Review */}
-            <div className="py-8">
+            <div className="py-4">
                 <ProductReview productId={order.id} />
             </div>
 
             {/* Billing / Price Section */}
             <BillingPrice userName={userName} order={order} />
             
-            <div className="mt-4 bg-[#F2F9F3] p-6 rounded-[20px] shadow-sm flex items-center justify-center">
+            <div className="mt-4 bg-[#F2F9F3] md:p-6 p-4 rounded-[20px] shadow-sm flex items-center justify-center">
                 <Button variant="link" className="text-black underline hover:cursor-pointer border border-black px-16 py-4" onClick={() => router.push("/contact")}>
                     Need Help?
                 </Button>
