@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://beyuvana.com/api/:path*", // 👈 backend API
+        destination: "https://beyuvana.com/api/:path*",
       },
     ];
   },
