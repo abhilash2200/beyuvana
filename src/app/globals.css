@@ -152,3 +152,7 @@
 .why_page.is-active {
   @apply bg-[#0C4B33] scale-102;
 }
+
+.comparearrow {
+  @apply absolute right-0 -bottom-6 lg:right-[1px] w-[140px];
+}

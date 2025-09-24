@@ -54,7 +54,7 @@ const ProductDetails = ({ name, tagline, description, certificateImg, faq, produ
                                     className="flex justify-between items-center text-[#0C4B33] px-5 py-3 hover:cursor-pointer transition-colors duration-300 no-underline hover:no-underline"
                                 >
                                     <span
-                                        className={`text-sm ${productId === 1 ? "text-red-500" : "text-blue-500"
+                                        className={`text-sm ${productId === 1 ? "text-[#0C4B33]" : "text-blue-500"
                                             }`}
                                     >
                                         {item.question}

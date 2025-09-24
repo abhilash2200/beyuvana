@@ -15,7 +15,7 @@ export default function Product2Layout({ product }: { product: Product }) {
           <ProductDetails name={product.name} tagline={product.tagline} description={product.description} certificateImg={product.certificateImg} faq={product.faq} productId={product.id} />
         </div>
         <div className="w-full md:w-[30%]">
-          <SelectPack />
+        <SelectPack productId="collagen-pink" />
         </div>
       </div>
     </div>

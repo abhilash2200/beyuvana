@@ -1,33 +1,117 @@
-"use client"
+"use client";
 import { Rating } from "@mui/material";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 
+interface Pack {
+    qty: number;
+    sachets: number;
+    price: number;
+    originalPrice: number;
+    discount: string;
+    tagline: string;
+}
 
-const SelectPack = () => {
+interface Product {
+    id: string;
+    pack: string;
+    name: string;
+    reviews: number;
+    rating: number;
+    packs: Pack[];
+    image: string;
+}
+
+const SelectPack = ({ productId }: { productId: string }) => {
     const router = useRouter();
     const { addToCart } = useCart();
 
-    const [selectedPack] = useState<1 | 2 | 4>(1);
+    const [product, setProduct] = useState<Product | null>(null);
+    const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
-    const prices: Record<1 | 2 | 4, number> = {
-        1: 1499,
-        2: 2029,
-        4: 3519,
+    // Dummy data inside component
+    const products: Record<string, Product> = {
+        "collagen-green": {
+            id: "collagen-green",
+            pack: "Select Pack",
+            name: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
+            reviews: 60,
+            rating: 4.5,
+            packs: [
+                {
+                    qty: 1,
+                    sachets: 15,
+                    price: 1499,
+                    originalPrice: 1999,
+                    discount: "20% Off",
+                    tagline: "See first glow in 2 weeks",
+                },
+                {
+                    qty: 2,
+                    sachets: 30,
+                    price: 2029,
+                    originalPrice: 2899,
+                    discount: "30% Off",
+                    tagline: "Best for visible results in 30 days",
+                },
+                {
+                    qty: 4,
+                    sachets: 60,
+                    price: 3519,
+                    originalPrice: 5499,
+                    discount: "36% Off",
+                    tagline: "Transform your skin in 60 days",
+                },
+            ],
+            image: "/assets/img/product-details/collagen-green-product.png",
+        },
+        "collagen-pink": {
+            id: "collagen-pink",
+            pack: "Select Pack",
+            name: "BEYUVANA™ Advanced Glow-Nourishing Formula for Radiant, Even-Toned Skin",
+            reviews: 42,
+            rating: 4,
+            packs: [
+                {
+                    qty: 1,
+                    sachets: 20,
+                    price: 1299,
+                    originalPrice: 1799,
+                    discount: "28% Off",
+                    tagline: "Glow in just 10 days",
+                },
+                {
+                    qty: 3,
+                    sachets: 60,
+                    price: 3299,
+                    originalPrice: 4999,
+                    discount: "34% Off",
+                    tagline: "Perfect for 2 months care",
+                },
+            ],
+            image: "/assets/img/product-details/collagen-pink-product.png",
+        },
     };
 
+    // Simulate fetching by id
+    useEffect(() => {
+        const prod = products[productId];
+        setProduct(prod || null);
+        setSelectedPack(prod ? prod.packs[0] : null); // default pack
+    }, [productId]);
+
     const handleAddToCart = () => {
-        const pack = selectedPack;
+        if (!product || !selectedPack) return;
         addToCart({
-            id: `select-pack-${pack}`,
-            name: `Pack of ${pack}`,
+            id: `${product.id}-${selectedPack.qty}`,
+            name: `${product.name} - Pack of ${selectedPack.qty}`,
             quantity: 1,
-            price: prices[pack],
-            image: "/assets/img/product-details/collagen-green-product.png",
+            price: selectedPack.price,
+            image: product.image,
         });
     };
 
@@ -36,81 +120,78 @@ const SelectPack = () => {
         router.push("/checkout");
     };
 
+    if (!product) return <p>Product not found</p>;
+
     return (
         <div className="border border-gray-900 rounded-[20px] p-4">
             <div className="flex items-center justify-center gap-2">
-                <h3 className="md:text-[25px] text-[16px] font-[Grafiels] text-[#1A2819]">Select Pack</h3>
+                <h3 className="md:text-[25px] text-[16px] font-[Grafiels] text-[#1A2819]">
+                    {product.pack}
+                </h3>
                 <span>|</span>
-                <Rating name="half-rating-read" defaultValue={4.5} precision={0.5} readOnly />
-                <p className="text-[12px] text-[#747474]">60 reviews</p>
+                <Rating
+                    name="half-rating-read"
+                    defaultValue={product.rating}
+                    precision={0.5}
+                    readOnly
+                />
+                <p className="text-[12px] text-[#747474]">{product.reviews} reviews</p>
             </div>
-            {/* data came form api */}
-            <div className="p-4 border border-gray-900 rounded-[20px]">
-                <div className="flex flex-wrap justify-between">
-                    <div className="w-full md:w-[40%]">
-                        <div className="flex flex-col">
-                            <p className="md:text-[25px] text-[16px] uppercase text-[#1A2819] leading-tight">1 pack</p>
-                            <p className="md:text-[16px] text-[13px] capitalize text-[#1A2819]">15 sachets</p>
+
+            {product.packs.map((pack) => (
+                <div
+                    key={pack.qty}
+                    onClick={() => setSelectedPack(pack)}
+                    className={`p-4 border rounded-[20px] my-4 cursor-pointer ${selectedPack?.qty === pack.qty
+                        ? "border-green-600 bg-green-50"
+                        : "border-gray-900"
+                        }`}
+                >
+                    <div className="flex flex-wrap justify-between">
+                        <div className="w-full md:w-[40%]">
+                            <p className="md:text-[25px] text-[16px] uppercase text-[#1A2819] leading-tight">
+                                {pack.qty} pack
+                            </p>
+                            <p className="md:text-[16px] text-[13px] capitalize text-[#1A2819]">
+                                {pack.sachets} sachets
+                            </p>
+                        </div>
+                        <div className="w-full md:w-[40%]">
+                            <p className="md:text-[30px] text-[16px] capitalize text-[#057A37] leading-tight font-bold">
+                                ₹{pack.price}
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <p className="text-[12px] text-[#747474] line-through">
+                                    ₹{pack.originalPrice}
+                                </p>
+                                <p className="text-[12px] text-[#D31714]">{pack.discount}</p>
+                            </div>
                         </div>
                     </div>
-                    <div className="w-full md:w-[40%]">
-                        <p className="md:text-[30px] text-[16px] capitalize text-[#057A37] leading-tight font-bold">₹1499</p>
-                        <div className="flex items-center gap-2">
-                            <p className="text-[12px] text-[#747474] line-through">₹1999</p>
-                            <p className="text-[12px] text-[#D31714]">20% Off</p>
-                        </div>
-                    </div>
+                    <p className="md:text-[18px] text-[16px] capitalize text-[#1A2819] text-center mt-5">
+                        {pack.tagline}
+                    </p>
                 </div>
-                <p className="md:text-[18px] text-[16px] capitalize text-[#1A2819] text-center mt-5">See first glow in 2 weeks</p>
-            </div>
-            <div className="p-4 border border-gray-900 rounded-[20px] my-5">
-                <div className="flex flex-wrap justify-between">
-                    <div className="w-full md:w-[40%]">
-                        <div className="flex flex-col">
-                            <p className="md:text-[25px] text-[16px] uppercase text-[#1A2819] leading-tight">2 pack</p>
-                            <p className="md:text-[16px] text-[13px] capitalize text-[#1A2819]">30 sachets</p>
-                        </div>
-                    </div>
-                    <div className="w-full md:w-[40%]">
-                        <p className="md:text-[30px] text-[16px] capitalize text-[#057A37] leading-tight font-bold">₹2029</p>
-                        <div className="flex items-center gap-2">
-                            <p className="text-[12px] text-[#747474] line-through">₹2899</p>
-                            <p className="text-[12px] text-[#D31714]">30% Off</p>
-                        </div>
-                    </div>
-                </div>
-                <p className="md:text-[18px] text-[16px] capitalize text-[#1A2819] text-center mt-5">Best for visible results in 30 days</p>
-            </div>
-            <div className="p-4 border border-gray-900 rounded-[20px]">
-                <div className="flex flex-wrap justify-between">
-                    <div className="w-full md:w-[40%]">
-                        <div className="flex flex-col">
-                            <p className="md:text-[25px] text-[16px] uppercase text-[#1A2819] leading-tight">4 pack</p>
-                            <p className="md:text-[16px] text-[13px] capitalize text-[#1A2819]">60 sachets</p>
-                        </div>
-                    </div>
-                    <div className="w-full md:w-[40%]">
-                        <p className="md:text-[30px] text-[16px] capitalize text-[#057A37] leading-tight font-bold">₹3519</p>
-                        <div className="flex items-center gap-2">
-                            <p className="text-[12px] text-[#747474] line-through">₹5499</p>
-                            <p className="text-[12px] text-[#D31714]">36% Off</p>
-                        </div>
-                    </div>
-                </div>
-                <p className="md:text-[18px] text-[16px] capitalize text-[#1A2819] text-center mt-5">Transform your skin in 60 days</p>
-            </div>
-            <div className="bg-[#FFE2E2] px-4 py-2 mt-5">
-                <div className="flex items-center gap-2">
-                    <Image src="/assets/img/product-details/sale.png" alt="pack-icon" width={20} height={20} />
-                    <p className="text-[12px] text-[#1A2819]">Get Extra 5% off on Prepaid orders</p>
+            ))}
+
+            <div className="bg-[#FFE2E2] px-4 py-2 my-5">
+                <div className="flex items-center justify-center gap-2">
+                    <Image
+                        src="/assets/img/product-details/sale.png"
+                        alt="pack-icon"
+                        width={20}
+                        height={20}
+                    />
+                    <p className="text-[12px] text-[#1A2819]">
+                        Get Extra 5% off on Prepaid orders
+                    </p>
                 </div>
             </div>
-            <div className="flex gap-2 mt-2 justify-center md:justify-start">
+
+            <div className="flex gap-4 items-center my-2 justify-center">
                 <Button
                     onClick={handleShopNow}
-                    disabled={selectedPack !== 1}
-                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${selectedPack !== 1 ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
+                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal bg-[#057A37] text-white"
                 >
                     <ShoppingBag size={16} />
                     Buy Now
@@ -118,14 +199,14 @@ const SelectPack = () => {
 
                 <Button
                     onClick={handleAddToCart}
-                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-white text-black border border-black hover:!border-black`}
+                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal bg-white text-black border border-black"
                 >
                     <ShoppingCart size={16} />
                     Add to Cart
                 </Button>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default SelectPack
+export default SelectPack;
