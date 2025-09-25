@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
-import { apiFetch } from "@/lib/api";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { authApi } from "@/lib/api";
 
 interface LoginFormProps {
     onClose?: () => void;
@@ -30,10 +30,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
         }
 
         try {
-            const data = await apiFetch<unknown>("/login/v1", {
-                method: "POST",
-                body: JSON.stringify({ email: form.email, password: form.password }),
-            });
+            const data = await authApi.login({ email: form.email, password: form.password });
 
             // 🔹 Normalize API response
             const apiData = data as Record<string, unknown>;

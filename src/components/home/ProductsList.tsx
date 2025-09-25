@@ -4,18 +4,81 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { products, Product } from "@/app/data/products";
+import { useState, useEffect } from "react";
+import { products } from "@/app/data/products";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
+import { productsApi } from "@/lib/api";
 
 const packs = [1, 2, 4] as const;
 
+// API Product type (from the API response) - using inline type for simplicity
+
+// Combined product type that can handle both static and API data
+interface DisplayProduct {
+  id: string;
+  name: string;
+  shortdescription: string;
+  description: string;
+  descriptiontext: string;
+  price: { 1: number; 2: number; 4: number };
+  benefits: { img: string; text: string }[];
+  mainImage: string;
+  product_id?: string; // For API integration
+}
+
 const ProductsList = () => {
-  const { addToCart } = useCart();
+  const { addToCart, loading } = useCart();
   const router = useRouter();
 
   // State as a map where key is product id and value is selected pack
   const [selectedPacks, setSelectedPacks] = useState<Record<string, 1 | 2 | 4>>({});
+  const [displayProducts, setDisplayProducts] = useState<DisplayProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch products from API on component mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await productsApi.getList({ category: "Skin Care" });
+
+        if (response.data && Array.isArray(response.data)) {
+          // Convert API products to display format
+          const apiProducts: DisplayProduct[] = response.data.slice(0, 2).map((apiProduct, index) => {
+            const staticProduct = products[index] || products[0]; // Fallback to static data
+
+            return {
+              id: apiProduct.id,
+              name: apiProduct.product_name,
+              shortdescription: staticProduct.shortdescription,
+              description: apiProduct.short_description || staticProduct.description,
+              descriptiontext: staticProduct.descriptiontext,
+              price: {
+                1: parseFloat(apiProduct.discount_price) || staticProduct.price[1],
+                2: parseFloat(apiProduct.discount_price) * 1.7 || staticProduct.price[2], // Approximate 2-pack pricing
+                4: parseFloat(apiProduct.discount_price) * 2.9 || staticProduct.price[4], // Approximate 4-pack pricing
+              },
+              benefits: staticProduct.benefits,
+              mainImage: apiProduct.image || staticProduct.mainImage,
+              product_id: apiProduct.id,
+            };
+          });
+
+          setDisplayProducts(apiProducts);
+        } else {
+          // Fallback to static data
+          setDisplayProducts(products);
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        // Fallback to static data
+        setDisplayProducts(products);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleSelectPack = (productId: string, pack: 1 | 2 | 4) => {
     setSelectedPacks((prev) => ({
@@ -24,25 +87,35 @@ const ProductsList = () => {
     }));
   };
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = async (product: DisplayProduct) => {
     const selectedPack: 1 | 2 | 4 = selectedPacks[product.id] ?? 1;
-    addToCart({
+
+    await addToCart({
       id: `${product.id}-${selectedPack}`,
       name: `${product.name} - Pack of ${selectedPack}`,
       quantity: 1,
       price: product.price[selectedPack],
       image: product.mainImage,
+      product_id: product.product_id || product.id, // Use product_id for API integration
     });
   };
 
-  const handleShopNow = (product: Product) => {
-    handleAddToCart(product);
+  const handleShopNow = async (product: DisplayProduct) => {
+    await handleAddToCart(product);
     router.push("/checkout");
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="text-lg text-gray-500">Loading products...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-12">
-      {products.map((product: Product, index: number) => {
+      {displayProducts.map((product: DisplayProduct, index: number) => {
         const isEven = index % 2 === 0;
 
         // Get the selected pack for this product or default to 1
@@ -54,9 +127,8 @@ const ProductsList = () => {
             className={`px-4 md:px-0 ${index % 2 !== 0 ? "w-full bg-[#FAFAFA]" : ""}`}
           >
             <div
-              className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${
-                index % 2 !== 0 ? "flex-row-reverse" : ""
-              }`}
+              className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${index % 2 !== 0 ? "flex-row-reverse" : ""
+                }`}
             >
               {/* Product Image */}
               <div className="w-full md:w-[28%]">
@@ -98,9 +170,8 @@ const ProductsList = () => {
                   {product.benefits.map((b, i) => (
                     <div
                       key={i}
-                      className={`w-[20%] ${
-                        i !== product.benefits.length - 1 ? "border-r border-black" : ""
-                      } pr-2`}
+                      className={`w-[20%] ${i !== product.benefits.length - 1 ? "border-r border-black" : ""
+                        } pr-2`}
                     >
                       <Image src={b.img} width={83} height={83} alt={`Benefit ${i + 1}`} />
                       <p className="hidden md:block">{b.text}</p>
@@ -121,21 +192,20 @@ const ProductsList = () => {
                     // Product-specific colors
                     const colors = isEven
                       ? {
-                          selected: "bg-[#057A37] text-white border-[#057A37]",
-                          unselected: "bg-[#DFF5E6] text-[#057A37] border-[#057A37]",
-                        }
+                        selected: "bg-[#057A37] text-white border-[#057A37]",
+                        unselected: "bg-[#DFF5E6] text-[#057A37] border-[#057A37]",
+                      }
                       : {
-                          selected: "bg-[#B00404] text-white border-[#B00404]",
-                          unselected: "bg-[#F5DADA] text-[#B00404] border-[#B00404]",
-                        };
+                        selected: "bg-[#B00404] text-white border-[#B00404]",
+                        unselected: "bg-[#F5DADA] text-[#B00404] border-[#B00404]",
+                      };
 
                     return (
                       <Button
                         key={pack}
                         onClick={() => handleSelectPack(product.id, pack)}
-                        className={`rounded-[10px] py-2 px-4 border font-semibold transition-colors ${
-                          isSelected ? colors.selected : colors.unselected
-                        }`}
+                        className={`rounded-[10px] py-2 px-4 border font-semibold transition-colors ${isSelected ? colors.selected : colors.unselected
+                          }`}
                       >
                         <span className="text-[10px] pr-3">Pack {pack}</span> ₹
                         {product.price[pack].toLocaleString()}
@@ -148,21 +218,21 @@ const ProductsList = () => {
                 <div className="flex gap-2 mt-2 justify-center md:justify-start">
                   <Button
                     onClick={() => handleShopNow(product)}
-                    disabled={selectedPack !== 1}
-                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${
-                      selectedPack !== 1 ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                    disabled={selectedPack !== 1 || loading}
+                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${selectedPack !== 1 || loading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                   >
                     <ShoppingBag size={16} />
-                    Buy Now
+                    {loading ? "Processing..." : "Buy Now"}
                   </Button>
 
                   <Button
                     onClick={() => handleAddToCart(product)}
-                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-white text-black border border-black hover:!border-black`}
+                    disabled={loading}
+                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-white text-black border border-black hover:!border-black disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <ShoppingCart size={16} />
-                    Add to Cart
+                    {loading ? "Adding..." : "Add to Cart"}
                   </Button>
                 </div>
               </div>

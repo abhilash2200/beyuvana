@@ -6,57 +6,55 @@ import { PiDotOutlineFill } from "react-icons/pi";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
-
-interface Order {
-  id: string;
-  productName: string;
-  description: string;
-  price: number;
-  status: "arriving" | "cancelled" | "delivered";
-  date?: string; // cancelled/delivered date
-  image: string;
-}
+import { ordersApi, Order } from "@/lib/api";
+import { useAuth } from "@/context/AuthProvider";
+import { toast } from "react-toastify";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user, sessionKey } = useAuth();
 
   useEffect(() => {
-    // 🔹 Replace with your actual API call
     const fetchOrders = async () => {
-      // Example dummy data (replace with API response)
-      const data: Order[] = [
-        {
-          id: "78464748557",
-          productName: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
-          description: "Crafted with 21 synergistic, clinically studied botanicals that work from within.",
-          price: 1565,
-          status: "arriving",
-          image: "/assets/img/product-1.png"
-        },
-        {
-          id: "78464748558",
-          productName: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
-          description: "Crafted with 21 synergistic, clinically studied botanicals that work from within.",
-          price: 1565,
-          status: "cancelled",
-          date: "22-08-2025",
-          image: "/assets/img/product-2.png"
-        },
-        {
-          id: "78464748559",
-          productName: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
-          description: "Crafted with 21 synergistic, clinically studied botanicals that work from within.",
-          price: 1565,
-          status: "delivered",
-          date: "21-08-2025",
-          image: "/assets/img/product-1.png"
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (!user || !sessionKey) {
+          setError("Please log in to view your orders");
+          toast.warning("Please log in to view your orders");
+          return;
         }
-      ];
-      setOrders(data);
+
+        const response = await ordersApi.getOrderList(sessionKey);
+
+        console.log("Orders API response:", response);
+
+        if (response.data && Array.isArray(response.data)) {
+          setOrders(response.data);
+          if (response.data.length === 0) {
+            toast.info("No orders found");
+          } else {
+            toast.success(`Found ${response.data.length} orders`);
+          }
+        } else {
+          setError(response.message || "Failed to fetch orders");
+          toast.error(response.message || "Failed to fetch orders");
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch orders";
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchOrders();
-  }, []);
+  }, [user, sessionKey]);
 
   const getStatusUI = (status: Order["status"], date?: string) => {
     switch (status) {
@@ -93,7 +91,37 @@ const OrdersPage = () => {
             textcolor="text-[#1A2819]"
           />
 
-          {orders.map((order) => (
+          {loading && (
+            <div className="flex justify-center items-center py-10">
+              <div className="text-gray-600">Loading your orders...</div>
+            </div>
+          )}
+
+          {error && (
+            <div className="flex justify-center items-center py-10">
+              <div className="text-red-600 text-center">
+                <p>{error}</p>
+                {!user && (
+                  <Link href="/auth" className="text-blue-600 underline mt-2 block">
+                    Please log in to view your orders
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+
+          {!loading && !error && orders.length === 0 && (
+            <div className="flex justify-center items-center py-10">
+              <div className="text-gray-600 text-center">
+                <p>No orders found</p>
+                <Link href="/product" className="text-blue-600 underline mt-2 block">
+                  Browse our products
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {!loading && !error && orders.map((order) => (
             <Link
               key={order.id}
               href={`/orders/${order.id}`}

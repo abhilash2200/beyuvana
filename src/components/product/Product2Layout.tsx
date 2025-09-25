@@ -5,7 +5,6 @@ import SelectPack from "./SelectPack";
 import ProductImg from "./ProductImg";
 import Image from "next/image";
 import Action from "./Action";
-import { FaRegCheckSquare } from "react-icons/fa";
 import HeaderText from "../common/HeaderText";
 import WhyBeyuvana from "./WhyBeyuvana";
 import Compare from "./Compare";

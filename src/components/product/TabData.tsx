@@ -14,42 +14,42 @@ interface TabItem {
 const tabItems: TabItem[] = [
     {
         id: "tab1",
-        icon:"",
+        icon: "",
         label: "Aging",
         content: <p>This is the overview content.</p>,
         img: "/assets/img/product-details/aging-1.png",
     },
     {
         id: "tab2",
-        icon:"",
+        icon: "",
         label: "Stress",
         content: <p>Here are some features of the product.</p>,
         img: "/assets/img/product-details/aging-1.png",
     },
     {
         id: "tab3",
-        icon:"",
+        icon: "",
         label: "Pollution",
         content: <p>User reviews will appear here.</p>,
         img: "/assets/img/product-details/aging-1.png",
     },
     {
         id: "tab4",
-        icon:"",
+        icon: "",
         label: "UV Radiation",
         content: <p>User reviews will appear here.</p>,
         img: "/assets/img/product-details/aging-1.png",
     },
     {
         id: "tab5",
-        icon:"",
+        icon: "",
         label: "Disrupted Sleep Pattern",
         content: <p>User reviews will appear here.</p>,
         img: "/assets/img/product-details/aging-1.png",
     },
     {
         id: "tab6",
-        icon:"",
+        icon: "",
         label: "Poor Gut Health",
         content: <p>User reviews will appear here.</p>,
         img: "/assets/img/product-details/aging-1.png",
@@ -62,7 +62,6 @@ const TabData = () => {
             <div className="flex gap-4">
                 {/* Left menu */}
                 <TabsList
-                    orientation="vertical"
                     className="flex flex-col w-[20%] space-y-2 bg-white p-2 rounded-md shadow"
                 >
                     {tabItems.map((tab) => (

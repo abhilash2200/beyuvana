@@ -4,7 +4,6 @@ import { useState, cloneElement, isValidElement } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
-import { apiFetch } from "@/lib/api";
 import { toast } from "react-toastify";
 
 interface LogoutButtonProps {
@@ -24,14 +23,7 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
 
     setLoading(true);
     try {
-      // 🔹 API logout via helper
-      await apiFetch("/logout/v1", {
-        method: "POST",
-        headers: { "session_key": sessionKey },
-        body: JSON.stringify({ user_id: user.id }),
-      });
-
-      // 🔹 Local logout
+      // 🔹 Use the logout function from AuthProvider (it handles both API call and local cleanup)
       await logout();
 
       toast.success("Logged out successfully!");

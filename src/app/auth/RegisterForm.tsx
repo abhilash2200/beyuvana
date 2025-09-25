@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { apiFetch } from "@/lib/api";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { authApi } from "@/lib/api";
 
 interface RegisterFormProps {
     onClose?: () => void;
@@ -36,24 +36,11 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
         setLoading(true);
 
         try {
-            // 🔹 Old OTP API (commented out)
-            /*
-            const response = await fetch("/api/auth/send-otp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
-            });
-            */
-
-            // 🔹 Signup API via helper
-            const data = await apiFetch<unknown>("/signup/v1", {
-                method: "POST",
-                body: JSON.stringify({
-                    fullname: form.name,
-                    email: form.email,
-                    phonenumber: form.phone,
-                    password: form.password,
-                }),
+            const data = await authApi.register({
+                fullname: form.name,
+                email: form.email,
+                phonenumber: form.phone,
+                password: form.password,
             });
 
             console.log("Signup success:", data);

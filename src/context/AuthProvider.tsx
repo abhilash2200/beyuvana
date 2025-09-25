@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { apiFetch } from "@/lib/api";
 
 type User = { id: string; name: string; email: string; phone: string } | null;
 
@@ -42,15 +41,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       if (sessionKey && user?.id) {
-        await apiFetch("/logout/v1", {
+        // Use proxy to avoid CORS issues
+        const response = await fetch("/api/proxy?endpoint=/logout/v1/", {
           method: "POST",
-          headers: { "session_key": sessionKey },
+          headers: {
+            "session_key": sessionKey,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ user_id: user.id }),
         });
+
+        if (!response.ok) {
+          console.warn("Logout API call failed, but continuing with local logout");
+        }
       }
     } catch (err) {
-      console.error("Logout error:", err);
+      console.error("Logout API error:", err);
+      // Continue with local logout even if API fails
     } finally {
+      // Always clean up local state
       localStorage.removeItem("user");
       localStorage.removeItem("session_key");
       setUser(null);

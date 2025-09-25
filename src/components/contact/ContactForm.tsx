@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { toast } from "react-toastify"
 
 interface FormData {
     name: string
@@ -48,13 +49,17 @@ const ContactForm: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        if (!validate()) return
+        if (!validate()) {
+            toast.error("Please fill all required fields correctly!");
+            return;
+        }
 
         setLoading(true)
         setTimeout(() => {
             setLoading(false)
-            alert("Form submitted ✅")
+            toast.success("Form submitted successfully! We'll get back to you soon.");
             setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
+            setErrors({})
         }, 1500)
     }
 

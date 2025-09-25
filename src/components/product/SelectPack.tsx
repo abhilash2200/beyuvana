@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
+import { toast } from "react-toastify";
 
 interface Pack {
     qty: number;
@@ -26,76 +27,84 @@ interface Product {
     image: string;
 }
 
+// Dummy data outside component
+const products: Record<string, Product> = {
+    "collagen-green": {
+        id: "collagen-green",
+        pack: "Select Pack",
+        name: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
+        reviews: 60,
+        rating: 4.5,
+        packs: [
+            {
+                qty: 1,
+                sachets: 15,
+                price: 1499,
+                originalPrice: 1999,
+                discount: "20% Off",
+                tagline: "See first glow in 2 weeks",
+            },
+            {
+                qty: 2,
+                sachets: 30,
+                price: 2029,
+                originalPrice: 2899,
+                discount: "30% Off",
+                tagline: "Best for visible results in 30 days",
+            },
+            {
+                qty: 4,
+                sachets: 60,
+                price: 3519,
+                originalPrice: 5499,
+                discount: "36% Off",
+                tagline: "Transform your skin in 60 days",
+            },
+        ],
+        image: "/assets/img/product-details/collagen-green-product.png",
+    },
+    "collagen-pink": {
+        id: "collagen-pink",
+        pack: "Select Pack",
+        name: "BEYUVANA™ Advanced Glow-Nourishing Formula for Radiant, Even-Toned Skin",
+        reviews: 42,
+        rating: 4,
+        packs: [
+            {
+                qty: 1,
+                sachets: 20,
+                price: 1299,
+                originalPrice: 1799,
+                discount: "28% Off",
+                tagline: "Glow in just 10 days",
+            },
+            {
+                qty: 3,
+                sachets: 60,
+                price: 3299,
+                originalPrice: 4999,
+                discount: "34% Off",
+                tagline: "Perfect for 2 months care",
+            },
+            {
+                qty: 4,
+                sachets: 80,
+                price: 4299,
+                originalPrice: 4999,
+                discount: "34% Off",
+                tagline: "Perfect for 3 months care",
+            },
+        ],
+        image: "/assets/img/product-details/collagen-pink-product.png",
+    },
+};
+
 const SelectPack = ({ productId }: { productId: string }) => {
     const router = useRouter();
     const { addToCart } = useCart();
 
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
-
-    // Dummy data inside component
-    const products: Record<string, Product> = {
-        "collagen-green": {
-            id: "collagen-green",
-            pack: "Select Pack",
-            name: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
-            reviews: 60,
-            rating: 4.5,
-            packs: [
-                {
-                    qty: 1,
-                    sachets: 15,
-                    price: 1499,
-                    originalPrice: 1999,
-                    discount: "20% Off",
-                    tagline: "See first glow in 2 weeks",
-                },
-                {
-                    qty: 2,
-                    sachets: 30,
-                    price: 2029,
-                    originalPrice: 2899,
-                    discount: "30% Off",
-                    tagline: "Best for visible results in 30 days",
-                },
-                {
-                    qty: 4,
-                    sachets: 60,
-                    price: 3519,
-                    originalPrice: 5499,
-                    discount: "36% Off",
-                    tagline: "Transform your skin in 60 days",
-                },
-            ],
-            image: "/assets/img/product-details/collagen-green-product.png",
-        },
-        "collagen-pink": {
-            id: "collagen-pink",
-            pack: "Select Pack",
-            name: "BEYUVANA™ Advanced Glow-Nourishing Formula for Radiant, Even-Toned Skin",
-            reviews: 42,
-            rating: 4,
-            packs: [
-                {
-                    qty: 1,
-                    sachets: 20,
-                    price: 1299,
-                    originalPrice: 1799,
-                    discount: "28% Off",
-                    tagline: "Glow in just 10 days",
-                },
-                {
-                    qty: 3,
-                    sachets: 60,
-                    price: 3299,
-                    originalPrice: 4999,
-                    discount: "34% Off",
-                    tagline: "Perfect for 2 months care",
-                },
-            ],
-            image: "/assets/img/product-details/collagen-pink-product.png",
-        },
-    };
 
     // Simulate fetching by id
     useEffect(() => {
@@ -105,19 +114,38 @@ const SelectPack = ({ productId }: { productId: string }) => {
     }, [productId]);
 
     const handleAddToCart = () => {
-        if (!product || !selectedPack) return;
-        addToCart({
-            id: `${product.id}-${selectedPack.qty}`,
-            name: `${product.name} - Pack of ${selectedPack.qty}`,
-            quantity: 1,
-            price: selectedPack.price,
-            image: product.image,
-        });
+        if (!product || !selectedPack) {
+            toast.warning("Please select a pack first!");
+            return;
+        }
+
+        try {
+            addToCart({
+                id: `${product.id}-${selectedPack.qty}`,
+                name: `${product.name} - Pack of ${selectedPack.qty}`,
+                quantity: 1,
+                price: selectedPack.price,
+                image: product.image,
+            });
+            toast.success(`${product.name} added to cart!`);
+        } catch {
+            toast.error("Failed to add to cart. Please try again.");
+        }
     };
 
     const handleShopNow = () => {
-        handleAddToCart();
-        router.push("/checkout");
+        if (!product || !selectedPack) {
+            toast.warning("Please select a pack first!");
+            return;
+        }
+
+        try {
+            handleAddToCart();
+            toast.success("Redirecting to checkout...");
+            router.push("/checkout");
+        } catch {
+            toast.error("Failed to proceed to checkout. Please try again.");
+        }
     };
 
     if (!product) return <p>Product not found</p>;
