@@ -3,38 +3,29 @@
 import Image from "next/image"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 import "@splidejs/react-splide/css"
+import { useParams } from "next/navigation"
+import { Product, fallbackProducts, Compare as CompareItem } from "@/app/data/fallbackProducts"
 
-interface CompareSlide {
-    id: number
-    img: string
-    title: string
-    desc: string
+interface CompareProps {
+    product?: Product
 }
 
-const slides: CompareSlide[] = [
-    {
-        id: 1,
-        img: "/assets/img/product-details/compare-11.png",
-        title: "Lines that used to stay... started to fade.",
-        desc: "I noticed the difference by week 4. My skin felt tighter, especially around the eyes and mouth. Now, even without makeup, the fine lines are visibly reduced."
-    },
-    {
-        id: 2,
-        img: "/assets/img/product-details/compare-11.png",
-        title: "Skin feels smoother & brighter",
-        desc: "After consistent use, my complexion looks healthier and more radiant. Even my friends started noticing the glow."
-    },
-    {
-        id: 3,
-        img: "/assets/img/product-details/compare-11.png",
-        title: "Visible improvement in elasticity",
-        desc: "By week 8, my skin felt more elastic and firm. Fine lines and sagging areas visibly reduced, giving a youthful look."
-    }
-]
+const Compare = ({ product }: CompareProps) => {
+    const params = useParams()
+    const routeId = typeof params?.id === "string" ? params.id : undefined
+    const resolvedProduct: Product | undefined = product ? product : fallbackProducts.find(p => p.id.toString() === routeId)
+    const slides: CompareItem[] = resolvedProduct?.compare || []
 
-const Compare = () => {
+    // Use first slide colors as container defaults; each slide sets its own as well
+    const containerBg = slides[0]?.bgColor || "#122014"
+    const containerHeading = slides[0]?.headingColor || "#FFFFFF"
+    const containerPara = slides[0]?.paraColor || "#FFFFFF"
+
     return (
-        <div className="relative bg-[#122014] rounded-[20px] px-6 py-10 pb-20 flex flex-col items-center justify-center gap-y-2 overflow-hidden">
+        <div
+            className="relative rounded-[20px] px-6 py-10 pb-20 flex flex-col items-center justify-center gap-y-2 overflow-hidden"
+            style={{ backgroundColor: containerBg }}
+        >
             <div className="absolute bottom-0 right-0 pointer-events-none">
                 <Image
                     src="/assets/img/product-details/deco-compare.png"
@@ -48,9 +39,11 @@ const Compare = () => {
             <Splide
                 options={{
                     type: "loop",
+                    perPage: 1,
                     autoplay: true,
                     interval: 4000,
-                    perPage: 1,
+                    gap: "1rem",
+                    arrows: true,
                     pagination: false,
                     classes: {
                         arrows: "splide__arrows comparearrow",
@@ -72,11 +65,11 @@ const Compare = () => {
                                 className="w-full h-auto"
                             />
                             <div className="py-6">
-                                <h2 className="text-[#FFF] font-[Grafiels] text-[25px] mb-4">
+                                <h2 className="font-[Grafiels] text-[25px] mb-4" style={{ color: slide.headingColor || containerHeading }}>
                                     {slide.title}
                                 </h2>
-                                <p className="text-[#FFF] mb-4">{slide.desc}</p>
-                                <hr className="text-[white]" />
+                                <p className="mb-4" style={{ color: slide.paraColor || containerPara }}>{slide.desc}</p>
+                                <hr style={{ color: slide.paraColor || containerPara }} />
                             </div>
                         </div>
                     </SplideSlide>

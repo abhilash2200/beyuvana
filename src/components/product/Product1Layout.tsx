@@ -8,6 +8,8 @@ import { FaRegCheckSquare } from "react-icons/fa";
 import HeaderText from "../common/HeaderText";
 import WhyBeyuvana from "./WhyBeyuvana";
 import Compare from "./Compare";
+import Builder from "./Builder";
+import TabData from "./TabData";
 
 const data = [
     {
@@ -197,7 +199,7 @@ export default function Product1Layout({ product }: { product: Product }) {
             <div className="py-10">
                 <HeaderText textalign="text-center" heading="Why the BEYUVANA™ PREMIUM COLLAGEN BUILDER Works" textcolor="text-[#1A2819]" />
                 <p className="text-center mb-4">BEYUVANA™ isn’t just another supplement — it’s a multi-action, plant-powered skin nutrition system designed to target the root causes of aging, not just the symptoms. Heres why it delivers real, visible results:</p>
-                <WhyBeyuvana />
+                <WhyBeyuvana product={product} />
             </div>
             <div className="py-10">
                 <div className="flex flex-wrap items-center justify-between">
@@ -208,6 +210,16 @@ export default function Product1Layout({ product }: { product: Product }) {
                         <Compare />
                     </div>
                 </div>
+            </div>
+            <div className="py-10 bg-[#F8FFF9] rounded-[20px]">
+                <HeaderText textalign="text-center" heading="Who Is BEYUVANA™ Premium Collagen Builder Made For?" textcolor="text-[#1A2819]" />
+                <p className="text-center mb-4 max-w-[90%] leading-tight">BEYUVANA™ is designed for modern individuals who want results without compromise —using only clean, plant-based ingredients that are backed by science and safe for everyday use.</p>
+                <Builder />
+            </div>
+            <div className="py-10">
+                <HeaderText textalign="text-center" heading="The Hidden Reasons Your Skin Loses Its Radiance So quickly" textcolor="text-[#1A2819]" />
+                <p className="text-center mb-4 max-w-[90%] leading-tight">Stress, pollution, UV exposure, poor sleep, and nutrient deficiencies silently disrupt your skin’s balance — breaking down collagen, dulling glow, and accelerating aging faster than you realize.</p>
+                <TabData />
             </div>
         </div>
     );

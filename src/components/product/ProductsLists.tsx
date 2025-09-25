@@ -58,16 +58,14 @@ const ProductsLists = () => {
   const [loading, setLoading] = useState(false);
 
   // Future API fetching logic (commented out for now)
-  /*
   useEffect(() => {
     setLoading(true);
-    fetch("/api/products") // replace with your real API endpoint
+    fetch("/products/lists/v1/") // replace with your real API endpoint
       .then((res) => res.json())
       .then((data: Product[]) => setProducts(data))
       .catch((err) => console.error("Failed to fetch products:", err))
       .finally(() => setLoading(false));
   }, []);
-  */
 
   const handleAddToCart = (product: Product) => {
     addToCart({
