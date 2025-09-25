@@ -7,6 +7,7 @@ import React, {
   ReactNode,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import { cartApi, CartItem } from "@/lib/api";
 import { useAuth } from "./AuthProvider";
@@ -42,6 +43,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<LocalCartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const { user, sessionKey } = useAuth();
+
+  // Store timeout references to clear them
+  const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -112,112 +116,125 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const increaseItemQuantity = useCallback(async (id: string) => {
-    const item = cartItems.find((i) => i.id === id);
-    if (!item) return;
-
     // Update local state immediately for better UX
-    setCartItems((prev) =>
-      prev.map((i) =>
-        i.id === id ? { ...i, quantity: i.quantity + 1 } : i
-      )
-    );
+    setCartItems((prev) => {
+      const item = prev.find((i) => i.id === id);
+      if (!item) return prev;
 
-    // Sync with server in background (no loading state)
-    if (user && sessionKey && item.product_id) {
-      try {
-        await cartApi.updateCart({
-          product_id: item.product_id,
-          quantity: item.quantity + 1,
-        }, sessionKey);
-      } catch (apiError) {
-        console.warn("API update failed, using local storage:", apiError);
-        // Revert local state if API fails
-        setCartItems((prev) =>
-          prev.map((i) =>
-            i.id === id ? { ...i, quantity: i.quantity - 1 } : i
-          )
-        );
-        toast.error("Failed to sync with server. Please try again.");
+      const newQuantity = item.quantity + 1;
+
+      // Clear existing timeout for this item
+      const existingTimeout = timeoutRefs.current.get(id);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
       }
-    }
-  }, [cartItems, user, sessionKey]);
+
+      // Debounced server update after 2 seconds
+      if (user && sessionKey && item.product_id) {
+        const timeout = setTimeout(() => {
+          cartApi.updateCart({
+            product_id: item.product_id,
+            quantity: newQuantity,
+          }, sessionKey).catch((apiError) => {
+            console.warn("API update failed, using local storage:", apiError);
+            toast.error("Failed to sync with server. Please try again.");
+          });
+          timeoutRefs.current.delete(id);
+        }, 2000); // 2 seconds delay
+
+        timeoutRefs.current.set(id, timeout);
+      }
+
+      return prev.map((i) =>
+        i.id === id ? { ...i, quantity: newQuantity } : i
+      );
+    });
+  }, [user, sessionKey]);
 
   const decreaseItemQuantity = useCallback(async (id: string) => {
-    const item = cartItems.find((i) => i.id === id);
-    if (!item) return;
+    // Update local state immediately for better UX
+    setCartItems((prev) => {
+      const item = prev.find((i) => i.id === id);
+      if (!item) return prev;
+
+      // Clear existing timeout for this item
+      const existingTimeout = timeoutRefs.current.get(id);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
+      }
+
+      if (item.quantity <= 1) {
+        // Remove item
+        if (user && sessionKey && item.product_id) {
+          const timeout = setTimeout(() => {
+            cartApi.removeFromCart(item.product_id, sessionKey).catch((apiError) => {
+              console.warn("API remove failed, using local storage:", apiError);
+              toast.error("Failed to sync with server. Please try again.");
+            });
+            timeoutRefs.current.delete(id);
+          }, 2000); // 2 seconds delay
+
+          timeoutRefs.current.set(id, timeout);
+        }
+        return prev.filter((i) => i.id !== id);
+      } else {
+        // Decrease quantity
+        const newQuantity = item.quantity - 1;
+
+        if (user && sessionKey && item.product_id) {
+          const timeout = setTimeout(() => {
+            cartApi.decreaseQuantity(item.product_id, sessionKey).catch((apiError) => {
+              console.warn("API update failed, using local storage:", apiError);
+              toast.error("Failed to sync with server. Please try again.");
+            });
+            timeoutRefs.current.delete(id);
+          }, 2000); // 2 seconds delay
+
+          timeoutRefs.current.set(id, timeout);
+        }
+
+        return prev.map((i) =>
+          i.id === id ? { ...i, quantity: newQuantity } : i
+        );
+      }
+    });
+  }, [user, sessionKey]);
+
+  const updateItemQuantity = useCallback(async (id: string, qty: number) => {
+    const newQuantity = qty < 1 ? 1 : qty;
 
     // Update local state immediately for better UX
     setCartItems((prev) => {
-      const target = prev.find((i) => i.id === id);
-      if (!target) return prev;
-      if (target.quantity <= 1) {
-        return prev.filter((i) => i.id !== id);
+      const item = prev.find((i) => i.id === id);
+      if (!item) return prev;
+
+      // Clear existing timeout for this item
+      const existingTimeout = timeoutRefs.current.get(id);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
       }
+
+      // Debounced server update after 2 seconds
+      if (user && sessionKey && item.product_id) {
+        const timeout = setTimeout(() => {
+          cartApi.updateCart({
+            product_id: item.product_id,
+            quantity: newQuantity,
+          }, sessionKey).catch((apiError) => {
+            console.warn("API update failed, using local storage:", apiError);
+            toast.error("Failed to sync with server. Please try again.");
+          });
+          timeoutRefs.current.delete(id);
+        }, 2000); // 2 seconds delay
+
+        timeoutRefs.current.set(id, timeout);
+      }
+
       return prev.map((i) =>
-        i.id === id ? { ...i, quantity: i.quantity - 1 } : i
+        i.id === id ? { ...i, quantity: newQuantity } : i
       );
     });
-
-    // Sync with server in background (no loading state)
-    if (user && sessionKey && item.product_id) {
-      try {
-        if (item.quantity <= 1) {
-          await cartApi.removeFromCart(item.product_id, sessionKey);
-        } else {
-          await cartApi.decreaseQuantity(item.product_id, sessionKey);
-        }
-      } catch (apiError) {
-        console.warn("API update failed, using local storage:", apiError);
-        // Revert local state if API fails
-        setCartItems((prev) => {
-          const existing = prev.find((i) => i.id === id);
-          if (existing) {
-            return prev.map((i) =>
-              i.id === id ? { ...i, quantity: i.quantity + 1 } : i
-            );
-          } else {
-            // Re-add item if it was removed
-            return [...prev, { ...item, quantity: 1 }];
-          }
-        });
-        toast.error("Failed to sync with server. Please try again.");
-      }
-    }
-  }, [cartItems, user, sessionKey]);
-
-  const updateItemQuantity = useCallback(async (id: string, qty: number) => {
-    const item = cartItems.find((i) => i.id === id);
-    if (!item) return;
-
-    const newQuantity = qty < 1 ? 1 : qty;
-    const oldQuantity = item.quantity;
-
-    // Update local state immediately for better UX
-    setCartItems((prev) =>
-      prev.map((i) =>
-        i.id === id ? { ...i, quantity: newQuantity } : i
-      )
-    );
-
-    // Sync with server in background (no loading state)
-    if (user && sessionKey && item.product_id) {
-      try {
-        await cartApi.updateCart({
-          product_id: item.product_id,
-          quantity: newQuantity,
-        }, sessionKey);
-      } catch (apiError) {
-        console.warn("API update failed, using local storage:", apiError);
-        // Revert local state if API fails
-        setCartItems((prev) =>
-          prev.map((i) =>
-            i.id === id ? { ...i, quantity: oldQuantity } : i
-          )
-        );
-        toast.error("Failed to sync with server. Please try again.");
-      }
-    }
-  }, [cartItems, user, sessionKey]);
+  }, [user, sessionKey]);
 
   const removeFromCart = useCallback(async (id: string) => {
     const item = cartItems.find((i) => i.id === id);
