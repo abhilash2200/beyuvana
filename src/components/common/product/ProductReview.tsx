@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import React, { useState, useEffect } from "react";
 import { FaStar, FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthProvider";
+import { reviewApi, ProductReviewRequest } from "@/lib/api";
 
 interface Review {
     name: string;
@@ -17,14 +18,15 @@ interface ProductReviewProps {
 }
 
 const ProductReview = ({ productId }: ProductReviewProps) => {
-    // const { user, sessionKey } = useAuth();
-    const { user } = useAuth();
+    const { user, sessionKey } = useAuth();
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState("");
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const [review, setReview] = useState<Review | null>(null);
-    const [hasReviewed, setHasReviewed] = useState(false); // user already reviewed
+    const [hasReviewed, setHasReviewed] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         // 🔹 Fetch existing review for this user and product from API
@@ -40,51 +42,52 @@ const ProductReview = ({ productId }: ProductReviewProps) => {
 
     const handleSubmit = async () => {
         if (!message || rating === 0) {
-            alert("Please give a rating and write a review!");
+            setError("Please give a rating and write a review!");
             return;
         }
 
-        const reviewData: Review & { user_id: string; product_id: string } = {
-            user_id: user?.id || "",
-            name: user?.name || "Unknown",
-            rating,
-            message,
-            product_id: productId,
-        };
-
-        console.log("Review to submit:", reviewData);
-
-        // 🔹 API call to save review (uncomment when backend ready)
-        /*
-        try {
-          const res = await fetch("/api/reviews", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "session_key": sessionKey || "",
-            },
-            body: JSON.stringify(reviewData),
-          });
-          if (!res.ok) throw new Error("Failed to save review");
-          console.log("Review saved successfully!");
-        } catch (err) {
-          console.error("Error saving review:", err);
-          return;
+        if (!user?.id) {
+            setError("Please login to submit a review");
+            return;
         }
-        */
 
-        // For now, save locally to simulate DB
-        localStorage.setItem(`review_${productId}_${user?.id}`, JSON.stringify(reviewData));
+        setLoading(true);
+        setError(null);
 
-        setReview({
-            name: reviewData.name,
-            rating: reviewData.rating,
-            message: reviewData.message,
-        });
-        setHasReviewed(true); // hide the button
-        setShowForm(false);
-        setMessage("");
-        setRating(0);
+        try {
+            const reviewData: ProductReviewRequest = {
+                product_id: parseInt(productId),
+                user_id: parseInt(user.id),
+                review: message,
+                star_ratting: rating,
+            };
+
+            console.log("Review to submit:", reviewData);
+
+            const response = await reviewApi.addReview(reviewData, sessionKey || undefined);
+
+            if (response.success !== false) {
+                console.log("Review saved successfully:", response);
+
+                // Update local state
+                setReview({
+                    name: user.name || "Unknown",
+                    rating: rating,
+                    message: message,
+                });
+                setHasReviewed(true);
+                setShowForm(false);
+                setMessage("");
+                setRating(0);
+            } else {
+                setError(response.message || "Failed to submit review");
+            }
+        } catch (err) {
+            console.error("Error saving review:", err);
+            setError(err instanceof Error ? err.message : "Failed to submit review");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -101,6 +104,11 @@ const ProductReview = ({ productId }: ProductReviewProps) => {
             {/* Review Form */}
             {showForm && !hasReviewed && (
                 <div className="p-4 bg-green-50 rounded-lg space-y-3">
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                            {error}
+                        </div>
+                    )}
                     <p className="font-[Grafiels] text-lg text-[#1A2819] mb-0">Your Rating</p>
 
                     {/* Star Rating */}
@@ -112,7 +120,10 @@ const ProductReview = ({ productId }: ProductReviewProps) => {
                                     key={i}
                                     className={`cursor-pointer text-2xl ${starValue <= (hover || rating) ? "text-yellow-400" : "text-gray-300"
                                         }`}
-                                    onClick={() => setRating(starValue)}
+                                    onClick={() => {
+                                        setRating(starValue);
+                                        if (error) setError(null);
+                                    }}
                                     onMouseEnter={() => setHover(starValue)}
                                     onMouseLeave={() => setHover(0)}
                                 />
@@ -125,7 +136,10 @@ const ProductReview = ({ productId }: ProductReviewProps) => {
                         className="w-full p-2 border rounded text-sm bg-white text-gray-700"
                         placeholder="Write your review..."
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        onChange={(e) => {
+                            setMessage(e.target.value);
+                            if (error) setError(null);
+                        }}
                         rows={5}
                     />
 
@@ -133,8 +147,9 @@ const ProductReview = ({ productId }: ProductReviewProps) => {
                     <Button
                         className="bg-green-700 hover:bg-green-800 text-white px-6 py-3 font-normal"
                         onClick={handleSubmit}
+                        disabled={loading}
                     >
-                        Submit
+                        {loading ? "Submitting..." : "Submit"}
                     </Button>
                 </div>
             )}

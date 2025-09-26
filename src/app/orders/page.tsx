@@ -35,13 +35,17 @@ const OrdersPage = () => {
         if (response.data && Array.isArray(response.data)) {
           setOrders(response.data);
           if (response.data.length === 0) {
-            toast.info("No orders found");
+            // Don't show toast for empty orders, just show the message
+            console.log("No orders found");
           } else {
             toast.success(`Found ${response.data.length} orders`);
           }
         } else {
           setError(response.message || "Failed to fetch orders");
-          toast.error(response.message || "Failed to fetch orders");
+          // Only show toast for actual errors, not for "under development" messages
+          if (response.message && !response.message.includes("under development")) {
+            toast.error(response.message);
+          }
         }
       } catch (err) {
         console.error("Error fetching orders:", err);
@@ -99,12 +103,32 @@ const OrdersPage = () => {
 
           {error && (
             <div className="flex justify-center items-center py-10">
-              <div className="text-red-600 text-center">
-                <p>{error}</p>
-                {!user && (
-                  <Link href="/auth" className="text-blue-600 underline mt-2 block">
-                    Please log in to view your orders
-                  </Link>
+              <div className="text-center max-w-md">
+                {error.includes("under development") ? (
+                  <div className="text-orange-600">
+                    <p className="text-lg font-semibold mb-2">🚧 Feature Coming Soon</p>
+                    <p>{error}</p>
+                    <Link href="/product" className="text-blue-600 underline mt-2 block">
+                      Browse our products instead
+                    </Link>
+                  </div>
+                ) : error.includes("log in") ? (
+                  <div className="text-red-600">
+                    <p>{error}</p>
+                    <Link href="/auth" className="text-blue-600 underline mt-2 block">
+                      Please log in to view your orders
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="text-red-600">
+                    <p>{error}</p>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="text-blue-600 underline mt-2 block"
+                    >
+                      Try again
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

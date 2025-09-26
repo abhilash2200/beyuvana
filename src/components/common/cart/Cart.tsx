@@ -17,12 +17,12 @@ export default function Cart() {
     const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
-    const [isSheetOpen, setIsSheetOpen] = React.useState(false);
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [lastIncreaseTime, setLastIncreaseTime] = React.useState<number>(0);
+    const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
 
-    const handleSheetOpenChange = (open: boolean) => {
-        setIsSheetOpen(open);
+    const handleSheetOpenChange = (_open: boolean) => {
+        // Handle sheet open/close if needed
     };
     React.useEffect(() => {
         if (lastIncreaseTime > 0) {
@@ -32,8 +32,8 @@ export default function Cart() {
                     position: "bottom-center",
                     autoClose: 2000,
                 });
-                setTimeout(() => setShowConfetti(false), 5000); 
-            }, 800); 
+                setTimeout(() => setShowConfetti(false), 5000);
+            }, 800);
 
             return () => clearTimeout(timer);
         }
@@ -261,7 +261,10 @@ export default function Cart() {
                                 )}
                             </div>
 
-                            <DeliveryAddress onAddAddress={() => setIsAddAddressOpen(true)} />
+                            <DeliveryAddress
+                                key={addressRefreshKey}
+                                onAddAddress={() => setIsAddAddressOpen(true)}
+                            />
                         </div>
 
                         <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
@@ -304,7 +307,13 @@ export default function Cart() {
                                 </Link>
                             </div>
                         </div>
-                        <AddAddressSheet open={isAddAddressOpen} onOpenChange={setIsAddAddressOpen} />
+                        <AddAddressSheet
+                            open={isAddAddressOpen}
+                            onOpenChange={setIsAddAddressOpen}
+                            onAddressSaved={() => {
+                                setAddressRefreshKey(prev => prev + 1);
+                            }}
+                        />
                     </>
                 )}
             </SheetContent>

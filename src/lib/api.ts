@@ -82,16 +82,50 @@ interface Order {
   image: string;
 }
 
+interface SaveAddressRequest {
+  user_id: number;
+  fullname: string;
+  address1: string;
+  address2: string;
+  mobile: string;
+  email: string;
+  city: string;
+  pincode: string;
+  is_primary: number;
+}
+
+interface SavedAddress {
+  id: number;
+  user_id: number;
+  fullname: string;
+  address1: string;
+  address2: string;
+  mobile: string;
+  email: string;
+  city: string;
+  pincode: string;
+  is_primary: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface ProductReviewRequest {
+  product_id: number;
+  user_id: number;
+  review: string;
+  star_ratting: number;
+}
+
 // Generic API fetch function
 async function apiFetch<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   // Use proxy for browser requests to avoid CORS issues
-  const url = isBrowser 
+  const url = isBrowser
     ? `${PROXY_URL}?endpoint=${encodeURIComponent(endpoint)}`
     : `${API_BASE_URL}${endpoint}`;
-  
+
   const defaultHeaders = {
     "Content-Type": "application/json",
   };
@@ -104,22 +138,23 @@ async function apiFetch<T = unknown>(
     },
   };
 
-  console.log(`🌐 Making API request to: ${url}`, { 
-    config, 
+  console.log(`🌐 Making API request to: ${url}`, {
+    config,
     isBrowser,
-    originalEndpoint: endpoint 
+    originalEndpoint: endpoint,
+    headers: config.headers
   });
 
   try {
     const response = await fetch(url, config);
-    
+
     console.log(`📡 API Response for ${endpoint}:`, {
       status: response.status,
       statusText: response.statusText,
       ok: response.ok,
       headers: Object.fromEntries(response.headers.entries())
     });
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`❌ API Error Response:`, errorText);
@@ -136,12 +171,12 @@ async function apiFetch<T = unknown>(
       config,
       isBrowser
     });
-    
+
     // Provide more specific error messages
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       throw new Error(`Network error: Unable to connect to ${url}. This might be a CORS issue or the server is unreachable.`);
     }
-    
+
     throw error;
   }
 }
@@ -195,7 +230,7 @@ export const cartApi = {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      
+
       if (sessionKey) {
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
@@ -214,13 +249,13 @@ export const cartApi = {
 
   // Note: These endpoints may not be implemented yet on the server
   // For now, we'll use local storage and only sync add operations
-  
+
   getCart: async (sessionKey?: string) => {
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      
+
       if (sessionKey) {
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
@@ -233,8 +268,22 @@ export const cartApi = {
       });
     } catch (error) {
       console.error("Get cart API failed:", error);
-      // Return empty array as fallback
-      return { data: [], status: false, message: "Failed to fetch cart items" };
+
+      // Check if it's a 401 error (authentication issue)
+      if (error instanceof Error && error.message.includes("401")) {
+        return {
+          data: [],
+          status: false,
+          message: "Please log in to sync your cart."
+        };
+      }
+
+      // Return empty array as fallback for other errors
+      return {
+        data: [],
+        status: false,
+        message: "Failed to fetch cart items. Using local cart."
+      };
     }
   },
 
@@ -249,7 +298,7 @@ export const cartApi = {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      
+
       if (sessionKey) {
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
@@ -272,7 +321,7 @@ export const cartApi = {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      
+
       if (sessionKey) {
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
@@ -295,7 +344,7 @@ export const cartApi = {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      
+
       if (sessionKey) {
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
@@ -323,7 +372,7 @@ export const ordersApi = {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      
+
       if (sessionKey) {
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
@@ -336,14 +385,108 @@ export const ordersApi = {
       });
     } catch (error) {
       console.error("Get order list API failed:", error);
-      // Return empty array as fallback instead of throwing error
-      // This prevents the app from crashing when the API is not ready
-      // TODO: Remove this fallback once the backend API is fully implemented
-      return { 
-        data: [], 
-        status: false, 
-        message: "Orders API is currently unavailable. The backend endpoint needs to be implemented or fixed." 
+
+      // Check if it's a 500 error (backend method not implemented)
+      if (error instanceof Error && error.message.includes("500")) {
+        return {
+          data: [],
+          status: false,
+          message: "Orders feature is currently under development. Please check back later."
+        };
+      }
+
+      // Check if it's a 401 error (authentication issue)
+      if (error instanceof Error && error.message.includes("401")) {
+        return {
+          data: [],
+          status: false,
+          message: "Please log in to view your orders."
+        };
+      }
+
+      // Generic fallback for other errors
+      return {
+        data: [],
+        status: false,
+        message: "Unable to load orders. Please try again later."
       };
+    }
+  },
+};
+
+// Address API functions
+export const addressApi = {
+  saveAddress: async (addressData: SaveAddressRequest, sessionKey?: string) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+      }
+
+      return await apiFetch("/api/save_address/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(addressData),
+      });
+    } catch (error) {
+      console.error("Save address API failed:", error);
+      throw new Error("Failed to save address. Please try again later.");
+    }
+  },
+
+  getAddresses: async (userId: number, sessionKey?: string) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+      }
+
+      return await apiFetch<SavedAddress[]>("/api/get_address/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ user_id: userId }),
+      });
+    } catch (error) {
+      console.error("Get addresses API failed:", error);
+      // Return empty array as fallback instead of throwing error
+      return {
+        data: [],
+        status: false,
+        message: "Failed to fetch addresses. Please try again later."
+      };
+    }
+  },
+};
+
+// Product Review API functions
+export const reviewApi = {
+  addReview: async (reviewData: ProductReviewRequest, sessionKey?: string) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+      }
+
+      return await apiFetch("/product-reviews/add/v1/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(reviewData),
+      });
+    } catch (error) {
+      console.error("Add review API failed:", error);
+      throw new Error("Failed to submit review. Please try again later.");
     }
   },
 };
@@ -365,4 +508,4 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
 
 // Export the generic apiFetch for custom use cases
 export { apiFetch };
-export type { ApiResponse, Product, LegacyProduct, LoginRequest, RegisterRequest, ProductsListRequest, AddToCartRequest, CartItem, Order };
+export type { ApiResponse, Product, LegacyProduct, LoginRequest, RegisterRequest, ProductsListRequest, AddToCartRequest, CartItem, Order, SaveAddressRequest, SavedAddress, ProductReviewRequest };

@@ -9,6 +9,8 @@ import HeaderText from "../common/HeaderText";
 import WhyBeyuvana from "./WhyBeyuvana";
 import Compare from "./Compare";
 import Builder from "./Builder";
+import TabData from "./TabData";
+import AdvancedPlant from "./AdvancedPlant";
 
 const data = [
   {
@@ -185,6 +187,16 @@ export default function Product2Layout({ product }: { product: Product }) {
         <HeaderText textalign="text-center" heading="Who Is BEYUVANA™ Premium Collagen Builder Made For?" textcolor="text-[#1A2819]" />
         <p className="text-center mb-4 max-w-[90%] leading-tight">BEYUVANA™ is designed for modern individuals who want results without compromise —using only clean, plant-based ingredients that are backed by science and safe for everyday use.</p>
         <Builder />
+      </div>
+      <div className="py-10">
+        <HeaderText textalign="text-center" heading="The Hidden Reasons Your Skin Loses Its Radiance So quickly" textcolor="text-[#1A2819]" />
+        <p className="text-center mb-4 max-w-[90%] leading-tight">Stress, pollution, UV exposure, poor sleep, and nutrient deficiencies silently disrupt your skin’s balance — breaking down collagen, dulling glow, and accelerating aging faster than you realize.</p>
+        <TabData productId={product.id} />
+      </div>
+      <div className="py-10">
+        <HeaderText textalign="text-center" heading="India’s Most Advanced Anti-Aging Innovation" textcolor="text-[#1A2819]" />
+        <p className="text-center mb-4 max-w-[90%] leading-tight">Collagen Reglow delivers clinically proven ingredients in precision-dosed sachets for maximum skin transformation.</p>
+        <AdvancedPlant />
       </div>
     </div>
   );

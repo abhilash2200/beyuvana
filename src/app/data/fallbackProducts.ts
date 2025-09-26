@@ -50,6 +50,29 @@ export interface Builder {
   paraColor: string;
 }
 
+export interface TabStats {
+  value: string;
+  description: string;
+  source: string;
+}
+
+export interface TabExtra {
+  title: string;
+  description: string;
+  source: string;
+}
+
+export interface TabItem {
+  id: string;
+  icon: string;
+  label: string;
+  description: string;
+  img: string;
+  stats: TabStats[];
+  extra: TabExtra;
+  bgColor?: string;
+  headingColor?: string;
+}
 
 
 export interface Product {
@@ -64,6 +87,7 @@ export interface Product {
   whyItems?: WhyItem[];
   compare?: Compare[];
   builder?: Builder[];
+  tabItems?: TabItem[];
 }
 
 export const fallbackProducts: Product[] = [
@@ -208,6 +232,152 @@ export const fallbackProducts: Product[] = [
         bgColor: "#CFE9D3",
         headingColor: "#303030",
         paraColor: "#000000",
+      },
+    ],
+    tabItems: [
+      {
+        id: "tab1",
+        icon: "/assets/img/product-details/aging.png",
+        label: "Aging",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "25%",
+            description: "Collagen loss by age 45",
+            source: "National Library of Medicine",
+          },
+          {
+            value: "50%",
+            description: "Reduction in hyaluronic acid by age 40",
+            source: "National Library of Medicine",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al.",
+        },
+      },
+      {
+        id: "tab2",
+        icon: "/assets/img/product-details/stress.png",
+        label: "Stress",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
+      },
+      {
+        id: "tab3",
+        icon: "/assets/img/product-details/pollution.png",
+        label: "Pollution",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
+      },
+      {
+        id: "tab4",
+        icon: "/assets/img/product-details/uv.png",
+        label: "UV Radiation",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
+      },
+      {
+        id: "tab5",
+        icon: "/assets/img/product-details/uv.png",
+        label: "Disrupted Sleep Pattern",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
+      },
+      {
+        id: "tab6",
+        icon: "/assets/img/product-details/uv.png",
+        label: "Poor Gut Health",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
       },
     ],
     faq: [
@@ -382,6 +552,152 @@ export const fallbackProducts: Product[] = [
         bgColor: "#B00404",
         headingColor: "#FFFFFF",
         paraColor: "#FFFFFF",
+      },
+    ],
+    tabItems: [
+      {
+        id: "tab1",
+        icon: "/assets/img/product-details/aging.png",
+        label: "Antioxidant Deficiency",
+        description: "Lack of Glutathione, Vitamin C, and Grape Seed Extract can weaken the skin’s defence against dullness and damage.\nGlow Essence provides powerful antioxidants to fight oxidative stress and support a brighter complexion.",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "25%",
+            description: "Collagen loss by age 45",
+            source: "National Library of Medicine",
+          },
+          {
+            value: "50%",
+            description: "Reduction in hyaluronic acid by age 40",
+            source: "National Library of Medicine",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al.",
+        },
+      },
+      {
+        id: "tab2",
+        icon: "/assets/img/product-details/stress.png",
+        label: "Chronic Inflammation",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
+      },
+      {
+        id: "tab3",
+        icon: "/assets/img/product-details/pollution.png",
+        label: "Dehydrated Skin",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
+      },
+      {
+        id: "tab4",
+        icon: "/assets/img/product-details/uv.png",
+        label: "Weak Skin Barrier",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
+      },
+      {
+        id: "tab5",
+        icon: "/assets/img/product-details/uv.png",
+        label: "Melanin Overproduction",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
+      },
+      {
+        id: "tab6",
+        icon: "/assets/img/product-details/uv.png",
+        label: "Nutrient Gaps in Diet",
+        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        img: "/assets/img/product-details/aging-1.png",
+        stats: [
+          {
+            value: "73.9%",
+            description: "in North India",
+            source: "largely due to poor nutritional conditions.",
+          },
+          {
+            value: "45.7%",
+            description: "in South India",
+            source: "largely due to poor nutritional conditions.",
+          },
+        ],
+        extra: {
+          title: "After 25,",
+          description: "collagen declines",
+          source: "Shuster et al., British Journal Dermatology",
+        },
       },
     ],
     faq: [
