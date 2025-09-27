@@ -50,6 +50,18 @@ export interface Builder {
   paraColor: string;
 }
 
+export interface Plant {
+  id: number;
+  img: string;
+  title: string;
+  description: string;
+  bgColor: string;
+  headingColor: string;
+  paragraphColor: string;
+  plusColor: string;
+  xColor: string;
+}
+
 export interface TabStats {
   value: string;
   description: string;
@@ -87,6 +99,7 @@ export interface Product {
   whyItems?: WhyItem[];
   compare?: Compare[];
   builder?: Builder[];
+  plants?: Plant[];
   tabItems?: TabItem[];
 }
 
@@ -410,6 +423,63 @@ export const fallbackProducts: Product[] = [
         ]
       }
     ],
+    plants: [
+      {
+        id: 1,
+        img: "/assets/img/product-details/plant.png",
+        title: "Ashwagandha Extract",
+        description: "Reduces stress-induced aging and cortisol imbalance, supporting hormonal harmony and skin health.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 2,
+        img: "/assets/img/product-details/plant.png",
+        title: "Neem Extract",
+        description: "Helps detoxify the skin and supports immunity for overall wellness.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 3,
+        img: "/assets/img/product-details/plant.png",
+        title: "Tulsi Extract",
+        description: "Known for its healing properties and immunity boosting benefits.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 4,
+        img: "/assets/img/product-details/plant.png",
+        title: "Aloe Vera",
+        description: "Supports hydration, skin rejuvenation, and digestive health.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 5,
+        img: "/assets/img/product-details/plant.png",
+        title: "Aloe Jelly",
+        description: "Supports hydration, skin rejuvenation, and digestive health.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+    ],
   },
   {
     id: 2,
@@ -729,6 +799,63 @@ export const fallbackProducts: Product[] = [
           "Use consistently for visible results in 4–6 weeks.",
         ]
       }
+    ],
+    plants: [
+      {
+        id: 1,
+        img: "/assets/img/product-details/plant.png",
+        title: "Inulin",
+        description: "Powerful antioxidant that brightens skin tone and reduces pigmentation for radiant, even-toned skin.",
+        bgColor: "#FFE7E7",
+        headingColor: "#B00404",
+        paragraphColor: "#666666",
+        plusColor: "#B00404",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 2,
+        img: "/assets/img/product-details/plant.png",
+        title: "VLemon Powder",
+        description: "Clinically studied vitamin C that enhances radiance and supports collagen production.",
+        bgColor: "#FFE7E7",
+        headingColor: "#B00404",
+        paragraphColor: "#666666",
+        plusColor: "#B00404",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 3,
+        img: "/assets/img/product-details/plant.png",
+        title: "Amla Dry Extract",
+        description: "Anti-inflammatory properties that calm redness and support skin healing.",
+        bgColor: "#FFE7E7",
+        headingColor: "#B00404",
+        paragraphColor: "#666666",
+        plusColor: "#B00404",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 4,
+        img: "/assets/img/product-details/plant.png",
+        title: "Green Tea Extract",
+        description: "Rich in antioxidants that protect against environmental damage and aging.",
+        bgColor: "#FFE7E7",
+        headingColor: "#B00404",
+        paragraphColor: "#666666",
+        plusColor: "#B00404",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 5,
+        img: "/assets/img/product-details/plant.png",
+        title: "Licorice Root",
+        description: "Natural skin brightener that helps fade dark spots and evens skin tone.",
+        bgColor: "#FFE7E7",
+        headingColor: "#B00404",
+        paragraphColor: "#666666",
+        plusColor: "#B00404",
+        xColor: "#FFFFFF",
+      },
     ],
   }
 ];

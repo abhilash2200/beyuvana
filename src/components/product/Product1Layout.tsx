@@ -11,6 +11,7 @@ import Compare from "./Compare";
 import Builder from "./Builder";
 import TabData from "./TabData";
 import AdvancedPlant from "./AdvancedPlant";
+import DetailsOfGreenCollagen from "./DetailsOfGreenCollagen";
 
 const data = [
     {
@@ -227,7 +228,14 @@ export default function Product1Layout({ product }: { product: Product }) {
             <div className="py-10">
                 <HeaderText textalign="text-center" heading="India’s Most Advanced Anti-Aging Innovation" textcolor="text-[#1A2819]" />
                 <p className="text-center mb-4 max-w-[90%] leading-tight">Collagen Reglow delivers clinically proven ingredients in precision-dosed sachets for maximum skin transformation.</p>
-                <AdvancedPlant />
+                <div className="py-6">
+                    <AdvancedPlant />
+                </div>
+            </div>
+            <div className="py-10">
+                <div className="container mx-auto px-4">
+                    <DetailsOfGreenCollagen />
+                </div>
             </div>
         </>
     );
