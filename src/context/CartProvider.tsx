@@ -133,7 +133,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (user && sessionKey && item.product_id) {
         const timeout = setTimeout(() => {
           cartApi.updateCart({
-            product_id: item.product_id,
+            product_id: item.product_id!,
             quantity: newQuantity,
           }, sessionKey).catch((apiError) => {
             console.warn("API update failed, using local storage:", apiError);
@@ -167,7 +167,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // Remove item
         if (user && sessionKey && item.product_id) {
           const timeout = setTimeout(() => {
-            cartApi.removeFromCart(item.product_id, sessionKey).catch((apiError) => {
+            cartApi.removeFromCart(item.product_id!, sessionKey).catch((apiError) => {
               console.warn("API remove failed, using local storage:", apiError);
               toast.error("Failed to sync with server. Please try again.");
             });
@@ -183,7 +183,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
         if (user && sessionKey && item.product_id) {
           const timeout = setTimeout(() => {
-            cartApi.decreaseQuantity(item.product_id, sessionKey).catch((apiError) => {
+            cartApi.decreaseQuantity(item.product_id!, sessionKey).catch((apiError) => {
               console.warn("API update failed, using local storage:", apiError);
               toast.error("Failed to sync with server. Please try again.");
             });
@@ -218,7 +218,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (user && sessionKey && item.product_id) {
         const timeout = setTimeout(() => {
           cartApi.updateCart({
-            product_id: item.product_id,
+            product_id: item.product_id!,
             quantity: newQuantity,
           }, sessionKey).catch((apiError) => {
             console.warn("API update failed, using local storage:", apiError);
@@ -245,7 +245,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       // Try to sync with server if user is logged in
       if (user && sessionKey && item.product_id) {
         try {
-          await cartApi.removeFromCart(item.product_id, sessionKey);
+          await cartApi.removeFromCart(item.product_id!, sessionKey);
           toast.success("Item removed from cart!");
         } catch (apiError) {
           console.warn("API remove failed, using local storage:", apiError);
