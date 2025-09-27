@@ -494,6 +494,7 @@ export const addressApi = {
     }
   },
 
+  // Get all addresses for a user
   getAddresses: async (userId: number, sessionKey?: string) => {
     try {
       const headers: Record<string, string> = {
@@ -508,7 +509,10 @@ export const addressApi = {
       return await apiFetch<SavedAddress[]>("/api/get_address/", {
         method: "POST",
         headers,
-        body: JSON.stringify({ user_id: userId }),
+        body: JSON.stringify({
+          user_id: userId,
+          // address_id is optional - if not provided, returns all addresses for user
+        }),
       });
     } catch (error) {
       console.error("Get addresses API failed:", error);
@@ -518,6 +522,92 @@ export const addressApi = {
         status: false,
         message: "Failed to fetch addresses. Please try again later.",
       };
+    }
+  },
+
+  // Get a specific address by ID
+  getAddressById: async (
+    userId: number,
+    addressId: number,
+    sessionKey?: string
+  ) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+      }
+
+      return await apiFetch<SavedAddress>("/api/get_address/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          user_id: userId,
+          address_id: addressId,
+        }),
+      });
+    } catch (error) {
+      console.error("Get address by ID API failed:", error);
+      throw new Error("Failed to fetch address. Please try again later.");
+    }
+  },
+
+  // Update an existing address
+  updateAddress: async (
+    addressData: SaveAddressRequest & { id: number },
+    sessionKey?: string
+  ) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+      }
+
+      return await apiFetch("/api/update_address/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(addressData),
+      });
+    } catch (error) {
+      console.error("Update address API failed:", error);
+      throw new Error("Failed to update address. Please try again later.");
+    }
+  },
+
+  // Delete an address
+  deleteAddress: async (
+    userId: number,
+    addressId: number,
+    sessionKey?: string
+  ) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+      }
+
+      return await apiFetch("/api/delete_address/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          user_id: userId,
+          address_id: addressId,
+        }),
+      });
+    } catch (error) {
+      console.error("Delete address API failed:", error);
+      throw new Error("Failed to delete address. Please try again later.");
     }
   },
 };

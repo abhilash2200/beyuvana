@@ -4,12 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { addressApi, SavedAddress } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
+import { MapPin, Plus, User, Phone, Mail, Home, RefreshCw } from "lucide-react";
 
 interface DeliveryAddressProps {
   onAddAddress: () => void;
+  onAddressSelect?: (address: SavedAddress | null) => void;
 }
 
-export default function DeliveryAddress({ onAddAddress }: DeliveryAddressProps) {
+export default function DeliveryAddress({ onAddAddress, onAddressSelect }: DeliveryAddressProps) {
   const { user, sessionKey } = useAuth();
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,17 +51,47 @@ export default function DeliveryAddress({ onAddAddress }: DeliveryAddressProps) 
     fetchAddresses();
   }, [fetchAddresses]);
 
+  // Handle address selection and notify parent
+  const handleAddressSelect = (addressId: number) => {
+    setSelectedId(addressId);
+    const selectedAddress = addresses.find(addr => addr.id === addressId);
+    onAddressSelect?.(selectedAddress || null);
+  };
+
+  // Notify parent when addresses change and selection is made
+  useEffect(() => {
+    if (selectedId && addresses.length > 0) {
+      const selectedAddress = addresses.find(addr => addr.id === selectedId);
+      onAddressSelect?.(selectedAddress || null);
+    }
+  }, [selectedId, addresses, onAddressSelect]);
+
   if (loading) {
-    return <div className="text-center text-gray-500 py-4">Loading addresses...</div>;
+    return (
+      <div className="mt-6 p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100 mb-[100px]">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 text-green-600 animate-spin mx-auto mb-3" />
+          <p className="text-gray-600 font-medium">Loading your addresses...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="mt-6 p-4 bg-red-50 rounded-md mb-[100px]">
+      <div className="mt-6 p-6 bg-red-50 rounded-xl border border-red-200 mb-[100px]">
         <div className="text-center">
-          <p className="mb-2 text-red-600">{error}</p>
-          <Button onClick={fetchAddresses} variant="outline">
-            Retry
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <MapPin className="w-6 h-6 text-red-600" />
+          </div>
+          <p className="mb-3 text-red-700 font-medium">{error}</p>
+          <Button
+            onClick={fetchAddresses}
+            variant="outline"
+            className="border-red-300 text-red-700 hover:bg-red-50"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Try Again
           </Button>
         </div>
       </div>
@@ -68,68 +100,123 @@ export default function DeliveryAddress({ onAddAddress }: DeliveryAddressProps) 
 
   if (!user?.id) {
     return (
-      <div className="mt-6 p-4 bg-gray-50 rounded-md mb-[100px]">
+      <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 mb-[100px]">
         <div className="text-center">
-          <p className="mb-2 text-gray-600">Please login to view saved addresses</p>
-          <Button onClick={onAddAddress}>Add Address</Button>
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="w-8 h-8 text-blue-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">Login Required</h3>
+          <p className="text-gray-600 mb-4">Please login to view and manage your saved addresses</p>
+          <Button
+            onClick={onAddAddress}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Address
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mt-6 p-4 bg-gray-50 rounded-md mb-[100px]">
-      {addresses.length === 0 ? (
-        <div className="text-center">
-          <p className="mb-2 text-gray-600">No saved address found</p>
-          <Button onClick={onAddAddress}>Add Address</Button>
-        </div>
-      ) : (
-        <>
-          <div className="flex justify-between items-center mb-2">
-            <h4 className="font-medium text-gray-700">
-              Select Delivery Address
-            </h4>
-            <Button onClick={onAddAddress}>Add New</Button>
+    <div className="mt-6 bg-white rounded-xl border border-gray-200 shadow-sm mb-[100px] overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+              <MapPin className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="text-white font-semibold text-lg">Delivery Address</h3>
           </div>
-          <div className="space-y-3">
+          <Button
+            onClick={onAddAddress}
+            className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add New
+          </Button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
+        {addresses.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Home className="w-10 h-10 text-gray-400" />
+            </div>
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">No Address Found</h4>
+            <p className="text-gray-600 mb-6">You haven&apos;t saved any delivery addresses yet. Add your first address to get started!</p>
+            <Button
+              onClick={onAddAddress}
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium text-base"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Add Your First Address
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-gray-600 text-sm mb-4">Select your delivery address:</p>
             {addresses.map((address) => (
               <label
                 key={address.id}
-                className="flex items-start gap-3 p-3 bg-white rounded border cursor-pointer hover:bg-gray-50"
+                className={`flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${selectedId === address.id
+                  ? 'border-green-500 bg-green-50 shadow-md'
+                  : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
+                  }`}
               >
-                <input
-                  type="radio"
-                  name="address"
-                  checked={selectedId === address.id}
-                  onChange={() => setSelectedId(address.id)}
-                  className="mt-1"
-                />
-                <div className="text-sm text-gray-700 flex-1">
-                  <div className="flex justify-between items-start mb-1">
-                    <p className="font-medium">{address.fullname}</p>
+                <div className="flex items-center justify-center w-5 h-5 mt-1">
+                  <input
+                    type="radio"
+                    name="address"
+                    checked={selectedId === address.id}
+                    onChange={() => handleAddressSelect(address.id)}
+                    className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-gray-500" />
+                      <p className="font-semibold text-gray-800">{address.fullname}</p>
+                    </div>
                     {address.is_primary === 1 && (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
                         Primary
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 mb-1">
-                    {address.address1}
-                    {address.address2 && `, ${address.address2}`}
-                  </p>
-                  <p className="text-gray-600 mb-1">
-                    {address.city}, {address.pincode}
-                  </p>
-                  <p className="text-gray-500">
-                    Mobile: {address.mobile}
-                  </p>
+
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p>{address.address1}</p>
+                        {address.address2 && <p>{address.address2}</p>}
+                        <p>{address.city}, {address.pincode}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-100">
+                      <div className="flex items-center gap-1">
+                        <Phone className="w-3 h-3 text-gray-400" />
+                        <span className="text-xs">{address.mobile}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Mail className="w-3 h-3 text-gray-400" />
+                        <span className="text-xs">{address.email}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </label>
             ))}
           </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 }
