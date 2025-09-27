@@ -166,15 +166,24 @@ const SelectPack = ({ productId }: { productId: string }) => {
                 <p className="text-[12px] text-[#747474]">{product.reviews} reviews</p>
             </div>
 
-            {product.packs.map((pack) => (
+            {product.packs.map((pack, index) => (
                 <div
                     key={pack.qty}
                     onClick={() => setSelectedPack(pack)}
-                    className={`p-4 border rounded-[20px] my-4 cursor-pointer ${selectedPack?.qty === pack.qty
-                        ? "border-green-600 bg-green-50"
-                        : "border-gray-900"
-                        }`}
+                    className={`relative p-4 border rounded-[20px] my-4 cursor-pointer 
+            ${selectedPack?.qty === pack.qty
+                            ? "border-green-600 bg-green-100"
+                            : "border-gray-900"} 
+            ${index === 1 ? "border-2 border-[#057A37]" : ""} // special border for 2nd pack
+        `}
                 >
+                    {/* Best Seller Label */}
+                    {index === 1 && (
+                        <p className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FFAA00] text-black text-xs px-3 py-1 rounded-full shadow">
+                            Best Seller
+                        </p>
+                    )}
+
                     <div className="flex flex-wrap justify-between">
                         <div className="w-full md:w-[40%]">
                             <p className="md:text-[25px] text-[16px] uppercase text-[#1A2819] leading-tight">
@@ -201,6 +210,7 @@ const SelectPack = ({ productId }: { productId: string }) => {
                     </p>
                 </div>
             ))}
+
 
             <div className="bg-[#FFE2E2] px-4 py-2 my-5">
                 <div className="flex items-center justify-center gap-2">
