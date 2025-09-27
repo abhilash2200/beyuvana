@@ -12,6 +12,9 @@ import Builder from "./Builder";
 import TabData from "./TabData";
 import AdvancedPlant from "./AdvancedPlant";
 import DetailsOfRedCollagen from "./DetailsOfRedCollagen";
+import CustomerReviews from "./CustomerReviews";
+import ProductFaq from "./ProductFaq";
+import CompareProduct from "./CompareProduct";
 
 const data = [
   {
@@ -206,6 +209,25 @@ export default function Product2Layout({ product }: { product: Product }) {
       <div className="py-10">
         <div className="container mx-auto px-4">
           <DetailsOfRedCollagen />
+        </div>
+      </div>
+      <div className="py-10">
+        <div className="container mx-auto px-4">
+          <HeaderText textalign="text-center" heading="GLOW ESSENCE VS OTHER PRODUCTS" textcolor="text-[#1A2819]" />
+          <p className="text-center mb-4 max-w-[90%] leading-tight">“Powered by 18 precision-selected plant actives to nourish your skin, strengthen your gut, and restore emotional balance.”</p>
+          <CompareProduct />
+        </div>
+      </div>
+      <div className="py-10">
+        <div className="container mx-auto px-4">
+          <HeaderText textalign="text-center" heading="Customer Reviews" textcolor="text-[#1A2819]" />
+          <CustomerReviews />
+        </div>
+      </div>
+      <div className="py-10">
+        <div className="container mx-auto px-4">
+          <HeaderText textalign="text-center" heading="Frequently Asked Questions" textcolor="text-[#1A2819]" />
+          <ProductFaq productId={2} />
         </div>
       </div>
     </>

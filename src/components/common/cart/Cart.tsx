@@ -11,6 +11,7 @@ import AddAddressSheet from "../address/AddAddressSheet";
 import { toast } from "react-toastify";
 import React from "react";
 import Confetti from "react-confetti";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Cart() {
     const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading } = useCart();
@@ -21,7 +22,7 @@ export default function Cart() {
     const [lastIncreaseTime, setLastIncreaseTime] = React.useState<number>(0);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
 
-    const handleSheetOpenChange = (_open: boolean) => {
+    const handleSheetOpenChange = () => {
         // Handle sheet open/close if needed
     };
     React.useEffect(() => {
@@ -68,7 +69,8 @@ export default function Cart() {
                     right: '0',
                     top: '0',
                     bottom: '0',
-                    position: 'fixed'
+                    position: 'fixed',
+                    overflow: 'visible'
                 }}
                 onOpenAutoFocus={(e) => {
                     e.preventDefault();
@@ -106,26 +108,50 @@ export default function Cart() {
                                 <SheetDescription className="sr-only">Items in your shopping cart</SheetDescription>
                                 <hr className="bg-[#057A37] w-28 h-0.5" />
                             </div>
-                            <div className="flex gap-2">
-                                <Button
-                                    onClick={refreshCart}
-                                    disabled={loading}
-                                    variant="outline"
-                                    className="flex items-center gap-2 px-3 py-1 text-sm"
-                                >
-                                    <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-                                    Refresh
-                                </Button>
-                                {cartItems.length > 0 && (
-                                    <Button
-                                        onClick={clearCart}
-                                        disabled={loading}
-                                        variant="outline"
-                                        className="flex items-center gap-2 px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
+                            <div className="flex gap-1 pr-12">
+                                <Tooltip delayDuration={300}>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            onClick={refreshCart}
+                                            disabled={loading}
+                                            variant="default"
+                                            className="flex items-center gap-2 px-3 py-1 text-sm"
+                                        >
+                                            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                        side="top"
+                                        sideOffset={10}
+                                        avoidCollisions={true}
+                                        className="bg-gray-800 text-white text-sm px-3 py-2 rounded-md shadow-xl border-0"
+                                        style={{ zIndex: 99999 }}
                                     >
-                                        <Trash2 size={16} />
-                                        Clear
-                                    </Button>
+                                        Refresh Cart
+                                    </TooltipContent>
+                                </Tooltip>
+                                {cartItems.length > 0 && (
+                                    <Tooltip delayDuration={300}>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                onClick={clearCart}
+                                                disabled={loading}
+                                                variant="default"
+                                                className="flex items-center gap-2 px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
+                                            >
+                                                <Trash2 size={16} />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent
+                                            side="top"
+                                            sideOffset={10}
+                                            avoidCollisions={true}
+                                            className="bg-gray-800 text-white text-sm px-3 py-2 rounded-md shadow-xl border-0"
+                                            style={{ zIndex: 99999 }}
+                                        >
+                                            Clear Cart
+                                        </TooltipContent>
+                                    </Tooltip>
                                 )}
                             </div>
                         </div>
@@ -141,182 +167,184 @@ export default function Cart() {
                     )}
                 </div>
 
-                {loading ? (
-                    <div className="flex flex-1 justify-center items-center">
-                        <div className="text-center text-gray-500 text-lg">
-                            <RefreshCw size={24} className="animate-spin mx-auto mb-2" />
-                            Loading cart items...
+                {
+                    loading ? (
+                        <div className="flex flex-1 justify-center items-center">
+                            <div className="text-center text-gray-500 text-lg">
+                                <RefreshCw size={24} className="animate-spin mx-auto mb-2" />
+                                Loading cart items...
+                            </div>
                         </div>
-                    </div>
-                ) : cartItems.length === 0 ? (
-                    <div className="flex flex-1 justify-center items-center">
-                        <p className="text-center text-gray-500 text-lg">Your cart is empty</p>
-                    </div>
-                ) : (
-                    <>
-                        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-                            <div className="flex flex-col gap-4 bg-[#F2F9F3] rounded-[10px] px-2 py-3">
-                                {cartItems.map((item) => (
-                                    <div key={item.id} className="flex items-center gap-4 border-b pb-4">
-                                        <div className="w-24 h-28 relative rounded-md overflow-hidden bg-gray-200">
-                                            <Image
-                                                src={item.image || "/placeholder.png"}
-                                                alt={item.name}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <div className="flex-1 flex flex-col justify-between">
-                                            <h3 className="font-[Grafiels] font-normal text-[15px] line-clamp-2">
-                                                {item.name}
-                                            </h3>
+                    ) : cartItems.length === 0 ? (
+                        <div className="flex flex-1 justify-center items-center">
+                            <p className="text-center text-gray-500 text-lg">Your cart is empty</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+                                <div className="flex flex-col gap-4 bg-[#F2F9F3] rounded-[10px] px-2 py-3">
+                                    {cartItems.map((item) => (
+                                        <div key={item.id} className="flex items-center gap-4 border-b pb-4">
+                                            <div className="w-24 h-28 relative rounded-md overflow-hidden bg-gray-200">
+                                                <Image
+                                                    src={item.image || "/placeholder.png"}
+                                                    alt={item.name}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                            <div className="flex-1 flex flex-col justify-between">
+                                                <h3 className="font-[Grafiels] font-normal text-[15px] line-clamp-2">
+                                                    {item.name}
+                                                </h3>
 
-                                            <div className="flex justify-between items-center mt-2">
-                                                <div className="flex items-center gap-2">
-                                                    <p className="font-normal text-[14px] text-[#057A37]">
+                                                <div className="flex justify-between items-center mt-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="font-normal text-[14px] text-[#057A37]">
+                                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                                                        </p>
+                                                        <span className="text-[11px]">|</span>
+                                                        <p className="text-[#747474] text-[10px]">
+                                                            MRP ₹ 1,499.00 <span className="text-[#057A37]">20% Off</span>
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between gap-2 bg-white w-36 rounded-full border border-[#057A37] px-2 py-1 overflow-hidden">
+                                                        <Button
+                                                            variant="default"
+                                                            disabled={loading}
+                                                            className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            onClick={() => decreaseItemQuantity(item.id)}
+                                                        >
+                                                            -
+                                                        </Button>
+
+                                                        <input
+                                                            type="number"
+                                                            min={1}
+                                                            value={item.quantity}
+                                                            onChange={(e) => {
+                                                                const newQuantity = Number(e.target.value) || 1;
+                                                                updateItemQuantity(item.id, newQuantity);
+                                                            }}
+                                                            className="w-10 text-center outline-none text-[#057A37] bg-transparent"
+                                                        />
+
+                                                        <Button
+                                                            variant="default"
+                                                            disabled={loading}
+                                                            className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            onClick={() => handleIncreaseQuantity(item.id)}
+                                                        >
+                                                            +
+                                                        </Button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex justify-between items-center mt-2">
+                                                    <p className="text-[10px] text-[#747474]">
+                                                        Crafted with 21 synergistic, clinically studied botanicals that work from within.
+                                                    </p>
+                                                    <p className="text-[14px] text-[#057A37]">
                                                         ₹{(item.price * item.quantity).toLocaleString("en-IN")}
                                                     </p>
-                                                    <span className="text-[11px]">|</span>
-                                                    <p className="text-[#747474] text-[10px]">
-                                                        MRP ₹ 1,499.00 <span className="text-[#057A37]">20% Off</span>
-                                                    </p>
                                                 </div>
-
-                                                <div className="flex items-center justify-between gap-2 bg-white w-36 rounded-full border border-[#057A37] px-2 py-1 overflow-hidden">
-                                                    <Button
-                                                        variant="default"
-                                                        disabled={loading}
-                                                        className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        onClick={() => decreaseItemQuantity(item.id)}
-                                                    >
-                                                        -
-                                                    </Button>
-
-                                                    <input
-                                                        type="number"
-                                                        min={1}
-                                                        value={item.quantity}
-                                                        onChange={(e) => {
-                                                            const newQuantity = Number(e.target.value) || 1;
-                                                            updateItemQuantity(item.id, newQuantity);
-                                                        }}
-                                                        className="w-10 text-center outline-none text-[#057A37] bg-transparent"
-                                                    />
-
-                                                    <Button
-                                                        variant="default"
-                                                        disabled={loading}
-                                                        className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        onClick={() => handleIncreaseQuantity(item.id)}
-                                                    >
-                                                        +
-                                                    </Button>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex justify-between items-center mt-2">
-                                                <p className="text-[10px] text-[#747474]">
-                                                    Crafted with 21 synergistic, clinically studied botanicals that work from within.
-                                                </p>
-                                                <p className="text-[14px] text-[#057A37]">
-                                                    ₹{(item.price * item.quantity).toLocaleString("en-IN")}
-                                                </p>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="rounded-md text-center">
-                                <div className="flex justify-center gap-4 mb-4">
-                                    <button
-                                        className={`px-3 py-1.5 rounded-full border text-[15px] ${selectedPayment === "prepaid"
-                                            ? "border-green-600 bg-green-100"
-                                            : "border-gray-300"
-                                            }`}
-                                        onClick={() => setSelectedPayment("prepaid")}
-                                    >
-                                        Prepaid
-                                    </button>
-                                    <button
-                                        className={`px-3 py-1.5 rounded-full border text-[15px] ${selectedPayment === "cod"
-                                            ? "border-green-600 bg-green-100"
-                                            : "border-gray-300"
-                                            }`}
-                                        onClick={() => setSelectedPayment("cod")}
-                                    >
-                                        COD
-                                    </button>
+                                    ))}
                                 </div>
 
-                                {selectedPayment === "prepaid" && (
-                                    <div className="flex justify-center">
-                                        <Image src="/assets/img/prepaid-image.png" alt="Prepaid" width={500} height={100} />
+                                <div className="rounded-md text-center">
+                                    <div className="flex justify-center gap-4 mb-4">
+                                        <button
+                                            className={`px-3 py-1.5 rounded-full border text-[15px] ${selectedPayment === "prepaid"
+                                                ? "border-green-600 bg-green-100"
+                                                : "border-gray-300"
+                                                }`}
+                                            onClick={() => setSelectedPayment("prepaid")}
+                                        >
+                                            Prepaid
+                                        </button>
+                                        <button
+                                            className={`px-3 py-1.5 rounded-full border text-[15px] ${selectedPayment === "cod"
+                                                ? "border-green-600 bg-green-100"
+                                                : "border-gray-300"
+                                                }`}
+                                            onClick={() => setSelectedPayment("cod")}
+                                        >
+                                            COD
+                                        </button>
                                     </div>
-                                )}
-                                {selectedPayment === "cod" && (
-                                    <div className="flex justify-center">
-                                        <Image src="/assets/img/postpaid-image.png" alt="COD" width={500} height={100} />
-                                    </div>
-                                )}
+
+                                    {selectedPayment === "prepaid" && (
+                                        <div className="flex justify-center">
+                                            <Image src="/assets/img/prepaid-image.png" alt="Prepaid" width={500} height={100} />
+                                        </div>
+                                    )}
+                                    {selectedPayment === "cod" && (
+                                        <div className="flex justify-center">
+                                            <Image src="/assets/img/postpaid-image.png" alt="COD" width={500} height={100} />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <DeliveryAddress
+                                    key={addressRefreshKey}
+                                    onAddAddress={() => setIsAddAddressOpen(true)}
+                                />
                             </div>
 
-                            <DeliveryAddress
-                                key={addressRefreshKey}
-                                onAddAddress={() => setIsAddAddressOpen(true)}
+                            <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
+                                <div>
+                                    <p className="text-lg font-bold">₹{total.toLocaleString("en-IN")}</p>
+                                    {selectedPayment === "cod" && (
+                                        <p className="text-[10px] text-gray-300">
+                                            Delivery charges may apply on COD
+                                        </p>
+                                    )}
+                                    {selectedPayment === "prepaid" && (
+                                        <p className="text-[10px] text-gray-300">
+                                            Free gifts added + upto ₹150 off
+                                        </p>
+                                    )}
+                                    {!selectedPayment && (
+                                        <p className="text-[10px] text-gray-300">
+                                            Select a payment method to see offers
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="bg-[#FFF] px-3 py-1 rounded-full">
+                                    <Link href="/checkout">
+                                        <Button
+                                            className="text-[#122014] font-normal text-[15px]"
+                                            onClick={() => {
+                                                if (cartItems.length === 0) {
+                                                    toast.warning("Your cart is empty!");
+                                                    return;
+                                                }
+                                                if (!selectedPayment) {
+                                                    toast.warning("Please select a payment method!");
+                                                    return;
+                                                }
+                                                toast.success("Proceeding to checkout...");
+                                            }}
+                                        >
+                                            Proceed to pay
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                            <AddAddressSheet
+                                open={isAddAddressOpen}
+                                onOpenChange={setIsAddAddressOpen}
+                                onAddressSaved={() => {
+                                    setAddressRefreshKey(prev => prev + 1);
+                                }}
                             />
-                        </div>
-
-                        <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
-                            <div>
-                                <p className="text-lg font-bold">₹{total.toLocaleString("en-IN")}</p>
-                                {selectedPayment === "cod" && (
-                                    <p className="text-[10px] text-gray-300">
-                                        Delivery charges may apply on COD
-                                    </p>
-                                )}
-                                {selectedPayment === "prepaid" && (
-                                    <p className="text-[10px] text-gray-300">
-                                        Free gifts added + upto ₹150 off
-                                    </p>
-                                )}
-                                {!selectedPayment && (
-                                    <p className="text-[10px] text-gray-300">
-                                        Select a payment method to see offers
-                                    </p>
-                                )}
-                            </div>
-                            <div className="bg-[#FFF] px-3 py-1 rounded-full">
-                                <Link href="/checkout">
-                                    <Button
-                                        className="text-[#122014] font-normal text-[15px]"
-                                        onClick={() => {
-                                            if (cartItems.length === 0) {
-                                                toast.warning("Your cart is empty!");
-                                                return;
-                                            }
-                                            if (!selectedPayment) {
-                                                toast.warning("Please select a payment method!");
-                                                return;
-                                            }
-                                            toast.success("Proceeding to checkout...");
-                                        }}
-                                    >
-                                        Proceed to pay
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-                        <AddAddressSheet
-                            open={isAddAddressOpen}
-                            onOpenChange={setIsAddAddressOpen}
-                            onAddressSaved={() => {
-                                setAddressRefreshKey(prev => prev + 1);
-                            }}
-                        />
-                    </>
-                )}
-            </SheetContent>
-        </Sheet>
+                        </>
+                    )
+                }
+            </SheetContent >
+        </Sheet >
     );
 }

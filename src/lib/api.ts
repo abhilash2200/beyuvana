@@ -1,8 +1,10 @@
-const API_BASE_URL = "https://beyuvana.com/api";
-const PROXY_URL = "/api/proxy";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api";
+const PROXY_URL = process.env.NEXT_PUBLIC_PROXY_URL || "/api/proxy";
 
-// Check if we're in browser environment
-const isBrowser = typeof window !== 'undefined';
+// Environment detection
+const isBrowser = typeof window !== "undefined";
+const isDevelopment = process.env.NODE_ENV === "development";
 
 interface ApiResponse<T = unknown> {
   data?: T;
@@ -116,7 +118,7 @@ interface ProductReviewRequest {
   star_ratting: number;
 }
 
-// Generic API fetch function
+// Generic API fetch function with timeout and environment-based logging
 async function apiFetch<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
@@ -130,51 +132,79 @@ async function apiFetch<T = unknown>(
     "Content-Type": "application/json",
   };
 
+  // Add timeout handling
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
   const config: RequestInit = {
     ...options,
     headers: {
       ...defaultHeaders,
       ...options.headers,
     },
+    signal: controller.signal,
   };
 
-  console.log(`🌐 Making API request to: ${url}`, {
-    config,
-    isBrowser,
-    originalEndpoint: endpoint,
-    headers: config.headers
-  });
+  // Environment-based logging
+  if (isDevelopment) {
+    console.log(`🌐 Making API request to: ${url}`, {
+      config,
+      isBrowser,
+      originalEndpoint: endpoint,
+      headers: config.headers,
+    });
+  }
 
   try {
     const response = await fetch(url, config);
+    clearTimeout(timeoutId);
 
-    console.log(`📡 API Response for ${endpoint}:`, {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-      headers: Object.fromEntries(response.headers.entries())
-    });
+    if (isDevelopment) {
+      console.log(`📡 API Response for ${endpoint}:`, {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries()),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ API Error Response:`, errorText);
-      throw new Error(`API error: ${response.status} ${response.statusText} - ${errorText}`);
+      if (isDevelopment) {
+        console.error(`❌ API Error Response:`, errorText);
+      }
+      throw new Error(
+        `API error: ${response.status} ${response.statusText} - ${errorText}`
+      );
     }
 
     const data = await response.json();
-    console.log(`✅ API Success for ${endpoint}:`, data);
+    if (isDevelopment) {
+      console.log(`✅ API Success for ${endpoint}:`, data);
+    }
     return data;
   } catch (error) {
-    console.error(`❌ API fetch error for ${endpoint}:`, {
-      error: error instanceof Error ? error.message : error,
-      url,
-      config,
-      isBrowser
-    });
+    clearTimeout(timeoutId);
+
+    // Handle timeout errors
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(`Request timeout: API call to ${endpoint} took too long`);
+    }
+
+    if (isDevelopment) {
+      console.error(`❌ API fetch error for ${endpoint}:`, {
+        error: error instanceof Error ? error.message : error,
+        url,
+        config,
+        isBrowser,
+      });
+    }
 
     // Provide more specific error messages
-    if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Network error: Unable to connect to ${url}. This might be a CORS issue or the server is unreachable.`);
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error(
+        `Network error: Unable to connect to ${url}. This might be a CORS issue or the server is unreachable.`
+      );
     }
 
     throw error;
@@ -191,7 +221,9 @@ export const authApi = {
       });
     } catch (error) {
       console.error("Login API failed, this might be a CORS issue:", error);
-      throw new Error("Login failed. Please check your internet connection and try again.");
+      throw new Error(
+        "Login failed. Please check your internet connection and try again."
+      );
     }
   },
 
@@ -203,7 +235,9 @@ export const authApi = {
       });
     } catch (error) {
       console.error("Register API failed, this might be a CORS issue:", error);
-      throw new Error("Registration failed. Please check your internet connection and try again.");
+      throw new Error(
+        "Registration failed. Please check your internet connection and try again."
+      );
     }
   },
 };
@@ -274,7 +308,7 @@ export const cartApi = {
         return {
           data: [],
           status: false,
-          message: "Please log in to sync your cart."
+          message: "Please log in to sync your cart.",
         };
       }
 
@@ -282,7 +316,7 @@ export const cartApi = {
       return {
         data: [],
         status: false,
-        message: "Failed to fetch cart items. Using local cart."
+        message: "Failed to fetch cart items. Using local cart.",
       };
     }
   },
@@ -311,7 +345,9 @@ export const cartApi = {
       });
     } catch (error) {
       console.error("Remove from cart API failed:", error);
-      throw new Error("Failed to remove item from cart. Please try again later.");
+      throw new Error(
+        "Failed to remove item from cart. Please try again later."
+      );
     }
   },
 
@@ -367,7 +403,7 @@ export const cartApi = {
 // This might be due to the endpoint not being fully implemented yet
 // or requiring different parameters/authentication format
 export const ordersApi = {
-  getOrderList: async (sessionKey?: string) => {
+  getOrderList: async (sessionKey?: string, userId?: string) => {
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -376,12 +412,31 @@ export const ordersApi = {
       if (sessionKey) {
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
+        // Alternative header formats that some backends expect
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
       }
 
-      return await apiFetch<Order[]>("/order/v1/", {
+      // Debug logging for headers
+      if (isDevelopment) {
+        console.log("🔍 Orders API Debug:", {
+          sessionKey: sessionKey ? "Present" : "Missing",
+          sessionKeyLength: sessionKey?.length || 0,
+          headers,
+          endpoint: "/api/order_list",
+        });
+      }
+
+      return await apiFetch<Order[]>("/api/order_list", {
         method: "POST",
         headers,
-        body: JSON.stringify({}), // Empty body for order list request
+        body: JSON.stringify({
+          // Send user_id if available
+          user_id: userId || null,
+        }),
       });
     } catch (error) {
       console.error("Get order list API failed:", error);
@@ -391,7 +446,8 @@ export const ordersApi = {
         return {
           data: [],
           status: false,
-          message: "Orders feature is currently under development. Please check back later."
+          message:
+            "Orders feature is currently under development. Please check back later.",
         };
       }
 
@@ -400,7 +456,7 @@ export const ordersApi = {
         return {
           data: [],
           status: false,
-          message: "Please log in to view your orders."
+          message: "Please log in to view your orders.",
         };
       }
 
@@ -408,7 +464,7 @@ export const ordersApi = {
       return {
         data: [],
         status: false,
-        message: "Unable to load orders. Please try again later."
+        message: "Unable to load orders. Please try again later.",
       };
     }
   },
@@ -460,7 +516,7 @@ export const addressApi = {
       return {
         data: [],
         status: false,
-        message: "Failed to fetch addresses. Please try again later."
+        message: "Failed to fetch addresses. Please try again later.",
       };
     }
   },
@@ -508,4 +564,17 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
 
 // Export the generic apiFetch for custom use cases
 export { apiFetch };
-export type { ApiResponse, Product, LegacyProduct, LoginRequest, RegisterRequest, ProductsListRequest, AddToCartRequest, CartItem, Order, SaveAddressRequest, SavedAddress, ProductReviewRequest };
+export type {
+  ApiResponse,
+  Product,
+  LegacyProduct,
+  LoginRequest,
+  RegisterRequest,
+  ProductsListRequest,
+  AddToCartRequest,
+  CartItem,
+  Order,
+  SaveAddressRequest,
+  SavedAddress,
+  ProductReviewRequest,
+};

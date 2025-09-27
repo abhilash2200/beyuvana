@@ -86,7 +86,6 @@ export interface TabItem {
   headingColor?: string;
 }
 
-
 export interface Product {
   id: number;
   name: string;
@@ -95,6 +94,7 @@ export interface Product {
   certificateImg?: string;
   images: string[];
   faq?: FaqItem[];
+  customFaq?: FaqItem[]; // New property for custom FAQ data
   actionItems?: ActionItem[];
   whyItems?: WhyItem[];
   compare?: Compare[];
@@ -108,7 +108,8 @@ export const fallbackProducts: Product[] = [
     id: 1,
     name: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
     tagline: "Aging is Natural — Radiance is a Choice",
-    description: "Crafted with 21 synergistic, clinically studied botanicals that work from within. Each precision-dosed sachet supports skin elasticity, deep hydration, and youthful glow. Stimulates natural collagen with Amla, Bamboo Silica, L-Lysine, and Hyaluronic Acid.",
+    description:
+      "Crafted with 21 synergistic, clinically studied botanicals that work from within. Each precision-dosed sachet supports skin elasticity, deep hydration, and youthful glow. Stimulates natural collagen with Amla, Bamboo Silica, L-Lysine, and Hyaluronic Acid.",
     certificateImg: "/assets/img/product-details/certificate.png",
     images: [
       "/assets/img/product-details/collagen-green-product.png",
@@ -120,35 +121,38 @@ export const fallbackProducts: Product[] = [
       {
         id: 1,
         title: "Youthful Skin Powered by Plants and Modern Science",
-        description: "This transformation is powered by a synergy of botanicals, antioxidants, and Ayurvedic adaptogens — uniting nature and science for timeless, radiant skin.",
+        description:
+          "This transformation is powered by a synergy of botanicals, antioxidants, and Ayurvedic adaptogens — uniting nature and science for timeless, radiant skin.",
         bgColor: "#E2F9E5",
         hoverBgColor: "#0C4B33",
         headingColor: "#0C4B33",
         hoverHeadingColor: "#FFFFFF",
         paragraphColor: "#2B2B2B",
-        hoverParagraphColor: "#E0F2E9"
+        hoverParagraphColor: "#E0F2E9",
       },
       {
         id: 2,
         title: "11 Holistic Functions in Every Serving",
-        description: "Collagen Boost from Within, Skin Hydration & Plumping, Brightens Skin Tone & Fades Pigmentation, Reduces Fine Lines & Wrinkles, Balances Stress-Aging & Hormones, UV & Pollution Defense, Anti-Inflammatory.",
+        description:
+          "Collagen Boost from Within, Skin Hydration & Plumping, Brightens Skin Tone & Fades Pigmentation, Reduces Fine Lines & Wrinkles, Balances Stress-Aging & Hormones, UV & Pollution Defense, Anti-Inflammatory.",
         bgColor: "#E2F9E5",
         hoverBgColor: "#0C4B33",
         headingColor: "#0C4B33",
         hoverHeadingColor: "#FFFFFF",
         paragraphColor: "#2B2B2B",
-        hoverParagraphColor: "#E0F2E9"
+        hoverParagraphColor: "#E0F2E9",
       },
       {
         id: 3,
         title: "Formulated for Maximum Absorption",
-        description: "Crafted with clinically backed, plant-based actives—absorbed deeply to deliver real, visible results from within. No added sugar, no shortcuts—just pure, purposeful nutrition your skin genuinely responds to.",
+        description:
+          "Crafted with clinically backed, plant-based actives—absorbed deeply to deliver real, visible results from within. No added sugar, no shortcuts—just pure, purposeful nutrition your skin genuinely responds to.",
         bgColor: "#E2F9E5",
         hoverBgColor: "#0C4B33",
         headingColor: "#0C4B33",
         hoverHeadingColor: "#FFFFFF",
         paragraphColor: "#2B2B2B",
-        hoverParagraphColor: "#E0F2E9"
+        hoverParagraphColor: "#E0F2E9",
       },
     ],
     whyItems: [
@@ -231,7 +235,8 @@ export const fallbackProducts: Product[] = [
       {
         id: 2,
         img: "/assets/img/product-details/builder.png",
-        title: "Young Professionals dealing with stress, screen time & pollution",
+        title:
+          "Young Professionals dealing with stress, screen time & pollution",
         desc: "Ashwagandha, Green Tea, and Astaxanthin combat oxidative stress, pollution damage, and fatigue-related skin aging — while balancing internal stress hormones.",
         bgColor: "#CFE9D3",
         headingColor: "#303030",
@@ -252,7 +257,8 @@ export const fallbackProducts: Product[] = [
         id: "tab1",
         icon: "/assets/img/product-details/aging.png",
         label: "Aging",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -276,7 +282,8 @@ export const fallbackProducts: Product[] = [
         id: "tab2",
         icon: "/assets/img/product-details/stress.png",
         label: "Stress",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -300,7 +307,8 @@ export const fallbackProducts: Product[] = [
         id: "tab3",
         icon: "/assets/img/product-details/pollution.png",
         label: "Pollution",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -324,7 +332,8 @@ export const fallbackProducts: Product[] = [
         id: "tab4",
         icon: "/assets/img/product-details/uv.png",
         label: "UV Radiation",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -348,7 +357,8 @@ export const fallbackProducts: Product[] = [
         id: "tab5",
         icon: "/assets/img/product-details/uv.png",
         label: "Disrupted Sleep Pattern",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -372,7 +382,8 @@ export const fallbackProducts: Product[] = [
         id: "tab6",
         icon: "/assets/img/product-details/uv.png",
         label: "Poor Gut Health",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow.",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -402,17 +413,12 @@ export const fallbackProducts: Product[] = [
           "Deeply hydrates and plumps skin",
           "Brightens skin tone and fades pigmentation",
           "Reduces fine lines and wrinkles",
-        ]
+        ],
       },
       {
         id: "item-2",
         question: "Ingredients",
-        answer: [
-          "Amla",
-          "Bamboo Silica",
-          "L-Lysine",
-          "Hyaluronic Acid",
-        ]
+        answer: ["Amla", "Bamboo Silica", "L-Lysine", "Hyaluronic Acid"],
       },
       {
         id: "item-3",
@@ -420,15 +426,50 @@ export const fallbackProducts: Product[] = [
         answer: [
           "Take 1 sachet daily with warm water or as directed by a healthcare professional.",
           "Consume consistently for best results.",
-        ]
-      }
+        ],
+      },
+    ],
+    customFaq: [
+      {
+        id: "01",
+        question: "What is Collagen?",
+        answer: [
+          "Naturally flavored with plant extracts and stevia for a refreshing taste—no artificial sweeteners or additives. Clean, light flavor powered by nature. Naturally flavored with plant extracts and stevia for a refreshing taste—no artificial sweeteners or additives. Clean, light flavor powered by nature.",
+        ],
+      },
+      {
+        id: "02",
+        question: "When should I start taking Collagen supplements?",
+        answer: [
+          "You can start taking collagen supplements anytime as part of a balanced lifestyle.",
+        ],
+      },
+      {
+        id: "03",
+        question: "How should I consume this supplement?",
+        answer: ["Mix it in water, smoothies, or your favorite drink daily."],
+      },
+      {
+        id: "04",
+        question: "Does this Collagen Powder contain sugar?",
+        answer: ["No, it does not contain added sugar."],
+      },
+      {
+        id: "05",
+        question:
+          "What is the difference between Marine Collagen and Fish or Bovine Collagen?",
+        answer: [
+          "Marine collagen is derived from fish skin, while bovine collagen comes from cows. Both provide similar benefits but differ in source.",
+        ],
+      },
     ],
     plants: [
       {
         id: 1,
         img: "/assets/img/product-details/plant.png",
         title: "Ashwagandha Extract",
-        description: "Reduces stress-induced aging and cortisol imbalance, supporting hormonal harmony and skin health.",
+        description:
+          "Reduces stress-induced aging and cortisol imbalance, supporting hormonal harmony and skin health.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -439,7 +480,8 @@ export const fallbackProducts: Product[] = [
         id: 2,
         img: "/assets/img/product-details/plant.png",
         title: "Neem Extract",
-        description: "Helps detoxify the skin and supports immunity for overall wellness.",
+        description:
+          "Helps detoxify the skin and supports immunity for overall wellness.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -450,7 +492,8 @@ export const fallbackProducts: Product[] = [
         id: 3,
         img: "/assets/img/product-details/plant.png",
         title: "Tulsi Extract",
-        description: "Known for its healing properties and immunity boosting benefits.",
+        description:
+          "Known for its healing properties and immunity boosting benefits.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -461,7 +504,8 @@ export const fallbackProducts: Product[] = [
         id: 4,
         img: "/assets/img/product-details/plant.png",
         title: "Aloe Vera",
-        description: "Supports hydration, skin rejuvenation, and digestive health.",
+        description:
+          "Supports hydration, skin rejuvenation, and digestive health.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -472,7 +516,8 @@ export const fallbackProducts: Product[] = [
         id: 5,
         img: "/assets/img/product-details/plant.png",
         title: "Aloe Jelly",
-        description: "Supports hydration, skin rejuvenation, and digestive health.",
+        description:
+          "Supports hydration, skin rejuvenation, and digestive health.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -485,7 +530,8 @@ export const fallbackProducts: Product[] = [
     id: 2,
     name: "BEYUVANA™ Advanced Glow-Nourishing Formula for Radiant, Even-Toned Skin",
     tagline: "Aging is Natural — Radiance is a Choice",
-    description: "Glow Essence is an advanced, 100% vegetarian, skin-nourishing formula enriched with 18 synergistic plant- based actives, designed to unlock visible clarity and radiance from within. Infused with 4X Liposomal Glutathione and clinically studied Vitamin C, it ",
+    description:
+      "Glow Essence is an advanced, 100% vegetarian, skin-nourishing formula enriched with 18 synergistic plant- based actives, designed to unlock visible clarity and radiance from within. Infused with 4X Liposomal Glutathione and clinically studied Vitamin C, it ",
     certificateImg: "/assets/img/product-details/certificate.png",
     images: [
       "/assets/img/product-details/collagen-pink-product.png",
@@ -497,35 +543,38 @@ export const fallbackProducts: Product[] = [
       {
         id: 1,
         title: "Radiant Skin, Backed by Nature and Science",
-        description: "Including 4X Liposomal Glutathione, Vitamin C, and Hyaluronic Acid—for powerful results from the inside out.It targets dark spots, dullness, acne, hydration, and gut balance—delivering visible clarity, glow, and even tone in just 6–8 weeks.",
+        description:
+          "Including 4X Liposomal Glutathione, Vitamin C, and Hyaluronic Acid—for powerful results from the inside out.It targets dark spots, dullness, acne, hydration, and gut balance—delivering visible clarity, glow, and even tone in just 6–8 weeks.",
         bgColor: "#FFE7E7",
         hoverBgColor: "#B00404",
         headingColor: "#B00404",
         hoverHeadingColor: "#FFFFFF",
         paragraphColor: "#2B2B2B",
-        hoverParagraphColor: "#FFFFFF"
+        hoverParagraphColor: "#FFFFFF",
       },
       {
         id: 2,
         title: "10 Advanced Skin-Optimizing Actions",
-        description: "Brightens skin tone, enhances radiance, and visibly fades pigmentation and dark spots. Combats acne, soothes breakouts, and repairs the skin barrier for stronger, healthier skin. Reduces redness, sensitivity, and inflammation while deeply hydrating and plumping from within.",
+        description:
+          "Brightens skin tone, enhances radiance, and visibly fades pigmentation and dark spots. Combats acne, soothes breakouts, and repairs the skin barrier for stronger, healthier skin. Reduces redness, sensitivity, and inflammation while deeply hydrating and plumping from within.",
         bgColor: "#FFE7E7",
         hoverBgColor: "#B00404",
         headingColor: "#B00404",
         hoverHeadingColor: "#FFFFFF",
         paragraphColor: "#2B2B2B",
-        hoverParagraphColor: "#FFFFFF"
+        hoverParagraphColor: "#FFFFFF",
       },
       {
         id: 3,
         title: "Fast-Acting Formula, Better Absorption",
-        description: "Expertly absorbed for faster to target skin concerns from deep within. No sugar. No fillers. Just pure, high-performance skin nutrition your body truly recognizes and responds to.",
+        description:
+          "Expertly absorbed for faster to target skin concerns from deep within. No sugar. No fillers. Just pure, high-performance skin nutrition your body truly recognizes and responds to.",
         bgColor: "#FFE7E7",
         hoverBgColor: "#B00404",
         headingColor: "#B00404",
         hoverHeadingColor: "#FFFFFF",
         paragraphColor: "#2B2B2B",
-        hoverParagraphColor: "#FFFFFF"
+        hoverParagraphColor: "#FFFFFF",
       },
     ],
     whyItems: [
@@ -629,7 +678,8 @@ export const fallbackProducts: Product[] = [
         id: "tab1",
         icon: "/assets/img/product-details/aging.png",
         label: "Antioxidant Deficiency",
-        description: "Lack of Glutathione, Vitamin C, and Grape Seed Extract can weaken the skin’s defence against dullness and damage.\nGlow Essence provides powerful antioxidants to fight oxidative stress and support a brighter complexion.",
+        description:
+          "Lack of Glutathione, Vitamin C, and Grape Seed Extract can weaken the skin’s defence against dullness and damage.\nGlow Essence provides powerful antioxidants to fight oxidative stress and support a brighter complexion.",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -653,7 +703,8 @@ export const fallbackProducts: Product[] = [
         id: "tab2",
         icon: "/assets/img/product-details/stress.png",
         label: "Chronic Inflammation",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -677,7 +728,8 @@ export const fallbackProducts: Product[] = [
         id: "tab3",
         icon: "/assets/img/product-details/pollution.png",
         label: "Dehydrated Skin",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -701,7 +753,8 @@ export const fallbackProducts: Product[] = [
         id: "tab4",
         icon: "/assets/img/product-details/uv.png",
         label: "Weak Skin Barrier",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -725,7 +778,8 @@ export const fallbackProducts: Product[] = [
         id: "tab5",
         icon: "/assets/img/product-details/uv.png",
         label: "Melanin Overproduction",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -749,7 +803,8 @@ export const fallbackProducts: Product[] = [
         id: "tab6",
         icon: "/assets/img/product-details/uv.png",
         label: "Nutrient Gaps in Diet",
-        description: "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
+        description:
+          "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline...",
         img: "/assets/img/product-details/aging-1.png",
         stats: [
           {
@@ -779,7 +834,7 @@ export const fallbackProducts: Product[] = [
           "Fades dark spots, acne scars, and pigmentation",
           "Deeply hydrates skin from within",
           "Soothes inflammation & reduces acne flare-ups",
-        ]
+        ],
       },
       {
         id: "item-2",
@@ -789,7 +844,7 @@ export const fallbackProducts: Product[] = [
           "Vitamin C",
           "Hyaluronic Acid",
           "Botanical Extracts",
-        ]
+        ],
       },
       {
         id: "item-3",
@@ -797,15 +852,53 @@ export const fallbackProducts: Product[] = [
         answer: [
           "Mix 1 sachet in a glass of water or smoothie daily.",
           "Use consistently for visible results in 4–6 weeks.",
-        ]
-      }
+        ],
+      },
+    ],
+    customFaq: [
+      {
+        id: "01",
+        question: "What is Glow Essence?",
+        answer: [
+          "Glow Essence is an advanced, 100% vegetarian, skin-nourishing formula enriched with 18 synergistic plant-based actives, designed to unlock visible clarity and radiance from within.",
+        ],
+      },
+      {
+        id: "02",
+        question: "How does Glow Essence work?",
+        answer: [
+          "It targets dark spots, dullness, acne, hydration, and gut balance—delivering visible clarity, glow, and even tone in just 6–8 weeks.",
+        ],
+      },
+      {
+        id: "03",
+        question: "What are the key ingredients?",
+        answer: [
+          "4X Liposomal Glutathione, Vitamin C, Hyaluronic Acid, and 15 other clinically studied plant-based actives for maximum absorption.",
+        ],
+      },
+      {
+        id: "04",
+        question: "How should I use Glow Essence?",
+        answer: [
+          "Mix 1 sachet in a glass of water or smoothie daily. Use consistently for visible results in 4–6 weeks.",
+        ],
+      },
+      {
+        id: "05",
+        question: "Is Glow Essence suitable for all skin types?",
+        answer: [
+          "Yes, Glow Essence is formulated for all skin types and is 100% vegetarian with no added sugar or artificial additives.",
+        ],
+      },
     ],
     plants: [
       {
         id: 1,
         img: "/assets/img/product-details/plant.png",
         title: "Inulin",
-        description: "Powerful antioxidant that brightens skin tone and reduces pigmentation for radiant, even-toned skin.",
+        description:
+          "Powerful antioxidant that brightens skin tone and reduces pigmentation for radiant, even-toned skin.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -816,7 +909,8 @@ export const fallbackProducts: Product[] = [
         id: 2,
         img: "/assets/img/product-details/plant.png",
         title: "VLemon Powder",
-        description: "Clinically studied vitamin C that enhances radiance and supports collagen production.",
+        description:
+          "Clinically studied vitamin C that enhances radiance and supports collagen production.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -827,7 +921,8 @@ export const fallbackProducts: Product[] = [
         id: 3,
         img: "/assets/img/product-details/plant.png",
         title: "Amla Dry Extract",
-        description: "Anti-inflammatory properties that calm redness and support skin healing.",
+        description:
+          "Anti-inflammatory properties that calm redness and support skin healing.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -838,7 +933,8 @@ export const fallbackProducts: Product[] = [
         id: 4,
         img: "/assets/img/product-details/plant.png",
         title: "Green Tea Extract",
-        description: "Rich in antioxidants that protect against environmental damage and aging.",
+        description:
+          "Rich in antioxidants that protect against environmental damage and aging.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -849,7 +945,8 @@ export const fallbackProducts: Product[] = [
         id: 5,
         img: "/assets/img/product-details/plant.png",
         title: "Licorice Root",
-        description: "Natural skin brightener that helps fade dark spots and evens skin tone.",
+        description:
+          "Natural skin brightener that helps fade dark spots and evens skin tone.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -857,5 +954,5 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
     ],
-  }
+  },
 ];

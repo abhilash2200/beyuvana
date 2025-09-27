@@ -12,6 +12,8 @@ import Builder from "./Builder";
 import TabData from "./TabData";
 import AdvancedPlant from "./AdvancedPlant";
 import DetailsOfGreenCollagen from "./DetailsOfGreenCollagen";
+import CustomerReviews from "./CustomerReviews";
+import ProductFaq from "./ProductFaq";
 
 const data = [
     {
@@ -235,6 +237,18 @@ export default function Product1Layout({ product }: { product: Product }) {
             <div className="py-10">
                 <div className="container mx-auto px-4">
                     <DetailsOfGreenCollagen />
+                </div>
+            </div>
+            <div className="py-10">
+                <div className="container mx-auto px-4">
+                    <HeaderText textalign="text-center" heading="Customer Reviews" textcolor="text-[#1A2819]" />
+                    <CustomerReviews />
+                </div>
+            </div>
+            <div className="py-10">
+                <div className="container mx-auto px-4">
+                    <HeaderText textalign="text-center" heading="Frequently Asked Questions" textcolor="text-[#1A2819]" />
+                    <ProductFaq productId={1} />
                 </div>
             </div>
         </>
