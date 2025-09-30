@@ -52,6 +52,11 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
             return;
         }
 
+        if (!sessionKey) {
+            setError("Session expired. Please login again");
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -68,7 +73,15 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 is_primary: 1, // Set as primary address
             };
 
-            const response = await addressApi.saveAddress(addressData, sessionKey || undefined);
+            console.log("Saving address with data:", {
+                addressData,
+                sessionKey: sessionKey ? "Present" : "Missing",
+                userId: user.id
+            });
+
+            const response = await addressApi.saveAddress(addressData, sessionKey);
+
+            console.log("Address save response:", response);
 
             if (response.success !== false) {
                 console.log("Address saved successfully:", response);
@@ -87,11 +100,20 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 // Call the callback to refresh addresses list
                 onAddressSaved?.();
             } else {
-                setError(response.message || "Failed to save address");
+                // Handle specific error cases
+                if (response.code === 401) {
+                    setError("Authentication failed. Please login again.");
+                } else {
+                    setError(response.message || "Failed to save address");
+                }
             }
         } catch (err) {
             console.error("Save address error:", err);
-            setError(err instanceof Error ? err.message : "Failed to save address");
+            if (err instanceof Error && err.message.includes("401")) {
+                setError("Authentication failed. Please login again.");
+            } else {
+                setError(err instanceof Error ? err.message : "Failed to save address");
+            }
         } finally {
             setLoading(false);
         }
@@ -114,6 +136,18 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
 
                 {/* Form fields */}
                 <div className="p-4 space-y-3 overflow-y-auto">
+                    {!user?.id && (
+                        <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded">
+                            <p className="font-medium">Login Required</p>
+                            <p className="text-sm">Please login to save your address.</p>
+                        </div>
+                    )}
+                    {!sessionKey && user?.id && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                            <p className="font-medium">Session Expired</p>
+                            <p className="text-sm">Please login again to save your address.</p>
+                        </div>
+                    )}
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
                             {error}
@@ -198,9 +232,12 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <Button
                         className="w-full"
                         onClick={handleSave}
-                        disabled={loading}
+                        disabled={loading || !user?.id || !sessionKey}
                     >
-                        {loading ? "Saving..." : "Save Address"}
+                        {loading ? "Saving..." :
+                            !user?.id ? "Login Required" :
+                                !sessionKey ? "Session Expired" :
+                                    "Save Address"}
                     </Button>
                 </div>
             </SheetContent>

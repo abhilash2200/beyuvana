@@ -24,23 +24,45 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
       return;
     }
 
+    if (!sessionKey) {
+      console.warn("No session key available for fetching addresses");
+      setError("Session expired. Please login again.");
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
-      const response = await addressApi.getAddresses(parseInt(user.id), sessionKey || undefined);
+
+      console.log("Fetching addresses with:", {
+        userId: user.id,
+        sessionKey: sessionKey ? "Present" : "Missing"
+      });
+
+      const response = await addressApi.getAddresses(parseInt(user.id), sessionKey);
+
+      console.log("Address fetch response:", response);
 
       if (response.data && Array.isArray(response.data)) {
         setAddresses(response.data);
         // Select the primary address or first address
         const primaryAddress = response.data.find(addr => addr.is_primary === 1);
         setSelectedId(primaryAddress?.id || response.data[0]?.id || null);
+      } else if (response.code === 401) {
+        setError("Authentication failed. Please login again.");
+        setAddresses([]);
       } else {
         setAddresses([]);
         setSelectedId(null);
       }
     } catch (err) {
       console.error("Failed to fetch addresses:", err);
-      setError("Failed to load addresses");
+      if (err instanceof Error && err.message.includes("401")) {
+        setError("Authentication failed. Please login again.");
+      } else {
+        setError("Failed to load addresses");
+      }
       setAddresses([]);
     } finally {
       setLoading(false);
@@ -107,12 +129,15 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
           </div>
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Login Required</h3>
           <p className="text-gray-600 mb-4">Please login to view and manage your saved addresses</p>
+          <p className="text-sm text-gray-500 mb-4">
+            After login, you can save multiple addresses and select them for delivery
+          </p>
           <Button
             onClick={onAddAddress}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Address
+            Login & Add Address
           </Button>
         </div>
       </div>

@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
                     </div>
 
                     {/* Quick Links */}
-                    <div className="pt-10 md:pl-10 flex flex-col items-start justify-start text-left">
+                    <div className="md:pt-10 pt-0 md:pl-10 flex flex-col items-start justify-start text-left">
                         <h2 className="text-[#DFC362] mb-6 font-[Grafiels] text-[25px]">Quick Links</h2>
                         <ul className="space-y-2 text-white/70 text-sm">
                             {quickLinks.map((link) => (
@@ -82,7 +82,7 @@ const Footer: React.FC = () => {
                     </div>
 
                     {/* Legal Links */}
-                    <div className="pt-10 flex flex-col items-start justify-start text-left">
+                    <div className="md:pt-10 pt-0 flex flex-col items-start justify-start text-left">
                         <h2 className="text-[#DFC362] mb-6 font-[Grafiels] text-[25px]">Legal Links</h2>
                         <ul className="space-y-2 text-white/70 text-sm">
                             {legalLinks.map((link) => (
@@ -97,7 +97,7 @@ const Footer: React.FC = () => {
                     </div>
 
                     {/* Contact & Social */}
-                    <div className="pt-10 flex flex-col items-start justify-start text-left">
+                    <div className="md:pt-10 pt-0 flex flex-col items-start justify-start text-left">
                         <h2 className="text-[#DFC362] mb-6 font-[Grafiels] text-[25px]">Contact</h2>
                         <ul className="space-y-2 text-white/70 text-sm mb-4">
                             {contactInfo.map((item, index) => (

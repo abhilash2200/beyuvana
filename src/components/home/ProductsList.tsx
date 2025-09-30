@@ -11,9 +11,6 @@ import { productsApi } from "@/lib/api";
 
 const packs = [1, 2, 4] as const;
 
-// API Product type (from the API response) - using inline type for simplicity
-
-// Combined product type that can handle both static and API data
 interface DisplayProduct {
   id: string;
   name: string;
@@ -151,17 +148,17 @@ const ProductsList = () => {
 
                 {index === 0 && (
                   <div>
-                    <p className="inline-flex border border-black rounded-[5px] py-2 px-2">
+                    <p className="inline-flex border border-black rounded-[5px] py-2 px-2 font-light">
                       {product.shortdescription}
                     </p>
                   </div>
                 )}
 
-                <p>{product.description}</p>
+                <p className="font-light">{product.description}</p>
 
                 {index === 1 && (
                   <div className="mb-3">
-                    <p>{product.descriptiontext}</p>
+                    <p className="font-light">{product.descriptiontext}</p>
                   </div>
                 )}
 
@@ -181,10 +178,11 @@ const ProductsList = () => {
 
                 {/* Pack Selection */}
                 <div className="flex flex-wrap md:flex-row gap-2 items-center mt-2">
-                  <p>
+                  <p className="font-light">
                     Select
                     <br />
                     Pack:
+                    <br />
                   </p>
                   {packs.map((pack) => {
                     const isSelected = selectedPack === pack;

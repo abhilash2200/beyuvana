@@ -23,7 +23,7 @@ const page = () => {
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="md:py-10 py-6">
         <div className="container mx-auto px-4">
           <div className="flex flex-col justify-center items-center text-center">
             <HeaderText textalign="text-center" heading="About Beyuvana" textcolor="text-[#1A2819]" />
@@ -49,25 +49,25 @@ const page = () => {
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="md:py-10 py-6">
         {/* <div className="container mx-auto px-4"> */}
           <ProductsList />
         {/* </div> */}
       </section>
 
-      <section className="py-10">
+      <section className="md:py-10 py-6">
         <div className="container mx-auto md:ps-20 lg:ps-8">
           <div className="flex flex-col items-center justify-center gap-y-2">
           <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
             <p className="w-full md:max-w-[60vw] font-light text-center">Crafted with 21 synergistic, clinically studied botanicals that work from within. Each precision-dosed sachet supports skin elasticity, deep hydration, and youthful glow. Stimulates natural collagen with Amla, Bamboo Silica, L-Lysine, and Hyaluronic Acid.</p>
           </div>
         </div>
-        <div className="pt-12 ms-auto">
+        <div className="md:pt-12 pt-6 ms-auto">
           <InfluencerVideo />
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="md:py-10 py-6">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center gap-y-2">
           <HeaderText textalign="text-center" heading="Why You Need BEYUVANA — Right Now" textcolor="text-[#1A2819]" />
@@ -86,7 +86,7 @@ const page = () => {
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="md:py-10 py-6">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center mb-6">
           <HeaderText textalign="text-center" heading="Customer Testimonials" textcolor="text-[#057A37]" />
@@ -95,7 +95,7 @@ const page = () => {
         </div>
       </section>
 
-      <section className="pt-10 pb-20">
+      <section className="md:pt-10 pt-12 pb-20">
         <div className="container mx-auto px-4">
           <CashBack />
         </div>
@@ -112,7 +112,7 @@ const page = () => {
             <div className="w-fill md:w-[68%]">
               <div className="flex flex-col gap-y-4">
               <HeaderText textalign="text-left" heading="BEYUVANA™ 60-Day Money-Back Guarantee" textcolor="text-[#057A37]" />
-                <p className="text-[#222222]">At BEYUVANA™, your trust means everything to us. We stand by the quality of our plant-powered formulations, and we want you to feel completely confident on your wellnes journey. That’s why we offer a 60-Day Money-Back Promise on your first purchase,
+                <p className="text-[#222222] font-light">At BEYUVANA™, your trust means everything to us. We stand by the quality of our plant-powered formulations, and we want you to feel completely confident on your wellnes journey. That’s why we offer a 60-Day Money-Back Promise on your first purchase,
                   exclusively from our website.</p>
                   
               </div>

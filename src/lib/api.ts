@@ -11,6 +11,8 @@ interface ApiResponse<T = unknown> {
   message?: string;
   success?: boolean;
   error?: string;
+  code?: number;
+  status?: boolean;
 }
 
 interface Product {
@@ -266,14 +268,27 @@ export const cartApi = {
       };
 
       if (sessionKey) {
-        headers["Authorization"] = `Bearer ${sessionKey}`;
+        // Try different header combinations - prioritize session_key
         headers["session_key"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        // Additional formats
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
       }
 
       return await apiFetch<CartItem[]>("/cart/add/v1/", {
         method: "POST",
         headers,
-        body: JSON.stringify(cartData),
+        body: JSON.stringify({
+          ...cartData,
+          session_key: sessionKey, // Add session key to request body as well
+        }),
       });
     } catch (error) {
       console.error("Add to cart API failed:", error);
@@ -291,14 +306,53 @@ export const cartApi = {
       };
 
       if (sessionKey) {
-        headers["Authorization"] = `Bearer ${sessionKey}`;
+        // Try different header combinations - prioritize session_key
         headers["session_key"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        // Additional formats
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // Try more variations
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Try specific format that might be expected
+        headers["Authorization"] = sessionKey; // Without Bearer prefix
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
       }
 
-      return await apiFetch<CartItem[]>("/cart/lists/v1/", {
+      // Debug logging for cart API
+      console.log("🔍 Cart API Debug:", {
+        sessionKey: sessionKey ? "Present" : "Missing",
+        sessionKeyLength: sessionKey?.length || 0,
+        headers,
+        endpoint: "/cart/lists/v1/",
+      });
+
+      // Try query parameter approach
+      const endpoint = sessionKey
+        ? `/cart/lists/v1/?session_key=${encodeURIComponent(sessionKey)}`
+        : "/cart/lists/v1/";
+
+      return await apiFetch<CartItem[]>(endpoint, {
         method: "POST",
         headers,
-        body: JSON.stringify({}), // Empty body for cart list request
+        body: JSON.stringify({
+          session_key: sessionKey, // Add session key to request body as well
+        }),
       });
     } catch (error) {
       console.error("Get cart API failed:", error);
@@ -481,12 +535,32 @@ export const addressApi = {
       if (sessionKey) {
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
+        // Add additional header formats that some backends expect
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+      }
+
+      // Debug logging for headers
+      if (isDevelopment) {
+        console.log("🔍 Save Address API Debug:", {
+          addressData,
+          sessionKey: sessionKey ? "Present" : "Missing",
+          sessionKeyLength: sessionKey?.length || 0,
+          headers,
+          endpoint: "/api/save_address/",
+        });
       }
 
       return await apiFetch("/api/save_address/", {
         method: "POST",
         headers,
-        body: JSON.stringify(addressData),
+        body: JSON.stringify({
+          ...addressData,
+          session_key: sessionKey, // Add session key to request body as well
+        }),
       });
     } catch (error) {
       console.error("Save address API failed:", error);
@@ -502,15 +576,41 @@ export const addressApi = {
       };
 
       if (sessionKey) {
-        headers["Authorization"] = `Bearer ${sessionKey}`;
+        // Try different header combinations - prioritize session_key
         headers["session_key"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        // Additional formats
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
       }
+
+      // Debug logging for headers - Force show for debugging
+      console.log("🔍 Address API Debug:", {
+        userId,
+        sessionKey: sessionKey ? "Present" : "Missing",
+        sessionKeyLength: sessionKey?.length || 0,
+        headers,
+        endpoint: "/api/get_address/",
+      });
+      console.log("📋 Exact Headers Being Sent:", headers);
+      console.log(
+        "🔑 Session Key Preview:",
+        sessionKey?.substring(0, 20) + "..."
+      );
+      console.log("🌍 Environment:", process.env.NODE_ENV);
 
       return await apiFetch<SavedAddress[]>("/api/get_address/", {
         method: "POST",
         headers,
         body: JSON.stringify({
           user_id: userId,
+          session_key: sessionKey, // Add session key to request body as well
           // address_id is optional - if not provided, returns all addresses for user
         }),
       });

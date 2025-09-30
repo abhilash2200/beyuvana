@@ -8,7 +8,7 @@ interface ListItemProps {
 const ListItem: FC<ListItemProps> = ({ text }) => (
     <li className="flex items-start">
         <span className="text-green-600 mr-2">•</span>
-        <p>{text}</p>
+        <p className="text-[14px] md:text-[16px]">{text}</p>
     </li>
 );
 

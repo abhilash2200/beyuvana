@@ -60,6 +60,14 @@ export default function LoginForm({ onClose }: LoginFormProps) {
                 (apiData.data as Record<string, unknown>)?.token ||
                 null;
 
+            // Debug logging for session key extraction
+            console.log("🔍 Login Response Debug:", {
+                apiData,
+                sessionKey,
+                sessionKeyType: typeof sessionKey,
+                sessionKeyLength: sessionKey?.length || 0
+            });
+
             if (!normalizedUser) {
                 setError("Invalid login response.");
                 toast.error("Login failed: Invalid server response.");
@@ -99,7 +107,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
 
     return (
         <div className="flex flex-col md:flex-row overflow-hidden">
-            <div className="w-full md:w-1/2">
+            <div className="w-full md:w-1/2 hidden md:block">
                 <Image
                     src="/assets/img/login-img.png"
                     width={491}
@@ -110,7 +118,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
             </div>
 
             {/* Right Form */}
-            <div className="w-full md:w-1/2 p-6 flex flex-col justify-center">
+            <div className="w-full md:w-1/2 md:p-6 p-0 flex flex-col justify-center">
                 <h2 className="text-[30px] text-[#057A37] mb-1 font-[Grafiels]">Login Now!</h2>
                 <hr className="w-32 h-0.5 mb-4 bg-[#057A37]" />
 

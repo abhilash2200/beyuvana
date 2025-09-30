@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const HeaderText = ({ heading, textalign, textcolor } : HeaderProps) => {
   return (
-    <h2 className={`md:text-[30px] text-[25px] font-[Grafiels] leading-tight mb-4 ${textalign} ${heading} ${textcolor} }`}>
+    <h2 className={`md:text-[30px] text-[25px] font-[Grafiels] leading-tight md:mb-4 mb-2 ${textalign} ${heading} ${textcolor} }`}>
         {heading}
     </h2>
   )

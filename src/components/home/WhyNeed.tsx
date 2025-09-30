@@ -48,7 +48,7 @@ const items: WhyNeedItem[] = [
 
 const WhyNeed: React.FC = () => {
   return (
-    <div className="w-full pt-10">
+    <div className="w-full md:pt-10 pt-6">
       <Splide
         aria-label="Why Need Slider"
         options={{

@@ -65,7 +65,7 @@ const floatingImages: FloatingImage[] = [
 
 const Choose: React.FC = () => {
     return (
-        <div className="flex flex-wrap justify-between items-center gap-6 md:gap-0">
+        <div className="flex flex-wrap justify-between items-center gap-6 md:gap-0 pt-6 md:pt-0">
             {/* LEFT SIDE */}
             <div className="w-full md:w-[32%] md:pr-10 flex flex-col items-end text-left md:text-right space-y-6 gap-y-6">
                 {leftContent.map((item, idx) => (
@@ -88,7 +88,6 @@ const Choose: React.FC = () => {
 
             {/* CENTER VIDEO */}
             <div className="w-full md:w-[32%] flex justify-center relative">
-                {/* floating icons for desktop */}
                 {floatingImages.map((img, idx) => (
                     <div
                         key={idx}

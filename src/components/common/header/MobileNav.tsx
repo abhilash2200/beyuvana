@@ -30,7 +30,7 @@ import Cart from "../cart/Cart";
 
 const links = [
     { label: "Home", href: "/", icon: <RiHome2Line className="text-lg" /> },
-    { label: "About Us", href: "/about-ud", icon: <RiInformationLine className="text-lg" /> },
+    { label: "About Us", href: "/about-us", icon: <RiInformationLine className="text-lg" /> },
     { label: "Product", href: "/product", icon: <RiShoppingBag3Line className="text-lg" /> },
     { label: "Contact", href: "/contact", icon: <RiPhoneLine className="text-lg" /> },
 ];
@@ -60,7 +60,7 @@ const MobileNav = () => {
                                     <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                                         <DialogTrigger asChild>
                                             <Button
-                                                className="bg-[#1A2819] text-white text-sm px-4 py-1 rounded-md"
+                                                className="bg-[#1A2819] text-white font-normal text-sm px-4 py-1 rounded-[5px]"
                                                 onClick={() => setIsLoginOpen(true)}
                                             >
                                                 Login
@@ -80,7 +80,7 @@ const MobileNav = () => {
                                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                                         <DialogTrigger asChild>
                                             <Button
-                                                className="bg-gray-200 text-[#1E2C1E] text-sm px-4 py-1 rounded-md"
+                                                className="bg-gray-200 text-[#1E2C1E] font-normal text-sm px-4 py-1 rounded-[5px]"
                                                 onClick={() => setIsRegisterOpen(true)}
                                             >
                                                 Register

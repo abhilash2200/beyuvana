@@ -42,12 +42,12 @@ const CashBack: React.FC = () => {
                                     </DialogTrigger>
 
                                     <DialogContent className="bg-[#fff] border border-[#1E2C1E] text-black rounded-2xl w-[90%] max-w-[1000px]">
-                                        <DialogHeader className="border-b border-[#1E2C1E">
-                                        <VisuallyHidden>
-                                            <DialogTitle className="text-xl font-bold mb-3">
-                                                Money Back Guarantee
-                                            </DialogTitle>
-                                        </VisuallyHidden>
+                                        <DialogHeader>
+                                            <VisuallyHidden>
+                                                <DialogTitle className="text-xl font-bold mb-3">
+                                                    Money Back Guarantee
+                                                </DialogTitle>
+                                            </VisuallyHidden>
                                         </DialogHeader>
 
                                         <div className="p-0">

@@ -58,7 +58,7 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
     return (
         <div className="flex flex-col md:flex-row overflow-hidden">
             {/* Left Image */}
-            <div className="w-full md:w-1/2">
+            <div className="w-full md:w-1/2 hidden md:block">
                 <Image
                     src="/assets/img/login-img.png"
                     width={491}
@@ -69,7 +69,7 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
             </div>
 
             {/* Right Form */}
-            <div className="w-full md:w-1/2 p-6 flex flex-col justify-center">
+            <div className="w-full md:w-1/2 md:p-6 p-0 flex flex-col justify-center">
                 <h2 className="text-[30px] text-[#057A37] mb-1 font-[Grafiels]">Register Now!</h2>
                 <hr className="w-32 h-0.5 mb-4 bg-[#057A37]" />
 

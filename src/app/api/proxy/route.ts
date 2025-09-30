@@ -29,13 +29,18 @@ async function handler(request: NextRequest) {
       headers["Content-Type"] = "application/json";
     }
 
-    if (isDevelopment) {
+    // Force debug logging for address API
+    if (
+      endpoint?.includes("get_address") ||
+      endpoint?.includes("save_address")
+    ) {
+      console.log(`🔍 ADDRESS API PROXY DEBUG:`);
       console.log(`📋 Headers being forwarded:`, headers);
       console.log(
-        `🔍 Debug - Original request headers:`,
+        `🔍 Original request headers:`,
         Object.fromEntries(request.headers.entries())
       );
-      console.log(`🔍 Debug - Endpoint: ${endpoint}`);
+      console.log(`🔍 Endpoint: ${endpoint}`);
     }
 
     // Build full URL with query params (excluding "endpoint" itself)
@@ -51,10 +56,17 @@ async function handler(request: NextRequest) {
       body = await request.text();
     }
 
-    if (isDevelopment) {
-      console.log(`🔄 Proxying ${request.method} request to:`, url);
-      console.log(`📤 Request body:`, body);
-      console.log(`📤 Final headers being sent:`, headers);
+    // Force debug logging for address API
+    if (
+      endpoint?.includes("get_address") ||
+      endpoint?.includes("save_address")
+    ) {
+      console.log(
+        `🔄 ADDRESS API - Proxying ${request.method} request to:`,
+        url
+      );
+      console.log(`📤 ADDRESS API - Request body:`, body);
+      console.log(`📤 ADDRESS API - Final headers being sent:`, headers);
     }
 
     const response = await fetch(url, {
@@ -63,10 +75,14 @@ async function handler(request: NextRequest) {
       body,
     });
 
-    if (isDevelopment) {
-      console.log(`📡 Backend response status:`, response.status);
+    // Force debug logging for address API
+    if (
+      endpoint?.includes("get_address") ||
+      endpoint?.includes("save_address")
+    ) {
+      console.log(`📡 ADDRESS API - Backend response status:`, response.status);
       console.log(
-        `📡 Backend response headers:`,
+        `📡 ADDRESS API - Backend response headers:`,
         Object.fromEntries(response.headers.entries())
       );
     }
@@ -80,8 +96,12 @@ async function handler(request: NextRequest) {
       data = textData;
     }
 
-    if (isDevelopment) {
-      console.log(`✅ Proxy response for ${endpoint}:`, {
+    // Force debug logging for address API
+    if (
+      endpoint?.includes("get_address") ||
+      endpoint?.includes("save_address")
+    ) {
+      console.log(`✅ ADDRESS API - Proxy response for ${endpoint}:`, {
         status: response.status,
         data,
         responseHeaders: Object.fromEntries(response.headers.entries()),
