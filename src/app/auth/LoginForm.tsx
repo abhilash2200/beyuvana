@@ -65,7 +65,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
                 apiData,
                 sessionKey,
                 sessionKeyType: typeof sessionKey,
-                sessionKeyLength: sessionKey?.length || 0
+                sessionKeyLength: typeof sessionKey === 'string' ? sessionKey.length : 0
             });
 
             if (!normalizedUser) {
