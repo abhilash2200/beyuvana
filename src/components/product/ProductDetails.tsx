@@ -26,7 +26,7 @@ interface ProductDetailsProps {
 const ProductDetails = ({ name, tagline, description, certificateImg, faq, productId }: ProductDetailsProps) => {
     return (
         <div className="flex flex-col gap-4">
-            <h1 className="text-2xl font-[Grafiels]">{name}</h1>
+            <h1 className="md:text-2xl text-xl leading-tight font-[Grafiels]">{name}</h1>
 
             {tagline && (
                 <div>
@@ -40,7 +40,7 @@ const ProductDetails = ({ name, tagline, description, certificateImg, faq, produ
 
             {certificateImg && (
                 <div className="flex items-center gap-2">
-                    <Image src={certificateImg} alt="certificate" width={40} height={40} />
+                    <Image src={certificateImg} alt="certificate" width={40} height={40} className="w-auto h-auto" />
                     <p className="text-sm text-gray-500">View Lab Certificates</p>
                 </div>
             )}
@@ -51,16 +51,16 @@ const ProductDetails = ({ name, tagline, description, certificateImg, faq, produ
                         {faq.map((item) => (
                             <AccordionItem key={item.id} value={item.id}>
                                 <AccordionTrigger
-                                    className="flex justify-between items-center text-[#0C4B33] px-5 py-3 hover:cursor-pointer transition-colors duration-300 no-underline hover:no-underline"
+                                    className="flex justify-between items-center text-[#0C4B33] md:px-5 px-0 py-3 hover:cursor-pointer transition-colors duration-300 no-underline hover:no-underline"
                                 >
                                     <span
-                                        className={`text-sm ${productId === 1 ? "text-[#0C4B33]" : "text-blue-500"
+                                        className={`text-sm ${productId === 1 ? "text-[#0C4B33]" : "text-[#FF4646]"
                                             }`}
                                     >
                                         {item.question}
                                     </span>
                                 </AccordionTrigger>
-                                <AccordionContent className="text-black px-5 py-4 font-light">
+                                <AccordionContent className="text-black md:px-5 px-0 py-4 font-light">
                                     {item.answer.map((ans, index) => (
                                         <p key={index} className="mb-1">{ans}</p>
                                     ))}

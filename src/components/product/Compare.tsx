@@ -23,7 +23,7 @@ const Compare = ({ product }: CompareProps) => {
 
     return (
         <div
-            className="relative rounded-[20px] px-6 py-10 pb-20 flex flex-col items-center justify-center gap-y-2 overflow-hidden"
+            className="relative rounded-[20px] px-6 py-10 md:pb-20 pb-10 flex flex-col items-center justify-center gap-y-2 overflow-hidden"
             style={{ backgroundColor: containerBg }}
         >
             <div className="absolute bottom-0 right-0 pointer-events-none">
@@ -65,10 +65,10 @@ const Compare = ({ product }: CompareProps) => {
                                 className="w-full h-auto"
                             />
                             <div className="py-6">
-                                <h2 className="font-[Grafiels] text-[25px] mb-4" style={{ color: slide.headingColor || containerHeading }}>
+                                <h2 className="font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-4" style={{ color: slide.headingColor || containerHeading }}>
                                     {slide.title}
                                 </h2>
-                                <p className="mb-4" style={{ color: slide.paraColor || containerPara }}>{slide.desc}</p>
+                                <p className="mb-4 text-[15px] font-light" style={{ color: slide.paraColor || containerPara }}>{slide.desc}</p>
                                 <hr style={{ color: slide.paraColor || containerPara }} />
                             </div>
                         </div>

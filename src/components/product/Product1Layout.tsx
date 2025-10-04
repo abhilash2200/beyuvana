@@ -14,6 +14,9 @@ import AdvancedPlant from "./AdvancedPlant";
 import DetailsOfGreenCollagen from "./DetailsOfGreenCollagen";
 import CustomerReviews from "./CustomerReviews";
 import ProductFaq from "./ProductFaq";
+import ResProductImg from "./ResponsiveV/ResProductImg";
+import ResSelectPack from "./ResponsiveV/ResSelectPack";
+import ResDropdown from "./ResponsiveV/ResDropdown";
 
 const data = [
     {
@@ -84,20 +87,30 @@ export default function Product1Layout({ product }: { product: Product }) {
             <div className="container mx-auto px-4 py-10">
                 <div className="flex flex-wrap justify-between gap-x-2">
                     <div className="w-full md:w-[30%]">
-                        <ProductImg images={product.images} />
+                        <div className="hidden md:block">
+                            <ProductImg images={product.images} />
+                        </div>
+                        <div className="block md:hidden">
+                            <ResProductImg images={product.images} />
+                        </div>
                     </div>
                     <div className="w-full md:w-[30%]">
                         <ProductDetails name={product.name} tagline={product.tagline} description={product.description} certificateImg={product.certificateImg} faq={product.faq} productId={product.id} />
                     </div>
                     <div className="w-full md:w-[30%]">
-                        <SelectPack productId="collagen-green" />
+                        <div className="hidden md:block">
+                            <SelectPack productId="collagen-green" />
+                        </div>
+                        <div className="block md:hidden">
+                            <ResSelectPack productId="collagen-green" />
+                        </div>
                     </div>
                 </div>
                 <hr className="my-10" />
-                <div className="py-10">
+                <div className="md:py-10 py-6">
                     <div className="flex flex-wrap justify-between items-center text-center gap-y-10">
                         {data.map((item, i) => (
-                            <div key={i} className="w-full md:w-[23%] relative">
+                            <div key={i} className="w-[45%] md:w-[23%] relative">
                                 <div className="flex flex-col items-center justify-center gap-y-4">
                                     <Image src={item.img} alt="certificate" width={136} height={136} />
                                     <p
@@ -112,17 +125,17 @@ export default function Product1Layout({ product }: { product: Product }) {
                         ))}
                     </div>
                 </div>
-                <div className="py-10 bg-[#F8FFF9] rounded-[20px]">
+                <div className="md:py-10 py-6 bg-[#F8FFF9] rounded-[20px]">
                     <div className="flex flex-col">
                         <div className="relative px-4">
                             <div className="flex flex-wrap">
-                                <div className="w-full md:w-[50%] py-26 pl-10">
+                                <div className="w-full md:w-[50%] md:py-26 md:pl-10">
                                     <div className="mb-6">
                                         <p className="border rounded-[8px] px-4 py-2 text-[15px] inline-flex">10 ACTIONS. 1 SMART SACHET</p>
                                     </div>
-                                    <h2 className="font-[Grafiels] text-[25px] text-[#1A2819] leading-tight mb-3 max-w-[80%]">A Premium Collagen Builder Powered by 21 Synergistic Plant-Based Actives</h2>
+                                    <h2 className="font-[Grafiels] md:text-[25px] text-[18px] text-[#1A2819] leading-tight mb-3 max-w-[80%]">A Premium Collagen Builder Powered by 21 Synergistic Plant-Based Actives</h2>
                                 </div>
-                                <div className="w-full md:w-[50%]">
+                                <div className="w-full md:w-[50%] hidden md:block">
                                     <div className="absolute bottom-0.5 right-0">
                                         <Image src="/assets/img/product-details/action-green.png" alt="action" width={448} height={368} className="w-full h-auto" />
                                     </div>
@@ -138,8 +151,8 @@ export default function Product1Layout({ product }: { product: Product }) {
                         </div>
                     </div>
                 </div>
-                <div className="py-10">
-                    <div className="flex flex-wrap items-center justify-between">
+                <div className="md:py-10 py-6">
+                    <div className="flex flex-wrap items-center gap-y-10 justify-between">
                         <div className="w-full md:w-[48%]">
                             <Image
                                 src="/assets/img/product-details/green-detail-info.png"
@@ -150,8 +163,8 @@ export default function Product1Layout({ product }: { product: Product }) {
                             />
                         </div>
                         <div className="w-full md:w-[48%]">
-                            <h2 className="text-[#1A2819] font-[Grafiels] text-[25px] mb-3">Experience Visible Transformation in 10 Weeks</h2>
-                            <p className="mb-4">
+                            <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-3">Experience Visible Transformation in 10 Weeks</h2>
+                            <p className="mb-4 leading-relaxed font-normal text-[15px] ">
                                 Our clinical-style progress chart reveals the powerful results of
                                 BEYUVANA™’s advanced anti-ageing formula. Within 10 weeks:
                             </p>
@@ -159,7 +172,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                                 {benefits.map((item, index) => (
                                     <li
                                         key={index}
-                                        className="flex gap-x-2 items-center mb-2 font-normal"
+                                        className="flex gap-x-2 items-center mb-2 font-normal text-[15px]"
                                     >
                                         <FaRegCheckSquare className="text-[#0C4B33] w-5 h-5 font-normal" /> {item.text}
                                     </li>
@@ -167,21 +180,21 @@ export default function Product1Layout({ product }: { product: Product }) {
                             </ul>
                         </div>
                     </div>
-                    <div className="text-center py-6">
+                    <div className="md:text-center text-left py-6">
                         <p>This transformation is powered by a synergy of botanicals, antioxidants, and Ayurvedic adaptogens — uniting nature and science for timeless, radiant skin.</p>
                     </div>
                 </div>
-                <div className="py-10">
-                    <div className="flex flex-wrap items-center justify-between">
+                <div className="md:py-10 py-6">
+                    <div className="flex flex-wrap items-center gap-y-10 justify-between">
                         <div className="w-full md:w-[40%]">
                             <HeaderText textalign="text-left" heading="Powered by Research-Backed Ingredients in BEYUVANA™ PREMIUM COLLAGEN BUILDER" textcolor="text-[#1A2819]" />
                             <p className="mb-6">Improvement in just 10 weeks</p>
                             <div className="flex flex-wrap justify-between gap-4">
                                 {stats.map((item, index) => (
-                                    <div key={index} className="w-full md:w-[47%]">
+                                    <div key={index} className="w-[45%] md:w-[47%]">
                                         <div className="flex flex-col items-center gap-y-2 px-4 py-6 bg-[#EDFFF0] rounded-[20px]">
-                                            <h2 className="text-[#0C4B33] font-[Grafiels] text-[30px] leading-tight">{item.percent}</h2>
-                                            <p className="text-center">
+                                            <h2 className="text-[#0C4B33] font-[Grafiels] md:text-[30px] text-[20px] leading-tight">{item.percent}</h2>
+                                            <p className="text-center text-[15px] line-clamp-2">
                                                 {item.title}
                                                 <br /> {item.subtitle}
                                             </p>
@@ -201,12 +214,12 @@ export default function Product1Layout({ product }: { product: Product }) {
                         </div>
                     </div>
                 </div>
-                <div className="py-10">
+                <div className="md:py-10 py-6">
                     <HeaderText textalign="text-center" heading="Why the BEYUVANA™ PREMIUM COLLAGEN BUILDER Works" textcolor="text-[#1A2819]" />
                     <p className="text-center mb-4">BEYUVANA™ isn’t just another supplement — it’s a multi-action, plant-powered skin nutrition system designed to target the root causes of aging, not just the symptoms. Heres why it delivers real, visible results:</p>
                     <WhyBeyuvana product={product} />
                 </div>
-                <div className="py-10">
+                <div className="md:py-10 py-6">
                     <div className="flex flex-wrap items-center justify-between">
                         <div className="w-full md:w-[48%]">
                             <Image src="/assets/img/product-details/green-288484.png" width={772} height={684} alt="detail info" className="w-full h-auto" />
@@ -216,36 +229,41 @@ export default function Product1Layout({ product }: { product: Product }) {
                         </div>
                     </div>
                 </div>
-                <div className="py-10 bg-[#F8FFF9] rounded-[20px]">
+                <div className="md:py-10 py-6 bg-[#F8FFF9] rounded-[20px]">
                     <HeaderText textalign="text-center" heading="Who Is BEYUVANA™ Premium Collagen Builder Made For?" textcolor="text-[#1A2819]" />
                     <p className="text-center mb-4 max-w-[90%] leading-tight">BEYUVANA™ is designed for modern individuals who want results without compromise —using only clean, plant-based ingredients that are backed by science and safe for everyday use.</p>
                     <Builder />
                 </div>
-                <div className="py-10">
+                <div className="md:py-10 py-6">
                     <HeaderText textalign="text-center" heading="The Hidden Reasons Your Skin Loses Its Radiance So quickly" textcolor="text-[#1A2819]" />
                     <p className="text-center mb-4 max-w-[90%] leading-tight">Stress, pollution, UV exposure, poor sleep, and nutrient deficiencies silently disrupt your skin’s balance — breaking down collagen, dulling glow, and accelerating aging faster than you realize.</p>
-                    <TabData productId={product.id} />
+                    <div className="hidden md:block">
+                        <TabData productId={product.id} />
+                    </div>
+                    <div className="block md:hidden">
+                        <ResDropdown productId={product.id} />
+                    </div>
                 </div>
             </div>
-            <div className="py-10">
+            <div className="md:py-10 py-6">
                 <HeaderText textalign="text-center" heading="India’s Most Advanced Anti-Aging Innovation" textcolor="text-[#1A2819]" />
-                <p className="text-center mb-4 max-w-[90%] leading-tight">Collagen Reglow delivers clinically proven ingredients in precision-dosed sachets for maximum skin transformation.</p>
+                <p className="text-center mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">Collagen Reglow delivers clinically proven ingredients in precision-dosed sachets for maximum skin transformation.</p>
                 <div className="py-6">
                     <AdvancedPlant />
                 </div>
             </div>
-            <div className="py-10">
+            <div className="md:py-10 py-6">
                 <div className="container mx-auto px-4">
                     <DetailsOfGreenCollagen />
                 </div>
             </div>
-            <div className="py-10">
+            <div className="md:py-10 py-6">
                 <div className="container mx-auto px-4">
                     <HeaderText textalign="text-center" heading="Customer Reviews" textcolor="text-[#1A2819]" />
                     <CustomerReviews />
                 </div>
             </div>
-            <div className="py-10">
+            <div className="md:py-10 py-6">
                 <div className="container mx-auto px-4">
                     <HeaderText textalign="text-center" heading="Frequently Asked Questions" textcolor="text-[#1A2819]" />
                     <ProductFaq productId={1} />

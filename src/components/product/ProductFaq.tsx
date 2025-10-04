@@ -32,7 +32,7 @@ const ProductFaq = ({ productId }: ProductFaqProps) => {
 
     const currentColors = colors[productId as keyof typeof colors] || colors[1];
     return (
-        <div className="max-w-[80%] mx-auto py-10">
+        <div className="md:w-[80%] w-full mx-auto py-10">
             <Accordion
                 type="single"
                 collapsible
@@ -54,11 +54,11 @@ const ProductFaq = ({ productId }: ProductFaqProps) => {
                                 " [&>svg]:hidden"
                             )}
                         >
-                            <div className="flex items-start gap-4 text-left">
-                                <span className="font-bold text-[#2D2D2D] text-[18px]">
+                            <div className="flex items-start gap-4 text-left md:w-auto w-[80%]">
+                                <span className="font-bold text-[#2D2D2D] md:text-[18px] text-[15px]">
                                     {String(index + 1).padStart(2, '0')}
                                 </span>
-                                <span className="font-medium text-[#2D2D2D] text-[18px]">
+                                <span className="md:font-medium text-[#2D2D2D] md:text-[18px] text-[15px]">
                                     {faq.question}
                                 </span>
                             </div>
@@ -68,9 +68,9 @@ const ProductFaq = ({ productId }: ProductFaqProps) => {
                             </div>
                         </AccordionTrigger>
 
-                        <AccordionContent className="pl-10 pt-2 text-sm text-[#2D2D2D] text-[18px]">
+                        <AccordionContent className="md:pl-10 pt-2 text-sm text-[#2D2D2D] md:text-[18px] text-[15px]">
                             {faq.answer.map((ans, answerIndex) => (
-                                <p key={answerIndex} className="mb-1">
+                                <p key={answerIndex} className="mb-1 text-[15px]">
                                     {ans}
                                 </p>
                             ))}

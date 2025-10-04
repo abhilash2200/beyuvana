@@ -29,13 +29,13 @@ const CompareProduct = () => {
   }
 
   return (
-    <div className="bg-[#FFF6F6] p-8 rounded-[20px]">
-      <div className="flex flex-wrap justify-between">
+    <div className="bg-[#FFF6F6] md:p-8 p-4 rounded-[20px]">
+      <div className="flex flex-wrap justify-between gap-y-10">
         {/* Left content */}
         <div className="w-full md:w-[30%]">
-          <h2 className="text-[#1A2819] font-[Grafiels] text-[25px] mb-4">{leftContent.title}</h2>
+          <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-4">{leftContent.title}</h2>
           {leftContent.points.map((point, i) => (
-            <p key={i} className="text-[#1A2819] font-normal text-[15px] mb-4 max-w-[80%]">
+            <p key={i} className="text-[#1A2819] font-normal md:text-[15px] text-[13px] leading-tight mb-4 md:w-[80%] w-full">
               {leftContent.icon}
               {point}
             </p>
@@ -49,16 +49,16 @@ const CompareProduct = () => {
             secondImage="/assets/img/product-details/after-age.png"
             firstImageClassName="object-cover object-left-top"
             secondImageClassname="object-cover object-left-top"
-            className="h-[250px] w-[200px] md:h-[500px] md:w-[500px] rounded-full"
+            className="h-[300px] w-[300px] md:h-[500px] md:w-[500px] rounded-full"
             slideMode="hover"
           />
         </div>
 
         {/* Right content */}
         <div className="w-full md:w-[30%]">
-          <h2 className="text-[#1A2819] font-[Grafiels] text-[25px] mb-4">{rightContent.title}</h2>
+          <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-4">{rightContent.title}</h2>
           {rightContent.points.map((point, i) => (
-            <p key={i} className="text-[#1A2819] font-normal text-[15px] mb-4 max-w-[80%]">
+            <p key={i} className="text-[#1A2819] font-normal md:text-[15px] text-[13px] leading-tight mb-4 md:w-[80%] w-full">
               {rightContent.icon}
               {point}
             </p>

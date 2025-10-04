@@ -52,11 +52,11 @@ const DetailsOfRedCollagen = () => {
 
   return (
     <div>
-      <div className="bg-[#E02D2D] rounded-[20px] p-6">
+      <div className="bg-[#E02D2D] rounded-[20px] md:p-6 p-4">
         <div className="flex flex-wrap items-center justify-between">
           {/* Left Section */}
           <div className="w-full md:w-[48%]">
-            <h2 className="text-white font-[Grafiels] text-[23px] leading-tight mb-5">
+            <h2 className="text-white font-[Grafiels] md:text-[23px] text-[18px] leading-tight mb-5">
               WHY CHOOSE BEYUVANA™ Glow Essence
             </h2>
             <p className="text-white mb-2 leading-relaxed font-light">
@@ -79,7 +79,7 @@ const DetailsOfRedCollagen = () => {
 
           {/* Right Section */}
           <div className="w-full md:w-[48%]">
-            <h2 className="text-[#22014] font-[Grafiels] text-[23px] leading-tight mb-5 bg-white text-center rounded-[20px] py-4">
+            <h2 className="text-[#22014] font-[Grafiels] md:text-[23px] text-[18px] leading-tight mb-5 bg-white text-center rounded-[20px] py-4">
               10 CORE ACTIVITIES, 10 PROVEN FUNCTIONS
             </h2>
             <div className="p-4 bg-[#000000]/50 rounded-[20px]">

@@ -31,7 +31,7 @@ const AdvancedPlant = ({ product }: AdvancedPlantProps) => {
           rewind: true,
           breakpoints: {
             1024: { perPage: 2 },
-            640: { perPage: 1 },
+            640: { perPage: 1, padding: { left: "1rem", right: "1rem" } },
           },
         }}
         aria-label="Advanced Plant Slider"

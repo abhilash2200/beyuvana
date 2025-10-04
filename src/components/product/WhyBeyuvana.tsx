@@ -21,7 +21,7 @@ const WhyBeyuvana = ({ product }: WhyBeyuvanaProps) => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   return (
-    <div className="py-10">
+    <div className="md:py-10 py-6">
       <Splide
         options={{
           perPage: 3,
@@ -59,7 +59,7 @@ const WhyBeyuvana = ({ product }: WhyBeyuvanaProps) => {
               <div
                 onMouseEnter={() => setHoveredId(item.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className="group rounded-[20px] h-[350px] flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all duration-300"
+                className="group rounded-[20px] md:h-[350px] h-auto flex flex-col items-center justify-center md:p-6 p-4 text-center cursor-pointer transition-all duration-300"
                 style={{ backgroundColor: bgColor }}
               >
                 <div
@@ -79,13 +79,13 @@ const WhyBeyuvana = ({ product }: WhyBeyuvanaProps) => {
                 </div>
 
                 <h3
-                  className="text-[22px] font-normal leading-tight font-[Grafiels] mb-2 whitespace-pre-line transition-colors duration-300"
+                  className="md:text-[22px] text-[20px] font-normal leading-tight font-[Grafiels] mb-2 whitespace-pre-line transition-colors duration-300"
                   style={{ color: headingColor }}
                 >
                   {item.title}
                 </h3>
                 <p
-                  className="font-light max-w-[80%] transition-colors duration-300"
+                  className="font-light max-w-[80%] transition-colors duration-300 text-[15px]"
                   style={{ color: paraColor }}
                 >
                   {item.desc}

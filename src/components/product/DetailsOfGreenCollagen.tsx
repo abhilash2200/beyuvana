@@ -5,11 +5,14 @@ import Image from "next/image"
 const DetailsOfGreenCollagen = () => {
     return (
         <div>
-            <div className="bg-[#1A2819] rounded-[20px] p-6">
-                <div className="flex flex-wrap items-center justify-between">
+            <div className="bg-[#1A2819] rounded-[20px] md:p-6 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-y-10">
                     <div className="w-full md:w-[48%]">
-                        <h2 className="text-white font-[Grafiels] text-[23px] leading-tight mb-5">Why Choose BEYUVANA™ Premium Collagen Builder?</h2>
-                        <p className="text-white mb-2 leading-relaxed font-light">A Smarter, Safer Path to Ageless Skin. Not Just Collagen — A Complete Skin Nutrition Ritual BEYUVANA™ is more than a collagen supplement.</p><p className="text-white mb-6 leading-relaxed font-light">Its a powerful, plant-based formula that activates your skin’s natural renewal systems from within. We don’t just give you collagen — we help your body create, protect, and preserve its own.</p><p className="text-white mb-6 leading-relaxed font-light">100% vegetarian, sugar-free, gelatin-free — crafted for those who want visible results, naturally. Every ingredient has a purpose, and every sachet is a step toward long-term skin health.</p>
+                        <h2 className="text-white font-[Grafiels] md:text-[23px] text-[18px] leading-tight mb-5">Why Choose BEYUVANA™ Premium Collagen Builder?</h2>
+                        <p className="text-white mb-6 md:leading-relaxed text-[15px] leading-tight font-light">A Smarter, Safer Path to Ageless Skin. Not Just Collagen — A Complete Skin Nutrition Ritual BEYUVANA™ is more than a collagen supplement.</p>
+                        <p className="text-white mb-6 md:leading-relaxed text-[15px] leading-tight font-light">Its a powerful, plant-based formula that activates your skin’s natural renewal systems from within. We don’t just give you collagen — we help your body create, protect, and preserve its own.</p>
+                        <p className="text-white mb-6 md:leading-relaxed text-[15px] leading-tight font-light">100% vegetarian, sugar-free, gelatin-free — crafted for those who want visible results, naturally. Every ingredient has a purpose, and every sachet is a step toward long-term skin health.</p>
+
                         <Image src="/assets/img/product-details/green-1.png" width={772} height={684} alt="detail info" className="w-full h-auto mb-6" />
                         <div className="flex items-center justify-start gap-x-2 mt-4">
                             <Image src="/assets/img/product-details/certificate.png" width={77} height={77} alt="detail info" className="w-auto h-auto" />
@@ -22,7 +25,7 @@ const DetailsOfGreenCollagen = () => {
                         </ul>
                     </div>
                     <div className="w-full md:w-[48%]">
-                        <h2 className="text-[#22014] font-[Grafiels] text-[23px] leading-tight mb-5 bg-white text-center rounded-[20px] py-4">10 Core Actions. 1 Intelligent Sachet</h2>
+                        <h2 className="text-[#22014] font-[Grafiels] md:text-[23px] text-[18px] leading-tight mb-5 bg-white text-center rounded-[20px] py-4">10 Core Actions. 1 Intelligent Sachet</h2>
                         <div className="p-4 bg-[#000000]/50 rounded-[20px]">
                             <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
                                 <p className="font-light text-[15px]">Activates Natural Collagen Production</p>
