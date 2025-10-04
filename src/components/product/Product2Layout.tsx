@@ -111,7 +111,7 @@ export default function Product2Layout({ product }: { product: Product }) {
                   <div className="mb-6">
                     <p className="border border-[#B00404] text-[#B00404] rounded-[8px] px-4 py-2 text-[15px] inline-flex">10 ACTIONS. 1 SMART SACHET</p>
                   </div>
-                  <h2 className="font-[Grafiels] md:text-[25px] text-[18px] text-[#303030] leading-tight mb-3 max-w-[80%]">A Premium Collagen Builder Powered by 21 Synergistic Plant-Based Actives</h2>
+                  <h2 className="font-[Grafiels] md:text-[25px] text-[18px] text-[#303030] leading-tight md:leading-relaxed mb-3 max-w-[80%]">A Premium Collagen Builder Powered by 21 Synergistic Plant-Based Actives</h2>
                 </div>
                 <div className="w-full md:w-[50%] hidden md:block">
                   <div className="absolute bottom-0.5 right-0">
