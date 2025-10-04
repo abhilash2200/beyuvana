@@ -5,6 +5,7 @@ import { Rating } from "@mui/material";
 import { Button } from "../ui/button";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import Link from "next/link";
+import { productDesignSlugs } from "@/app/data/productConfigs";
 import { useCart } from "@/context/CartProvider";
 
 // Product interface
@@ -47,7 +48,7 @@ export default function ProductsLists({ products }: ProductsListsProps) {
 
               {/* Image Section */}
               <div className="w-full md:w-[35%]">
-                <Link href={`/product/${product.id}`} className="flex items-center justify-center">
+                <Link href={`/product/${productDesignSlugs[product.id] || product.id}`} className="flex items-center justify-center">
                   <div
                     className="p-6 flex items-center justify-center rounded-[10px]"
                     style={{ backgroundColor: product.bgColor }}
@@ -66,7 +67,7 @@ export default function ProductsLists({ products }: ProductsListsProps) {
               {/* Text Section */}
               <div className="w-full md:w-[65%]">
                 <div className="flex flex-col">
-                  <Link href={`/product/${product.id}`} className="flex items-center justify-start">
+                  <Link href={`/product/${productDesignSlugs[product.id] || product.id}`} className="flex items-center justify-start">
                     <h2 className="text-[#1A2819] font-[Grafiels] text-[25px] leading-tight mb-4">{product.name}</h2>
                   </Link>
                   {product.tagline && <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">{product.tagline}</p>}
