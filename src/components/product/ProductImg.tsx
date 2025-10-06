@@ -51,6 +51,7 @@ export default function ProductImg({ images }: ProductImgProps) {
         <Splide
           options={{
             perPage: 3,
+            perMove: 1,
             gap: "1rem",
             pagination: false,
             arrows: false,

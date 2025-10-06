@@ -7,6 +7,8 @@ import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 import { toast } from "react-toastify";
+import { productsApi, type Product as ApiProduct, type PriceTier } from "@/lib/api";
+import { designSlugToProductId } from "@/app/data/productConfigs";
 
 interface Pack {
     qty: number;
@@ -19,7 +21,6 @@ interface Pack {
 
 interface Product {
     id: string;
-    pack: string;
     name: string;
     reviews: number;
     rating: number;
@@ -27,91 +28,140 @@ interface Product {
     image: string;
 }
 
-// Dummy data outside component
-const products: Record<string, Product> = {
-    "collagen-green": {
-        id: "collagen-green",
-        pack: "Select Pack",
-        name: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
-        reviews: 60,
-        rating: 4.5,
-        packs: [
-            {
-                qty: 1,
-                sachets: 15,
-                price: 1499,
-                originalPrice: 1999,
-                discount: "20% Off",
-                tagline: "See first glow in 2 weeks",
-            },
-            {
-                qty: 2,
-                sachets: 30,
-                price: 2029,
-                originalPrice: 2899,
-                discount: "30% Off",
-                tagline: "Best for visible results in 30 days",
-            },
-            {
-                qty: 4,
-                sachets: 60,
-                price: 3519,
-                originalPrice: 5499,
-                discount: "36% Off",
-                tagline: "Transform your skin in 60 days",
-            },
-        ],
-        image: "/assets/img/product-details/collagen-green-product.png",
-    },
-    "collagen-pink": {
-        id: "collagen-pink",
-        pack: "Select Pack",
-        name: "BEYUVANA™ Advanced Glow-Nourishing Formula for Radiant, Even-Toned Skin",
-        reviews: 42,
-        rating: 4,
-        packs: [
-            {
-                qty: 1,
-                sachets: 20,
-                price: 1299,
-                originalPrice: 1799,
-                discount: "28% Off",
-                tagline: "Glow in just 10 days",
-            },
-            {
-                qty: 3,
-                sachets: 60,
-                price: 3299,
-                originalPrice: 4999,
-                discount: "34% Off",
-                tagline: "Perfect for 2 months care",
-            },
-            {
-                qty: 4,
-                sachets: 80,
-                price: 4299,
-                originalPrice: 4999,
-                discount: "34% Off",
-                tagline: "Perfect for 3 months care",
-            },
-        ],
-        image: "/assets/img/product-details/collagen-pink-product.png",
-    },
-};
+function formatINR(value: number): string {
+    const rounded = Math.round(value || 0);
+    return new Intl.NumberFormat("en-IN").format(rounded);
+}
 
-const SelectPack = ({ productId }: { productId: string }) => {
+function getDefaultSachets(designType: "green" | "pink" | undefined, qty: number): number {
+    if (designType === "green") {
+        const base = 15;
+        return qty * base;
+    }
+    if (designType === "pink") {
+        const base = 20;
+        return qty * base;
+    }
+    return qty;
+}
+
+function getPackTagline(
+    designType: "green" | "pink" | undefined,
+    qty: number
+): string {
+    if (designType === "green") {
+        if (qty === 1) return "See first glow in 2 weeks";
+        if (qty === 2) return "Best for visible results in 30 days";
+        if (qty === 4) return "Transform your skin in 60 days";
+    }
+    if (designType === "pink") {
+        if (qty === 1) return "See first glow in 2 weeks";
+        if (qty === 2) return "Best for visible results in 30 days";
+        if (qty === 4) return "Transform your skin in 60 days";
+    }
+    return "";
+}
+
+function buildPacksFromPrices(
+    prices: PriceTier[] | undefined,
+    designType: "green" | "pink" | undefined
+): Pack[] {
+    if (!Array.isArray(prices)) return [];
+    return prices
+        .map((tier) => {
+            const qty = Number(tier.qty);
+            const mrp = parseFloat(tier.mrp || "0");
+            const final = parseFloat(tier.final_price || "0");
+            const percent = tier.discount_off_inpercent || tier.discount || "";
+            const discount = percent
+                ? `${String(percent).replace(/%/g, "").trim()}% Off`
+                : mrp > 0 && final > 0
+                    ? `${Math.round(((mrp - final) / mrp) * 100)}% Off`
+                    : "";
+
+            return {
+                qty,
+                sachets: getDefaultSachets(designType, qty),
+                price: Math.round(isNaN(final) ? 0 : final),
+                originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
+                discount,
+                tagline: getPackTagline(designType, qty),
+            } as Pack;
+        })
+        .sort((a, b) => a.qty - b.qty);
+}
+
+const SelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
     const router = useRouter();
     const { addToCart } = useCart();
 
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
-    // Simulate fetching by id
+    // Load from API by matching design slug -> id, fall back by name contains
     useEffect(() => {
-        const prod = products[productId];
-        setProduct(prod || null);
-        setSelectedPack(prod ? prod.packs[0] : null); // default pack
-    }, [productId]);
+        let ignore = false;
+
+        const load = async () => {
+            try {
+                const numericId = designSlugToProductId[productId];
+                const { data } = await productsApi.getList({
+                    filter: { categorykey: ["hair-care"] },
+                    sort: { product_name: "ASC" },
+                    page: 1,
+                    limit: 100,
+                });
+                if (!Array.isArray(data)) return;
+
+                let apiProduct: ApiProduct | undefined;
+                if (numericId) {
+                    apiProduct = data.find((p) => String(p.id) === String(numericId));
+                }
+                // Prefer matching by design_type when provided
+                if (!apiProduct && designType) {
+                    const desired = designType.toLowerCase();
+                    apiProduct = data.find((p) => {
+                        const dt = (p.design_type || "").toString().toLowerCase();
+                        return dt === desired;
+                    });
+                }
+                if (!apiProduct) {
+                    apiProduct = data.find((p) =>
+                        String(p.product_name || "").toLowerCase().includes(productId.replace(/-/g, " "))
+                    );
+                }
+                if (!apiProduct && designType) {
+                    const kw = designType === "pink" ? "glow" : "collagen";
+                    apiProduct = data.find((p) => String(p.product_name || "").toLowerCase().includes(kw));
+                }
+                if (!apiProduct) return;
+
+                const image = apiProduct.image_single || apiProduct.image || (Array.isArray(apiProduct.image_all) && apiProduct.image_all[0]) || "/assets/img/green-product.png";
+                const packs = buildPacksFromPrices(apiProduct.prices, designType);
+
+                const hydrated: Product = {
+                    id: String(apiProduct.id),
+                    name: apiProduct.product_name,
+                    reviews: designType === "pink" ? 42 : 60,
+                    rating: designType === "pink" ? 4 : 4.5,
+                    packs,
+                    image,
+                };
+
+                if (!ignore) {
+                    setProduct(hydrated);
+                    setSelectedPack(packs[0] || null);
+                }
+            } catch (e) {
+                console.error("Failed to load product packs:", e);
+            }
+        };
+
+        load();
+        return () => {
+            ignore = true;
+        };
+    }, [productId, designType]);
 
     const handleAddToCart = () => {
         if (!product || !selectedPack) {
@@ -153,9 +203,7 @@ const SelectPack = ({ productId }: { productId: string }) => {
     return (
         <div className="border border-gray-900 rounded-[20px] p-4">
             <div className="flex items-center justify-center gap-2">
-                <h3 className="md:text-[25px] text-[16px] font-[Grafiels] text-[#1A2819]">
-                    {product.pack}
-                </h3>
+                <h3 className="md:text-[25px] text-[16px] font-[Grafiels] text-[#1A2819]">Select Pack</h3>
                 <span>|</span>
                 <Rating
                     name="half-rating-read"
@@ -193,19 +241,20 @@ const SelectPack = ({ productId }: { productId: string }) => {
                                 {pack.sachets} sachets
                             </p>
                         </div>
+
                         <div className="w-full md:w-[40%]">
                             <p className="md:text-[30px] text-[16px] capitalize text-[#057A37] leading-tight font-bold">
-                                ₹{pack.price}
+                                ₹{formatINR(pack.price)}
                             </p>
                             <div className="flex items-center gap-2">
                                 <p className="text-[12px] text-[#747474] line-through">
-                                    ₹{pack.originalPrice}
+                                    ₹{formatINR(pack.originalPrice)}
                                 </p>
                                 <p className="text-[12px] text-[#D31714]">{pack.discount}</p>
                             </div>
                         </div>
                     </div>
-                    <p className="md:text-[18px] text-[16px] capitalize text-[#1A2819] text-center mt-5">
+                    <p className="md:text-[16px] text-[16px] capitalize text-[#1A2819] text-center mt-5">
                         {pack.tagline}
                     </p>
                 </div>

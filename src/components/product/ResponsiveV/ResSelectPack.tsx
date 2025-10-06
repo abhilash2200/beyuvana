@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
+import { productsApi, type Product as ApiProduct, type PriceTier } from "@/lib/api";
+import { designSlugToProductId } from "@/app/data/productConfigs";
 
 type Pack = {
     qty: number;
@@ -27,76 +29,73 @@ type Product = {
     image: string;
 };
 
-const products: Record<string, Product> = {
-    "collagen-green": {
-        id: "collagen-green",
-        name: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
-        reviews: 60,
-        rating: 4.5,
-        packs: [
-            {
-                qty: 1,
-                sachets: 15,
-                price: 1499,
-                originalPrice: 1999,
-                discount: "20% Off",
-                tagline: "See first glow in 2 weeks",
-            },
-            {
-                qty: 2,
-                sachets: 30,
-                price: 2029,
-                originalPrice: 2899,
-                discount: "30% Off",
-                tagline: "Best for visible results in 30 days",
-            },
-            {
-                qty: 4,
-                sachets: 60,
-                price: 3519,
-                originalPrice: 5499,
-                discount: "36% Off",
-                tagline: "Transform your skin in 60 days",
-            },
-        ],
-        image: "/assets/img/product-details/collagen-green-product.png",
-    },
-    "collagen-pink": {
-        id: "collagen-pink",
-        name: "BEYUVANA™ Advanced Glow-Nourishing Formula for Radiant, Even-Toned Skin",
-        reviews: 42,
-        rating: 4,
-        packs: [
-            {
-                qty: 1,
-                sachets: 20,
-                price: 1299,
-                originalPrice: 1799,
-                discount: "28% Off",
-                tagline: "Glow in just 10 days",
-            },
-            {
-                qty: 3,
-                sachets: 60,
-                price: 3299,
-                originalPrice: 4999,
-                discount: "34% Off",
-                tagline: "Perfect for 2 months care",
-            },
-            {
-                qty: 4,
-                sachets: 80,
-                price: 4299,
-                originalPrice: 4999,
-                discount: "34% Off",
-                tagline: "Perfect for 3 months care",
-            },
-        ],
-        image: "/assets/img/product-details/collagen-pink-product.png",
-    },
-};
+function formatINR(value: number): string {
+    const rounded = Math.round(value || 0);
+    return new Intl.NumberFormat("en-IN").format(rounded);
+}
 
-const ResSelectPack = ({ productId }: { productId: string }) => {
+function getDefaultSachets(designType: "green" | "pink" | undefined, qty: number): number {
+    if (designType === "green") {
+        // Historically: 1->15, 2->30, 4->60
+        const base = 15;
+        return qty * base;
+    }
+    if (designType === "pink") {
+        // Historically: 1->20, 3->60, 4->80 (fallback multiply by 20)
+        const base = 20;
+        return qty * base;
+    }
+    // Fallback if unknown
+    return qty;
+}
+
+function getPackTagline(
+    designType: "green" | "pink" | undefined,
+    qty: number
+): string {
+    if (designType === "green") {
+        if (qty === 1) return "See first glow in 2 weeks";
+        if (qty === 2) return "Best for visible results in 30 days";
+        if (qty === 4) return "Transform your skin in 60 days";
+    }
+    if (designType === "pink") {
+        if (qty === 1) return "Glow in just 10 days";
+        if (qty === 2) return "Perfect for 2 months care";
+        if (qty === 4) return "Perfect for 3 months care";
+    }
+    return "";
+}
+
+function buildPacksFromPrices(
+    prices: PriceTier[] | undefined,
+    designType: "green" | "pink" | undefined
+): Pack[] {
+    if (!Array.isArray(prices)) return [];
+    return prices
+        .map((tier) => {
+            const qty = Number(tier.qty);
+            const mrp = parseFloat(tier.mrp || "0");
+            const final = parseFloat(tier.final_price || "0");
+            const percent = tier.discount_off_inpercent || tier.discount || "";
+            const discount = percent
+                ? `${String(percent).replace(/%/g, "").trim()}% Off`
+                : mrp > 0 && final > 0
+                    ? `${Math.round(((mrp - final) / mrp) * 100)}% Off`
+                    : "";
+
+            return {
+                qty,
+                sachets: getDefaultSachets(designType, qty),
+                price: Math.round(isNaN(final) ? 0 : final),
+                originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
+                discount,
+                tagline: getPackTagline(designType, qty),
+            } as Pack;
+        })
+        .sort((a, b) => a.qty - b.qty);
+}
+
+const ResSelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
     const router = useRouter();
     const { addToCart } = useCart();
 
@@ -104,10 +103,71 @@ const ResSelectPack = ({ productId }: { productId: string }) => {
     const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
     useEffect(() => {
-        const prod = products[productId];
-        setProduct(prod || null);
-        setSelectedPack(prod ? prod.packs[0] : null);
-    }, [productId]);
+        let ignore = false;
+
+        const loadProduct = async () => {
+            try {
+                const numericId = designSlugToProductId[productId];
+                const { data } = await productsApi.getList({
+                    filter: { categorykey: ["hair-care"] },
+                    sort: { product_name: "ASC" },
+                    page: 1,
+                    limit: 100,
+                });
+                if (!Array.isArray(data)) return;
+
+                let apiProduct: ApiProduct | undefined;
+                if (numericId) {
+                    apiProduct = data.find((p) => String(p.id) === String(numericId));
+                }
+                // Prefer matching by design_type when provided, since backend IDs likely differ
+                if (!apiProduct && designType) {
+                    const desired = designType.toLowerCase();
+                    apiProduct = data.find((p) => {
+                        const dt = (p.design_type || "").toString().toLowerCase();
+                        return dt === desired;
+                    });
+                }
+                // Fallback: try to roughly match by name containing slug words
+                if (!apiProduct) {
+                    apiProduct = data.find((p) =>
+                        String(p.product_name || "").toLowerCase().includes(productId.replace(/-/g, " "))
+                    );
+                }
+                // Last resort: keyword-based guess by design type
+                if (!apiProduct && designType) {
+                    const kw = designType === "pink" ? "glow" : "collagen";
+                    apiProduct = data.find((p) => String(p.product_name || "").toLowerCase().includes(kw));
+                }
+                if (!apiProduct) return;
+
+                const image = apiProduct.image_single || apiProduct.image || (Array.isArray(apiProduct.image_all) && apiProduct.image_all[0]) || "/assets/img/green-product.png";
+                const packs = buildPacksFromPrices(apiProduct.prices, designType);
+
+                const hydrated: Product = {
+                    id: String(apiProduct.id),
+                    name: apiProduct.product_name,
+                    // Defaults to keep UI consistent
+                    reviews: designType === "pink" ? 42 : 60,
+                    rating: designType === "pink" ? 4 : 4.5,
+                    packs,
+                    image,
+                };
+
+                if (!ignore) {
+                    setProduct(hydrated);
+                    setSelectedPack(packs[0] || null);
+                }
+            } catch (e) {
+                console.error("Failed to load product packs:", e);
+            }
+        };
+
+        loadProduct();
+        return () => {
+            ignore = true;
+        };
+    }, [productId, designType]);
 
     const handleAddToCart = () => {
         if (!product || !selectedPack) {
@@ -164,14 +224,14 @@ const ResSelectPack = ({ productId }: { productId: string }) => {
                                     </p>
 
                                     <p className="text-lg font-bold text-[#057A37] mt-1">
-                                        ₹{pack.price}
+                                        ₹{formatINR(pack.price)}
                                     </p>
 
                                     <div className="gap-2">
                                         <p className="text-xs text-gray-500 line-through">
-                                            ₹{pack.originalPrice}
+                                            ₹{formatINR(pack.originalPrice)}
                                         </p>
-                                        
+
                                         <p className="text-xs text-[#D31714]">{pack.discount}</p>
                                     </div>
 

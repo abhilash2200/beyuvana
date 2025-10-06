@@ -8,6 +8,7 @@ const ResProductImg = ({ images }: { images: string[] }) => {
         <Splide
           options={{
             perPage: 1,
+            perMove: 1,
             gap: "1rem",
             pagination: true,
             arrows: false,

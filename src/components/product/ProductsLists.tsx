@@ -44,6 +44,11 @@ interface ProductsListsProps {
 export default function ProductsLists({ products }: ProductsListsProps) {
   const { addToCart, loading } = useCart();
 
+  const formatINR = (value: number): string => {
+    const rounded = Math.round(value || 0);
+    return new Intl.NumberFormat("en-IN").format(rounded);
+  };
+
   const handleAddToCart = async (product: Product) => {
     await addToCart({
       id: product.id.toString(),
@@ -115,9 +120,9 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                   {product.description.map((desc, i) => (
                     <p key={i} className="text-[15px] mb-3">{desc}</p>
                   ))}
-                  <h3 className="text-[#1A2819] text-[25px] mb-3 font-semibold leading-tight">₹{product.price.toLocaleString()}</h3>
+                  <h3 className="text-[#1A2819] text-[25px] mb-3 font-semibold leading-tight">₹{formatINR(product.price)}</h3>
                   <p className="text-[15px] mb-4">
-                    <span className="line-through text-gray-500 text-[12px]">₹{product.originalPrice.toLocaleString()}</span>{" "}
+                    <span className="line-through text-gray-500 text-[12px]">₹{formatINR(product.originalPrice)}</span>{" "}
                     <span className="text-[#057A37] font-semibold">{product.discount}</span>
                   </p>
 
@@ -129,10 +134,10 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                           <div key={idx} className="border rounded-[15px] px-3 py-2 bg-white">
                             <div className="flex items-center justify-between text-[13px]">
                               <span>{tier.unit_name} {tier.qty}</span>
-                              <span className="text-[#057A37] font-medium">₹{parseFloat(tier.final_price).toLocaleString()}</span>
+                              <span className="text-[#057A37] font-medium">₹{formatINR(parseFloat(tier.final_price))}</span>
                             </div>
                             <div className="text-[11px] text-[#777]">
-                              <span className="line-through">₹{parseFloat(tier.mrp).toLocaleString()}</span>
+                              <span className="line-through">₹{formatINR(parseFloat(tier.mrp))}</span>
                               {tier.discount_off_inpercent && parseFloat(tier.discount_off_inpercent) > 0 && (
                                 <span className="ml-2">{tier.discount_off_inpercent}% Off</span>
                               )}
