@@ -18,6 +18,8 @@ import CompareProduct from "./CompareProduct";
 import ResProductImg from "./ResponsiveV/ResProductImg";
 import ResSelectPack from "./ResponsiveV/ResSelectPack";
 import ResDropdown from "./ResponsiveV/ResDropdown";
+import { productDesignSlugs } from "@/app/data/productConfigs";
+import { slugify } from "@/lib/utils";
 
 const data = [
   {
@@ -77,10 +79,16 @@ export default function Product2Layout({ product }: { product: Product }) {
           </div>
           <div className="w-full md:w-[30%]">
             <div className="hidden md:block">
-              <SelectPack productId="collagen-pink" />
+              <SelectPack
+                productId={productDesignSlugs[product.id] || slugify(product.name)}
+                designType="pink"
+              />
             </div>
             <div className="block md:hidden">
-              <ResSelectPack productId="collagen-pink" />
+              <ResSelectPack
+                productId={productDesignSlugs[product.id] || slugify(product.name)}
+                designType="pink"
+              />
             </div>
           </div>
         </div>

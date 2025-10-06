@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { products } from "@/app/data/products";
+// Removed static products import; prices and data come from API
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { productsApi } from "@/lib/api";
 
@@ -36,39 +36,56 @@ const ProductsList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await productsApi.getList({ category: "Skin Care" });
+        const response = await productsApi.getList({
+          filter: { categorykey: ["hair-care"] },
+          sort: { product_name: "ASC" },
+          searchTerms: "",
+          page: 1,
+          limit: 10,
+        });
 
         if (response.data && Array.isArray(response.data)) {
-          // Convert API products to display format
-          const apiProducts: DisplayProduct[] = response.data.slice(0, 2).map((apiProduct, index) => {
-            const staticProduct = products[index] || products[0]; // Fallback to static data
+          // Convert API products to display format (no hardcoded prices)
+          const apiProducts: DisplayProduct[] = response.data.slice(0, 2).map((apiProduct) => {
+            const tiers = Array.isArray(apiProduct.prices) ? apiProduct.prices : [];
+
+            const getTierPrice = (qty: 1 | 2 | 4): number => {
+              const tier = tiers.find((t) => Number(t.qty) === Number(qty));
+              const price = tier ? parseFloat(tier.final_price) : NaN;
+              return isNaN(price) ? 0 : price;
+            };
+
+            const mainImage =
+              apiProduct.image_single ||
+              apiProduct.image ||
+              (Array.isArray(apiProduct.image_all) && apiProduct.image_all.length > 0
+                ? apiProduct.image_all[0]
+                : "/assets/img/green-product.png");
 
             return {
               id: apiProduct.id,
               name: apiProduct.product_name,
-              shortdescription: staticProduct.shortdescription,
-              description: apiProduct.short_description || staticProduct.description,
-              descriptiontext: staticProduct.descriptiontext,
+              shortdescription: apiProduct.short_description || "",
+              description: apiProduct.product_description || apiProduct.short_description || "",
+              descriptiontext: apiProduct.short_description || "",
               price: {
-                1: parseFloat(apiProduct.discount_price) || staticProduct.price[1],
-                2: parseFloat(apiProduct.discount_price) * 1.7 || staticProduct.price[2], // Approximate 2-pack pricing
-                4: parseFloat(apiProduct.discount_price) * 2.9 || staticProduct.price[4], // Approximate 4-pack pricing
+                1: getTierPrice(1),
+                2: getTierPrice(2),
+                4: getTierPrice(4),
               },
-              benefits: staticProduct.benefits,
-              mainImage: apiProduct.image || staticProduct.mainImage,
+              benefits: [],
+              mainImage,
               product_id: apiProduct.id,
             };
           });
 
           setDisplayProducts(apiProducts);
         } else {
-          // Fallback to static data
-          setDisplayProducts(products);
+          setDisplayProducts([]);
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
-        // Fallback to static data
-        setDisplayProducts(products);
+        setDisplayProducts([]);
       } finally {
         setIsLoading(false);
       }

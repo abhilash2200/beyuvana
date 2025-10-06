@@ -101,21 +101,25 @@ export interface Product {
   builder?: Builder[];
   plants?: Plant[];
   tabItems?: TabItem[];
+  // Uppercase design type flag to drive layout selection (GREEN -> Product1Layout, PINK -> Product2Layout)
+  design_type?: "GREEN" | "PINK";
 }
 
 export const fallbackProducts: Product[] = [
   {
     id: 1,
     name: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
+    design_type: "GREEN",
     tagline: "Aging is Natural — Radiance is a Choice",
     description:
       "Crafted with 21 synergistic, clinically studied botanicals that work from within. Each precision-dosed sachet supports skin elasticity, deep hydration, and youthful glow. Stimulates natural collagen with Amla, Bamboo Silica, L-Lysine, and Hyaluronic Acid.",
     certificateImg: "/assets/img/product-details/certificate.png",
     images: [
-      "/assets/img/product-details/collagen-green-product.png",
-      "/assets/img/product-details/collagen-green-side.png",
-      "/assets/img/product-details/collagen-green-info.png",
-      "/assets/img/product-details/collagen-green-ingredients.png",
+      "/assets/img/product-details/Green_1.png",
+      "/assets/img/product-details/Green_2.png",
+      "/assets/img/product-details/Green_3.png",
+      "/assets/img/product-details/Green_4.png",
+      "/assets/img/product-details/Green_5.png",
     ],
     actionItems: [
       {
@@ -529,15 +533,17 @@ export const fallbackProducts: Product[] = [
   {
     id: 2,
     name: "BEYUVANA™ Advanced Glow-Nourishing Formula for Radiant, Even-Toned Skin",
+    design_type: "PINK",
     tagline: "Aging is Natural — Radiance is a Choice",
     description:
       "Glow Essence is an advanced, 100% vegetarian, skin-nourishing formula enriched with 18 synergistic plant- based actives, designed to unlock visible clarity and radiance from within. Infused with 4X Liposomal Glutathione and clinically studied Vitamin C, it ",
     certificateImg: "/assets/img/product-details/certificate.png",
     images: [
-      "/assets/img/product-details/collagen-pink-product.png",
-      "/assets/img/product-details/collagen-pink-side.png",
-      "/assets/img/product-details/collagen-pink-info.png",
-      "/assets/img/product-details/collagen-pink-ingredients.png",
+      "/assets/img/product-details/Artboard_1.png",
+      "/assets/img/product-details/Artboard_2.png",
+      "/assets/img/product-details/Artboard_3.png",
+      "/assets/img/product-details/Artboard_4.png",
+      "/assets/img/product-details/Artboard_5.png",
     ],
     actionItems: [
       {

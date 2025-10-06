@@ -58,9 +58,6 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 **Important:** Set the following environment variables in your Vercel project:
 
-- `NEXT_PUBLIC_API_BASE_URL`: `https://beyuvana.com/api`
-- `NEXT_PUBLIC_PROXY_URL`: `/api/proxy`
-
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ### Production Features

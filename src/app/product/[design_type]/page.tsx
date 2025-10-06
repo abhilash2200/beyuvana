@@ -2,31 +2,31 @@
 
 import { useParams } from "next/navigation";
 import { fallbackProducts } from "../../data/fallbackProducts";
-import { productConfigs, designSlugToProductId } from "../../data/productConfigs";
+import { designSlugToProductId } from "../../data/productConfigs";
+import Product1Layout from "@/components/product/Product1Layout";
+import Product2Layout from "@/components/product/Product2Layout";
+import { slugify } from "@/lib/utils";
 import { toast } from "react-toastify";
 
 const ProductDetailPage = () => {
     const { design_type } = useParams() as { design_type?: string };
     const slug = String(design_type || "");
 
-    const productId = designSlugToProductId[slug];
+    // 1) Try direct mapping like "collagen-green" | "collagen-pink"
+    const mappedProductId = designSlugToProductId[slug];
 
-    if (!productId) {
-        toast.error("Invalid product design type!");
-        return <p className="text-center py-10">Invalid product design type</p>;
-    }
+    // 2) Find product either by mapped id or by matching the name slug
+    const product = mappedProductId
+        ? fallbackProducts.find((p) => p.id === mappedProductId)
+        : fallbackProducts.find((p) => slugify(p.name) === slug);
 
-    const product = fallbackProducts.find((p) => p.id === productId);
     if (!product) {
-        toast.error("Product not found!");
-        return <p className="text-center py-10">Product not found!</p>;
+        toast.error("Invalid product or design type!");
+        return <p className="text-center py-10">Invalid product or design type</p>;
     }
 
-    const LayoutComponent = productConfigs[productId as keyof typeof productConfigs]?.layout;
-    if (!LayoutComponent) {
-        toast.error("Layout not available for this product!");
-        return <p className="text-center py-10">No layout found for this product</p>;
-    }
+    // Choose layout by design_type: GREEN -> Product1Layout, PINK -> Product2Layout
+    const LayoutComponent = product.design_type === "GREEN" ? Product1Layout : Product2Layout;
 
     return <LayoutComponent product={product} />;
 };

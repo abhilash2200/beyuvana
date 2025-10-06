@@ -1,5 +1,7 @@
 import { Product } from "@/app/data/fallbackProducts";
 import ProductImg from "./ProductImg";
+import { productDesignSlugs } from "@/app/data/productConfigs";
+import { slugify } from "@/lib/utils";
 import ProductDetails from "./ProductDetails";
 import SelectPack from "./SelectPack";
 import Image from "next/image";
@@ -99,10 +101,16 @@ export default function Product1Layout({ product }: { product: Product }) {
                     </div>
                     <div className="w-full md:w-[30%]">
                         <div className="hidden md:block">
-                            <SelectPack productId="collagen-green" />
+                            <SelectPack
+                                productId={productDesignSlugs[product.id] || slugify(product.name)}
+                                designType="green"
+                            />
                         </div>
                         <div className="block md:hidden">
-                            <ResSelectPack productId="collagen-green" />
+                            <ResSelectPack
+                                productId={productDesignSlugs[product.id] || slugify(product.name)}
+                                designType="green"
+                            />
                         </div>
                     </div>
                 </div>

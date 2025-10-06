@@ -15,6 +15,19 @@ interface ApiResponse<T = unknown> {
   status?: boolean;
 }
 
+interface PriceTier {
+  product_price_id: string;
+  qty: number;
+  unit_id: string;
+  unit_name: string;
+  mrp: string;
+  discount: string;
+  discount_off_inpercent: string;
+  discount_amount: number;
+  sale_price: string;
+  final_price: string;
+}
+
 interface Product {
   id: string;
   category: string;
@@ -23,14 +36,22 @@ interface Product {
   brandkey: string;
   product_code: string;
   product_name: string;
-  product_price: string;
-  discount_price: string;
-  discount_off_inpercent: string;
+  // Legacy flat prices (some backends)
+  product_price?: string;
+  discount_price?: string;
+  discount_off_inpercent?: string;
+  // New tiered pricing structure
+  prices?: PriceTier[];
   sku_number: string;
   short_description: string;
   product_description: string;
   in_stock: string;
-  image: string;
+  // Image fields may vary per backend
+  image?: string;
+  image_single?: string;
+  image_all?: string[];
+  // Optional design type used to select layout on product detail page
+  design_type?: "green" | "pink" | "GREEN" | "PINK";
 }
 
 // Legacy product interface for backward compatibility
@@ -44,6 +65,21 @@ interface LegacyProduct {
   discount: string;
   image: string;
   bgColor: string;
+  // Bubble through the design type if backend sends it
+  design_type?: "green" | "pink";
+  // Pass-through fields so frontend can show everything when needed
+  category?: string;
+  categorykey?: string;
+  brand?: string;
+  brandkey?: string;
+  product_code?: string;
+  sku_number?: string;
+  short_description?: string;
+  product_description?: string;
+  in_stock?: string;
+  image_single?: string;
+  image_all?: string[];
+  prices?: PriceTier[];
 }
 
 interface LoginRequest {
@@ -58,8 +94,19 @@ interface RegisterRequest {
   password: string;
 }
 
+// Dynamic product list request to match backend (filter/sort/search/pagination)
 interface ProductsListRequest {
-  category?: string;
+  filter?: {
+    brandkey?: string[];
+    categorykey?: string[];
+    product_name?: string[];
+    product_price?: [number, number];
+    [key: string]: unknown; // allow future filters
+  };
+  sort?: Record<string, "ASC" | "DESC">;
+  searchTerms?: string;
+  page?: number;
+  limit?: number;
 }
 
 interface AddToCartRequest {
@@ -250,11 +297,30 @@ export const productsApi = {
     try {
       return await apiFetch<Product[]>("/products/lists/v1/", {
         method: "POST",
-        body: JSON.stringify(params),
+        body: JSON.stringify({
+          // provide safe defaults if caller omits values
+          page: 1,
+          limit: 10,
+          filter: {},
+          ...params,
+        }),
       });
     } catch (error) {
       console.error("Products API failed:", error);
       throw new Error("Failed to fetch products. Please try again later.");
+    }
+  },
+  getDetails: async (productId: string | number) => {
+    try {
+      return await apiFetch<Product>("/products/details/v1/", {
+        method: "POST",
+        body: JSON.stringify({
+          product_id: productId,
+        }),
+      });
+    } catch (error) {
+      console.error("Product details API failed:", error);
+      throw new Error("Failed to fetch product details. Please try again later.");
     }
   },
 };
@@ -739,16 +805,63 @@ export const reviewApi = {
 
 // Utility function to convert API product to legacy format
 export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
+  // Choose best available image
+  const image =
+    apiProduct.image_single ||
+    apiProduct.image ||
+    (Array.isArray(apiProduct.image_all) && apiProduct.image_all.length > 0
+      ? apiProduct.image_all[0]
+      : "/assets/img/green-product.png");
+
+  // Determine pricing: prefer first tier if provided
+  const firstTier = Array.isArray(apiProduct.prices) && apiProduct.prices.length > 0
+    ? apiProduct.prices[0]
+    : undefined;
+
+  const price = firstTier
+    ? parseFloat(firstTier.final_price)
+    : parseFloat(apiProduct.discount_price || "0") || 0;
+
+  const originalPrice = firstTier
+    ? parseFloat(firstTier.mrp)
+    : parseFloat(apiProduct.product_price || "0") || 0;
+
+  const discountPercent = firstTier
+    ? firstTier.discount_off_inpercent
+    : apiProduct.discount_off_inpercent || "0";
+
+  // Normalize design type to lowercase for UI switching
+  const normalizedDesign = (() => {
+    const dt = apiProduct.design_type;
+    if (!dt) return undefined;
+    const lower = (typeof dt === "string" ? dt.toLowerCase() : "") as "green" | "pink";
+    return lower === "green" || lower === "pink" ? lower : undefined;
+  })();
+
   return {
     id: parseInt(apiProduct.id),
     name: apiProduct.product_name,
     tagline: apiProduct.short_description,
     description: [apiProduct.product_description],
-    price: parseFloat(apiProduct.discount_price) || 0,
-    originalPrice: parseFloat(apiProduct.product_price) || 0,
-    discount: `${apiProduct.discount_off_inpercent}% Off`,
-    image: apiProduct.image || "/assets/img/green-product.png",
+    price,
+    originalPrice,
+    discount: `${discountPercent}% Off`,
+    image,
     bgColor: "#FAFAFA",
+    design_type: normalizedDesign,
+    // Pass-throughs
+    category: apiProduct.category,
+    categorykey: apiProduct.categorykey,
+    brand: apiProduct.brand,
+    brandkey: apiProduct.brandkey,
+    product_code: apiProduct.product_code,
+    sku_number: apiProduct.sku_number,
+    short_description: apiProduct.short_description,
+    product_description: apiProduct.product_description,
+    in_stock: apiProduct.in_stock,
+    image_single: apiProduct.image_single,
+    image_all: apiProduct.image_all,
+    prices: apiProduct.prices,
   };
 };
 
@@ -758,6 +871,7 @@ export type {
   ApiResponse,
   Product,
   LegacyProduct,
+  PriceTier,
   LoginRequest,
   RegisterRequest,
   ProductsListRequest,
