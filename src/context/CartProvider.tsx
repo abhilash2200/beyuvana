@@ -67,15 +67,30 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, sessionKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // When user logs out, immediately clear local cart and storage
+  useEffect(() => {
+    if (!user || !sessionKey) {
+      setCartItems([]);
+      try { localStorage.removeItem("cart"); } catch { }
+    }
+  }, [user, sessionKey]);
+
   const addToCart = async (item: LocalCartItem) => {
     setLoading(true);
     try {
+      // Require login before adding items
+      if (!user || !sessionKey) {
+        toast.info("Please login to add items to your cart.");
+        return;
+      }
       // If user is logged in, sync with server
-      if (user && sessionKey && item.product_id) {
+      if (item.product_id) {
         await cartApi.addToCart({
           product_id: item.product_id,
           quantity: item.quantity,
-        }, sessionKey);
+          price_qty: 0,
+          price_unit_name: item.name,
+        }, sessionKey, user.id);
         toast.success("Item added to cart!");
       }
 
@@ -96,20 +111,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Failed to add to cart:", error);
       toast.error("Failed to add item to cart. Please try again.");
-
-      // Still add to local cart as fallback
-      setCartItems((prev) => {
-        const existing = prev.find((i) => i.id === item.id);
-        if (existing) {
-          return prev.map((i) =>
-            i.id === item.id
-              ? { ...i, quantity: i.quantity + item.quantity }
-              : i
-          );
-        } else {
-          return [...prev, item];
-        }
-      });
     } finally {
       setLoading(false);
     }
@@ -135,7 +136,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           cartApi.updateCart({
             product_id: item.product_id!,
             quantity: newQuantity,
-          }, sessionKey).catch((apiError) => {
+            price_qty: 0,
+            price_unit_name: item.name,
+          }, sessionKey, user.id).catch((apiError) => {
             console.warn("API update failed, using local storage:", apiError);
             toast.error("Failed to sync with server. Please try again.");
           });
@@ -220,7 +223,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           cartApi.updateCart({
             product_id: item.product_id!,
             quantity: newQuantity,
-          }, sessionKey).catch((apiError) => {
+            price_qty: 0,
+            price_unit_name: item.name,
+          }, sessionKey, user.id).catch((apiError) => {
             console.warn("API update failed, using local storage:", apiError);
             toast.error("Failed to sync with server. Please try again.");
           });
@@ -268,19 +273,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const response = await cartApi.getCart(sessionKey);
-      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-        // Convert API cart items to local format
-        const serverCartItems: LocalCartItem[] = response.data.map((item: CartItem) => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image,
-          product_id: item.product_id,
-        }));
-        setCartItems(serverCartItems);
+      if (Array.isArray(response.data)) {
+        if (response.data.length > 0) {
+          // Convert API cart items to local format
+          const serverCartItems: LocalCartItem[] = response.data.map((item: CartItem) => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image,
+            product_id: item.product_id,
+          }));
+          setCartItems(serverCartItems);
+        } else {
+          // Empty server cart → start fresh for this user
+          setCartItems([]);
+          try { localStorage.removeItem("cart"); } catch { }
+        }
       }
-      // If no server data, keep using local storage
     } catch (error) {
       console.error("Failed to sync cart with server:", error);
       // Don't show error toast for sync failures, just use local storage

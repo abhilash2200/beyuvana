@@ -145,28 +145,24 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
   }
 
   return (
-    <div className="mt-6 bg-white rounded-xl border border-gray-200 shadow-sm mb-[100px] overflow-hidden">
+    <div className="mt-6 mb-[100px] overflow-hidden bg-[#FAFAFA] rounded-[20px] px-4">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
+      <div className="py-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-              <MapPin className="w-4 h-4 text-white" />
-            </div>
-            <h3 className="text-white font-semibold text-lg">Delivery Address</h3>
+            <h3 className="text-[#057A37] font-normal text-[15px]">Select Delivery Address</h3>
           </div>
           <Button
             onClick={onAddAddress}
-            className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+            className="bg-[#057A37] px-3 py-2 text-[10px] rounded-[20px] font-normal text-white border-white/30"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New
+            Change Address
           </Button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="py-2">
         {addresses.length === 0 ? (
           <div className="text-center py-8">
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -184,12 +180,11 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-gray-600 text-sm mb-4">Select your delivery address:</p>
             {addresses.map((address) => (
               <label
                 key={address.id}
-                className={`flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${selectedId === address.id
-                  ? 'border-green-500 bg-green-50 shadow-md'
+                className={`flex items-start border-0 gap-4 p-4 rounded-lg cursor-pointer transition-all duration-200 ${selectedId === address.id
+                  ? ''
                   : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
                   }`}
               >
@@ -205,8 +200,7 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-gray-500" />
-                      <p className="font-semibold text-gray-800">{address.fullname}</p>
+                      <p className="font-normal text-gray-800 capitalize text-[15px]">{address.fullname}</p>
                     </div>
                     {address.is_primary === 1 && (
                       <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
@@ -217,15 +211,12 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
 
                   <div className="space-y-1 text-sm text-gray-600">
                     <div className="flex items-start gap-2">
-                      <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                       <div>
-                        <p>{address.address1}</p>
-                        {address.address2 && <p>{address.address2}</p>}
-                        <p>{address.city}, {address.pincode}</p>
+                        <p>{address.address1}<span>{address.address2 && <span>, {address.address2}</span>},</span>{address.city}, {address.pincode}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-100">
+                    {/* <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-100">
                       <div className="flex items-center gap-1">
                         <Phone className="w-3 h-3 text-gray-400" />
                         <span className="text-xs">{address.mobile}</span>
@@ -234,7 +225,7 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
                         <Mail className="w-3 h-3 text-gray-400" />
                         <span className="text-xs">{address.email}</span>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </label>

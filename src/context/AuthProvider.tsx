@@ -38,6 +38,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  // Persist sessionKey whenever it changes and user is logged in
+  useEffect(() => {
+    try {
+      if (user && sessionKey) {
+        localStorage.setItem("session_key", sessionKey);
+      }
+    } catch (err) {
+      console.warn("Failed to persist session key:", err);
+    }
+  }, [user, sessionKey]);
+
   const logout = async () => {
     try {
       if (sessionKey && user?.id) {

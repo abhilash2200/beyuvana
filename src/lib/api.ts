@@ -112,6 +112,8 @@ interface ProductsListRequest {
 interface AddToCartRequest {
   product_id: string;
   quantity: number;
+  price_qty?: number;
+  price_unit_name?: string;
 }
 
 interface CartItem {
@@ -131,6 +133,22 @@ interface Order {
   status: "arriving" | "cancelled" | "delivered";
   date?: string; // cancelled/delivered date
   image: string;
+}
+
+// Raw order shape from backend
+interface BackendOrderItem {
+  id?: string | number;
+  user_id?: string | number;
+  status?: string;
+  pay_status?: string;
+  created_date?: string;
+  order_no?: string;
+  paid_amount?: string | number;
+  gross_amount?: string | number;
+  qty?: string | number;
+  thumbnail?: string;
+  product_name?: string;
+  updated_at?: string;
 }
 
 interface SaveAddressRequest {
@@ -340,14 +358,18 @@ export const productsApi = {
 
 // Cart API functions
 export const cartApi = {
-  addToCart: async (cartData: AddToCartRequest, sessionKey?: string) => {
+  addToCart: async (
+    cartData: AddToCartRequest & { price_qty?: number; price_unit_name?: string },
+    sessionKey?: string,
+    userId?: string | number
+  ) => {
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
 
       if (sessionKey) {
-        // Try different header combinations - prioritize session_key
+        // Broad header coverage (match getCart/orders/get_address)
         headers["session_key"] = sessionKey;
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["X-Session-Key"] = sessionKey;
@@ -355,19 +377,37 @@ export const cartApi = {
         headers["X-API-Key"] = sessionKey;
         headers["token"] = sessionKey;
         headers["auth-token"] = sessionKey;
-        // Additional formats
         headers["Session-Key"] = sessionKey;
         headers["Auth-Token"] = sessionKey;
         headers["API-Key"] = sessionKey;
+        // More variations
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
       }
+
+      const payload = {
+        user_id: userId != null ? Number(userId) : undefined,
+        product_id: Number(cartData.product_id),
+        qty: Number(cartData.quantity),
+        price_qty: cartData.price_qty ?? 0,
+        price_unit_name: cartData.price_unit_name ?? "",
+      };
 
       return await apiFetch<CartItem[]>("/cart/add/v1/", {
         method: "POST",
         headers,
-        body: JSON.stringify({
-          ...cartData,
-          session_key: sessionKey, // Add session key to request body as well
-        }),
+        body: JSON.stringify(payload),
       });
     } catch (error) {
       console.error("Add to cart API failed:", error);
@@ -454,10 +494,10 @@ export const cartApi = {
     }
   },
 
-  updateCart: async (cartData: AddToCartRequest, sessionKey?: string) => {
+  updateCart: async (cartData: AddToCartRequest, sessionKey?: string, userId?: string | number) => {
     // This endpoint doesn't exist yet, use add to cart instead
     console.warn("Update cart API not implemented yet, using add to cart");
-    return await cartApi.addToCart(cartData, sessionKey);
+    return await cartApi.addToCart(cartData, sessionKey, userId);
   },
 
   removeFromCart: async (productId: string, sessionKey?: string) => {
@@ -536,21 +576,38 @@ export const cartApi = {
 // This might be due to the endpoint not being fully implemented yet
 // or requiring different parameters/authentication format
 export const ordersApi = {
-  getOrderList: async (sessionKey?: string, userId?: string) => {
+  getOrderList: async (sessionKey?: string, userId?: string, status: string = "PENDING") => {
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
 
       if (sessionKey) {
+        // Broad header coverage (match cart/get_address behavior)
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
-        // Alternative header formats that some backends expect
         headers["X-Session-Key"] = sessionKey;
         headers["X-Auth-Token"] = sessionKey;
         headers["X-API-Key"] = sessionKey;
         headers["token"] = sessionKey;
         headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
       }
 
       // Debug logging for headers
@@ -563,14 +620,53 @@ export const ordersApi = {
         });
       }
 
-      return await apiFetch<Order[]>("/api/order_list", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          // Send user_id if available
-          user_id: userId || null,
-        }),
-      });
+      const uid = userId ? Number(userId) : null;
+
+      async function fetchAndMap(payload: { user_id: number | null; status?: string; session_key: string | null }) {
+        const respLocal = await apiFetch<BackendOrderItem[]>("/api/order_list", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+        const rawLocal = respLocal as ApiResponse<BackendOrderItem[]>;
+        const listLocal: BackendOrderItem[] = Array.isArray(rawLocal?.data) ? (rawLocal.data as BackendOrderItem[]) : [];
+        const mappedLocal: Order[] = listLocal.map((o): Order => {
+          const id = String(o?.id ?? "");
+          const productName = String(o?.product_name ?? o?.order_no ?? "Order");
+          const description = `Order ${o?.order_no ?? id} • Qty ${o?.qty ?? "1"}`;
+          const price = parseFloat(String(o?.paid_amount ?? o?.gross_amount ?? 0)) || 0;
+          const backendStatus = String(o?.status ?? "").toUpperCase();
+          const payStatus = String(o?.pay_status ?? "").toUpperCase();
+          const statusMapped: Order["status"] = backendStatus === "DELIVERED" || backendStatus === "COMPLETED"
+            ? "delivered"
+            : backendStatus === "CANCELLED" || payStatus === "FAILED"
+              ? "cancelled"
+              : "arriving";
+          const date = String(o?.created_date ?? o?.updated_at ?? "");
+          const image = String(o?.thumbnail ?? "/assets/img/product-1.png");
+          return { id, productName, description, price, status: statusMapped, date, image };
+        });
+        return { resp: respLocal, mapped: mappedLocal } as { resp: ApiResponse<BackendOrderItem[]>; mapped: Order[] };
+      }
+
+      // 1) Try with given status
+      let { resp: resp, mapped } = await fetchAndMap({ user_id: uid, status, session_key: sessionKey || null });
+      // Note: response mapped below from subsequent fetches if needed
+      // 2) If empty, try without status
+      if (mapped.length === 0) {
+        const result = await fetchAndMap({ user_id: uid, session_key: sessionKey || null });
+        resp = result.resp;
+        mapped = result.mapped;
+      }
+
+      // 3) If still empty, swap between "PENDING" and "Upcoming"
+      if (mapped.length === 0) {
+        const alt = status?.toUpperCase() === "Upcoming" ? "PENDING" : "Upcoming";
+        const result = await fetchAndMap({ user_id: uid, status: alt, session_key: sessionKey || null });
+        resp = result.resp;
+        mapped = result.mapped;
+      }
+      return { ...resp, data: mapped } as ApiResponse<Order[]>;
     } catch (error) {
       console.error("Get order list API failed:", error);
 
@@ -612,14 +708,31 @@ export const addressApi = {
       };
 
       if (sessionKey) {
+        // Broad header coverage (match cart/orders behavior)
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
-        // Add additional header formats that some backends expect
         headers["X-Session-Key"] = sessionKey;
         headers["X-Auth-Token"] = sessionKey;
         headers["X-API-Key"] = sessionKey;
         headers["token"] = sessionKey;
         headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
       }
 
       // Debug logging for headers
@@ -655,7 +768,7 @@ export const addressApi = {
       };
 
       if (sessionKey) {
-        // Try different header combinations - prioritize session_key
+        // Broad header coverage - match cart/orders behavior
         headers["session_key"] = sessionKey;
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["X-Session-Key"] = sessionKey;
@@ -663,10 +776,23 @@ export const addressApi = {
         headers["X-API-Key"] = sessionKey;
         headers["token"] = sessionKey;
         headers["auth-token"] = sessionKey;
-        // Additional formats
         headers["Session-Key"] = sessionKey;
         headers["Auth-Token"] = sessionKey;
         headers["API-Key"] = sessionKey;
+        // More variations some backends expect
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
       }
 
       // Debug logging for headers - Force show for debugging

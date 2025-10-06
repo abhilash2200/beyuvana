@@ -5,7 +5,7 @@ import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescri
 import { ShoppingCart, RefreshCw, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
 import Image from "next/image";
-import Link from "next/link";
+import CheckoutSheet from "./CheckoutSheet";
 import DeliveryAddress from "../address/DeliveryAddress";
 import AddAddressSheet from "../address/AddAddressSheet";
 import { toast } from "react-toastify";
@@ -319,24 +319,27 @@ export default function Cart() {
                                     )}
                                 </div>
                                 <div className="bg-[#FFF] px-3 py-1 rounded-full">
-                                    <Link href="/checkout">
-                                        <Button
-                                            className="text-[#122014] font-normal text-[15px]"
-                                            onClick={() => {
-                                                if (cartItems.length === 0) {
-                                                    toast.warning("Your cart is empty!");
-                                                    return;
-                                                }
-                                                if (!selectedPayment) {
-                                                    toast.warning("Please select a payment method!");
-                                                    return;
-                                                }
-                                                toast.success("Proceeding to checkout...");
-                                            }}
-                                        >
-                                            Proceed to pay
-                                        </Button>
-                                    </Link>
+                                    <CheckoutSheet
+                                        trigger={
+                                            <Button
+                                                className="text-[#122014] font-normal text-[15px]"
+                                                onClick={(e) => {
+                                                    if (cartItems.length === 0) {
+                                                        e.preventDefault();
+                                                        toast.warning("Your cart is empty!");
+                                                        return;
+                                                    }
+                                                    if (!selectedPayment) {
+                                                        e.preventDefault();
+                                                        toast.warning("Please select a payment method!");
+                                                        return;
+                                                    }
+                                                }}
+                                            >
+                                                Proceed to pay
+                                            </Button>
+                                        }
+                                    />
                                 </div>
                             </div>
                             <AddAddressSheet

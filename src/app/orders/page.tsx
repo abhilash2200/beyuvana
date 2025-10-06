@@ -28,7 +28,7 @@ const OrdersPage = () => {
           return;
         }
 
-        const response = await ordersApi.getOrderList(sessionKey, user?.id);
+        const response = await ordersApi.getOrderList(sessionKey, user?.id, "Upcoming");
 
         console.log("Orders API response:", response);
 
