@@ -155,7 +155,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                             </div>
                         </div>
                         <div className="py-6 px-4">
-                            <Action />
+                            <Action product={product} />
                         </div>
                     </div>
                 </div>
@@ -233,14 +233,14 @@ export default function Product1Layout({ product }: { product: Product }) {
                             <Image src="/assets/img/product-details/green-288484.png" width={772} height={684} alt="detail info" className="w-full h-auto" />
                         </div>
                         <div className="w-full md:w-[48%]">
-                            <Compare />
+                            <Compare product={product} />
                         </div>
                     </div>
                 </div>
                 <div className="md:py-10 py-6 bg-[#F8FFF9] rounded-[20px]">
                     <HeaderText textalign="text-center" heading="Who Is BEYUVANA™ Premium Collagen Builder Made For?" textcolor="text-[#1A2819]" />
                     <p className="text-center mb-4 max-w-[90%] leading-tight">BEYUVANA™ is designed for modern individuals who want results without compromise —using only clean, plant-based ingredients that are backed by science and safe for everyday use.</p>
-                    <Builder />
+                    <Builder product={product} />
                 </div>
                 <div className="md:py-10 py-6">
                     <HeaderText textalign="text-center" heading="The Hidden Reasons Your Skin Loses Its Radiance So quickly" textcolor="text-[#1A2819]" />

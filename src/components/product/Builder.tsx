@@ -3,18 +3,11 @@
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import Image from "next/image";
-import { useParams } from "next/navigation"
-import { Product, fallbackProducts } from "@/app/data/fallbackProducts"
+import { Product } from "@/app/data/fallbackProducts"
 
-const Builder = () => {
-  const params = useParams()
-  const routeId = typeof params?.id === "string" ? params.id : undefined
-
-  // Find the product based on route ID
-  const resolvedProduct: Product | undefined = fallbackProducts.find(p => p.id.toString() === routeId)
-
+const Builder = ({ product }: { product: Product }) => {
   // Use builder array for slides
-  const slides = resolvedProduct?.builder || []
+  const slides = product?.builder || []
 
   return (
     <div className="py-8">

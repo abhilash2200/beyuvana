@@ -2,13 +2,10 @@
 
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
-import { fallbackProducts } from "@/app/data/fallbackProducts";
-import { useParams } from "next/navigation";
+import type { Product } from "@/app/data/fallbackProducts";
 import { useState } from "react";
 
-const Action = () => {
-  const { id } = useParams();
-  const product = fallbackProducts.find((p) => p.id.toString() === id);
+const Action = ({ product }: { product: Product }) => {
   const [hovered, setHovered] = useState<number | null>(null);
 
   if (!product || !product.actionItems) return null;
