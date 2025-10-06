@@ -46,9 +46,8 @@ async function handler(request: NextRequest) {
     // Build full URL with query params (excluding "endpoint" itself)
     const queryParams = new URLSearchParams(searchParams);
     queryParams.delete("endpoint");
-    const url = `${API_BASE_URL}${endpoint}${
-      queryParams.toString() ? "?" + queryParams.toString() : ""
-    }`;
+    const url = `${API_BASE_URL}${endpoint}${queryParams.toString() ? "?" + queryParams.toString() : ""
+      }`;
 
     // Forward body for methods like POST, PUT, PATCH
     let body: string | undefined = undefined;
@@ -87,13 +86,33 @@ async function handler(request: NextRequest) {
       );
     }
 
-    // Try parsing JSON, fallback to text
-    let data;
+    // Read upstream body as text (may be JSON). We'll forward it verbatim
     const textData = await response.text();
-    try {
-      data = JSON.parse(textData);
-    } catch {
-      data = textData;
+
+    // Prepare response headers and forward critical ones (e.g., Set-Cookie)
+    const forwardHeaders = new Headers();
+
+    // Preserve content type if provided by upstream
+    const contentType = response.headers.get("content-type");
+    if (contentType) {
+      forwardHeaders.set("content-type", contentType);
+    } else {
+      // Default to JSON since most backend responses are JSON
+      forwardHeaders.set("content-type", "application/json");
+    }
+
+    // Forward all Set-Cookie headers from upstream so auth cookies persist
+    const setCookie = response.headers.getSetCookie?.() as string[] | undefined;
+    if (Array.isArray(setCookie) && setCookie.length > 0) {
+      for (const cookie of setCookie) {
+        forwardHeaders.append("set-cookie", cookie);
+      }
+    } else {
+      // Fallback for environments without getSetCookie()
+      const rawSetCookie = response.headers.get("set-cookie");
+      if (rawSetCookie) {
+        forwardHeaders.append("set-cookie", rawSetCookie);
+      }
     }
 
     // Force debug logging for address API
@@ -103,12 +122,15 @@ async function handler(request: NextRequest) {
     ) {
       console.log(`✅ ADDRESS API - Proxy response for ${endpoint}:`, {
         status: response.status,
-        data,
         responseHeaders: Object.fromEntries(response.headers.entries()),
       });
     }
 
-    return NextResponse.json(data, { status: response.status });
+    // Return raw body with forwarded headers (cookies included)
+    return new NextResponse(textData, {
+      status: response.status,
+      headers: forwardHeaders,
+    });
   } catch (error) {
     if (isDevelopment) {
       console.error("❌ Proxy error:", error);

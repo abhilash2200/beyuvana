@@ -47,17 +47,22 @@ export default function Cart() {
 
     return (
         <Sheet onOpenChange={handleSheetOpenChange}>
-            <SheetTrigger asChild>
-                <Button
-                    className="relative"
-                    aria-label="Open cart"
-                >
-                    <ShoppingCart className="w-6 h-6 text-black" />
-                    {cartItems.length > 0 && (
-                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#057A37] rounded-full" />
-                    )}
-                </Button>
-            </SheetTrigger>
+            <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                    <SheetTrigger asChild>
+                        <Button
+                            className="relative"
+                            aria-label="Open cart"
+                        >
+                            <ShoppingCart className="w-6 h-6 text-black" />
+                            {cartItems.length > 0 && (
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#057A37] rounded-full" />
+                            )}
+                        </Button>
+                    </SheetTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="left" className="bg-gray-800 text-white text-[12px] px-3 py-2 rounded-md shadow-xl border-0" sideOffset={8}>Open cart</TooltipContent>
+            </Tooltip>
             <SheetContent
                 side="right"
                 aria-describedby={undefined}
