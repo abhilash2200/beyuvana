@@ -167,6 +167,19 @@ interface ProductReviewRequest {
   star_ratting: number;
 }
 
+// Product review list types
+export interface ProductReviewItem {
+  id: number;
+  user_name: string;
+  review: string;
+  star_ratting: number;
+  created_at?: string;
+}
+
+export type ReviewsListResponse = {
+  reviews: ProductReviewItem[];
+};
+
 // Generic API fetch function with timeout and environment-based logging
 async function apiFetch<T = unknown>(
   endpoint: string,
@@ -799,6 +812,37 @@ export const reviewApi = {
     } catch (error) {
       console.error("Add review API failed:", error);
       throw new Error("Failed to submit review. Please try again later.");
+    }
+  },
+  getReviews: async (
+    productId: number,
+    sessionKey?: string
+  ): Promise<ApiResponse<ReviewsListResponse>> => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        // Backend expects 'sessionkey' in some cases
+        headers["sessionkey"] = sessionKey;
+        headers["session_key"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+      }
+
+      return await apiFetch<ReviewsListResponse>("/product-reviews/lists/v1/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ product_id: productId }),
+      });
+    } catch (error) {
+      console.error("Get reviews API failed:", error);
+      // Return empty structure on failure to avoid UI crash
+      return {
+        data: { reviews: [] },
+        status: false,
+        message: "Failed to fetch reviews",
+      } as ApiResponse<ReviewsListResponse>;
     }
   },
 };

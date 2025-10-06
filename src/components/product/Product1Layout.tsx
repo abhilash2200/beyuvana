@@ -19,6 +19,7 @@ import ProductFaq from "./ProductFaq";
 import ResProductImg from "./ResponsiveV/ResProductImg";
 import ResSelectPack from "./ResponsiveV/ResSelectPack";
 import ResDropdown from "./ResponsiveV/ResDropdown";
+import { backendProductIdMap } from "@/app/data/productConfigs";
 
 const data = [
     {
@@ -257,7 +258,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                 <HeaderText textalign="text-center" heading="India’s Most Advanced Anti-Aging Innovation" textcolor="text-[#1A2819]" />
                 <p className="text-center mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">Collagen Reglow delivers clinically proven ingredients in precision-dosed sachets for maximum skin transformation.</p>
                 <div className="py-6">
-                    <AdvancedPlant />
+                    <AdvancedPlant product={product} />
                 </div>
             </div>
             <div className="md:py-10 py-6">
@@ -268,7 +269,11 @@ export default function Product1Layout({ product }: { product: Product }) {
             <div className="md:py-10 py-6">
                 <div className="container mx-auto px-4">
                     <HeaderText textalign="text-center" heading="Customer Reviews" textcolor="text-[#1A2819]" />
-                    <CustomerReviews />
+                    <CustomerReviews
+                        productId={backendProductIdMap[product.id] ?? product.id}
+                        productName={product.name}
+                        designSlug={productDesignSlugs[product.id]}
+                    />
                 </div>
             </div>
             <div className="md:py-10 py-6">
