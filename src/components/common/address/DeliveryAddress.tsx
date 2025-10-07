@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { addressApi, SavedAddress } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
-import { MapPin, Plus, User, Phone, Mail, Home, RefreshCw } from "lucide-react";
+import { MapPin, Plus, User, Home, RefreshCw } from "lucide-react";
 
 interface DeliveryAddressProps {
   onAddAddress: () => void;
@@ -15,8 +15,18 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
   const { user, sessionKey } = useAuth();
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Helper function to check if an address is primary
+  const isPrimaryAddress = (address: SavedAddress): boolean => {
+    const isPrimary = address.is_primary;
+    // Convert to string and check for various representations of "true" or "1"
+    const primaryStr = String(isPrimary).toLowerCase();
+    return isPrimary === 1 ||
+      primaryStr === "1" ||
+      primaryStr === "true" ||
+      (typeof isPrimary === 'boolean' && isPrimary);
+  };
 
   const fetchAddresses = useCallback(async () => {
     if (!user?.id) {
@@ -45,16 +55,40 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
       console.log("Address fetch response:", response);
 
       if (response.data && Array.isArray(response.data)) {
-        setAddresses(response.data);
-        // Select the primary address or first address
-        const primaryAddress = response.data.find(addr => addr.is_primary === 1);
-        setSelectedId(primaryAddress?.id || response.data[0]?.id || null);
+        // Log all addresses to see their structure
+        console.log("DeliveryAddress: All addresses from API:", response.data);
+        response.data.forEach((addr, index) => {
+          console.log(`Address ${index + 1}:`, {
+            id: addr.id,
+            fullname: addr.fullname,
+            is_primary: addr.is_primary,
+            is_primary_type: typeof addr.is_primary
+          });
+        });
+
+        // Only show the primary address - check for different possible values
+        const primaryAddress = response.data.find(addr => isPrimaryAddress(addr));
+        console.log("DeliveryAddress: Found addresses:", response.data.length, "Primary address:", primaryAddress);
+
+        if (primaryAddress) {
+          setAddresses([primaryAddress]); // Only set the primary address
+          console.log("DeliveryAddress: Set primary address as selected:", primaryAddress.fullname);
+        } else {
+          // If no primary address is found, show the first address as a fallback
+          // This handles cases where the API doesn't have any address marked as primary
+          if (response.data.length > 0) {
+            console.log("DeliveryAddress: No primary address found, using first address as fallback");
+            setAddresses([response.data[0]]);
+          } else {
+            setAddresses([]);
+            console.log("DeliveryAddress: No addresses found at all");
+          }
+        }
       } else if (response.code === 401) {
         setError("Authentication failed. Please login again.");
         setAddresses([]);
       } else {
         setAddresses([]);
-        setSelectedId(null);
       }
     } catch (err) {
       console.error("Failed to fetch addresses:", err);
@@ -73,20 +107,15 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
     fetchAddresses();
   }, [fetchAddresses]);
 
-  // Handle address selection and notify parent
-  const handleAddressSelect = (addressId: number) => {
-    setSelectedId(addressId);
-    const selectedAddress = addresses.find(addr => addr.id === addressId);
-    onAddressSelect?.(selectedAddress || null);
-  };
-
-  // Notify parent when addresses change and selection is made
+  // Notify parent when primary address is loaded
   useEffect(() => {
-    if (selectedId && addresses.length > 0) {
-      const selectedAddress = addresses.find(addr => addr.id === selectedId);
-      onAddressSelect?.(selectedAddress || null);
+    if (addresses.length > 0) {
+      // Since we only show the primary address, notify parent with the first (and only) address
+      onAddressSelect?.(addresses[0] || null);
+    } else {
+      onAddressSelect?.(null);
     }
-  }, [selectedId, addresses, onAddressSelect]);
+  }, [addresses, onAddressSelect]);
 
   if (loading) {
     return (
@@ -156,7 +185,7 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
             onClick={onAddAddress}
             className="bg-[#057A37] px-3 py-2 text-[10px] rounded-[20px] font-normal text-white border-white/30"
           >
-            Change Address
+            {addresses.length === 0 ? "Add Address" : "Manage Addresses"}
           </Button>
         </div>
       </div>
@@ -175,60 +204,40 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium text-base"
             >
               <Plus className="w-5 h-5 mr-2" />
-              Add Your First Address
+              Add Address
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
             {addresses.map((address) => (
-              <label
+              <div
                 key={address.id}
-                className={`flex items-start border-0 gap-4 p-4 rounded-lg cursor-pointer transition-all duration-200 ${selectedId === address.id
-                  ? ''
-                  : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
-                  }`}
+                className="flex items-start gap-2 rounded-lg p-2"
               >
                 <div className="flex items-center justify-center w-5 h-5 mt-1">
-                  <input
-                    type="radio"
-                    name="address"
-                    checked={selectedId === address.id}
-                    onChange={() => handleAddressSelect(address.id)}
-                    className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
-                  />
+                  <div className="w-3 h-3 bg-green-600 rounded-full flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                  </div>
                 </div>
                 <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex justify-between items-start mb-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-normal text-gray-800 capitalize text-[15px]">{address.fullname}</p>
+                      <p className="font-normal text-gray-800 capitalize text-[13px]">{address.fullname}</p>
                     </div>
-                    {address.is_primary === 1 && (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
-                        Primary
-                      </span>
-                    )}
+                    <span className="text-[10px] bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                      Delivery Address
+                    </span>
                   </div>
 
-                  <div className="space-y-1 text-sm text-gray-600">
+                  <div className="space-y-1 text-[12px] text-gray-600">
                     <div className="flex items-start gap-2">
                       <div>
-                        <p>{address.address1}<span>{address.address2 && <span>, {address.address2}</span>},</span>{address.city}, {address.pincode}</p>
+                        <p className="capitalize">{address.address1}<span>{address.address2 && <span>, {address.address2}</span>},</span>{address.city}, {address.pincode}</p>
                       </div>
                     </div>
-
-                    {/* <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-100">
-                      <div className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs">{address.mobile}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Mail className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs">{address.email}</span>
-                      </div>
-                    </div> */}
                   </div>
                 </div>
-              </label>
+              </div>
             ))}
           </div>
         )}

@@ -42,6 +42,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<LocalCartItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [authInitialized, setAuthInitialized] = useState(false);
   const { user, sessionKey } = useAuth();
 
   // Store timeout references to clear them
@@ -49,31 +50,62 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
+    try {
+      const storedCart = localStorage.getItem("cart");
+      if (storedCart) {
+        const parsedCart = JSON.parse(storedCart);
+        if (Array.isArray(parsedCart)) {
+          setCartItems(parsedCart);
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to load cart from localStorage:", error);
+      // Clear invalid cart data
+      try {
+        localStorage.removeItem("cart");
+      } catch { }
     }
   }, []);
 
+  // Track when auth is initialized to prevent premature cart clearing
+  useEffect(() => {
+    // Check if auth data exists in localStorage to determine if auth is initialized
+    const hasStoredAuth = localStorage.getItem("user") || localStorage.getItem("session_key");
+    if (hasStoredAuth) {
+      // If there's stored auth data, wait for it to be loaded
+      if (user !== null || sessionKey !== null) {
+        setAuthInitialized(true);
+      }
+    } else {
+      // If no stored auth data, auth is immediately initialized as "not logged in"
+      setAuthInitialized(true);
+    }
+  }, [user, sessionKey]);
+
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    try {
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+    } catch (error) {
+      console.warn("Failed to save cart to localStorage:", error);
+    }
   }, [cartItems]);
 
-  // Sync with server when user logs in
+  // Sync with server when user logs in (only after auth is initialized)
   useEffect(() => {
-    if (user && sessionKey) {
+    if (authInitialized && user && sessionKey) {
       syncWithServer();
     }
-  }, [user, sessionKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, sessionKey, authInitialized]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When user logs out, immediately clear local cart and storage
+  // Only clear if auth is initialized to prevent clearing on page reload
   useEffect(() => {
-    if (!user || !sessionKey) {
+    if (authInitialized && (!user || !sessionKey)) {
       setCartItems([]);
       try { localStorage.removeItem("cart"); } catch { }
     }
-  }, [user, sessionKey]);
+  }, [user, sessionKey, authInitialized]);
 
   const addToCart = async (item: LocalCartItem) => {
     setLoading(true);

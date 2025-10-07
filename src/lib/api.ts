@@ -155,7 +155,7 @@ interface SaveAddressRequest {
   user_id: number;
   fullname: string;
   address1: string;
-  address2: string;
+  address2: string; // Required by API, but can be empty string
   mobile: string;
   email: string;
   city: string;
@@ -746,13 +746,26 @@ export const addressApi = {
         });
       }
 
+      // Ensure all required fields are present
+      const requestData = {
+        user_id: addressData.user_id,
+        fullname: addressData.fullname,
+        address1: addressData.address1,
+        address2: addressData.address2 || "", // Explicitly ensure address2 is present
+        mobile: addressData.mobile,
+        email: addressData.email,
+        city: addressData.city,
+        pincode: addressData.pincode,
+        is_primary: addressData.is_primary,
+        session_key: sessionKey,
+      };
+
+      console.log("API Request Data:", requestData);
+
       return await apiFetch("/api/save_address/", {
         method: "POST",
         headers,
-        body: JSON.stringify({
-          ...addressData,
-          session_key: sessionKey, // Add session key to request body as well
-        }),
+        body: JSON.stringify(requestData),
       });
     } catch (error) {
       console.error("Save address API failed:", error);
@@ -871,14 +884,65 @@ export const addressApi = {
       };
 
       if (sessionKey) {
+        // Broad header coverage (match other address API behavior)
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
       }
+
+      // Debug logging for headers
+      if (isDevelopment) {
+        console.log("🔍 Update Address API Debug:", {
+          addressData,
+          sessionKey: sessionKey ? "Present" : "Missing",
+          sessionKeyLength: sessionKey?.length || 0,
+          headers,
+          endpoint: "/api/update_address/",
+        });
+      }
+
+      // Ensure all required fields are present with correct field names
+      const requestData = {
+        user_id: addressData.user_id,
+        fullname: addressData.fullname,
+        address1: addressData.address1,
+        address2: addressData.address2 || "", // Ensure address2 is present
+        mobile: addressData.mobile,
+        email: addressData.email,
+        city: addressData.city,
+        pincode: addressData.pincode,
+        is_primary: addressData.is_primary,
+        address_id: addressData.id, // Use address_id instead of id
+        session_key: sessionKey, // Add session key to request body as well
+      };
+
+      console.log("API Update Request Data:", requestData);
 
       return await apiFetch("/api/update_address/", {
         method: "POST",
         headers,
-        body: JSON.stringify(addressData),
+        body: JSON.stringify(requestData),
       });
     } catch (error) {
       console.error("Update address API failed:", error);
@@ -898,21 +962,193 @@ export const addressApi = {
       };
 
       if (sessionKey) {
+        // Broad header coverage (match other address API behavior)
         headers["Authorization"] = `Bearer ${sessionKey}`;
         headers["session_key"] = sessionKey;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
       }
 
+      // Debug logging for headers
+      if (isDevelopment) {
+        console.log("🔍 Delete Address API Debug:", {
+          userId,
+          addressId,
+          sessionKey: sessionKey ? "Present" : "Missing",
+          sessionKeyLength: sessionKey?.length || 0,
+          headers,
+          endpoint: "/api/delete_address/",
+        });
+      }
+
+      const requestData = {
+        user_id: userId,
+        address_id: addressId,
+        session_key: sessionKey, // Add session key to request body as well
+      };
+
+      console.log("API Delete Request Data:", requestData);
+
       return await apiFetch("/api/delete_address/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(requestData),
+      });
+    } catch (error) {
+      console.error("Delete address API failed:", error);
+      throw new Error("Failed to delete address. Please try again later.");
+    }
+  },
+
+  // Set primary address
+  setPrimaryAddress: async (
+    userId: number,
+    addressId: number,
+    sessionKey?: string
+  ) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        // Broad header coverage (match other address API behavior)
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
+      }
+
+      // Debug logging for headers
+      if (isDevelopment) {
+        console.log("🔍 Set Primary Address API Debug:", {
+          userId,
+          addressId,
+          sessionKey: sessionKey ? "Present" : "Missing",
+          sessionKeyLength: sessionKey?.length || 0,
+          headers,
+          endpoint: "/api/set_primary_address/",
+        });
+      }
+
+      return await apiFetch("/api/set_primary_address/", {
         method: "POST",
         headers,
         body: JSON.stringify({
           user_id: userId,
           address_id: addressId,
+          session_key: sessionKey, // Add session key to request body as well
         }),
       });
     } catch (error) {
-      console.error("Delete address API failed:", error);
-      throw new Error("Failed to delete address. Please try again later.");
+      console.error("Set primary address API failed:", error);
+      throw new Error("Failed to set primary address. Please try again later.");
+    }
+  },
+
+  // Get address details by ID
+  getAddressDetails: async (
+    userId: number,
+    addressId: number,
+    sessionKey?: string
+  ) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        // Broad header coverage (match other address API behavior)
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["sessionkey"] = sessionKey;
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
+      }
+
+      // Debug logging for headers
+      if (isDevelopment) {
+        console.log("🔍 Get Address Details API Debug:", {
+          userId,
+          addressId,
+          sessionKey: sessionKey ? "Present" : "Missing",
+          sessionKeyLength: sessionKey?.length || 0,
+          headers,
+          endpoint: "/api/get_address_details/",
+        });
+      }
+
+      return await apiFetch<SavedAddress>("/api/get_address_details/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          user_id: userId,
+          address_id: addressId,
+          session_key: sessionKey, // Add session key to request body as well
+        }),
+      });
+    } catch (error) {
+      console.error("Get address details API failed:", error);
+      throw new Error("Failed to fetch address details. Please try again later.");
     }
   },
 };
