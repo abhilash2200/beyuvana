@@ -18,6 +18,8 @@ interface DisplayProduct {
   description: string;
   descriptiontext: string;
   price: { 1: number; 2: number; 4: number };
+  mrp: { 1: number; 2: number; 4: number };
+  discount: { 1: string; 2: string; 4: string };
   benefits: { img: string; text: string }[];
   mainImage: string;
   product_id?: string; // For API integration
@@ -55,6 +57,17 @@ const ProductsList = () => {
               return isNaN(price) ? 0 : price;
             };
 
+            const getTierMRP = (qty: 1 | 2 | 4): number => {
+              const tier = tiers.find((t) => Number(t.qty) === Number(qty));
+              const mrp = tier ? parseFloat(tier.mrp) : NaN;
+              return isNaN(mrp) ? 0 : mrp;
+            };
+
+            const getTierDiscount = (qty: 1 | 2 | 4): string => {
+              const tier = tiers.find((t) => Number(t.qty) === Number(qty));
+              return tier ? tier.discount_off_inpercent : "0%";
+            };
+
             const mainImage =
               apiProduct.image_single ||
               apiProduct.image ||
@@ -72,6 +85,16 @@ const ProductsList = () => {
                 1: getTierPrice(1),
                 2: getTierPrice(2),
                 4: getTierPrice(4),
+              },
+              mrp: {
+                1: getTierMRP(1),
+                2: getTierMRP(2),
+                4: getTierMRP(4),
+              },
+              discount: {
+                1: getTierDiscount(1),
+                2: getTierDiscount(2),
+                4: getTierDiscount(4),
               },
               benefits: [],
               mainImage,
@@ -111,6 +134,10 @@ const ProductsList = () => {
       price: product.price[selectedPack],
       image: product.mainImage,
       product_id: product.product_id || product.id, // Use product_id for API integration
+      // Pre-populate with correct MRP and discount data
+      mrp_price: product.mrp[selectedPack],
+      discount_percent: product.discount[selectedPack],
+      short_description: product.shortdescription,
     });
   };
 
@@ -223,7 +250,7 @@ const ProductsList = () => {
                           }`}
                       >
                         <span className="text-[10px] pr-3">Pack {pack}</span> ₹
-                        {product.price[pack].toLocaleString()}
+                        {Math.round(product.price[pack]).toLocaleString()}
                       </Button>
                     );
                   })}

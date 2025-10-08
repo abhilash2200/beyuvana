@@ -54,6 +54,41 @@ interface Product {
   design_type?: "green" | "pink" | "GREEN" | "PINK";
 }
 
+// Product Details API response interface
+interface ProductDetailsResponse {
+  total_star_ratting: string;
+  id: string;
+  categorykey: string;
+  category: string;
+  product_code: string;
+  product_name: string;
+  product_price: string;
+  discount_price: string;
+  discount_off_inpercent: string;
+  sku_number: string;
+  short_description: string;
+  product_description: string;
+  in_stock: string;
+  image: string[];
+  prices?: PriceTier[];
+  my_review: ProductReview[];
+  review: ProductReview[];
+}
+
+interface ProductReview {
+  id: string;
+  product_id: string;
+  customer_logo: string;
+  customer_name: string;
+  review: string;
+  created_id: string;
+  created_on: string;
+  status: string;
+  review_added_by: string;
+  user_id: string;
+  star_ratting: string;
+}
+
 // Legacy product interface for backward compatibility
 interface LegacyProduct {
   id: number;
@@ -185,6 +220,130 @@ interface ProductReviewRequest {
   star_ratting: number;
 }
 
+// Order Details API interfaces
+interface OrderDetailsItem {
+  product_code: string;
+  product_name: string;
+  sku_number: string;
+  image: string;
+  id: string;
+  user_id: string;
+  product_id: string;
+  sale_price: string;
+  sale_unit: string;
+  qty: string;
+  mrp_price: string;
+  total_mrp_price: string;
+  total_sale_price: string;
+  discount_amount: string;
+  created_at: string;
+  created_date: string;
+  updated_at: string;
+  order_id: string;
+  rate_star: string;
+  review: string | null;
+  review_date: string | null;
+  gst_amount: string;
+}
+
+interface OrderDetailsAddress {
+  address1: string;
+  address2: string;
+  city: string;
+  pincode: string;
+  fullname: string;
+  email: string;
+  mobile: string;
+}
+
+interface OrderDetailsPayment {
+  id: string;
+  order_no: string;
+  pay_gateway_name: string;
+  payment_request_id: string;
+  txn_id: string;
+  txn_date: string;
+  pay_status: string;
+  paid_amount: string;
+  created_at: string;
+  updated_at: string;
+  other_info: string;
+  user_id: string;
+}
+
+interface OrderDetailsData {
+  order_details: {
+    id: string;
+    user_id: string;
+    txn_id: string;
+    status: string;
+    pay_status: string;
+    created_date: string;
+    order_no: string;
+    paid_amount: string;
+    discount_amount: string;
+    gross_amount: string;
+    promo_amount: string;
+    promo_code: string;
+    qty: string;
+    pay_mode: string;
+    pay_gateway_name: string;
+    session_key: string;
+    awb_no: string | null;
+    courier_name: string | null;
+    created_at: string;
+    updated_at: string;
+    total_discount: string;
+    gst_amount: string;
+    gst_no: string | null;
+    address_id: string;
+    completed_date: string | null;
+    remarks: string | null;
+    thumbnail: string;
+    shipment_shipment_id: string;
+    shipment_order_id: string;
+    payment_app_type: string;
+    payment_redirect_url: string;
+  };
+  item_list: OrderDetailsItem[];
+  address: OrderDetailsAddress;
+  payment_details: OrderDetailsPayment;
+}
+
+// Checkout API interfaces
+interface CheckoutCartItem {
+  product_id: number;
+  sale_price: number;
+  mrp_price: number;
+  sale_unit: number;
+  qty: number;
+  total_mrp_price: number;
+  total_sale_price: number;
+  discount_amount: number;
+}
+
+interface PaymentInfo {
+  pay_gateway_name: string;
+  pay_status: string;
+  txn_id: string;
+}
+
+interface CheckoutRequest {
+  cart: CheckoutCartItem[];
+  user_id: number;
+  qty: number;
+  paid_amount: number;
+  discount_amount: number;
+  gross_amount: number;
+  promo_amount: number;
+  total_discount: number;
+  promo_code: string;
+  pay_mode: string;
+  address_id: number;
+  gst_amount: string;
+  payment_info: PaymentInfo;
+}
+
 // Product review list types
 export interface ProductReviewItem {
   id: number;
@@ -208,6 +367,7 @@ async function apiFetch<T = unknown>(
     ? `${PROXY_URL}?endpoint=${encodeURIComponent(endpoint)}`
     : `${API_BASE_URL}${endpoint}`;
 
+
   const defaultHeaders = {
     "Content-Type": "application/json",
   };
@@ -225,42 +385,51 @@ async function apiFetch<T = unknown>(
     signal: controller.signal,
   };
 
-  // Environment-based logging
-  if (isDevelopment) {
-    console.log(`🌐 Making API request to: ${url}`, {
-      config,
-      isBrowser,
-      originalEndpoint: endpoint,
-      headers: config.headers,
-    });
-  }
 
   try {
+
     const response = await fetch(url, config);
     clearTimeout(timeoutId);
 
-    if (isDevelopment) {
-      console.log(`📡 API Response for ${endpoint}:`, {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-        headers: Object.fromEntries(response.headers.entries()),
-      });
-    }
 
     if (!response.ok) {
       const errorText = await response.text();
-      if (isDevelopment) {
-        console.error(`❌ API Error Response:`, errorText);
-      }
       throw new Error(
         `API error: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 
-    const data = await response.json();
-    if (isDevelopment) {
-      console.log(`✅ API Success for ${endpoint}:`, data);
+    // Check if response is JSON before trying to parse
+    const contentType = response.headers.get('content-type');
+    const isJson = contentType && contentType.includes('application/json');
+
+
+    // Always read the response as text first to validate content
+    const responseText = await response.text();
+
+
+    // Check if response body is actually HTML despite content-type claims
+    if (responseText.trim().startsWith('<') || responseText.includes('<html') || responseText.includes('<div')) {
+      throw new Error(
+        `Backend returned HTML error page instead of JSON data. This indicates a server error. Status: ${response.status}`
+      );
+    }
+
+    if (!isJson) {
+
+      throw new Error(
+        `Expected JSON response but got ${contentType || 'unknown content type'}. Response: ${responseText.substring(0, 200)}`
+      );
+    }
+
+    // Try to parse as JSON
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      throw new Error(
+        `Failed to parse JSON response. The server may be returning invalid JSON or HTML. Error: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`
+      );
     }
     return data;
   } catch (error) {
@@ -271,19 +440,18 @@ async function apiFetch<T = unknown>(
       throw new Error(`Request timeout: API call to ${endpoint} took too long`);
     }
 
-    if (isDevelopment) {
-      console.error(`❌ API fetch error for ${endpoint}:`, {
-        error: error instanceof Error ? error.message : error,
-        url,
-        config,
-        isBrowser,
-      });
-    }
 
     // Provide more specific error messages
     if (error instanceof TypeError && error.message === "Failed to fetch") {
       throw new Error(
         `Network error: Unable to connect to ${url}. This might be a CORS issue or the server is unreachable.`
+      );
+    }
+
+    // Handle AbortError (timeout)
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(
+        `Request timeout: API call to ${endpoint} took too long (15s timeout)`
       );
     }
 
@@ -341,12 +509,13 @@ export const productsApi = {
       throw new Error("Failed to fetch products. Please try again later.");
     }
   },
-  getDetails: async (productId: string | number) => {
+  getDetails: async (productId: string | number, userId?: string | number) => {
     try {
-      return await apiFetch<Product>("/products/details/v1/", {
+      return await apiFetch<ProductDetailsResponse>("/products/details/v1/", {
         method: "POST",
         body: JSON.stringify({
           product_id: productId,
+          user_id: userId,
         }),
       });
     } catch (error) {
@@ -571,6 +740,83 @@ export const cartApi = {
   },
 };
 
+// Order Details API functions
+export const orderDetailsApi = {
+  getOrderDetails: async (orderId: string, userId: string, sessionKey?: string) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        // Use sessionkey header as shown in the API documentation
+        headers["sessionkey"] = sessionKey;
+      }
+
+      const requestBody = {
+        user_id: parseInt(userId),
+        order_id: parseInt(orderId),
+      };
+
+
+      // Validate request body before sending
+      let requestBodyString;
+      try {
+        requestBodyString = JSON.stringify(requestBody);
+        if (isDevelopment) {
+          console.log("📤 Sending order details request:", {
+            bodyLength: requestBodyString.length,
+            bodyPreview: requestBodyString.substring(0, 200)
+          });
+        }
+      } catch (jsonError) {
+        console.error("❌ Failed to serialize request body:", {
+          error: jsonError,
+          requestBody,
+          orderId
+        });
+        throw new Error("Failed to serialize request data");
+      }
+
+      return await apiFetch<OrderDetailsData>("/api/order_details/", {
+        method: "POST",
+        headers,
+        body: requestBodyString,
+      });
+    } catch (error) {
+      // Enhanced error logging for order details
+      console.error("Order details API failed:", {
+        error: error instanceof Error ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        } : error,
+        errorType: typeof error,
+        errorString: String(error),
+        orderId,
+        userId,
+        sessionKeyPresent: !!sessionKey,
+        timestamp: new Date().toISOString()
+      });
+
+      // Provide more specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes("404")) {
+          throw new Error("Order not found. Please check the order ID.");
+        } else if (error.message.includes("401")) {
+          throw new Error("Authentication failed. Please log in again.");
+        } else if (error.message.includes("timeout")) {
+          throw new Error("Request timeout. Please try again.");
+        } else if (error.message.includes("Failed to fetch")) {
+          throw new Error("Network error. Please check your connection.");
+        }
+      }
+
+      throw new Error("Failed to fetch order details. Please try again later.");
+    }
+  },
+};
+
 // Orders API functions
 // Note: The /order/v1/ endpoint currently returns internal server error
 // This might be due to the endpoint not being fully implemented yet
@@ -643,7 +889,23 @@ export const ordersApi = {
               ? "cancelled"
               : "arriving";
           const date = String(o?.created_date ?? o?.updated_at ?? "");
-          const image = String(o?.thumbnail ?? "/assets/img/product-1.png");
+          // Handle image URL with proper fallback
+          const thumbnail = String(o?.thumbnail ?? "");
+          const image = thumbnail && thumbnail.trim() !== ""
+            ? thumbnail.startsWith("http") || thumbnail.startsWith("/")
+              ? thumbnail
+              : `/assets/img/${thumbnail}`
+            : "/assets/img/product-1.png";
+
+          // Debug logging for image URLs
+          if (isDevelopment) {
+            console.log("🖼️ Order Image Processing:", {
+              orderId: id,
+              productName,
+              thumbnail,
+              finalImage: image
+            });
+          }
           return { id, productName, description, price, status: statusMapped, date, image };
         });
         return { resp: respLocal, mapped: mappedLocal } as { resp: ApiResponse<BackendOrderItem[]>; mapped: Order[] };
@@ -1153,6 +1415,65 @@ export const addressApi = {
   },
 };
 
+// Checkout API functions
+export const checkoutApi = {
+  processCheckout: async (checkoutData: CheckoutRequest, sessionKey?: string) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        // Use sessionkey header as shown in the curl example
+        headers["sessionkey"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["session_key"] = sessionKey;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
+      }
+
+      // Debug logging for checkout API
+      if (isDevelopment) {
+        console.log("🔍 Checkout API Debug:", {
+          checkoutData,
+          sessionKey: sessionKey ? "Present" : "Missing",
+          sessionKeyLength: sessionKey?.length || 0,
+          headers,
+          endpoint: "/api/checkout/",
+        });
+      }
+
+      return await apiFetch("/api/checkout/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(checkoutData),
+      });
+    } catch (error) {
+      console.error("Checkout API failed:", error);
+      throw new Error("Failed to process checkout. Please try again later.");
+    }
+  },
+};
+
 // Product Review API functions
 export const reviewApi = {
   addReview: async (reviewData: ProductReviewRequest, sessionKey?: string) => {
@@ -1162,8 +1483,42 @@ export const reviewApi = {
       };
 
       if (sessionKey) {
-        headers["Authorization"] = `Bearer ${sessionKey}`;
+        // Use comprehensive header coverage like other API functions
+        headers["sessionkey"] = sessionKey;
         headers["session_key"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
+      }
+
+      // Debug logging for review API
+      if (isDevelopment) {
+        console.log("🔍 Review API Debug:", {
+          reviewData,
+          sessionKey: sessionKey ? "Present" : "Missing",
+          sessionKeyLength: sessionKey?.length || 0,
+          headers,
+          endpoint: "/product-reviews/add/v1/",
+        });
       }
 
       return await apiFetch("/product-reviews/add/v1/", {
@@ -1186,10 +1541,31 @@ export const reviewApi = {
       };
 
       if (sessionKey) {
-        // Backend expects 'sessionkey' in some cases
+        // Use comprehensive header coverage like other API functions
         headers["sessionkey"] = sessionKey;
         headers["session_key"] = sessionKey;
         headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["X-Session-Key"] = sessionKey;
+        headers["X-Auth-Token"] = sessionKey;
+        headers["X-API-Key"] = sessionKey;
+        headers["token"] = sessionKey;
+        headers["auth-token"] = sessionKey;
+        headers["Session-Key"] = sessionKey;
+        headers["Auth-Token"] = sessionKey;
+        headers["API-Key"] = sessionKey;
+        // More variations
+        headers["session-key"] = sessionKey;
+        headers["authkey"] = sessionKey;
+        headers["auth_key"] = sessionKey;
+        headers["apikey"] = sessionKey;
+        headers["api_key"] = sessionKey;
+        headers["access_token"] = sessionKey;
+        headers["access-token"] = sessionKey;
+        // Authorization without Bearer
+        headers["Authorization"] = sessionKey;
+        headers["X-Authorization"] = sessionKey;
+        headers["X-Token"] = sessionKey;
+        headers["X-Access-Token"] = sessionKey;
       }
 
       return await apiFetch<ReviewsListResponse>("/product-reviews/lists/v1/", {
@@ -1276,6 +1652,8 @@ export { apiFetch };
 export type {
   ApiResponse,
   Product,
+  ProductDetailsResponse,
+  ProductReview,
   LegacyProduct,
   PriceTier,
   LoginRequest,
@@ -1287,4 +1665,11 @@ export type {
   SaveAddressRequest,
   SavedAddress,
   ProductReviewRequest,
+  CheckoutRequest,
+  CheckoutCartItem,
+  PaymentInfo,
+  OrderDetailsData,
+  OrderDetailsItem,
+  OrderDetailsAddress,
+  OrderDetailsPayment,
 };

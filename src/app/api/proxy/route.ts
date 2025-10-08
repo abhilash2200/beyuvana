@@ -29,19 +29,6 @@ async function handler(request: NextRequest) {
       headers["Content-Type"] = "application/json";
     }
 
-    // Force debug logging for address API
-    if (
-      endpoint?.includes("get_address") ||
-      endpoint?.includes("save_address")
-    ) {
-      console.log(`🔍 ADDRESS API PROXY DEBUG:`);
-      console.log(`📋 Headers being forwarded:`, headers);
-      console.log(
-        `🔍 Original request headers:`,
-        Object.fromEntries(request.headers.entries())
-      );
-      console.log(`🔍 Endpoint: ${endpoint}`);
-    }
 
     // Build full URL with query params (excluding "endpoint" itself)
     const queryParams = new URLSearchParams(searchParams);
@@ -55,18 +42,6 @@ async function handler(request: NextRequest) {
       body = await request.text();
     }
 
-    // Force debug logging for address API
-    if (
-      endpoint?.includes("get_address") ||
-      endpoint?.includes("save_address")
-    ) {
-      console.log(
-        `🔄 ADDRESS API - Proxying ${request.method} request to:`,
-        url
-      );
-      console.log(`📤 ADDRESS API - Request body:`, body);
-      console.log(`📤 ADDRESS API - Final headers being sent:`, headers);
-    }
 
     const response = await fetch(url, {
       method: request.method,
@@ -74,17 +49,6 @@ async function handler(request: NextRequest) {
       body,
     });
 
-    // Force debug logging for address API
-    if (
-      endpoint?.includes("get_address") ||
-      endpoint?.includes("save_address")
-    ) {
-      console.log(`📡 ADDRESS API - Backend response status:`, response.status);
-      console.log(
-        `📡 ADDRESS API - Backend response headers:`,
-        Object.fromEntries(response.headers.entries())
-      );
-    }
 
     // Read upstream body as text (may be JSON). We'll forward it verbatim
     const textData = await response.text();
@@ -115,16 +79,6 @@ async function handler(request: NextRequest) {
       }
     }
 
-    // Force debug logging for address API
-    if (
-      endpoint?.includes("get_address") ||
-      endpoint?.includes("save_address")
-    ) {
-      console.log(`✅ ADDRESS API - Proxy response for ${endpoint}:`, {
-        status: response.status,
-        responseHeaders: Object.fromEntries(response.headers.entries()),
-      });
-    }
 
     // Return raw body with forwarded headers (cookies included)
     return new NextResponse(textData, {

@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Wallet } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
+import { useAuth } from "@/context/AuthProvider";
+import { checkoutApi, CheckoutRequest, CheckoutCartItem, SavedAddress } from "@/lib/api";
 import Image from "next/image";
 import React from "react";
 import DeliveryAddress from "../address/DeliveryAddress";
@@ -11,11 +13,117 @@ import AddAddressSheet from "../address/AddAddressSheet";
 import { toast } from "react-toastify";
 
 export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }) {
-    const { cartItems, loading } = useCart();
-    const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const { cartItems, loading, clearCart } = useCart();
+    const { user, sessionKey } = useAuth();
+    const total = cartItems.reduce((acc, item) => acc + Math.round(item.price * item.quantity), 0);
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
+    const [selectedAddress, setSelectedAddress] = React.useState<SavedAddress | null>(null);
+    const [isProcessingOrder, setIsProcessingOrder] = React.useState(false);
+
+    // Calculate pricing details
+    const calculatePricing = () => {
+        const grossAmount = cartItems.reduce((acc, item) => {
+            // Use actual MRP price from the matching price tier
+            const originalPrice = item.mrp_price || item.price; // Use sale price as fallback only
+            return acc + (originalPrice * item.quantity);
+        }, 0);
+
+        const paidAmount = total;
+        const discountAmount = Math.max(0, grossAmount - paidAmount);
+        const totalQty = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+        return {
+            grossAmount: Math.round(grossAmount * 100) / 100,
+            paidAmount: Math.round(paidAmount * 100) / 100,
+            discountAmount: Math.round(discountAmount * 100) / 100,
+            totalQty
+        };
+    };
+
+    // Process checkout
+    const handlePlaceOrder = async () => {
+        if (cartItems.length === 0) {
+            toast.warning("Your cart is empty!");
+            return;
+        }
+        if (!selectedPayment) {
+            toast.warning("Please select a payment method!");
+            return;
+        }
+        if (!selectedAddress) {
+            toast.warning("Please select a delivery address!");
+            return;
+        }
+        if (!user || !sessionKey) {
+            toast.warning("Please login to place an order!");
+            return;
+        }
+
+        setIsProcessingOrder(true);
+        try {
+            const pricing = calculatePricing();
+
+            // Convert cart items to checkout format
+            const checkoutCartItems: CheckoutCartItem[] = cartItems.map(item => {
+                const originalPrice = item.mrp_price || item.price; // Use actual MRP from API only
+                const totalMrpPrice = Math.round((originalPrice * item.quantity) * 100) / 100;
+                const totalSalePrice = Math.round((item.price * item.quantity) * 100) / 100;
+                const discountAmount = Math.round((totalMrpPrice - totalSalePrice) * 100) / 100;
+
+                return {
+                    product_id: parseInt(item.product_id || item.id),
+                    sale_price: Math.round(item.price * 100) / 100,
+                    mrp_price: Math.round(originalPrice * 100) / 100,
+                    sale_unit: 1,
+                    qty: item.quantity,
+                    total_mrp_price: totalMrpPrice,
+                    total_sale_price: totalSalePrice,
+                    discount_amount: discountAmount
+                };
+            });
+
+            const checkoutData: CheckoutRequest = {
+                cart: checkoutCartItems,
+                user_id: parseInt(user.id),
+                qty: pricing.totalQty,
+                paid_amount: pricing.paidAmount,
+                discount_amount: pricing.discountAmount,
+                gross_amount: pricing.grossAmount,
+                promo_amount: 0,
+                total_discount: pricing.discountAmount,
+                promo_code: "",
+                pay_mode: selectedPayment === "prepaid" ? "Online" : "COD",
+                address_id: selectedAddress.id,
+                gst_amount: "",
+                payment_info: {
+                    pay_gateway_name: selectedPayment === "prepaid" ? "instamojo" : "cod",
+                    pay_status: "",
+                    txn_id: ""
+                }
+            };
+
+            console.log("Processing checkout with data:", checkoutData);
+
+            const response = await checkoutApi.processCheckout(checkoutData, sessionKey);
+
+            if (response.status || response.success) {
+                toast.success("Order placed successfully!");
+                // Clear cart after successful order
+                await clearCart();
+                // Close the checkout sheet
+                window.location.reload(); // Simple way to close the sheet
+            } else {
+                toast.error(response.message || "Failed to place order. Please try again.");
+            }
+        } catch (error) {
+            console.error("Checkout error:", error);
+            toast.error("Failed to place order. Please try again.");
+        } finally {
+            setIsProcessingOrder(false);
+        }
+    };
 
     return (
         <Sheet>
@@ -76,9 +184,14 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
                                                 <p className="font-[Grafiels] text-[14px] line-clamp-2">{item.name}</p>
-                                                <p className="text-[13px] text-[#057A37]">₹{(item.price * item.quantity).toLocaleString("en-IN")}</p>
+                                                <p className="text-[13px] text-[#057A37]">₹{Math.round(item.price * item.quantity).toLocaleString("en-IN")}</p>
                                             </div>
                                             <p className="text-[11px] text-[#747474] mt-1">Qty: {item.quantity}</p>
+                                            {item.short_description && (
+                                                <p className="text-[10px] text-[#747474] mt-1 line-clamp-1">
+                                                    {item.short_description}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -117,6 +230,7 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                             <DeliveryAddress
                                 key={addressRefreshKey}
                                 onAddAddress={() => setIsAddAddressOpen(true)}
+                                onAddressSelect={setSelectedAddress}
                             />
                         </div>
 
@@ -137,20 +251,10 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                             <div className="bg-[#FFF] px-3 py-1 rounded-full">
                                 <Button
                                     className="text-[#122014] font-normal text-[15px]"
-                                    onClick={() => {
-                                        if (cartItems.length === 0) {
-                                            toast.warning("Your cart is empty!");
-                                            return;
-                                        }
-                                        if (!selectedPayment) {
-                                            toast.warning("Please select a payment method!");
-                                            return;
-                                        }
-                                        toast.success("Placing your order...");
-                                        // TODO: Integrate actual order placement API here
-                                    }}
+                                    onClick={handlePlaceOrder}
+                                    disabled={isProcessingOrder}
                                 >
-                                    Place Order
+                                    {isProcessingOrder ? "Processing..." : "Place Order"}
                                 </Button>
                             </div>
                         </div>

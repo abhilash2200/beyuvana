@@ -180,8 +180,9 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             quantity: 1,
             price: selectedPack.price,
             image: product.image,
+            product_id: product.id, // Add product_id for API integration
         });
-        toast.success(`${product.name} added to cart!`);
+        toast.success(`${product.name} - Pack of ${selectedPack.qty} added to cart!`);
     };
 
     const handleShopNow = () => {

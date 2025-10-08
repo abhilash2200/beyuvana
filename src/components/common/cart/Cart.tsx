@@ -15,7 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 export default function Cart() {
     const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading } = useCart();
-    const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const total = cartItems.reduce((acc, item) => acc + Math.round(item.price * item.quantity), 0);
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [showConfetti, setShowConfetti] = React.useState(false);
@@ -206,11 +206,20 @@ export default function Cart() {
                                                 <div className="flex justify-between items-center mt-2">
                                                     <div className="flex items-center gap-2">
                                                         <p className="font-normal text-[14px] text-[#057A37]">
-                                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                                                            ₹{Math.round(item.price * item.quantity).toLocaleString("en-IN")}
                                                         </p>
                                                         <span className="text-[11px]">|</span>
                                                         <p className="text-[#747474] text-[10px]">
-                                                            MRP ₹ 1,499.00 <span className="text-[#057A37]">20% Off</span>
+                                                            {item.mrp_price && item.discount_percent ? (
+                                                                <>
+                                                                    MRP ₹{Math.round(item.mrp_price * item.quantity).toLocaleString("en-IN")}
+                                                                    <span className="text-[#057A37]"> {item.discount_percent}% Off</span>
+                                                                </>
+                                                            ) : (
+                                                                <span className="text-[#747474]">
+                                                                    {item.product_id ? "Loading pricing..." : "No product ID"}
+                                                                </span>
+                                                            )}
                                                         </p>
                                                     </div>
 
@@ -248,10 +257,10 @@ export default function Cart() {
 
                                                 <div className="flex justify-between items-center mt-2">
                                                     <p className="text-[10px] text-[#747474]">
-                                                        Crafted with 21 synergistic, clinically studied botanicals that work from within.
+                                                        {item.short_description || item.product_description || "Loading product details..."}
                                                     </p>
                                                     <p className="text-[14px] text-[#057A37]">
-                                                        ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                                                        ₹{Math.round(item.price * item.quantity).toLocaleString("en-IN")}
                                                     </p>
                                                 </div>
                                             </div>

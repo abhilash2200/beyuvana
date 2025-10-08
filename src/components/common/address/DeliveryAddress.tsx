@@ -220,7 +220,7 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="flex justify-between items-start mb-1">
+                  <div className="flex justify-between items-center mb-1">
                     <div className="flex items-center gap-2">
                       <p className="font-normal text-gray-800 capitalize text-[13px]">{address.fullname}</p>
                     </div>

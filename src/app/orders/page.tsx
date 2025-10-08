@@ -10,11 +10,48 @@ import { ordersApi, Order } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "react-toastify";
 
+// Helper function to handle image URLs with proper fallback
+const getImageUrl = (imageUrl: string): string => {
+  if (!imageUrl || imageUrl.trim() === "") {
+    return "/assets/img/product-1.png";
+  }
+
+  // If it's already a full URL or starts with /, use as is
+  if (imageUrl.startsWith("http") || imageUrl.startsWith("/")) {
+    return imageUrl;
+  }
+
+  // Otherwise, assume it's a filename and prepend the assets path
+  return `/assets/img/${imageUrl}`;
+};
+
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user, sessionKey } = useAuth();
+
+  // Add test function for navigation
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as unknown as Record<string, unknown>).testOrderNavigation = (orderId?: string) => {
+        const testId = orderId || (orders.length > 0 ? orders[0].id : '81');
+        const encodedId = encodeURIComponent(testId);
+        const url = `/orders/${encodedId}`;
+
+        console.log("🧪 Testing Order Navigation:", {
+          orderId: testId,
+          encodedId,
+          url,
+          ordersCount: orders.length
+        });
+
+        // Navigate to the order detail page
+        window.location.href = url;
+        return { orderId: testId, url };
+      };
+    }
+  }, [orders]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -145,53 +182,77 @@ const OrdersPage = () => {
             </div>
           )}
 
-          {!loading && !error && orders.map((order) => (
-            <Link
-              key={order.id}
-              href={`/orders/${order.id}`}
-              className="block py-5 border-b border-gray-300 border-dashed hover:bg-gray-50 transition"
-            >
-              <div className="flex flex-wrap justify-between items-center">
-                {/* Left product info */}
-                <div className="w-full md:w-[40%]">
-                  <div className="flex gap-3">
-                    {/* Placeholder with Image inside */}
-                    <div className="md:w-28 md:h-28 w-20 h-20 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
-                      <Image
-                        src={order.image}
-                        width={120}
-                        height={120}
-                        alt={order.productName}
-                        className="object-contain max-h-full max-w-full"
-                      />
+          {!loading && !error && orders.map((order) => {
+            // Validate order ID before creating link
+            const orderId = order.id?.trim();
+            if (!orderId) {
+              console.warn("Order missing ID:", order);
+              return null;
+            }
+
+            return (
+              <Link
+                key={order.id}
+                href={`/orders/${encodeURIComponent(orderId)}`}
+                className="block py-5 border-b border-gray-300 border-dashed hover:bg-gray-50 transition"
+              >
+                <div className="flex flex-wrap justify-between items-center">
+                  {/* Left product info */}
+                  <div className="w-full md:w-[40%]">
+                    <div className="flex gap-3">
+                      {/* Placeholder with Image inside */}
+                      <div className="md:w-28 md:h-28 w-20 h-20 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
+                        <Image
+                          src={getImageUrl(order.image)}
+                          width={120}
+                          height={120}
+                          alt={order.productName}
+                          className="object-contain max-h-full max-w-full"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            console.log("🖼️ Image failed to load, using fallback:", {
+                              originalSrc: order.image,
+                              fallbackSrc: "/assets/img/product-1.png"
+                            });
+                            target.src = "/assets/img/product-1.png";
+                          }}
+                          onLoad={() => {
+                            console.log("🖼️ Image loaded successfully:", {
+                              orderId: order.id,
+                              productName: order.productName,
+                              imageSrc: order.image
+                            });
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex-1 flex flex-col justify-between">
+                        <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
+                        <h2 className="font-[Grafiels] md:text-[18px] text-[16px] md:line-clamp-2 line-clamp-1 leading-tight mb-1 text-[#1A2819]">{order.productName}</h2>
+                        <p className="text-gray-600 md:text-[15px] text-[13px] line-clamp-2">{order.description}</p>
+                      </div>
+                      <div className="flex items-center justify-center md:hidden">
+                        <span><FaChevronRight className="text-black" /></span>
+                      </div>
                     </div>
 
-                    <div className="flex-1 flex flex-col justify-between">
-                      <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
-                      <h2 className="font-[Grafiels] md:text-[18px] text-[16px] md:line-clamp-2 line-clamp-1 leading-tight mb-1 text-[#1A2819]">{order.productName}</h2>
-                      <p className="text-gray-600 md:text-[15px] text-[13px] line-clamp-2">{order.description}</p>
-                    </div>
-                    <div className="flex items-center justify-center md:hidden">
-                      <span><FaChevronRight className="text-black" /></span>
-                    </div>
                   </div>
 
+                  {/* Price */}
+                  <div className="w-full md:w-[20%] hidden md:block">
+                    <p className="font-semibold">₹{order.price.toFixed(2)}</p>
+                  </div>
+
+                  {/* Status */}
+                  <div className="w-full md:w-[20%] hidden md:block">
+                    {getStatusUI(order.status, order.date)}
+                  </div>
+
+
                 </div>
-
-                {/* Price */}
-                <div className="w-full md:w-[20%] hidden md:block">
-                  <p className="font-semibold">₹{order.price.toFixed(2)}</p>
-                </div>
-
-                {/* Status */}
-                <div className="w-full md:w-[20%] hidden md:block">
-                  {getStatusUI(order.status, order.date)}
-                </div>
-
-
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

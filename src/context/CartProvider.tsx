@@ -9,7 +9,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { cartApi, CartItem } from "@/lib/api";
+import { cartApi, CartItem, productsApi, ProductDetailsResponse } from "@/lib/api";
 import { useAuth } from "./AuthProvider";
 import { toast } from "react-toastify";
 
@@ -21,6 +21,15 @@ type LocalCartItem = {
   quantity: number;
   image?: string;
   product_id?: string; // Add product_id for API integration
+  // Pack-specific information
+  pack_qty?: number; // The pack size (1, 2, 3, 4, etc.)
+  // Enhanced product details from product details API
+  product_details?: ProductDetailsResponse;
+  mrp_price?: number;
+  discount_percent?: string;
+  short_description?: string;
+  product_description?: string;
+  in_stock?: string;
 };
 
 type CartContextType = {
@@ -33,6 +42,7 @@ type CartContextType = {
   updateItemQuantity: (id: string, qty: number) => Promise<void>;
   syncWithServer: () => Promise<void>;
   refreshCart: () => Promise<void>; // Manual refresh function
+  refreshProductDetails: () => Promise<void>; // Refresh product details for all items
   loading: boolean;
 };
 
@@ -43,29 +53,109 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<LocalCartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [authInitialized, setAuthInitialized] = useState(false);
+  const [cartLoadedFromStorage, setCartLoadedFromStorage] = useState(false);
+  const [isPageRefresh, setIsPageRefresh] = useState(true); // Track if this is a page refresh
   const { user, sessionKey } = useAuth();
 
   // Store timeout references to clear them
   const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
-  // Load cart from localStorage on mount
+  // Function to fetch product details for a cart item
+  const fetchProductDetails = useCallback(async (productId: string, userId?: string | number): Promise<ProductDetailsResponse | null> => {
+    try {
+      const response = await productsApi.getDetails(productId, userId);
+      if (response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      console.warn(`Failed to fetch product details for product ${productId}:`, error);
+      return null;
+    }
+  }, []);
+
+  // Function to enhance cart items with product details
+  const enhanceCartItemsWithDetails = useCallback(async (items: LocalCartItem[]): Promise<LocalCartItem[]> => {
+    if (!user || !sessionKey) {
+      return items;
+    }
+
+    const enhancedItems = await Promise.all(
+      items.map(async (item) => {
+        // Always fetch fresh product details to ensure we have the latest pricing
+        if (!item.product_id) {
+          return item;
+        }
+
+        const productDetails = await fetchProductDetails(item.product_id, user.id);
+        if (productDetails) {
+          // Find the matching price tier based on pack size (not quantity)
+          // For pack-specific items, we use the pack_qty to find the correct tier
+          const packSize = item.pack_qty || item.quantity;
+          const matchingPriceTier = productDetails.prices?.find(tier =>
+            Number(tier.qty) === packSize
+          );
+
+          return {
+            ...item,
+            product_details: productDetails,
+            // Use the matching price tier data for the pack size
+            mrp_price: matchingPriceTier ? parseFloat(matchingPriceTier.mrp) : 0,
+            discount_percent: matchingPriceTier?.discount_off_inpercent,
+            price: matchingPriceTier ? parseFloat(matchingPriceTier.final_price) : item.price,
+            short_description: productDetails.short_description,
+            product_description: productDetails.product_description,
+            in_stock: productDetails.in_stock,
+            // Update image if available from product details
+            image: productDetails.image?.[0] || item.image,
+          };
+        }
+        return item;
+      })
+    );
+
+    return enhancedItems;
+  }, [user, sessionKey, fetchProductDetails]);
+
+  // Load cart from localStorage on mount (only once)
   useEffect(() => {
     try {
-      const storedCart = localStorage.getItem("cart");
-      if (storedCart) {
-        const parsedCart = JSON.parse(storedCart);
-        if (Array.isArray(parsedCart)) {
-          setCartItems(parsedCart);
+      // Try to load user-specific cart if user is available
+      if (user?.id) {
+        const userCartKey = `cart_${user.id}`;
+        const storedCart = localStorage.getItem(userCartKey);
+        if (storedCart) {
+          const parsedCart = JSON.parse(storedCart);
+          if (Array.isArray(parsedCart)) {
+            console.log(`Loaded cart for user ${user.id} from localStorage:`, parsedCart);
+            setCartItems(parsedCart);
+          }
+        }
+      } else {
+        // If no user, try to load from legacy cart key for backward compatibility
+        const storedCart = localStorage.getItem("cart");
+        if (storedCart) {
+          const parsedCart = JSON.parse(storedCart);
+          if (Array.isArray(parsedCart)) {
+            console.log("Loaded legacy cart from localStorage:", parsedCart);
+            setCartItems(parsedCart);
+          }
         }
       }
+      setCartLoadedFromStorage(true);
     } catch (error) {
       console.warn("Failed to load cart from localStorage:", error);
       // Clear invalid cart data
       try {
-        localStorage.removeItem("cart");
+        if (user?.id) {
+          localStorage.removeItem(`cart_${user.id}`);
+        } else {
+          localStorage.removeItem("cart");
+        }
       } catch { }
+      setCartLoadedFromStorage(true);
     }
-  }, []);
+  }, [user?.id]); // Re-run when user changes
 
   // Track when auth is initialized to prevent premature cart clearing
   useEffect(() => {
@@ -82,30 +172,99 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, sessionKey]);
 
+  // Mark that this is no longer a page refresh once auth is initialized
+  useEffect(() => {
+    if (authInitialized) {
+      setIsPageRefresh(false);
+    }
+  }, [authInitialized]);
+
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     try {
-      localStorage.setItem("cart", JSON.stringify(cartItems));
+      if (user?.id) {
+        // Save to user-specific cart key
+        const userCartKey = `cart_${user.id}`;
+        localStorage.setItem(userCartKey, JSON.stringify(cartItems));
+        console.log(`Saved cart for user ${user.id} to localStorage`);
+      } else {
+        // Fallback to legacy cart key for non-authenticated users
+        localStorage.setItem("cart", JSON.stringify(cartItems));
+        console.log("Saved cart to legacy localStorage key");
+      }
     } catch (error) {
       console.warn("Failed to save cart to localStorage:", error);
     }
-  }, [cartItems]);
+  }, [cartItems, user?.id]);
 
-  // Sync with server when user logs in (only after auth is initialized)
+  // Handle user login - restore user-specific cart
   useEffect(() => {
-    if (authInitialized && user && sessionKey) {
+    if (authInitialized && user && sessionKey && cartLoadedFromStorage) {
+      console.log(`User ${user.id} logged in, checking for user-specific cart`);
+
+      // Check if there's a user-specific cart to restore
+      const userCartKey = `cart_${user.id}`;
+      const userCart = localStorage.getItem(userCartKey);
+
+      if (userCart) {
+        try {
+          const parsedUserCart = JSON.parse(userCart);
+          if (Array.isArray(parsedUserCart) && parsedUserCart.length > 0) {
+            console.log(`Restoring cart for user ${user.id}:`, parsedUserCart);
+            setCartItems(parsedUserCart);
+
+            // Enhance with product details
+            enhanceCartItemsWithDetails(parsedUserCart).then((enhancedItems) => {
+              setCartItems(enhancedItems);
+            });
+          }
+        } catch (error) {
+          console.warn(`Failed to parse user cart for ${user.id}:`, error);
+          localStorage.removeItem(userCartKey);
+        }
+      }
+    }
+  }, [user, sessionKey, authInitialized, cartLoadedFromStorage, enhanceCartItemsWithDetails]);
+
+  // Enhance cart items with product details when user logs in
+  useEffect(() => {
+    if (authInitialized && user && sessionKey && cartLoadedFromStorage && cartItems.length > 0) {
+      console.log("Enhancing cart items with product details");
+      enhanceCartItemsWithDetails(cartItems).then((enhancedItems) => {
+        setCartItems(enhancedItems);
+      });
+    }
+  }, [user, sessionKey, authInitialized, cartLoadedFromStorage, enhanceCartItemsWithDetails]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync with server when user logs in (only after auth is initialized and cart is loaded)
+  useEffect(() => {
+    if (authInitialized && user && sessionKey && cartLoadedFromStorage) {
       syncWithServer();
     }
-  }, [user, sessionKey, authInitialized]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, sessionKey, authInitialized, cartLoadedFromStorage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When user logs out, immediately clear local cart and storage
-  // Only clear if auth is initialized to prevent clearing on page reload
+  // Only clear if auth is initialized and it's not a page refresh
   useEffect(() => {
-    if (authInitialized && (!user || !sessionKey)) {
+    if (authInitialized && (!user || !sessionKey) && !isPageRefresh) {
+      // This is a real logout, clear the cart
+      console.log("User logged out, clearing cart");
       setCartItems([]);
-      try { localStorage.removeItem("cart"); } catch { }
+      try {
+        // Clear both legacy and user-specific cart keys
+        localStorage.removeItem("cart");
+        // Clear all user-specific cart keys (in case there are multiple users)
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith("cart_")) {
+            localStorage.removeItem(key);
+          }
+        });
+      } catch { }
+    } else if (authInitialized && (!user || !sessionKey) && isPageRefresh) {
+      // This is a page refresh, don't clear the cart
+      console.log("Page refresh detected, keeping cart");
     }
-  }, [user, sessionKey, authInitialized]);
+  }, [user, sessionKey, authInitialized, isPageRefresh]);
 
   const addToCart = async (item: LocalCartItem) => {
     setLoading(true);
@@ -137,7 +296,47 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
               : i
           );
         } else {
-          return [...prev, item];
+          // Extract pack size from item ID (format: productId-packSize)
+          const packSize = item.id.includes('-') ? parseInt(item.id.split('-')[1]) : item.quantity;
+
+          // Add new item with pack information
+          const newItem = {
+            ...item,
+            pack_qty: packSize
+          };
+          const newItems = [...prev, newItem];
+
+          // Fetch product details for the new item if it has a product_id
+          if (item.product_id && user) {
+            fetchProductDetails(item.product_id, user.id).then((productDetails) => {
+              if (productDetails) {
+                // Find the matching price tier based on pack size
+                const matchingPriceTier = productDetails.prices?.find(tier =>
+                  Number(tier.qty) === packSize
+                );
+
+                setCartItems((currentItems) =>
+                  currentItems.map((currentItem) =>
+                    currentItem.id === item.id
+                      ? {
+                        ...currentItem,
+                        product_details: productDetails,
+                        // Use the matching price tier data for the pack size
+                        mrp_price: matchingPriceTier ? parseFloat(matchingPriceTier.mrp) : 0,
+                        discount_percent: matchingPriceTier?.discount_off_inpercent,
+                        price: matchingPriceTier ? parseFloat(matchingPriceTier.final_price) : currentItem.price,
+                        short_description: productDetails.short_description,
+                        product_description: productDetails.product_description,
+                        in_stock: productDetails.in_stock,
+                        image: productDetails.image?.[0] || currentItem.image,
+                      }
+                      : currentItem
+                  )
+                );
+              }
+            });
+          }
+          return newItems;
         }
       });
     } catch (error) {
@@ -180,9 +379,30 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         timeoutRefs.current.set(id, timeout);
       }
 
-      return prev.map((i) =>
-        i.id === id ? { ...i, quantity: newQuantity } : i
-      );
+      // Update quantity and recalculate price tier if product details are available
+      return prev.map((i) => {
+        if (i.id === id) {
+          const updatedItem = { ...i, quantity: newQuantity };
+
+          // For pack-specific items, don't recalculate price tier on quantity change
+          // The price tier is based on pack size, not quantity
+          // Only recalculate if this is not a pack-specific item
+          if (i.product_details?.prices && !i.pack_qty) {
+            const matchingPriceTier = i.product_details.prices.find(tier =>
+              Number(tier.qty) === newQuantity
+            );
+
+            if (matchingPriceTier) {
+              updatedItem.mrp_price = parseFloat(matchingPriceTier.mrp);
+              updatedItem.discount_percent = matchingPriceTier.discount_off_inpercent;
+              updatedItem.price = parseFloat(matchingPriceTier.final_price);
+            }
+          }
+
+          return updatedItem;
+        }
+        return i;
+      });
     });
   }, [user, sessionKey]);
 
@@ -228,9 +448,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           timeoutRefs.current.set(id, timeout);
         }
 
-        return prev.map((i) =>
-          i.id === id ? { ...i, quantity: newQuantity } : i
-        );
+        // Update quantity and recalculate price tier if product details are available
+        return prev.map((i) => {
+          if (i.id === id) {
+            const updatedItem = { ...i, quantity: newQuantity };
+
+            // Recalculate price tier for new quantity if product details exist
+            if (i.product_details?.prices) {
+              const matchingPriceTier = i.product_details.prices.find(tier =>
+                Number(tier.qty) === newQuantity
+              );
+
+              if (matchingPriceTier) {
+                updatedItem.mrp_price = parseFloat(matchingPriceTier.mrp);
+                updatedItem.discount_percent = matchingPriceTier.discount_off_inpercent;
+              }
+            }
+
+            return updatedItem;
+          }
+          return i;
+        });
       }
     });
   }, [user, sessionKey]);
@@ -267,9 +505,30 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         timeoutRefs.current.set(id, timeout);
       }
 
-      return prev.map((i) =>
-        i.id === id ? { ...i, quantity: newQuantity } : i
-      );
+      // Update quantity and recalculate price tier if product details are available
+      return prev.map((i) => {
+        if (i.id === id) {
+          const updatedItem = { ...i, quantity: newQuantity };
+
+          // For pack-specific items, don't recalculate price tier on quantity change
+          // The price tier is based on pack size, not quantity
+          // Only recalculate if this is not a pack-specific item
+          if (i.product_details?.prices && !i.pack_qty) {
+            const matchingPriceTier = i.product_details.prices.find(tier =>
+              Number(tier.qty) === newQuantity
+            );
+
+            if (matchingPriceTier) {
+              updatedItem.mrp_price = parseFloat(matchingPriceTier.mrp);
+              updatedItem.discount_percent = matchingPriceTier.discount_off_inpercent;
+              updatedItem.price = parseFloat(matchingPriceTier.final_price);
+            }
+          }
+
+          return updatedItem;
+        }
+        return i;
+      });
     });
   }, [user, sessionKey]);
 
@@ -316,11 +575,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             image: item.image,
             product_id: item.product_id,
           }));
-          setCartItems(serverCartItems);
+
+          // Enhance cart items with product details
+          const enhancedItems = await enhanceCartItemsWithDetails(serverCartItems);
+          setCartItems(enhancedItems);
         } else {
-          // Empty server cart → start fresh for this user
-          setCartItems([]);
-          try { localStorage.removeItem("cart"); } catch { }
+          // Empty server cart → keep local cart if it exists, don't clear it
+          // This prevents the cart from being cleared on page refresh when server cart is empty
+          console.log("Server cart is empty, keeping local cart if it exists");
+          // Only clear if local cart is also empty (user actually cleared it)
+          if (cartItems.length === 0) {
+            console.log("Both server and local cart are empty, no action needed");
+          } else {
+            console.log("Keeping local cart with", cartItems.length, "items");
+          }
         }
       }
     } catch (error) {
@@ -345,7 +613,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       // Always clear local state
       setCartItems([]);
-      localStorage.removeItem("cart");
+
+      // Clear both legacy and user-specific cart keys
+      try {
+        localStorage.removeItem("cart");
+        if (user?.id) {
+          localStorage.removeItem(`cart_${user.id}`);
+        }
+      } catch { }
 
       toast.success("Cart cleared successfully!");
     } catch (error) {
@@ -363,6 +638,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Manual refresh function for product details
+  const refreshProductDetails = async () => {
+    if (user && sessionKey && cartItems.length > 0) {
+      console.log("Manually refreshing product details for all cart items");
+      const enhancedItems = await enhanceCartItemsWithDetails(cartItems);
+      setCartItems(enhancedItems);
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -375,6 +659,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         updateItemQuantity,
         syncWithServer,
         refreshCart,
+        refreshProductDetails,
         loading,
       }}
     >

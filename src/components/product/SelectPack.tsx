@@ -176,8 +176,9 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 quantity: 1,
                 price: selectedPack.price,
                 image: product.image,
+                product_id: product.id, // Add product_id for API integration
             });
-            toast.success(`${product.name} added to cart!`);
+            toast.success(`${product.name} - Pack of ${selectedPack.qty} added to cart!`);
         } catch {
             toast.error("Failed to add to cart. Please try again.");
         }

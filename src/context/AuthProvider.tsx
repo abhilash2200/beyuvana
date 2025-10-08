@@ -73,6 +73,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Always clean up local state
       localStorage.removeItem("user");
       localStorage.removeItem("session_key");
+
+      // Clear user-specific cart data
+      if (user?.id) {
+        try {
+          localStorage.removeItem(`cart_${user.id}`);
+          console.log(`Cleared cart data for user ${user.id} on logout`);
+        } catch (error) {
+          console.warn("Failed to clear user cart data:", error);
+        }
+      }
+
       setUser(null);
       setSessionKey(null);
     }
