@@ -10,26 +10,12 @@ import { ordersApi, Order } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "react-toastify";
 
-// Helper function to handle image URLs with proper fallback
-const getImageUrl = (imageUrl: string): string => {
-  if (!imageUrl || imageUrl.trim() === "") {
-    return "/assets/img/product-1.png";
-  }
-
-  // If it's already a full URL or starts with /, use as is
-  if (imageUrl.startsWith("http") || imageUrl.startsWith("/")) {
-    return imageUrl;
-  }
-
-  // Otherwise, assume it's a filename and prepend the assets path
-  return `/assets/img/${imageUrl}`;
-};
-
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user, sessionKey } = useAuth();
+
 
   // Add test function for navigation
   useEffect(() => {
@@ -71,6 +57,7 @@ const OrdersPage = () => {
 
         if (response.data && Array.isArray(response.data)) {
           setOrders(response.data);
+
           if (response.data.length === 0) {
             // Don't show toast for empty orders, just show the message
             console.log("No orders found");
@@ -200,30 +187,21 @@ const OrdersPage = () => {
                   {/* Left product info */}
                   <div className="w-full md:w-[40%]">
                     <div className="flex gap-3">
-                      {/* Placeholder with Image inside */}
+                      {/* Product Image */}
                       <div className="md:w-28 md:h-28 w-20 h-20 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
-                        <Image
-                          src={getImageUrl(order.image)}
-                          width={120}
-                          height={120}
-                          alt={order.productName}
-                          className="object-contain max-h-full max-w-full"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            console.log("🖼️ Image failed to load, using fallback:", {
-                              originalSrc: order.image,
-                              fallbackSrc: "/assets/img/product-1.png"
-                            });
-                            target.src = "/assets/img/product-1.png";
-                          }}
-                          onLoad={() => {
-                            console.log("🖼️ Image loaded successfully:", {
-                              orderId: order.id,
-                              productName: order.productName,
-                              imageSrc: order.image
-                            });
-                          }}
-                        />
+                        {order.thumbnail ? (
+                          <Image
+                            src={order.thumbnail}
+                            width={120}
+                            height={120}
+                            alt={order.productName}
+                            className="object-contain max-h-full max-w-full"
+                          />
+                        ) : (
+                          <div className="text-gray-400 text-xs text-center p-2">
+                            No Image
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex-1 flex flex-col justify-between">

@@ -1,22 +1,5 @@
 "use client"
 
-import Image from "next/image";
-
-// Helper function to handle image URLs with proper fallback
-const getImageUrl = (imageUrl: string): string => {
-    if (!imageUrl || imageUrl.trim() === "") {
-        return "/assets/img/product-1.png";
-    }
-
-    // If it's already a full URL or starts with /, use as is
-    if (imageUrl.startsWith("http") || imageUrl.startsWith("/")) {
-        return imageUrl;
-    }
-
-    // Otherwise, assume it's a filename and prepend the assets path
-    return `/assets/img/${imageUrl}`;
-};
-
 interface BillingPriceProps {
     userName: string;
     order: {

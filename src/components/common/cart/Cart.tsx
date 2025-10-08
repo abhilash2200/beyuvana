@@ -271,7 +271,7 @@ export default function Cart() {
                                 <div className="rounded-md text-center">
                                     <div className="flex justify-center gap-4 mb-4">
                                         <button
-                                            className={`px-3 py-1.5 rounded-full border text-[15px] ${selectedPayment === "prepaid"
+                                            className={`px-3 py-1 rounded-full border leading-tight text-[13px] ${selectedPayment === "prepaid"
                                                 ? "border-green-600 bg-green-100"
                                                 : "border-gray-300"
                                                 }`}
@@ -280,7 +280,7 @@ export default function Cart() {
                                             Prepaid
                                         </button>
                                         <button
-                                            className={`px-3 py-1.5 rounded-full border text-[15px] ${selectedPayment === "cod"
+                                            className={`px-3 py-1 rounded-full border leading-tight text-[13px] ${selectedPayment === "cod"
                                                 ? "border-green-600 bg-green-100"
                                                 : "border-gray-300"
                                                 }`}

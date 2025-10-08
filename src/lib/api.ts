@@ -168,6 +168,8 @@ interface Order {
   status: "arriving" | "cancelled" | "delivered";
   date?: string; // cancelled/delivered date
   image: string;
+  thumbnail?: string; // Direct image URL from API
+  product_id?: string; // Add product_id for better product matching
 }
 
 // Raw order shape from backend
@@ -181,9 +183,10 @@ interface BackendOrderItem {
   paid_amount?: string | number;
   gross_amount?: string | number;
   qty?: string | number;
-  thumbnail?: string;
   product_name?: string;
+  product_id?: string | number;
   updated_at?: string;
+  thumbnail?: string; // Direct image URL from API
 }
 
 interface SaveAddressRequest {
@@ -299,7 +302,7 @@ interface OrderDetailsData {
     address_id: string;
     completed_date: string | null;
     remarks: string | null;
-    thumbnail: string;
+    thumbnail: string; // Direct image URL from API
     shipment_shipment_id: string;
     shipment_order_id: string;
     payment_app_type: string;
@@ -876,6 +879,11 @@ export const ordersApi = {
         });
         const rawLocal = respLocal as ApiResponse<BackendOrderItem[]>;
         const listLocal: BackendOrderItem[] = Array.isArray(rawLocal?.data) ? (rawLocal.data as BackendOrderItem[]) : [];
+
+        // Debug: Log the raw backend response to see what fields are available
+        if (isDevelopment && listLocal.length > 0) {
+          console.log("🔍 Raw backend order data:", listLocal[0]);
+        }
         const mappedLocal: Order[] = listLocal.map((o): Order => {
           const id = String(o?.id ?? "");
           const productName = String(o?.product_name ?? o?.order_no ?? "Order");
@@ -889,24 +897,19 @@ export const ordersApi = {
               ? "cancelled"
               : "arriving";
           const date = String(o?.created_date ?? o?.updated_at ?? "");
-          // Handle image URL with proper fallback
-          const thumbnail = String(o?.thumbnail ?? "");
-          const image = thumbnail && thumbnail.trim() !== ""
-            ? thumbnail.startsWith("http") || thumbnail.startsWith("/")
-              ? thumbnail
-              : `/assets/img/${thumbnail}`
-            : "/assets/img/product-1.png";
+          // Use thumbnail from API response, fallback to default image
+          const image = o?.thumbnail || "/assets/img/product-1.png";
+          const thumbnail = o?.thumbnail;
+          const product_id = o?.product_id ? String(o.product_id) : undefined;
 
-          // Debug logging for image URLs
-          if (isDevelopment) {
-            console.log("🖼️ Order Image Processing:", {
-              orderId: id,
-              productName,
-              thumbnail,
-              finalImage: image
-            });
-          }
-          return { id, productName, description, price, status: statusMapped, date, image };
+          console.log("🔍 Order mapping:", {
+            orderId: id,
+            productName,
+            product_id,
+            hasProductId: !!product_id
+          });
+
+          return { id, productName, description, price, status: statusMapped, date, image, thumbnail, product_id };
         });
         return { resp: respLocal, mapped: mappedLocal } as { resp: ApiResponse<BackendOrderItem[]>; mapped: Order[] };
       }

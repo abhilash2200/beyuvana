@@ -2,7 +2,6 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PiFilePdfBold } from "react-icons/pi";
@@ -35,21 +34,6 @@ const sanitizeOrderId = (id: string): string => {
     const sanitized = decoded.replace(/[^a-zA-Z0-9\-_]/g, '');
 
     return sanitized;
-};
-
-// Helper function to handle image URLs with proper fallback
-const getImageUrl = (imageUrl: string): string => {
-    if (!imageUrl || imageUrl.trim() === "") {
-        return "/assets/img/product-1.png";
-    }
-
-    // If it's already a full URL or starts with /, use as is
-    if (imageUrl.startsWith("http") || imageUrl.startsWith("/")) {
-        return imageUrl;
-    }
-
-    // Otherwise, assume it's a filename and prepend the assets path
-    return `/assets/img/${imageUrl}`;
 };
 
 const OrderDetailPage = () => {
@@ -85,6 +69,7 @@ const OrderDetailPage = () => {
             setUserName("User");
         }
     }, []);
+
 
     // Fetch order details from API
     useEffect(() => {
@@ -138,21 +123,10 @@ const OrderDetailPage = () => {
                     // Convert API order to local format for compatibility
                     const firstItem = data.item_list[0];
                     if (firstItem) {
-                        // Handle image URL with proper fallback
-                        const itemImage = getImageUrl(firstItem.image);
-
-                        // Debug logging for image URLs
-                        console.log("🖼️ Order Detail Image Processing:", {
-                            orderId: data.order_details.id,
-                            productName: firstItem.product_name,
-                            originalImage: firstItem.image,
-                            finalImage: itemImage
-                        });
-
                         const localOrder: Order = {
                             id: data.order_details.id,
                             productName: firstItem.product_name,
-                            productImage: itemImage,
+                            productImage: data.order_details.thumbnail || firstItem.image || "", // Use thumbnail from API
                             shortdecs: `${firstItem.product_name} - ${firstItem.product_code}`,
                             quantity: parseInt(firstItem.qty),
                             status: data.order_details.status === "PENDING" ? "Processing" :
@@ -306,17 +280,21 @@ const OrderDetailPage = () => {
             <div className="flex flex-col md:flex-row items-center gap-6 border-b md:pb-6 pb-4">
                 <div className="flex gap-4 flex-1">
                     <div className="relative md:w-28 md:h-28 w-20 h-20">
-                        <Image
-                            src={getImageUrl(order.productImage)}
-                            alt={order.productName}
-                            width={120}
-                            height={120}
-                            className="rounded border"
-                            onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = "/assets/img/product-1.png";
-                            }}
-                        />
+                        {order.productImage ? (
+                            <Image
+                                src={order.productImage}
+                                alt={order.productName}
+                                width={120}
+                                height={120}
+                                className="rounded border"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gray-200 rounded border flex items-center justify-center">
+                                <div className="text-gray-400 text-xs text-center p-2">
+                                    No Image
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex-1 flex flex-col justify-between md:text-[18px] text-[16px]">
