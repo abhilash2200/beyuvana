@@ -16,7 +16,7 @@ const Builder = ({ product }: { product: Product }) => {
           type: "loop",
           perPage: 2,
           autoplay: true,
-          interval: 4000,
+          interval: 1500,
           padding: "1rem",
           breakpoints: {
             1024: { perPage: 2 },
@@ -37,7 +37,7 @@ const Builder = ({ product }: { product: Product }) => {
                   width={334}
                   height={180}
                   alt={item.title}
-                  className="w-full h-[180px] object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div

@@ -333,16 +333,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/compare-11.png",
-        title: "Lines that used to stay... started to fade.",
-        desc: "I noticed the difference by week 4. My skin felt tighter, especially around the eyes and mouth. Now, even without makeup, the fine lines are visibly reduced.",
-        bgColor: "#122014",
-        headingColor: "#FFFFFF",
-        paraColor: "#FFFFFF",
-      },
-      {
-        id: 3,
-        img: "/assets/img/product-details/compare-11.png",
+        img: "/assets/img/product-details/compare-13.png",
         title: "Lines that used to stay... started to fade.",
         desc: "I noticed the difference by week 4. My skin felt tighter, especially around the eyes and mouth. Now, even without makeup, the fine lines are visibly reduced.",
         bgColor: "#122014",
@@ -353,7 +344,7 @@ export const fallbackProducts: Product[] = [
     builder: [
       {
         id: 1,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/1.png",
         title: "Noticing early signs of aging",
         desc: "Fine lines, dryness, and dullness are common after 25. BEYUVANA™ delivers Glutathione, Hyaluronic Acid, and CoQ10 to deeply hydrate, support collagen, and visibly improve texture. ",
         bgColor: "#CFE9D3",
@@ -362,7 +353,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/2.png",
         title:
           "Young Professionals dealing with stress, screen time & pollution",
         desc: "Ashwagandha, Green Tea, and Astaxanthin combat oxidative stress, pollution damage, and fatigue-related skin aging — while balancing internal stress hormones.",
@@ -372,7 +363,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 3,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/3.png",
         title: "Vegetarians avoiding animal collagen",
         desc: "Formulated with L-Lysine, Vitamin C, and Bamboo Extract, BEYUVANA™ stimulates your natural collagen production — no bovine or marine collagen needed.",
         bgColor: "#CFE9D3",
@@ -381,7 +372,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 4,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/4.png",
         title: "Wellness Seekers focused on holistic skin health",
         desc: "Adaptogens, antioxidants, and gut-friendly herbs like Amla and Aloe Vera support the gutskin axis, hormone balance, and full-body skin glow from within.",
         bgColor: "#CFE9D3",
@@ -390,7 +381,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 5,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/5.png",
         title: "Moms & Busy Individuals needing easy, smart self-care",
         desc: "One sachet a day delivers 21 synergistic actives including Licorice, Grape Seed Extract, and Hyaluronic Acid — making glow and firmness part of your daily routine.",
         bgColor: "#CFE9D3",
@@ -399,7 +390,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 6,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/6.png",
         title: "Anyone avoiding, sugar, or animal-based products",
         desc: "Enriched with plant-based actives, sugar-free, and gelatin-free — every ingredient is purposeful, and designed to nourish your skin at every level. ",
         bgColor: "#CFE9D3",
@@ -408,7 +399,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 7,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/7.png",
         title: "Those Seeking a Natural, Lasting Glow",
         desc: "Glutathione, Amla, and Astaxanthin work together to brighten dull skin, enhance radiance, and promote even skin tone — naturally and gently. ",
         bgColor: "#CFE9D3",
@@ -417,7 +408,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 8,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/8.png",
         title: "Those Battling Pigmentation & Uneven Tone",
         desc: "Licorice, Grape Seed Extract, and Vitamin C help reduce hyperpigmentation, sun damage, and dark spots — supporting a more even, luminous complexion over time.",
         bgColor: "#CFE9D3",
@@ -426,7 +417,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 9,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/9.png",
         title: "Those with Gut Issues Affecting Skin Health",
         desc: "Amla, and adaptogenic herbs support the gut-skin axis by reducing inflammation, improving digestion, and promoting clearer, healthier-looking skin from within ",
         bgColor: "#CFE9D3",
@@ -466,7 +457,7 @@ export const fallbackProducts: Product[] = [
         label: "Stress",
         description:
           "High cortisol levels from stress quietly slow down your skin’s ability to heal, break down collagen faster, and reduce glow — leading to visible aging and loss of youthful firmness.",
-        img: "/assets/img/product-details/aging-1.png",
+        img: "/assets/img/product-details/mstress.png",
         stats: [
           {
             value: "43.5%",
@@ -491,7 +482,7 @@ export const fallbackProducts: Product[] = [
         label: "Pollution",
         description:
           "Pollution silently accelerates skin aging by triggering oxidative stress, chronic inflammation, and weakening the skin’s protective barrier — leading to dullness, sensitivity, and premature loss of firmness and radiance. ",
-        img: "/assets/img/product-details/aging-1.png",
+        img: "/assets/img/product-details/mpollution.png",
         stats: [
           {
             value: "20%",
@@ -516,7 +507,7 @@ export const fallbackProducts: Product[] = [
         label: "UV Radiation",
         description:
           "UV Radiation deeply damages the skin by breaking down collagen and elastin — resulting in premature wrinkles, loss of firmness, and uneven tone that dulls your natural radiance over time. ",
-        img: "/assets/img/product-details/aging-1.png",
+        img: "/assets/img/product-details/uv-radiation.png",
         stats: [
           {
             value: "80%",
@@ -541,7 +532,7 @@ export const fallbackProducts: Product[] = [
         label: "Disrupted Sleep Pattern",
         description:
           "Disrupted sleep patterns impair the skin’s overnight renewal cycle, increasing cortisol and accelerating collagen loss — leading to visible dullness, dryness, and early signs of aging. ",
-        img: "/assets/img/product-details/aging-1.png",
+        img: "/assets/img/product-details/disruptive-sleep-pattern.png",
         stats: [
           {
             value: "35%",
@@ -566,7 +557,7 @@ export const fallbackProducts: Product[] = [
         label: "Poor Gut Health",
         description:
           "An imbalanced gut disrupts nutrient absorption, triggers inflammation, and weakens the skin barrier — leading to breakouts, uneven tone, and loss of natural glow from within.",
-        img: "/assets/img/product-details/aging-1.png",
+        img: "/assets/img/product-details/poor-gut-health.png",
         stats: [
           {
             value: "40%",
@@ -732,7 +723,7 @@ export const fallbackProducts: Product[] = [
     plants: [
       {
         id: 1,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/astaxanthin.gif",
         title: "Ashwagandha Extract",
         description:
           "Rich in natural Vitamin C, it boosts collagen synthesis and combats oxidative stress—promoting firmer, more even-toned skin. ",
@@ -744,7 +735,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/bamboo.gif",
         title: "Bamboo Extract",
         description:
           "High in silica, it strengthens skin structure and supports collagen formation, improving elasticity and resilience. ",
@@ -756,7 +747,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 3,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/l-lysine.gif",
         title: "L-Lysine",
         description:
           "Essential amino acid that supports collagen cross-linking, enhancing skin firmness and reducing signs of sagging. ",
@@ -768,7 +759,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 4,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/l-plorine.gif",
         title: "L-Proline",
         description:
           "Vital for collagen regeneration, it helps maintain skin texture, elasticity, and smoothness. ",
@@ -780,7 +771,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 5,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/horstail-plant.gif",
         title: "Horsetail Extract",
         description:
           "Natural source of silica and antioxidants that reinforce skin structure and combat agerelated degradation.",
@@ -792,7 +783,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 6,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/coenzyme.gif",
         title: "Coenzyme Q10",
         description:
           "Powers cellular energy, reduces wrinkle depth, and protects skin from oxidative damage.",
@@ -804,7 +795,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 7,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/astaxanthin.gif",
         title: "Astaxanthin",
         description:
           "One of the most potent natural antioxidants—helps reduce UV damage, boosts elasticity, and fights premature aging. ",
@@ -816,7 +807,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 8,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/reserveratrol.gif",
         title: "Resveratrol",
         description:
           "A powerful polyphenol that neutralizes free radicals and supports youthful skin regeneration.",
@@ -828,7 +819,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 9,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/glutathione.gif",
         title: "Glutathione",
         description:
           "Brightens skin, reduces pigmentation, and supports liver detox to promote a clearer, radiant complexion. ",
@@ -840,7 +831,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 10,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/hyaluronic-acid.gif",
         title: "Hyaluronic Acid",
         description:
           "Holds up to 1000x its weight in water—deeply hydrates and plumps skin for smoother texture and suppleness.",
@@ -852,7 +843,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 11,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/vitamin-c.gif",
         title: "Vitamin C",
         description:
           "Essential for collagen biosynthesis, it reduces dullness and pigmentation while enhancing glow.",
@@ -864,7 +855,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 12,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/vitamin-e.gif",
         title: "Vitamin E",
         description:
           "Antioxidant that protects against environmental damage, soothes inflammation, and promotes moisture retention.",
@@ -876,7 +867,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 13,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/biotin.gif",
         title: "Biotin",
         description:
           "Supports healthy skin, hair, and nails by strengthening keratin structure and maintaining hydration. ",
@@ -888,7 +879,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 14,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/zinc.gif",
         title: "Zinc",
         description:
           "Promotes healing, reduces acne, and balances sebum production for clearer skin.",
@@ -900,7 +891,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 15,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/selenium.gif",
         title: "Selenium",
         description:
           "Antioxidant that protects skin cells, enhances elasticity, and supports immune and thyroid health.",
@@ -912,7 +903,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 16,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/grape.gif",
         title: "Grape Seed Extract",
         description:
           "Rich in flavonoids, it enhances collagen health and defends against sun damage and inflammation.",
@@ -924,7 +915,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 17,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/pomegranate.gif",
         title: "Pomegranate Extract",
         description:
           "Packed with polyphenols, it boosts regeneration, fights pigmentation, and enhances glow.",
@@ -936,7 +927,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 18,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/tea.gif",
         title: "Green Tea Extract",
         description:
           "Reduces irritation, shields skin from pollution, and combats premature aging with potent antioxidants.",
@@ -948,7 +939,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 19,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/plant.gif",
         title: "Ashwagandha Extract",
         description:
           "Reduces stress-induced aging and cortisol imbalance, supporting hormonal harmony and skin health.",
@@ -960,7 +951,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 20,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/gotu-kola.gif",
         title: "Gotu Kola Extract",
         description:
           "Enhances collagen production, boosts microcirculation, and accelerates wound healing and skin renewal.",
@@ -972,7 +963,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 21,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/shatavari.gif",
         title: "Shatavari Extract",
         description:
           "Balances hormones, reduces inflammation, and improves hydration and skin resilience from within. ",
@@ -984,7 +975,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 22,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/plant.gif",
         title: "Stevia",
         description:
           "zero sugar or aftertaste—keeping the formulation clean and holistic.",
@@ -996,7 +987,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 23,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/plant.gif",
         title: "Pineapple Flavor",
         description:
           "Adds a refreshing tropical taste that makes daily consumption enjoyable. Naturally derived ",
