@@ -17,7 +17,7 @@ interface FaqItem {
 interface ProductDetailsProps {
     name: string
     tagline?: string
-    description?: string
+    description?: string[]
     certificateImg?: string
     faq?: FaqItem[]
     productId?: number
@@ -36,7 +36,9 @@ const ProductDetails = ({ name, tagline, description, certificateImg, faq, produ
                 </div>
             )}
 
-            {description && <p className="text-sm text-gray-500">{description}</p>}
+            {description && description.map((item, index) => (
+                <p key={index} className="text-sm text-gray-500">{item}</p>
+            ))}
 
             {certificateImg && (
                 <div className="flex items-center gap-2">
@@ -47,7 +49,7 @@ const ProductDetails = ({ name, tagline, description, certificateImg, faq, produ
 
             {faq && faq.length > 0 && (
                 <div className="w-full mx-auto">
-                    <Accordion type="single" collapsible defaultValue={faq[0].id} className="space-y-3">
+                    <Accordion type="single" collapsible className="space-y-3">{/*  defaultValue={faq[0].id} */}
                         {faq.map((item) => (
                             <AccordionItem key={item.id} value={item.id}>
                                 <AccordionTrigger
