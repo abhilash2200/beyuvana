@@ -17,7 +17,7 @@ const Page = () => {
         your options.
       </p>
 
-      <h2 className="mt-8 font-semibold text-lg">1. Order Cancellation Window</h2>
+      <h2 className="mt-8 font-semibold text-lg">1.Order Cancelling Window</h2>
       <p className="mt-2">
         Orders can be canceled within <strong>2 hours</strong> of placing the order, before
         the order is processed for shipping. Once the order has been processed,
