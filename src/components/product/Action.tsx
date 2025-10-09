@@ -34,7 +34,7 @@ const Action = ({ product }: { product: Product }) => {
               <div
                 onMouseEnter={() => setHovered(item.id)}
                 onMouseLeave={() => setHovered(null)}
-                className="group rounded-[20px] md:h-[250px] h-auto md:px-6 px-4 md:py-10 py-5 cursor-pointer transition-colors duration-300"
+                className="group rounded-[20px] md:h-[320px] h-auto md:px-6 px-4 md:py-10 py-5 cursor-pointer transition-colors duration-300"
                 style={{
                   backgroundColor: isHovered ? item.hoverBgColor : item.bgColor,
                 }}

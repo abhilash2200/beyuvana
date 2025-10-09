@@ -61,12 +61,12 @@ interface BenefitItem {
 }
 
 const benefits: BenefitItem[] = [
-    { text: "Hydration surges 75%, leaving skin plump and supple." },
-    { text: "Glow rises 70%, restoring luminous radiance." },
-    { text: "Elasticity improves 68%, for a firmer, lifted feel." },
-    { text: "Pigmentation reduces by 60%, revealing clearer, even skin tone." },
-    { text: "Wrinkle depth reduces 62%, visibly softening fine lines." },
-    { text: "Overall ageing markers drop 61%, showcasing comprehensive renewal." },
+    { text: "Hydration surges 65%, leaving skin plump and supple." },
+    { text: "Glow rises 62%, restoring luminous radiance. " },
+    { text: "Elasticity improves 52%, for a firmer, lifted feel. " },
+    { text: "Pigmentation balances 38%, revealing clearer, even skin tone. " },
+    { text: "WWrinkle depth reduces 35%, visibly softening fine lines. " },
+    { text: "Overall ageing markers drop 40%, showcasing comprehensive renewal. " },
 ]
 
 interface StatCard {
@@ -174,8 +174,8 @@ export default function Product1Layout({ product }: { product: Product }) {
                         <div className="w-full md:w-[48%]">
                             <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-3">Experience Visible Transformation in 10 Weeks</h2>
                             <p className="mb-4 leading-relaxed font-normal text-[15px] ">
-                                Our clinical-style progress chart reveals the powerful results of
-                                BEYUVANA™’s advanced anti-ageing formula. Within 10 weeks:
+                            Our clinical-style progress chart reveals the powerful results of BEYUVANA™’s advanced 
+                            anti-ageing formula. Within 10 weeks:
                             </p>
                             <ul>
                                 {benefits.map((item, index) => (
@@ -190,7 +190,8 @@ export default function Product1Layout({ product }: { product: Product }) {
                         </div>
                     </div>
                     <div className="md:text-center text-left py-6">
-                        <p>This transformation is powered by a synergy of botanicals, antioxidants, and Ayurvedic adaptogens — uniting nature and science for timeless, radiant skin.</p>
+                        <p className="leading-relaxed font-normal text-[15px] ">This transformation is powered by a synergy of botanicals, antioxidants, and Ayurvedic 
+                        adaptogens — uniting nature and science for timeless, radiant skin. </p>
                     </div>
                 </div>
                 <div className="md:py-10 py-6">
