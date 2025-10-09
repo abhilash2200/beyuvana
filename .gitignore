@@ -41,5 +41,5 @@ yarn-error.log*
 next-env.d.ts
 
 #assets
-/assets/videos
-/assets/gifs
+/assets/videos/
+/assets/gifs/
