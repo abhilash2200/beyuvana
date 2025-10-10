@@ -20,7 +20,6 @@ import ResProductImg from "./ResponsiveV/ResProductImg";
 import ResSelectPack from "./ResponsiveV/ResSelectPack";
 import ResDropdown from "./ResponsiveV/ResDropdown";
 import { backendProductIdMap } from "@/app/data/productConfigs";
-import InfluencerVideo from "./InfluencerVideos";
 import InfluencerVideos from "./InfluencerVideos";
 
 const data = [
