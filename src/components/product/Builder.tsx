@@ -45,7 +45,7 @@ const Builder = ({ product }: { product: Product }) => {
                 style={{ backgroundColor: item.bgColor }}
               >
                 <h2
-                  className="text-[20px] font-[Grafiels] leading-tight mb-3"
+                  className="text-[22px] font-[Grafiels] leading-tight mb-5"
                   style={{ color: item.headingColor }}
                 >
                   {item.title}

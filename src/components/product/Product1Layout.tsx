@@ -98,7 +98,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                         </div>
                     </div>
                     <div className="w-full md:w-[30%]">
-                        <ProductDetails name={product.name} tagline={product.tagline} description={product.description} certificateImg={product.certificateImg} faq={product.faq} productId={product.id} />
+                        <ProductDetails name={product.name} tagline={product.tagline} description={product.description} certificateImg={product.certificateImg} certificateImages={product.certificateImages} faq={product.faq} productId={product.id} />
                     </div>
                     <div className="w-full md:w-[30%]">
                         <div className="hidden md:block">
@@ -174,8 +174,8 @@ export default function Product1Layout({ product }: { product: Product }) {
                         <div className="w-full md:w-[48%]">
                             <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-3">Experience Visible Transformation in 10 Weeks</h2>
                             <p className="mb-4 leading-relaxed font-normal text-[15px] ">
-                            Our clinical-style progress chart reveals the powerful results of BEYUVANA™’s advanced 
-                            anti-ageing formula. Within 10 weeks:
+                                Our clinical-style progress chart reveals the powerful results of BEYUVANA™’s advanced
+                                anti-ageing formula. Within 10 weeks:
                             </p>
                             <ul>
                                 {benefits.map((item, index) => (
@@ -190,8 +190,8 @@ export default function Product1Layout({ product }: { product: Product }) {
                         </div>
                     </div>
                     <div className="md:text-center text-left py-6">
-                        <p className="leading-relaxed font-normal text-[15px] ">This transformation is powered by a synergy of botanicals, antioxidants, and Ayurvedic 
-                        adaptogens — uniting nature and science for timeless, radiant skin. </p>
+                        <p className="leading-relaxed font-normal text-[15px] ">This transformation is powered by a synergy of botanicals, antioxidants, and Ayurvedic
+                            adaptogens — uniting nature and science for timeless, radiant skin. </p>
                     </div>
                 </div>
                 <div className="md:py-10 py-6">

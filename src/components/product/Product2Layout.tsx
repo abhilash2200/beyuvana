@@ -76,7 +76,7 @@ export default function Product2Layout({ product }: { product: Product }) {
             </div>
           </div>
           <div className="w-full md:w-[30%]">
-            <ProductDetails name={product.name} tagline={product.tagline} description={product.description} certificateImg={product.certificateImg} faq={product.faq} productId={product.id} />
+            <ProductDetails name={product.name} tagline={product.tagline} description={product.description} certificateImg={product.certificateImg} certificateImages={product.certificateImages} faq={product.faq} productId={product.id} />
           </div>
           <div className="w-full md:w-[30%]">
             <div className="hidden md:block">

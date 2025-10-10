@@ -92,6 +92,8 @@ export interface Product {
   tagline?: string;
   description?: string[];
   certificateImg?: string;
+  // Optional gallery shown in the certificates dialog
+  certificateImages?: string[];
   images: string[];
   faq?: FaqItem[];
   customFaq?: FaqItem[]; // New property for custom FAQ data
@@ -118,6 +120,11 @@ export const fallbackProducts: Product[] = [
       "100% vegetarian. Sugar-free. No marine or bovine — only clean, conscious skin nutrition. ",
     ],
     certificateImg: "/assets/img/product-details/certificate.png",
+    certificateImages: [
+      "/assets/img/product-details/Green_1.png",
+      "/assets/img/product-details/Green_2.png",
+      "/assets/img/product-details/Green_3.png",
+    ],
     images: [
       "/assets/img/product-details/Green_1.png",
       "/assets/img/product-details/Green_2.png",
@@ -250,7 +257,7 @@ export const fallbackProducts: Product[] = [
     whyItems: [
       {
         id: 1,
-        img: "/assets/img/product-details/hydrated-skin.png",
+        img: "/assets/img/product-details/stimulates.png",
         title: "Stimulates Natural\nCollagen Production",
         desc: "Unlike animal collagen powders that simply supply broken peptides, BEYUVANA™ uses amino acids (L-Lysine, L-Proline), Vitamin C, and bamboo silica to naturally boost your body’s own collagen-building process — from within.",
         bgColor: "#F8FFF9",
@@ -262,7 +269,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/hydrated-skin.png",
+        img: "/assets/img/product-details/deep.png",
         title: "Deep Hydration &\nSkin Barrier Repair",
         desc: "With Hyaluronic Acid, Amla, and Aloe Vera, the formula restores moisture balance, plumps the skin, and strengthens the barrier — essential for smooth, youthful skin. ",
         bgColor: "#F8FFF9",
@@ -274,7 +281,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 3,
-        img: "/assets/img/product-details/acne-treatment.png",
+        img: "/assets/img/product-details/brightens.png",
         title: "Brightens Skin &\nFades Pigmentation",
         desc: "Clinically studied actives like Glutathione, Licorice, and Grape Seed Extract gently reduce oxidative stress and pigmentation, giving your skin a radiant glow.",
         bgColor: "#F8FFF9",
@@ -286,7 +293,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 4,
-        img: "/assets/img/product-details/acne-treatment.png",
+        img: "/assets/img/product-details/fights.png",
         title: "Fights Wrinkles &\nFine Lines",
         desc: "Astaxanthin, CoQ10, and Vitamin E support skin elasticity and reduce signs of aging by protecting against free radicals and UV-related damage. ",
         bgColor: "#F8FFF9",
@@ -298,7 +305,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 5,
-        img: "/assets/img/product-details/acne-treatment.png",
+        img: "/assets/img/product-details/reduces.png",
         title: "Reduces Stress-Aging\n& Balances Hormones",
         desc: "Adaptogens like Ashwagandha and Shatavari help regulate cortisol and hormonal fluctuations — often overlooked contributors to aging skin.",
         bgColor: "#F8FFF9",
@@ -310,7 +317,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 6,
-        img: "/assets/img/product-details/acne-treatment.png",
+        img: "/assets/img/product-details/supports.png",
         title: "Supports Gut-Skin\nAxis & Detoxification",
         desc: "With herbs like Aloe Vera and Amla, it promotes gentle cleansing and gut health — which reflects visibly on your skin.",
         bgColor: "#F8FFF9",
@@ -1011,6 +1018,11 @@ export const fallbackProducts: Product[] = [
       "100% vegetarian. Sugar-free. No marine or bovine — only clean, conscious skin nutrition. ",
     ],
     certificateImg: "/assets/img/product-details/certificate.png",
+    certificateImages: [
+      "/assets/img/product-details/pink-certificate-1.png",
+      "/assets/img/product-details/pink-certificate-2.png",
+      "/assets/img/product-details/pink-certificate-3.png",
+    ],
     images: [
       "/assets/img/product-details/Artboard_1.png",
       "/assets/img/product-details/Artboard_2.png",

@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import ImageGalleryDialog from "@/components/ui/ImageGalleryDialog"
 import {
     Accordion,
     AccordionContent,
@@ -19,11 +20,12 @@ interface ProductDetailsProps {
     tagline?: string
     description?: string[]
     certificateImg?: string
+    certificateImages?: string[]
     faq?: FaqItem[]
     productId?: number
 }
 
-const ProductDetails = ({ name, tagline, description, certificateImg, faq, productId }: ProductDetailsProps) => {
+const ProductDetails = ({ name, tagline, description, certificateImg, certificateImages, faq, productId }: ProductDetailsProps) => {
     return (
         <div className="flex flex-col gap-4">
             <h1 className="md:text-2xl text-xl leading-tight font-[Grafiels]">{name}</h1>
@@ -41,10 +43,16 @@ const ProductDetails = ({ name, tagline, description, certificateImg, faq, produ
             ))}
 
             {certificateImg && (
-                <div className="flex items-center gap-2">
-                    <Image src={certificateImg} alt="certificate" width={40} height={40} className="w-auto h-auto" />
-                    <p className="text-sm text-gray-500">View Lab Certificates</p>
-                </div>
+                <ImageGalleryDialog
+                    images={certificateImages ?? (certificateImg ? [certificateImg] : [])}
+                    title="Lab Certificates"
+                    trigger={
+                        <button type="button" className="flex items-center gap-2 hover:opacity-80 hover:cursor-pointer">
+                            <Image src={certificateImg} alt="certificate" width={40} height={40} className="w-auto h-auto" />
+                            <p className="text-sm text-gray-500">View Lab Certificates</p>
+                        </button>
+                    }
+                />
             )}
 
             {faq && faq.length > 0 && (
