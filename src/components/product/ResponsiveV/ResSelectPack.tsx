@@ -97,7 +97,7 @@ function buildPacksFromPrices(
 
 const ResSelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
     const router = useRouter();
-    const { addToCart } = useCart();
+    const { addToCart, openCart } = useCart();
 
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
@@ -182,7 +182,6 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             image: product.image,
             product_id: product.id, // Add product_id for API integration
         });
-        toast.success(`${product.name} - Pack of ${selectedPack.qty} added to cart!`);
     };
 
     const handleShopNow = () => {
@@ -191,7 +190,7 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             return;
         }
         handleAddToCart();
-        router.push("/checkout");
+        openCart();
     };
 
     if (!product) return <p>Product not found</p>;

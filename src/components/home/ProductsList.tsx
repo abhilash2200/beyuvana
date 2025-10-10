@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 // Removed static products import; prices and data come from API
 import { ShoppingCart, ShoppingBag } from "lucide-react";
@@ -26,8 +25,7 @@ interface DisplayProduct {
 }
 
 const ProductsList = () => {
-  const { addToCart, loading } = useCart();
-  const router = useRouter();
+  const { addToCart, loading, openCart } = useCart();
 
   // State as a map where key is product id and value is selected pack
   const [selectedPacks, setSelectedPacks] = useState<Record<string, 1 | 2 | 4>>({});
@@ -143,7 +141,7 @@ const ProductsList = () => {
 
   const handleShopNow = async (product: DisplayProduct) => {
     await handleAddToCart(product);
-    router.push("/checkout");
+    openCart();
   };
 
   if (isLoading) {

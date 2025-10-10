@@ -21,6 +21,7 @@ import ResDropdown from "./ResponsiveV/ResDropdown";
 import { productDesignSlugs } from "@/app/data/productConfigs";
 import { slugify } from "@/lib/utils";
 import { backendProductIdMap } from "@/app/data/productConfigs";
+import InfluencerVideos from "./InfluencerVideos";
 
 const data = [
   {
@@ -111,6 +112,10 @@ export default function Product2Layout({ product }: { product: Product }) {
               </div>
             ))}
           </div>
+        </div>
+        <div className="md:py-10 py-6">
+          <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
+          <InfluencerVideos />
         </div>
         <div className="md:py-10 py-6 bg-[#FFF0F0] rounded-[20px]">
           <div className="flex flex-col">

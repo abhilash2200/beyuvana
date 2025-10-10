@@ -1,8 +1,10 @@
 "use client"
 
 import Image from "next/image"
+import ImageGalleryDialog from "@/components/ui/ImageGalleryDialog"
+import { Product } from "@/app/data/fallbackProducts"
 
-const DetailsOfGreenCollagen = () => {
+const DetailsOfGreenCollagen = ({ product }: { product?: Product }) => {
     const coreActions = [
         {
             title: "Activates Natural Collagen Production",
@@ -62,6 +64,9 @@ const DetailsOfGreenCollagen = () => {
                 "Glutathione · Grape Seed · Selenium · Zinc · Vitamin C",
         },
     ]
+    const certificateImg = product?.certificateImg
+    const certificateImages = product?.certificateImages
+    const triggerImg = certificateImg ?? (certificateImages && certificateImages[0])
     return (
         <div>
             <div className="bg-[#1A2819] rounded-[20px] md:p-6 p-4">
@@ -73,10 +78,20 @@ const DetailsOfGreenCollagen = () => {
                         <p className="text-white mb-6 md:leading-relaxed text-[15px] leading-tight font-light">100% vegetarian, sugar-free, gelatin-free — crafted for those who want visible results, naturally. Every ingredient has a purpose, and every sachet is a step toward long-term skin health.</p>
 
                         <Image src="/assets/img/product-details/green-1.png" width={772} height={684} alt="detail info" className="w-full h-auto mb-6" />
-                        <div className="flex items-center justify-start gap-x-2 mt-4">
-                            <Image src="/assets/img/product-details/certificate.png" width={77} height={77} alt="detail info" className="w-auto h-auto" />
-                            <p className="text-white">View Lab Certificates</p>
-                        </div>
+                        {triggerImg && (
+                            <div className="flex items-center justify-start gap-x-2 mt-4">
+                                <ImageGalleryDialog
+                                    images={certificateImages ?? (certificateImg ? [certificateImg] : [])}
+                                    title="Lab Certificates"
+                                    trigger={
+                                        <button type="button" className="flex items-center gap-2 group hover:cursor-pointer hover:no-underline">
+                                            <Image src={triggerImg} alt="certificate" width={40} height={40} className="w-auto h-auto" />
+                                            <p className="text-sm text-gray-200 group-hover:underline">View Lab Certificates</p>
+                                        </button>
+                                    }
+                                />
+                            </div>
+                        )}
                         <ul className="mt-4 list-disc list-inside text-white font-light text-[15px]">
                             <li>Each Sachet Delivers 21 Synergistic Plant-Based Actives.</li>
                             <li>Designed for Multi-Action Skin Nutrition from Within.</li>

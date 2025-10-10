@@ -42,7 +42,7 @@ interface ProductsListsProps {
 }
 
 export default function ProductsLists({ products }: ProductsListsProps) {
-  const { addToCart, loading } = useCart();
+  const { addToCart, loading, openCart } = useCart();
 
   const formatINR = (value: number): string => {
     const rounded = Math.round(value || 0);
@@ -58,6 +58,11 @@ export default function ProductsLists({ products }: ProductsListsProps) {
       image: product.image,
       product_id: product.id.toString(), // Use the same ID as product_id for API
     });
+  };
+
+  const handleShopNow = async (product: Product) => {
+    await handleAddToCart(product);
+    openCart();
   };
 
   return (
@@ -149,7 +154,7 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                   )}
 
                   <div className="flex gap-4">
-                    <Button onClick={() => console.log("Shop now:", product.name)} className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal capitalize transition-colors bg-[#057A37] text-white border-[#057A37]">
+                    <Button onClick={() => { handleShopNow(product); }} className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal capitalize transition-colors bg-[#057A37] text-white border-[#057A37]">
                       <ShoppingBag size={16} /> shop now
                     </Button>
                     <Button

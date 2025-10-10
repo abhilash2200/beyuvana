@@ -47,9 +47,9 @@ const ProductDetails = ({ name, tagline, description, certificateImg, certificat
                     images={certificateImages ?? (certificateImg ? [certificateImg] : [])}
                     title="Lab Certificates"
                     trigger={
-                        <button type="button" className="flex items-center gap-2 hover:opacity-80 hover:cursor-pointer">
+                        <button type="button" className="flex items-center gap-2 group hover:cursor-pointer hover:no-underline">
                             <Image src={certificateImg} alt="certificate" width={40} height={40} className="w-auto h-auto" />
-                            <p className="text-sm text-gray-500">View Lab Certificates</p>
+                            <p className="text-sm text-gray-500 group-hover:underline">View Lab Certificates</p>
                         </button>
                     }
                 />

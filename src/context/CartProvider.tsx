@@ -44,6 +44,11 @@ type CartContextType = {
   refreshCart: () => Promise<void>; // Manual refresh function
   refreshProductDetails: () => Promise<void>; // Refresh product details for all items
   loading: boolean;
+  // Cart UI controls
+  isCartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
+  setCartOpen: (open: boolean) => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -56,6 +61,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartLoadedFromStorage, setCartLoadedFromStorage] = useState(false);
   const [isPageRefresh, setIsPageRefresh] = useState(true); // Track if this is a page refresh
   const { user, sessionKey } = useAuth();
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Store timeout references to clear them
   const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
@@ -661,6 +667,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         refreshCart,
         refreshProductDetails,
         loading,
+        // Cart UI controls
+        isCartOpen,
+        openCart: () => setIsCartOpen(true),
+        closeCart: () => setIsCartOpen(false),
+        setCartOpen: setIsCartOpen,
       }}
     >
       {children}

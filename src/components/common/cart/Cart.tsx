@@ -14,7 +14,7 @@ import Confetti from "react-confetti";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Cart() {
-    const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading } = useCart();
+    const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading, isCartOpen, setCartOpen } = useCart();
     const total = cartItems.reduce((acc, item) => acc + Math.round(item.price * item.quantity), 0);
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
@@ -22,8 +22,8 @@ export default function Cart() {
     const [lastIncreaseTime, setLastIncreaseTime] = React.useState<number>(0);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
 
-    const handleSheetOpenChange = () => {
-        // Handle sheet open/close if needed
+    const handleSheetOpenChange = (open: boolean) => {
+        setCartOpen(open);
     };
     React.useEffect(() => {
         if (lastIncreaseTime > 0) {
@@ -46,7 +46,7 @@ export default function Cart() {
     };
 
     return (
-        <Sheet onOpenChange={handleSheetOpenChange}>
+        <Sheet open={isCartOpen} onOpenChange={handleSheetOpenChange}>
             <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
                     <SheetTrigger asChild>

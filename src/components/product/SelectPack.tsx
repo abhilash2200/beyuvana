@@ -93,7 +93,7 @@ function buildPacksFromPrices(
 
 const SelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
     const router = useRouter();
-    const { addToCart } = useCart();
+    const { addToCart, openCart } = useCart();
 
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
@@ -178,7 +178,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 image: product.image,
                 product_id: product.id, // Add product_id for API integration
             });
-            toast.success(`${product.name} - Pack of ${selectedPack.qty} added to cart!`);
         } catch {
             toast.error("Failed to add to cart. Please try again.");
         }
@@ -192,8 +191,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
 
         try {
             handleAddToCart();
-            toast.success("Redirecting to checkout...");
-            router.push("/checkout");
+            openCart();
         } catch {
             toast.error("Failed to proceed to checkout. Please try again.");
         }

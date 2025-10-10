@@ -154,8 +154,22 @@
 }
 
 .comparearrow {
-  @apply absolute right-0 -bottom-3 lg:right-[1px] w-[140px];
+  @apply absolute !right-2 !-bottom-2 lg:right-[1px] w-[120px];
 }
+
+.comparearrow-btn {
+  @apply !w-8 !h-8 !rounded-[4px] bg-white/50;
+}
+
+.comparearrow-next {
+  @apply !bg-white/50;
+}
+
+.comparearrow-prev {
+  @apply !bg-white/50;
+}
+
+
 
 .respagination {
   @apply !absolute md:!bottom-[-0.8rem] !bottom-[-1.5rem] !flex gap-2;

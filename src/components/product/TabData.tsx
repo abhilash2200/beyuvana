@@ -38,7 +38,7 @@ const TabData = ({ productId }: TabDataProps) => {
                         <TabsTrigger
                             key={tab.id}
                             value={tab.id}
-                            className="flex items-center justify-start gap-x-4 text-[20px] font-medium py-2 px-5 h-auto w-full cursor-pointer data-[state=active]:shadow-none border-0 border-b last:border-b-0 border-[#E5E7EB]"
+                            className="flex items-center justify-start gap-x-4 text-[20px] font-medium py-2 px-5 h-auto w-full cursor-pointer data-[state=active]:shadow-none border-0 border-b last:border-b-0 border-[#acacac]"
                             style={{
                                 color: active === tab.id ? (tab.headingColor ?? "#017933") : "#000000",
                             }}

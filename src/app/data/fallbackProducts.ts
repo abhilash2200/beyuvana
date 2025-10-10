@@ -424,7 +424,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 9,
-        img: "/assets/img/product-details/green-who/8.png",
+        img: "/assets/img/product-details/green-who/9.png",
         title: "Those with Gut Issues Affecting Skin Health",
         desc: "Amla, and adaptogenic herbs support the gut-skin axis by reducing inflammation, improving digestion, and promoting clearer, healthier-looking skin from within ",
         bgColor: "#CFE9D3",
