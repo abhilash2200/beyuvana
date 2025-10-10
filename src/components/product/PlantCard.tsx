@@ -17,6 +17,7 @@ interface PlantCardProps {
 
 const PlantCard = ({ title, description, img, bgColor, headingColor, paragraphColor, plusColor, xColor }: PlantCardProps) => {
     const [expanded, setExpanded] = useState(false);
+    const isGif = img.toLowerCase().endsWith(".gif");
 
     return (
         <div
@@ -35,6 +36,7 @@ const PlantCard = ({ title, description, img, bgColor, headingColor, paragraphCo
                             width={96}
                             height={96}
                             className="object-cover w-full h-full"
+                            unoptimized={isGif}
                         />
                     </div>
                     <h3
@@ -71,6 +73,7 @@ const PlantCard = ({ title, description, img, bgColor, headingColor, paragraphCo
                         alt={title}
                         fill
                         className="object-cover rounded-xl"
+                        unoptimized={isGif}
                     />
                     <div className="absolute inset-0 flex items-center justify-center z-30 text-center">
                         <h3 className="text-[#FFFFFF] font-[Grafiels] text-[25px]">{title}</h3>

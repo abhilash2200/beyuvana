@@ -3,6 +3,65 @@
 import Image from "next/image"
 
 const DetailsOfGreenCollagen = () => {
+    const coreActions = [
+        {
+            title: "Activates Natural Collagen Production",
+            description:
+                "Boosts collagen synthesis for firmer, younger-looking skin — without marine or bovine collagen.",
+            ingredients:
+                "L-Lysine · L-Proline · Amla (Vit C) · Bamboo Extract (Silica)",
+        },
+        {
+            title: "Delivers Deep Skin Hydration",
+            description:
+                "Hydrates from within to smooth lines and restore skin bounce and suppleness.",
+            ingredients: "Hyaluronic Acid · Amla · Vitamin E",
+        },
+        {
+            title: "Fades Pigmentation & Enhances Glow",
+            description:
+                "Brightens skin tone, reduces dark spots, and supports a radiant complexion.",
+            ingredients:
+                "Glutathione · Grape Seed Extract · Vitamin C · Pomegranate · Licorice (via base)",
+        },
+        {
+            title: "Smooths Fine Lines & Wrinkles",
+            description:
+                "Minimizes wrinkle depth, strengthens skin texture, and reduces visible signs of aging.",
+            ingredients:
+                "CoQ10 · Astaxanthin · Resveratrol · Horsetail (Silica) · Vitamin E",
+        },
+        {
+            title: "Combats Stress-Induced Aging",
+            description:
+                "Reduces cortisol impact, improves skin resilience, and balances stress-aging responses.",
+            ingredients: "Ashwagandha · Shatavari · Gotu Kola",
+        },
+        {
+            title: "Protects from UV & Pollution Damage",
+            description:
+                "Defends against environmental aggressors that accelerate premature aging.",
+            ingredients: "Green Tea (EGCG) · Astaxanthin · Amla · Grape Seed",
+        },
+        {
+            title: "Strengthens the Gut-Skin Axis",
+            description:
+                "Promotes gut balance to support clearer, healthier, inflammation-free skin.",
+            ingredients: "Amla · Shatavari · Ashwagandha",
+        },
+        {
+            title: "Fights Inflammation & Breakouts",
+            description: "Soothes skin, reduces sensitivity, and calms flare-ups.",
+            ingredients: "Green Tea · Licorice (via base) · Selenium · Zinc",
+        },
+        {
+            title: "Supports Cellular Detox & Skin Repair",
+            description:
+                "Flushes toxins, promotes clarity, and accelerates natural skin repair cycles.",
+            ingredients:
+                "Glutathione · Grape Seed · Selenium · Zinc · Vitamin C",
+        },
+    ]
     return (
         <div>
             <div className="bg-[#1A2819] rounded-[20px] md:p-6 p-4">
@@ -27,69 +86,17 @@ const DetailsOfGreenCollagen = () => {
                     <div className="w-full md:w-[48%]">
                         <h2 className="text-[#22014] font-[Grafiels] md:text-[23px] text-[18px] leading-tight mb-5 bg-white text-center rounded-[20px] py-4">10 Core Actions. 1 Intelligent Sachet</h2>
                         <div className="p-4 bg-[#000000]/50 rounded-[20px]">
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Activates Natural Collagen Production</p>
-                                <div className="font-light text-[13px]">
-                                    <p className="mb-1">Boosts collagen synthesis for firmer, younger-looking skin — without marine or bovine collagen.</p>
-                                    <p><span className="font-medium">Key Ingredients: </span>L-Lysine · L-Proline · Amla (Vit C) · Bamboo Extract (Silica)</p>
+                            {coreActions.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between border-b border-white last:border-b-0 border-dashed text-white py-4">
+                                    <div className="max-w-[35%]">
+                                        <p className="font-light text-[15px]">{item.title}</p>
+                                    </div>
+                                    <div className="font-light text-[13px] max-w-[60%]">
+                                        <p className="mb-1">{item.description}</p>
+                                        <p><span className="font-medium">Key Ingredients: </span>{item.ingredients}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Delivers Deep Skin Hydration</p>
-                                <div className="font-light text-[13px]">
-                                    <p>Hydrates from within to smooth lines and restore skin bounce and suppleness.</p>
-                                    <p><span className="font-medium">Key Ingredients: </span> Hyaluronic Acid · Amla · Vitamin E</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Fades Pigmentation & Enhances Glow</p>
-                                <div className="font-light text-[13px]">
-                                    <p>Brightens skin tone, reduces dark spots, and supports a radiant complexion.</p>
-                                    <p><span className="font-medium">Key Ingredients: </span>Glutathione · Grape Seed Extract · Vitamin C · Pomegranate · Licorice (via base)</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Smooths Fine Lines & Wrinkles</p>
-                                <div className="font-light text-[13px]">
-                                    <p>Minimizes wrinkle depth, strengthens skin texture, and reduces visible signs of aging. </p>
-                                    <p><span className="font-medium"    >Key Ingredients: </span>CoQ10 · Astaxanthin · Resveratrol · Horsetail (Silica) · Vitamin E</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Combats Stress-Induced Aging</p>
-                                <div className="font-light text-[13px]">
-                                    <p>Reduces cortisol impact, improves skin resilience, and balances stress-aging responses. </p>
-                                    <p><span className="font-medium">Key Ingredients: </span>Ashwagandha · Shatavari · Gotu Kola</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Protects from UV & Pollution Damage</p>
-                                <div className="font-light text-[13px]">
-                                    <p>Defends against environmental aggressors that accelerate premature aging. </p>
-                                    <p><span className="font-medium">Key Ingredients: </span> Green Tea (EGCG) · Astaxanthin · Amla · Grape Seed </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Strengthens the Gut-Skin Axis</p>
-                                <div className="font-light text-[13px]">
-                                    <p>Promotes gut balance to support clearer, healthier, inflammation-free skin. </p>
-                                    <p><span className="font-medium">Key Ingredients: </span> Amla · Shatavari · Ashwagandha</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Fights Inflammation & Breakouts</p>
-                                <div className="font-light text-[13px]">
-                                    <p>Soothes skin, reduces sensitivity, and calms flare-ups.</p>
-                                    <p><span className="font-medium">Key Ingredients: </span>Green Tea · Licorice (via base) · Selenium · Zinc</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-white border-dashed text-white py-4">
-                                <p className="font-light text-[15px]">Supports Cellular Detox & Skin Repair</p>
-                                <div className="font-light text-[13px]">
-                                    <p>Flushes toxins, promotes clarity, and accelerates natural skin repair cycles.</p>
-                                    <p><span className="font-medium">Key Ingredients: </span>Glutathione · Grape Seed · Selenium · Zinc · Vitamin C</p>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>

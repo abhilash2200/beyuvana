@@ -86,14 +86,14 @@ const DetailsOfRedCollagen = () => {
               {coreActivities.map((item, index) => (
                 <div
                   key={index}
-                  className={`flex items-center gap-x-10 text-white py-4 ${
-                    index !== coreActivities.length - 1
-                      ? "border-b border-white border-dashed"
-                      : ""
-                  }`}
+                  className="flex items-center justify-between border-b border-white last:border-b-0 border-dashed text-white py-4"
                 >
-                  <p className="font-light text-[15px]">{item.title}</p>
-                  <p className="max-w-[80%] text-[13px] text-left">{item.desc}</p>
+                  <div className="max-w-[35%]">
+                    <p className="font-light text-[15px]">{item.title}</p>
+                  </div>
+                  <div className="font-light text-[13px] max-w-[60%]">
+                    <p className="mb-1">{item.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>

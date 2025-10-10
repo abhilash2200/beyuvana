@@ -111,7 +111,7 @@ export const fallbackProducts: Product[] = [
     name: "BEYUVANA™ Premium Collagen Builder— Complete Anti-Aging Solution",
     design_type: "GREEN",
     tagline: "Aging is Natural — Radiance is a Choice",
-    description:[
+    description: [
       "Crafted with 21 synergistic, clinically studied botanicals that work from within. Each precision-dosed sachet supports skin elasticity, deep hydration, and youthful glow. ",
       "Stimulates natural collagen with Amla, Bamboo Silica, L-Lysine, and Hyaluronic Acid. Defends against stress-aging, pollution, and hormonal imbalance with powerful adaptogens.",
       "Enriched with antioxidants like Glutathione, CoQ10 & Astaxanthin for visible age reversal. ",
@@ -417,7 +417,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 9,
-        img: "/assets/img/product-details/green-who/9.png",
+        img: "/assets/img/product-details/green-who/8.png",
         title: "Those with Gut Issues Affecting Skin Health",
         desc: "Amla, and adaptogenic herbs support the gut-skin axis by reducing inflammation, improving digestion, and promoting clearer, healthier-looking skin from within ",
         bgColor: "#CFE9D3",
@@ -939,7 +939,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 19,
-        img: "/assets/gifs/plant.gif",
+        img: "/assets/img/product-details/plant.png",
         title: "Ashwagandha Extract",
         description:
           "Reduces stress-induced aging and cortisol imbalance, supporting hormonal harmony and skin health.",
@@ -975,7 +975,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 22,
-        img: "/assets/gifs/plant.gif",
+        img: "/assets/img/product-details/plant.png",
         title: "Stevia",
         description:
           "zero sugar or aftertaste—keeping the formulation clean and holistic.",
@@ -987,7 +987,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 23,
-        img: "/assets/gifs/plant.gif",
+        img: "/assets/img/product-details/plant.png",
         title: "Pineapple Flavor",
         description:
           "Adds a refreshing tropical taste that makes daily consumption enjoyable. Naturally derived ",
@@ -1004,7 +1004,7 @@ export const fallbackProducts: Product[] = [
     name: "BEYUVANA™ Advanced Glow-Nourishing Formula for Radiant, Even-Toned Skin",
     design_type: "PINK",
     tagline: "Aging is Natural — Radiance is a Choice",
-    description:[
+    description: [
       "Glow Essence is an advanced, 100% vegetarian, skin-nourishing formula enriched with 18 synergistic plant- based actives, designed to unlock visible clarity and radiance from within. Infused with 4X Liposomal Glutathione and clinically studied Vitamin C, it ",
       "Stimulates natural collagen with Amla, Bamboo Silica, L-Lysine, and Hyaluronic Acid. Defends against stress-aging, pollution, and hormonal imbalance with powerful adaptogens.",
       "Enriched with antioxidants like Glutathione, CoQ10 & Astaxanthin for visible age reversal. ",
