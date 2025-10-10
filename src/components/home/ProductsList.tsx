@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { productsApi } from "@/lib/api";
 import type { Product, PriceTier } from "@/lib/api";
+import { products as staticProducts } from "@/app/data/products";
 
 const packs = [1, 2, 4] as const;
 
@@ -48,7 +49,7 @@ const ProductsList = () => {
 
         if (list.length > 0) {
           // Convert API products to display format (no hardcoded prices)
-          const apiProducts: DisplayProduct[] = list.map((apiProduct: Product) => {
+          const apiProducts: DisplayProduct[] = list.map((apiProduct: Product, idx: number) => {
             const tiers: PriceTier[] = Array.isArray(apiProduct.prices) ? (apiProduct.prices as PriceTier[]) : [];
 
             const getTierPrice = (qty: 1 | 2 | 4): number => {
@@ -96,7 +97,7 @@ const ProductsList = () => {
                 2: getTierDiscount(2),
                 4: getTierDiscount(4),
               },
-              benefits: [],
+              benefits: staticProducts[idx]?.benefits || [],
               mainImage,
               product_id: apiProduct.id,
             };
