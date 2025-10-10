@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 // Removed static products import; prices and data come from API
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { productsApi } from "@/lib/api";
+import type { Product, PriceTier } from "@/lib/api";
 
 const packs = [1, 2, 4] as const;
 
@@ -36,18 +37,19 @@ const ProductsList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        // Fetch only the latest two products (id DESC)
         const response = await productsApi.getList({
-          filter: { categorykey: ["hair-care"] },
-          sort: { product_name: "ASC" },
-          searchTerms: "",
+          sort: { id: "DESC" },
           page: 1,
-          limit: 10,
+          limit: 2,
         });
 
-        if (response.data && Array.isArray(response.data)) {
+        const list = response.data && Array.isArray(response.data) ? response.data : [];
+
+        if (list.length > 0) {
           // Convert API products to display format (no hardcoded prices)
-          const apiProducts: DisplayProduct[] = response.data.slice(0, 2).map((apiProduct) => {
-            const tiers = Array.isArray(apiProduct.prices) ? apiProduct.prices : [];
+          const apiProducts: DisplayProduct[] = list.map((apiProduct: Product) => {
+            const tiers: PriceTier[] = Array.isArray(apiProduct.prices) ? (apiProduct.prices as PriceTier[]) : [];
 
             const getTierPrice = (qty: 1 | 2 | 4): number => {
               const tier = tiers.find((t) => Number(t.qty) === Number(qty));
@@ -258,9 +260,8 @@ const ProductsList = () => {
                 <div className="flex gap-2 mt-2 justify-center md:justify-start">
                   <Button
                     onClick={() => handleShopNow(product)}
-                    disabled={selectedPack !== 1 || loading}
-                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${selectedPack !== 1 || loading ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                    disabled={loading}
+                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <ShoppingBag size={16} />
                     {loading ? "Processing..." : "Buy Now"}
