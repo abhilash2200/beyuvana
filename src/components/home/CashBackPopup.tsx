@@ -30,17 +30,20 @@ const Section: FC<SectionProps> = ({ title, items }) => (
 
 const CashBackPopup: FC = () => {
     const howItWorks = [
-        "Use the product as recommended for 60 days, with consistent daily consumption.",
-        "Submit your refund request with your Order ID via email (customercare@beyuvana.com) or WhatsApp (+91-XXXXXXXXXX) within 60 days of delivery",
-        "Our team will verify your order details. A complimentary nutritionist consultation may be arranged to understand your experience and ensure eligibility.",
-        "Valid only on orders placed directly at www.beyuvana.com within the last 60 days. Purchases made on third-party platforms (Amazon, Nykaa, etc.) are not covered.",
+        "Use the product as recommended for 90 days, with consistent daily consumption.",
+        "SRecord a 10-second video every day while consuming your BEYUVANA sachet for the full 90 days. This proof ensures your consistency.",
+        "Submit your refund request with your Order ID and daily video proofs via email (info.beyuvana@gmail.com ) or\nWhatsApp (+91 87773 77060) within 90 days of delivery.",
+        "Our team will verify your order and videos. A complimentary nutritionist consultation may be arranged to understand your experience and ensure eligibility.",
+        "Valid only on orders placed directly at www.beyuvana.com within the last 90 days. Purchases made on third-party platforms (Amazon, Nykaa, etc.) are not covered.",
         "Applicable once per customer, only on our sachet wellness range (Collagen Builder & Glow Essence).",
     ];
 
     const whenItDoesntApply = [
-        "If the sachets were not consumed consistently as per guidance.",
+        "If the sachets were not consumed consistently as per daily guidance.",
+        "If the 10-second daily videos are missing or incomplete (even one day missing disqualifies eligibility).",
         "If an underlying health condition may have influenced individual experience.",
-        "If the claim is for product bundles that include items outside the sachet wellness range.",
+        "If the claim includes bundled products outside the sachet wellness range.",
+        "If the refund request is made after 90 days of delivery.",
     ];
 
     return (
@@ -49,7 +52,7 @@ const CashBackPopup: FC = () => {
             <Section title="When It Doesn’t Apply" items={whenItDoesntApply} />
 
             <div className="bg-green-900 text-white p-4 rounded">
-                <p className="text-[12px] font-light">If an underlying health condition may have influenced individual experience.<span className="text-[13px] font-normal"> BEYUVANA™ — Wellness, Naturally.</span></p>
+                <p className="text-[12px] font-light">If individual results are influenced by underlying health conditions, our team is here to guide you with care.<span className="text-[13px] font-normal"> BEYUVANA™ — Wellness, Naturally.</span></p>
             </div>
         </div>
     );

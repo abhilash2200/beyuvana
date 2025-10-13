@@ -111,8 +111,8 @@ const page = () => {
             </div>
             <div className="w-fill md:w-[68%]">
               <div className="flex flex-col gap-y-4">
-              <HeaderText textalign="text-left" heading="BEYUVANA™ 60-Day Money-Back Guarantee" textcolor="text-[#057A37]" />
-                <p className="text-[#222222] font-light">At BEYUVANA™, your trust means everything to us. We stand by the quality of our plant-powered formulations, and we want you to feel completely confident on your wellnes journey. That’s why we offer a 60-Day Money-Back Promise on your first purchase,
+              <HeaderText textalign="text-left" heading="BEYUVANA™ 90-Day Money-Back Guarantee" textcolor="text-[#057A37]" />
+                <p className="text-[#222222] font-light">At BEYUVANA™, your trust means everything to us. We stand by the quality of our plant-powered formulations, and we want you to feel completely confident on your wellnes journey. That’s why we offer a 90-Day Money-Back Promise on your first purchase,
                   exclusively from our website.</p>
                   
               </div>

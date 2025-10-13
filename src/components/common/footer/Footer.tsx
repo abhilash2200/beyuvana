@@ -38,9 +38,9 @@ const socialLinks: SocialItem[] = [
 ];
 
 const contactInfo = [
-    { icon: <MdPhone />, text: "+91 7003810162" },
-    { icon: <MdEmail />, text: "info@beyuvana.com" },
-    { icon: <MdLocationOn />, text: "Kolkata, India" },
+    { icon: <MdPhone />, text: "+91 8777377060", href: "tel:+918777377060" },
+    { icon: <MdEmail />, text: "info.beyuvana@gmail.com", href: "mailto:info.beyuvana@gmail.com" },
+    { icon: <MdLocationOn />, text: "Kolkata, India", href: "https://www.google.com/maps/place/Beyuvana/@22.5726487,88.363755,15z/data=!4m6!3m5!1s0x3a027599e21da86b:0x1c5cc322f207770!8m2!3d22.5726487!4d88.363755!16s%2Fg%2F11b5652p4k?entry=ttu&g_ep=EgoyMDI1MTAxMy4wIKXMDSoASAFQAw%3D%3D" },
 ];
 
 const Footer: React.FC = () => {
@@ -101,10 +101,10 @@ const Footer: React.FC = () => {
                         <h2 className="text-[#DFC362] mb-6 font-[Grafiels] text-[25px]">Contact</h2>
                         <ul className="space-y-2 text-white/70 text-sm mb-4">
                             {contactInfo.map((item, index) => (
-                                <li key={index} className="flex items-center gap-2">
+                                <a href={item.href} key={index} className="flex items-center gap-2">
                                     <span className="text-[#DFC362] text-lg">{item.icon}</span>
                                     {item.text}
-                                </li>
+                                </a>
                             ))}
                         </ul>
                         <h2 className="text-[#DFC362] mb-2 font-[Grafiels] text-[1.2rem]">Social Links</h2>
@@ -125,9 +125,14 @@ const Footer: React.FC = () => {
                 </div>
 
                 <hr className="my-6 border-white/20" />
-                <p className="text-center text-white text-sm">
-                    © {new Date().getFullYear()} @beyuvana2025 • All rights reserved
-                </p>
+                <div className="flex items-center justify-between">
+                    <p className="text-center text-white text-sm">
+                        © {new Date().getFullYear()} @beyuvana2025 • All rights reserved
+                    </p>
+                    <p className="text-center capitalize text-white text-sm">
+                        design and developed by <a href="https://digitalwolf.co.in/" className="text-[#DFC362] hover:text-[#DFC362] transition-colors">Digital wolf</a>
+                    </p>
+                </div>
             </div>
         </footer>
     );
