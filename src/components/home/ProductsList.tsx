@@ -215,8 +215,10 @@ const ProductsList = () => {
                       className={`w-[20%] ${i !== product.benefits.length - 1 ? "border-r border-black" : ""
                         } pr-2`}
                     >
+                      <div className="flex flex-col items-center gap-2 text-center">
                       <Image src={b.img} width={83} height={83} alt={`Benefit ${i + 1}`} />
-                      <p className="hidden md:block">{b.text}</p>
+                      <p className="hidden md:block text-[12px]">{b.text}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
