@@ -125,7 +125,7 @@ const Footer: React.FC = () => {
                 </div>
 
                 <hr className="my-6 border-white/20" />
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between md:flex-row flex-col gap-y-4">
                     <p className="text-center text-white text-sm">
                         © {new Date().getFullYear()} @beyuvana2025 • All rights reserved
                     </p>
