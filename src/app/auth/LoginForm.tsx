@@ -89,6 +89,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
             */
 
             // Debug: Login successful
+            toast.success(`Welcome back, ${normalizedUser.name}!`);
             onClose?.();
         } catch (err: unknown) {
             console.error(err);

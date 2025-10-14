@@ -25,8 +25,7 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
     try {
       // 🔹 Use the logout function from AuthProvider (it handles both API call and local cleanup)
       await logout();
-
-      toast.success("Logged out successfully!");
+      toast.success("You have been logged out successfully.");
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);

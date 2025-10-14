@@ -9,6 +9,7 @@ import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { productsApi } from "@/lib/api";
 import type { Product, PriceTier } from "@/lib/api";
 import { products as staticProducts } from "@/app/data/products";
+import { toast } from "react-toastify";
 
 const packs = [1, 2, 4] as const;
 
@@ -160,6 +161,7 @@ const ProductsList = () => {
   const handleShopNow = async (product: DisplayProduct) => {
     await handleAddToCart(product);
     openCart();
+    toast.info("Opening your cart...");
   };
 
   if (isLoading) {

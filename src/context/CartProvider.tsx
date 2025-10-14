@@ -288,7 +288,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           price_qty: 0,
           price_unit_name: item.name,
         }, sessionKey, user.id);
-        toast.success("Item added to cart!");
+        toast.success(`${item.name} added to cart!`);
       }
 
       // Update local state
@@ -548,7 +548,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (user && sessionKey && item.product_id) {
         try {
           await cartApi.removeFromCart(item.product_id!, sessionKey);
-          toast.success("Item removed from cart!");
+          toast.success(`${item.name} removed from cart!`);
         } catch (apiError) {
           console.warn("API remove failed, using local storage:", apiError);
         }
@@ -628,7 +628,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch { }
 
-      toast.success("Cart cleared successfully!");
+      toast.success("Your cart has been cleared successfully!");
     } catch (error) {
       console.error("Failed to clear cart:", error);
       toast.error("Failed to clear cart. Please try again.");

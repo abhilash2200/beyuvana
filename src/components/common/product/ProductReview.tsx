@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import { FaStar, FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthProvider";
 import { reviewApi, ProductReviewRequest } from "@/lib/api";
+import { toast } from "react-toastify";
 
 interface Review {
     name: string;
@@ -68,6 +69,7 @@ const ProductReview = ({ productId }: ProductReviewProps) => {
 
             if (response.success !== false) {
                 // Debug: Review saved successfully
+                toast.success("Thank you for your review! Your feedback helps other customers.");
 
                 // Update local state
                 setReview({
@@ -81,6 +83,7 @@ const ProductReview = ({ productId }: ProductReviewProps) => {
                 setRating(0);
             } else {
                 setError(response.message || "Failed to submit review");
+                toast.error("Failed to submit review. Please try again.");
             }
         } catch (err) {
             console.error("Error saving review:", err);

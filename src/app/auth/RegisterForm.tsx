@@ -44,7 +44,7 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
             });
 
             // Debug: Signup success
-            toast.success("Signup successful!");
+            toast.success(`Welcome to BEYUVANA, ${form.name}! Your account has been created successfully.`);
             onClose?.();
         } catch (err) {
             console.error(err);

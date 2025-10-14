@@ -159,7 +159,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
 
     const handleAddToCart = () => {
         if (!product || !selectedPack) {
-            toast.warning("Please select a pack first!");
+            toast.warning("Please select a pack size first!");
             return;
         }
 
@@ -172,6 +172,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 image: product.image,
                 product_id: product.id, // Add product_id for API integration
             });
+            toast.success(`${product.name} (Pack of ${selectedPack.qty}) added to cart!`);
         } catch {
             toast.error("Failed to add to cart. Please try again.");
         }
@@ -179,13 +180,14 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
 
     const handleShopNow = () => {
         if (!product || !selectedPack) {
-            toast.warning("Please select a pack first!");
+            toast.warning("Please select a pack size first!");
             return;
         }
 
         try {
             handleAddToCart();
             openCart();
+            toast.info("Opening your cart...");
         } catch {
             toast.error("Failed to proceed to checkout. Please try again.");
         }

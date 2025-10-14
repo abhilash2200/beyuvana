@@ -109,7 +109,7 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
             const response = await checkoutApi.processCheckout(checkoutData, sessionKey);
 
             if (response.status || response.success) {
-                toast.success("Order placed successfully!");
+                toast.success("🎉 Order placed successfully! You will receive a confirmation email shortly.");
                 // Clear cart after successful order
                 await clearCart();
                 // Close the checkout sheet

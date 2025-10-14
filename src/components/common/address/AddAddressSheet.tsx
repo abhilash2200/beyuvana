@@ -12,6 +12,7 @@ import {
 import { addressApi, SaveAddressRequest, SavedAddress } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
 import { MapPin, Star, Check, Edit } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface AddAddressSheetProps {
     open: boolean;
@@ -104,6 +105,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 // Clear any existing errors and show success message
                 setError(null);
                 setSuccessMessage("Primary address updated successfully!");
+                toast.success("Primary address updated successfully!");
 
                 // Clear success message after 3 seconds
                 setTimeout(() => setSuccessMessage(null), 3000);
@@ -113,10 +115,12 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
             } else {
                 console.error("Failed to set primary address:", response);
                 setError(response.message || "Failed to set primary address");
+                toast.error("Failed to set primary address. Please try again.");
             }
         } catch (err) {
             console.error("Failed to set primary address:", err);
             setError("Failed to set primary address. Please try again.");
+            toast.error("Failed to set primary address. Please try again.");
         } finally {
             setSettingPrimary(null);
         }
@@ -239,6 +243,8 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
 
             if (response.success !== false) {
                 // Debug: Address saved/updated successfully
+                const successMsg = isEditMode ? "Address updated successfully!" : "Address saved successfully!";
+                toast.success(successMsg);
                 // Reset form and edit mode
                 setForm({
                     fullName: "",
@@ -260,8 +266,10 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 // Handle specific error cases
                 if (response.code === 401) {
                     setError("Authentication failed. Please login again.");
+                    toast.error("Authentication failed. Please login again.");
                 } else {
                     setError(response.message || "Failed to save address");
+                    toast.error("Failed to save address. Please try again.");
                 }
             }
         } catch (err) {
