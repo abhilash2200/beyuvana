@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
@@ -19,9 +19,31 @@ const features: FeatureItem[] = [
 ];
 
 const WhatMakes = () => {
+    const splideRef = useRef<{ splide: { root: HTMLElement } }>(null);
+
+    useEffect(() => {
+        if (splideRef.current) {
+            const splide = splideRef.current.splide;
+            if (splide) {
+                // Add classes after Splide initializes
+                const pagination = splide.root.querySelector('.splide__pagination');
+                const pages = splide.root.querySelectorAll('.splide__pagination__page');
+
+                if (pagination) {
+                    pagination.classList.add('whatpagination');
+                }
+
+                pages.forEach((page: Element) => {
+                    page.classList.add('whatpage');
+                });
+            }
+        }
+    }, []);
+
     return (
         <div className="pt-5">
             <Splide
+                ref={splideRef}
                 options={{
                     perPage: 5,
                     perMove: 1,
@@ -29,14 +51,17 @@ const WhatMakes = () => {
                     pagination: true,
                     arrows: false,
                     breakpoints: {
-                        1024: { perPage: 2 },
-                        640: { perPage: 1 },
+                        1024: {
+                            perPage: 2,
+                            pagination: false
+                        },
+                        640: {
+                            perPage: 1,
+                            pagination: true
+                        },
                     },
                 }}
-                classes={{
-                    pagination: "splide__pagination testpagination",
-                    page: "splide__pagination__page testpage",
-                }}
+                className="whatmakes-slider"
             >
                 {features.map((item, index) => (
                     <SplideSlide key={index}>
@@ -48,7 +73,7 @@ const WhatMakes = () => {
                                 height={60}
                                 className="mb-4"
                             />
-                            <p className="text-gray-800 text-sm whitespace-pre-line font-medium">
+                            <p className="text-gray-800 text-[14px] md:text-[18px] whitespace-pre-line font-medium">
                                 {item.text}
                             </p>
                         </div>

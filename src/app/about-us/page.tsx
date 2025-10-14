@@ -54,7 +54,7 @@ const page = () => {
         </div>
       </section>
 
-      <section className='md:py-10 py-6'>
+      <section className='md:py-10 py-6 pb-10'>
         <div className='container mx-auto px-4'>
           <HeaderText textalign="text-center" heading="What Makes Us Different?" textcolor="text-[#1A2819]" />
           <WhatMakes />

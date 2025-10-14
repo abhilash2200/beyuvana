@@ -1,14 +1,13 @@
 "use client";
-import { Rating } from "@mui/material";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 import { toast } from "react-toastify";
 import { productsApi, type Product as ApiProduct, type PriceTier } from "@/lib/api";
 import { designSlugToProductId } from "@/app/data/productConfigs";
+import ProductRating from "./ProductRating";
 
 interface Pack {
     qty: number;
@@ -22,8 +21,6 @@ interface Pack {
 interface Product {
     id: string;
     name: string;
-    reviews: number;
-    rating: number;
     packs: Pack[];
     image: string;
 }
@@ -92,7 +89,6 @@ function buildPacksFromPrices(
 }
 
 const SelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
-    const router = useRouter();
     const { addToCart, openCart } = useCart();
 
     const [product, setProduct] = useState<Product | null>(null);
@@ -142,8 +138,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 const hydrated: Product = {
                     id: String(apiProduct.id),
                     name: apiProduct.product_name,
-                    reviews: designType === "pink" ? 42 : 60,
-                    rating: designType === "pink" ? 4 : 4.5,
                     packs,
                     image,
                 };
@@ -204,13 +198,10 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
             <div className="flex items-center justify-center gap-2">
                 <h3 className="md:text-[25px] text-[16px] font-[Grafiels] text-[#1A2819]">Select Pack</h3>
                 <span>|</span>
-                <Rating
-                    name="half-rating-read"
-                    defaultValue={product.rating}
-                    precision={0.5}
-                    readOnly
+                <ProductRating
+                    productId={product.id}
+                    className="text-[12px]"
                 />
-                <p className="text-[12px] text-[#747474]">{product.reviews} reviews</p>
             </div>
 
             {product.packs.map((pack, index) => (

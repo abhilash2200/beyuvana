@@ -21,7 +21,7 @@ const ResProductImg = ({ images }: { images: string[] }) => {
           className="w-full"
         >
           {images.map((img, idx) => (
-            <SplideSlide key={idx}>
+            <SplideSlide key={idx} className="flex justify-center items-center">
                 <Image
                   src={img}
                   alt={`Thumbnail ${idx + 1}`}

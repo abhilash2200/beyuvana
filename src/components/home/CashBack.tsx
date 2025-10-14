@@ -56,7 +56,7 @@ const CashBack: React.FC = () => {
                                     </DialogContent>
                                 </Dialog>
                             ) : (
-                                <p className="whitespace-pre-line text-[#000] md:text-[16px] text-[14px]">{item.text}</p>
+                                <p className="whitespace-pre-line text-[#000] md:text-[16px] text-[13px]">{item.text}</p>
                             )}
                         </div>
                     </div>

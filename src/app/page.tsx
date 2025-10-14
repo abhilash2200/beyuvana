@@ -27,8 +27,8 @@ const page = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col justify-center items-center text-center">
             <HeaderText textalign="text-center" heading="About Beyuvana" textcolor="text-[#1A2819]" />
-            <h4 className="text-[#3B3B3B] font-medium md:text-[20px] text-[18px] mb-2">Nourishment That Goes Deeper Than Skin.</h4>
-            <p className="w-full md:max-w-[1200px] font-light">At BEYUVANA™, we create plant-powered wellness formulations backed by modern science, crafted with clinically researched ingredients, lab-tested for safety, and made 100% vegetarian—so you always know exactly what youre putting into your body. </p>
+            <h4 className="text-[#3B3B3B] font-medium md:text-[20px] text-[17px] mb-2">Nourishment That Goes Deeper Than Skin.</h4>
+            <p className="w-full md:max-w-[1200px] font-light text-[15px] md:text-[16px]">At BEYUVANA™, we create plant-powered wellness formulations backed by modern science, crafted with clinically researched ingredients, lab-tested for safety, and made 100% vegetarian—so you always know exactly what youre putting into your body. </p>
           </div>
         </div>
       </section>

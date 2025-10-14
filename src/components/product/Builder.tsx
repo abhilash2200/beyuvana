@@ -37,7 +37,7 @@ const Builder = ({ product }: { product: Product }) => {
                   width={334}
                   height={180}
                   alt={item.title}
-                  className="w-full h-full object-cover"
+                  className="w-full md:h-full h-[200px] object-cover"
                 />
               </div>
               <div
@@ -45,12 +45,12 @@ const Builder = ({ product }: { product: Product }) => {
                 style={{ backgroundColor: item.bgColor }}
               >
                 <h2
-                  className="text-[22px] font-[Grafiels] leading-tight mb-5"
+                  className="md:text-[22px] text-[18px] font-[Grafiels] leading-tight mb-5"
                   style={{ color: item.headingColor }}
                 >
                   {item.title}
                 </h2>
-                <p style={{ color: item.paraColor }}>{item.desc}</p>
+                <p className="md:text-[15px] text-[13px]" style={{ color: item.paraColor }}>{item.desc}</p>
               </div>
             </div>
           </SplideSlide>

@@ -152,6 +152,7 @@ const CustomerReviews = ({ productId, productName, designSlug }: { productId?: n
         if (!reviews.length) {
             return <p className='text-sm text-gray-500'>No reviews yet.</p>
         }
+
         return (
             <div className='flex flex-col gap-4'>
                 {reviews.map((r) => (

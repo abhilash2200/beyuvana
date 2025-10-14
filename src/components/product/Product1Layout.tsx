@@ -122,9 +122,9 @@ export default function Product1Layout({ product }: { product: Product }) {
                         {data.map((item, i) => (
                             <div key={i} className="w-[45%] md:w-[23%] relative">
                                 <div className="flex flex-col items-center justify-center gap-y-4">
-                                    <Image src={item.img} alt="certificate" width={136} height={136} />
+                                    <Image src={item.img} alt="certificate" width={136} height={136} className="md:w-auto md:h-auto w-[90px] h-[90px]" />
                                     <p
-                                        className="text-sm text-gray-500 max-w-[80%]"
+                                        className="text-[13px] whitespace-pre-line md:text-sm text-gray-500 max-w-[80%]"
                                         dangerouslySetInnerHTML={{ __html: item.text }}
                                     />
                                 </div>
@@ -230,8 +230,8 @@ export default function Product1Layout({ product }: { product: Product }) {
                     </div>
                 </div>
                 <div className="md:py-10 py-6">
-                    <HeaderText textalign="text-center" heading="Why the BEYUVANA™ PREMIUM COLLAGEN BUILDER Works" textcolor="text-[#1A2819]" />
-                    <p className="text-center mb-4">BEYUVANA™ isn’t just another supplement — it’s a multi-action, plant-powered skin nutrition system designed to target the root causes of aging, not just the symptoms. Heres why it delivers real, visible results:</p>
+                    <HeaderText textalign="md:text-center text-left" heading="Why the BEYUVANA™ PREMIUM COLLAGEN BUILDER Works" textcolor="text-[#1A2819]" />
+                    <p className="md:text-center text-left mb-4">BEYUVANA™ isn’t just another supplement — it’s a multi-action, plant-powered skin nutrition system designed to target the root causes of aging, not just the symptoms. Heres why it delivers real, visible results:</p>
                     <WhyBeyuvana product={product} />
                 </div>
                 <div className="md:py-10 py-6">
@@ -245,13 +245,13 @@ export default function Product1Layout({ product }: { product: Product }) {
                     </div>
                 </div>
                 <div className="md:py-10 py-6 bg-[#F8FFF9] rounded-[20px]">
-                    <HeaderText textalign="text-center" heading="Who Is BEYUVANA™ Premium Collagen Builder Made For?" textcolor="text-[#1A2819]" />
-                    <p className="text-center mb-4 max-w-[90%] leading-tight">BEYUVANA™ is designed for modern individuals who want results without compromise —using only clean, plant-based ingredients that are backed by science and safe for everyday use.</p>
+                    <HeaderText textalign="md:text-center text-left" heading="Who Is BEYUVANA™ Premium Collagen Builder Made For?" textcolor="text-[#1A2819]" />
+                    <p className="md:text-center text-left mb-4 max-w-[90%] leading-tight">BEYUVANA™ is designed for modern individuals who want results without compromise —using only clean, plant-based ingredients that are backed by science and safe for everyday use.</p>
                     <Builder product={product} />
                 </div>
                 <div className="md:py-10 py-6">
-                    <HeaderText textalign="text-center" heading="The Hidden Reasons Your Skin Loses Its Radiance So quickly" textcolor="text-[#1A2819]" />
-                    <p className="text-center mb-4 max-w-[90%] leading-tight">Stress, pollution, UV exposure, poor sleep, and nutrient deficiencies silently disrupt your skin’s balance — breaking down collagen, dulling glow, and accelerating aging faster than you realize.</p>
+                    <HeaderText textalign="md:text-center text-left" heading="The Hidden Reasons Your Skin Loses Its Radiance So quickly" textcolor="text-[#1A2819]" />
+                    <p className="md:text-center text-left mb-4 max-w-[90%] leading-tight">Stress, pollution, UV exposure, poor sleep, and nutrient deficiencies silently disrupt your skin’s balance — breaking down collagen, dulling glow, and accelerating aging faster than you realize.</p>
                     <div className="hidden md:block">
                         <TabData productId={product.id} />
                     </div>
@@ -261,8 +261,10 @@ export default function Product1Layout({ product }: { product: Product }) {
                 </div>
             </div>
             <div className="md:py-10 py-6">
-                <HeaderText textalign="text-center" heading="India’s Most Advanced Anti-Aging Innovation" textcolor="text-[#1A2819]" />
-                <p className="text-center mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">Collagen Reglow delivers clinically proven ingredients in precision-dosed sachets for maximum skin transformation.</p>
+                <div className="container mx-auto px-4">
+                <HeaderText textalign="md:text-center text-left" heading="India’s Most Advanced Anti-Aging Innovation" textcolor="text-[#1A2819]" />
+                </div>
+                <p className="md:text-center text-left mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">Collagen Reglow delivers clinically proven ingredients in precision-dosed sachets for maximum skin transformation.</p>
                 <div className="py-6">
                     <AdvancedPlant product={product} />
                 </div>
@@ -274,7 +276,7 @@ export default function Product1Layout({ product }: { product: Product }) {
             </div>
             <div className="md:py-10 py-6">
                 <div className="container mx-auto px-4">
-                    <HeaderText textalign="text-center" heading="Customer Reviews" textcolor="text-[#1A2819]" />
+                    <HeaderText textalign="md:text-center text-left" heading="Customer Reviews" textcolor="text-[#1A2819]" />
                     <CustomerReviews
                         productId={backendProductIdMap[product.id] ?? product.id}
                         productName={product.name}
@@ -284,7 +286,7 @@ export default function Product1Layout({ product }: { product: Product }) {
             </div>
             <div className="md:py-10 py-6">
                 <div className="container mx-auto px-4">
-                    <HeaderText textalign="text-center" heading="Frequently Asked Questions" textcolor="text-[#1A2819]" />
+                    <HeaderText textalign="md:text-center text-left" heading="Frequently Asked Questions" textcolor="text-[#1A2819]" />
                     <ProductFaq productId={1} />
                 </div>
             </div>

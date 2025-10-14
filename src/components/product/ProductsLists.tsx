@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Rating } from "@mui/material";
 import { Button } from "../ui/button";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
 import type { PriceTier } from "@/lib/api";
 import { useCart } from "@/context/CartProvider";
+import ProductRating from "./ProductRating";
 
 // Product interface
 export interface Product {
@@ -119,8 +119,10 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                     )}
                   </div> */}
                   <div className="flex gap-x-4 items-center mb-3">
-                    <Rating name="half-rating-read" defaultValue={4.5} precision={0.5} readOnly />
-                    <p className="text-[12px] text-[#747474]">60 reviews</p>
+                    <ProductRating
+                      productId={product.id}
+                      className="text-[12px]"
+                    />
                   </div>
                   {product.description.map((desc, i) => (
                     <p key={i} className="text-[15px] mb-3">{desc}</p>
@@ -134,10 +136,10 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                   {Array.isArray(product.prices) && product.prices.length > 0 && (
                     <div className="mb-4">
                       <div className="text-[13px] text-[#1A2819] font-semibold mb-2">Available options</div>
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 w-[65%]">
+                      <div className="flex md:grid md:grid-cols-4 gap-2 md:w-[65%] w-[100%] overflow-x-auto md:overflow-x-visible">
                         {product.prices.slice(0, 6).map((tier, idx) => (
-                          <div key={idx} className="border border-[#057A37] rounded-[15px] px-3 py-2 bg-[#EBF2EC]">
-                            <div className="flex items-center justify-between text-[13px]">
+                          <div key={idx} className="border border-[#057A37] rounded-[15px] px-3 py-2 bg-[#EBF2EC] min-w-[130px] md:min-w-0">
+                            <div className="flex items-center justify-between text-[13px] mb-1 md:mb-0">
                               <span>{tier.unit_name} {tier.qty}</span>
                               <span className="text-[#057A37] font-medium">₹{formatINR(parseFloat(tier.final_price))}</span>
                             </div>

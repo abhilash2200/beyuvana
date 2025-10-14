@@ -19,8 +19,8 @@ interface SectionProps {
 
 const Section: FC<SectionProps> = ({ title, items }) => (
     <section className="mb-6">
-        <h2 className="text-xl mb-3 text-[#0C4B33] font-[Grafiels]">{title}</h2>
-        <ul className="space-y-3">
+        <h2 className="md:text-xl text-[15px] mb-3 text-[#0C4B33] font-[Grafiels]">{title}</h2>
+        <ul className="space-y-3 text-[14px] md:text-[16px]">
             {items.map((item, index) => (
                 <ListItem key={index} text={item} />
             ))}
@@ -47,7 +47,7 @@ const CashBackPopup: FC = () => {
     ];
 
     return (
-        <div className="w-full mx-auto text-gray-800 transition-colors">
+        <div className="w-full mx-auto text-gray-800 transition-colors h-[80vh] md:h-auto overflow-y-auto">
             <Section title="How It Works?" items={howItWorks} />
             <Section title="When It Doesn’t Apply" items={whenItDoesntApply} />
 

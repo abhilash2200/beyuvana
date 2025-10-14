@@ -227,12 +227,17 @@ const ProductsList = () => {
                   {product.benefits.map((b, i) => (
                     <div
                       key={i}
-                      className={`w-[20%] ${i !== product.benefits.length - 1 ? "border-r border-black" : ""
+                      className={`md:w-[20%] w-[45%] ${i !== product.benefits.length - 1
+                        ? "md:border-r md:border-black"
+                        : ""
+                        } ${i !== product.benefits.length - 1 && !(i === 1 || i === 3)
+                          ? "border-r border-black"
+                          : ""
                         } pr-2`}
                     >
                       <div className="flex flex-col items-center gap-2 text-center">
                         <Image src={b.img} width={83} height={83} alt={`Benefit ${i + 1}`} />
-                        <p className="hidden md:block text-[12px]">{b.text}</p>
+                        <p className="text-[12px]">{b.text}</p>
                       </div>
                     </div>
                   ))}

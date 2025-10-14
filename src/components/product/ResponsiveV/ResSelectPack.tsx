@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
@@ -10,6 +9,7 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import { productsApi, type Product as ApiProduct, type PriceTier } from "@/lib/api";
 import { designSlugToProductId } from "@/app/data/productConfigs";
+import ProductRating from "../ProductRating";
 
 type Pack = {
     qty: number;
@@ -23,8 +23,6 @@ type Pack = {
 type Product = {
     id: string;
     name: string;
-    reviews: number;
-    rating: number;
     packs: Pack[];
     image: string;
 };
@@ -96,7 +94,6 @@ function buildPacksFromPrices(
 }
 
 const ResSelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
-    const router = useRouter();
     const { addToCart, openCart } = useCart();
 
     const [product, setProduct] = useState<Product | null>(null);
@@ -147,9 +144,6 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                 const hydrated: Product = {
                     id: String(apiProduct.id),
                     name: apiProduct.product_name,
-                    // Defaults to keep UI consistent
-                    reviews: designType === "pink" ? 42 : 60,
-                    rating: designType === "pink" ? 4 : 4.5,
                     packs,
                     image,
                 };
@@ -197,6 +191,14 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
 
     return (
         <div>
+            <div className="flex items-center justify-center gap-2 mb-4">
+                <h3 className="text-[16px] font-[Grafiels] text-[#1A2819]">Select Pack</h3>
+                <span>|</span>
+                <ProductRating
+                    productId={product.id}
+                    className="text-[12px]"
+                />
+            </div>
             <div className="md:hidden mt-4">
                 <Splide
                     className="custom-splide"
