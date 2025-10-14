@@ -18,7 +18,7 @@ type SocialItem = {
 
 const quickLinks: LinkItem[] = [
     { name: "Contact Us", href: "/contact" },
-    { name: "Shipping & Returns", href: "/" },
+    { name: "Shipping & Returns", href: "/shipping-and-return" },
     { name: "Product", href: "/product" },
 ];
 

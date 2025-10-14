@@ -22,14 +22,14 @@ const page = () => {
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-3">
                       <Phone className="text-[#057A37] w-5 h-5" />
-                      <a href="tel:+917003810162" className="text-gray-700 hover:underline">
-                        +91 7003810162
+                      <a href="tel:+918777377060" className="text-gray-700 hover:underline">
+                        +91 8777377060
                       </a>
                     </div>
                     <div className="flex items-center gap-3">
                       <Mail className="text-[#057A37] w-5 h-5" />
-                      <a href="mailto:info@beyuvana.com" className="text-gray-700 hover:underline">
-                        info@beyuvana.com
+                      <a href="mailto:info.beyuvana@gmail.com" className="text-gray-700 hover:underline">
+                        info.beyuvana@gmail.com
                       </a>
                     </div>
                     <div className="flex items-center gap-3">

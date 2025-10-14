@@ -38,18 +38,33 @@ const ProductsList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Fetch only the latest two products (id DESC)
-        const response = await productsApi.getList({
-          sort: { id: "DESC" },
-          page: 1,
-          limit: 2,
-        });
+        // Fetch products based on design type: first green, then pink
+        const [greenResponse, pinkResponse] = await Promise.all([
+          // Fetch green design product
+          productsApi.getList({
+            filter: { design_type: ["green", "GREEN"] },
+            sort: { id: "DESC" },
+            page: 1,
+            limit: 1,
+          }),
+          // Fetch pink design product
+          productsApi.getList({
+            filter: { design_type: ["pink", "PINK"] },
+            sort: { id: "DESC" },
+            page: 1,
+            limit: 1,
+          })
+        ]);
 
-        const list = response.data && Array.isArray(response.data) ? response.data : [];
+        const greenList = greenResponse.data && Array.isArray(greenResponse.data) ? greenResponse.data : [];
+        const pinkList = pinkResponse.data && Array.isArray(pinkResponse.data) ? pinkResponse.data : [];
 
-        if (list.length > 0) {
+        // Combine products: green first, then pink
+        const combinedList = [...greenList, ...pinkList];
+
+        if (combinedList.length > 0) {
           // Convert API products to display format (no hardcoded prices)
-          const apiProducts: DisplayProduct[] = list.map((apiProduct: Product, idx: number) => {
+          const apiProducts: DisplayProduct[] = combinedList.map((apiProduct: Product, idx: number) => {
             const tiers: PriceTier[] = Array.isArray(apiProduct.prices) ? (apiProduct.prices as PriceTier[]) : [];
 
             const getTierPrice = (qty: 1 | 2 | 4): number => {
@@ -216,8 +231,8 @@ const ProductsList = () => {
                         } pr-2`}
                     >
                       <div className="flex flex-col items-center gap-2 text-center">
-                      <Image src={b.img} width={83} height={83} alt={`Benefit ${i + 1}`} />
-                      <p className="hidden md:block text-[12px]">{b.text}</p>
+                        <Image src={b.img} width={83} height={83} alt={`Benefit ${i + 1}`} />
+                        <p className="hidden md:block text-[12px]">{b.text}</p>
                       </div>
                     </div>
                   ))}

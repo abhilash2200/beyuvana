@@ -1,8 +1,8 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: 'Cancellation Policy',
-  description: 'Review BEYUVANA™ order cancellation window and process.',
+  title: 'Shipping & Return Policy',
+  description: 'Shipping coverage, dispatch, delivery timelines, returns and damages policy at BEYUVANA™.',
 }
 
 

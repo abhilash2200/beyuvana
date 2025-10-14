@@ -122,7 +122,7 @@ const Header = () => {
                                     <DropdownMenuContent className="w-38">
                                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem>
+                                        {/* <DropdownMenuItem>
                                             <Link
                                                 href="/profile"
                                                 className="w-full block"
@@ -130,7 +130,7 @@ const Header = () => {
                                             >
                                                 Profile
                                             </Link>
-                                        </DropdownMenuItem>
+                                        </DropdownMenuItem> */}
                                         <DropdownMenuItem>
                                             <Link
                                                 href="/orders"

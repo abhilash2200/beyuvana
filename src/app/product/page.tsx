@@ -5,33 +5,42 @@ import React from 'react'
 // Server-side fetch function
 async function fetchProducts() {
   try {
-    const limit = 50; // fetch in larger pages to minimize requests
-    let pageNum = 1;
-    const all: ReturnType<typeof convertToLegacyProduct>[] = [];
-
-    while (true) {
-      const response = await productsApi.getList({
-        // no category filter: fetch all
+    // Fetch products based on design type: first green, then pink
+    const [greenResponse, pinkResponse] = await Promise.all([
+      // Fetch green design products
+      productsApi.getList({
+        filter: { design_type: ["green", "GREEN"] },
         sort: { id: "DESC" },
-        page: pageNum,
-        limit,
-      });
+        page: 1,
+        limit: 50,
+      }),
+      // Fetch pink design products
+      productsApi.getList({
+        filter: { design_type: ["pink", "PINK"] },
+        sort: { id: "DESC" },
+        page: 1,
+        limit: 50,
+      })
+    ]);
 
-      const list = (response.data && Array.isArray(response.data)) ? response.data : [];
-      if (list.length === 0) break;
+    const greenList = (greenResponse.data && Array.isArray(greenResponse.data)) ? greenResponse.data : [];
+    const pinkList = (pinkResponse.data && Array.isArray(pinkResponse.data)) ? pinkResponse.data : [];
 
-      all.push(...list.map(convertToLegacyProduct));
+    // Combine products: green first, then pink
+    const combinedList = [...greenList, ...pinkList];
 
-      // If the page returned fewer than limit, we've reached the end
-      if (list.length < limit) break;
+    // Convert to legacy format and ensure proper ordering
+    const all = combinedList.map(convertToLegacyProduct);
 
-      pageNum += 1;
-      // Safety cap to avoid infinite loops if backend behaves unexpectedly
-      if (pageNum > 50) break;
-    }
+    // Ensure green products come first, then pink products
+    return all.sort((a, b) => {
+      // First sort by design type (green first, then pink)
+      if (a.design_type === "green" && b.design_type === "pink") return -1;
+      if (a.design_type === "pink" && b.design_type === "green") return 1;
 
-    // Ensure latest-first on the client as well
-    return all.sort((a, b) => b.id - a.id);
+      // Within same design type, sort by ID DESC (latest first)
+      return b.id - a.id;
+    });
   } catch (err) {
     console.error("Fetch products error:", err);
     return [];

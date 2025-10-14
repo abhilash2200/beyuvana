@@ -134,9 +134,9 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                   {Array.isArray(product.prices) && product.prices.length > 0 && (
                     <div className="mb-4">
                       <div className="text-[13px] text-[#1A2819] font-semibold mb-2">Available options</div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 w-[65%]">
                         {product.prices.slice(0, 6).map((tier, idx) => (
-                          <div key={idx} className="border rounded-[15px] px-3 py-2 bg-white">
+                          <div key={idx} className="border border-[#057A37] rounded-[15px] px-3 py-2 bg-[#EBF2EC]">
                             <div className="flex items-center justify-between text-[13px]">
                               <span>{tier.unit_name} {tier.qty}</span>
                               <span className="text-[#057A37] font-medium">₹{formatINR(parseFloat(tier.final_price))}</span>
