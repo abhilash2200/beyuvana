@@ -2,9 +2,10 @@ import { Metadata } from "next"
 
 
 export async function generateMetadata(
-    { params }: { params: { id?: string } }
+    { params }: { params: Promise<{ id?: string }> }
 ): Promise<Metadata> {
-    const id = String(params?.id || "");
+    const resolvedParams = await params;
+    const id = String(resolvedParams?.id || "");
     const safeId = encodeURIComponent(id);
     const title = `Order #${safeId} | BEYUVANA™`;
     const description = `Details and status for order #${safeId}.`;

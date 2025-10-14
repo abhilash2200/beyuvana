@@ -1,9 +1,10 @@
 import { Metadata } from "next"
 
 export async function generateMetadata(
-  { params }: { params: { design_type?: string } }
+  { params }: { params: Promise<{ design_type?: string }> }
 ): Promise<Metadata> {
-  const slug = String(params?.design_type || "");
+  const resolvedParams = await params;
+  const slug = String(resolvedParams?.design_type || "");
 
   // Basic metadata without importing client-side dependencies
   const title = `Product | BEYUVANA™`;
