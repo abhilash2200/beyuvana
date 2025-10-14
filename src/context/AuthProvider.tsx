@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (user?.id) {
         try {
           localStorage.removeItem(`cart_${user.id}`);
-          console.log(`Cleared cart data for user ${user.id} on logout`);
+          // Debug: Cleared cart data for user on logout
         } catch (error) {
           console.warn("Failed to clear user cart data:", error);
         }

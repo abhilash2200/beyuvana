@@ -103,18 +103,10 @@ const OrderDetailPage = () => {
                 setLoading(true);
                 setError(null);
 
-                console.log("🔍 Order Details Debug:", {
-                    orderId,
-                    rawOrderId,
-                    sanitized: orderId,
-                    user: user?.id,
-                    sessionKey: sessionKey ? "Present" : "Missing",
-                    sessionKeyLength: sessionKey?.length || 0,
-                    timestamp: new Date().toISOString()
-                });
+                // Debug: Order Details Debug
 
                 const response = await orderDetailsApi.getOrderDetails(orderId, user?.id?.toString() || '', sessionKey);
-                console.log("Order details response:", response);
+                // Debug: Order details response
 
                 if (response && response.status && response.data) {
                     const data = response.data;

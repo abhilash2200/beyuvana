@@ -25,12 +25,7 @@ const OrdersPage = () => {
         const encodedId = encodeURIComponent(testId);
         const url = `/orders/${encodedId}`;
 
-        console.log("🧪 Testing Order Navigation:", {
-          orderId: testId,
-          encodedId,
-          url,
-          ordersCount: orders.length
-        });
+        // Debug: Testing Order Navigation
 
         // Navigate to the order detail page
         window.location.href = url;
@@ -53,16 +48,16 @@ const OrdersPage = () => {
 
         const response = await ordersApi.getOrderList(sessionKey, user?.id, "Upcoming");
 
-        console.log("Orders API response:", response);
+        // Debug: Orders API response
 
         if (response.data && Array.isArray(response.data)) {
           setOrders(response.data);
 
           if (response.data.length === 0) {
             // Don't show toast for empty orders, just show the message
-            console.log("No orders found");
+            // Debug: No orders found
           } else {
-            toast.success(`Found ${response.data.length} orders`);
+            // Debug: Found orders
           }
         } else {
           setError(response.message || "Failed to fetch orders");

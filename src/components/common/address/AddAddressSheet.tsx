@@ -84,14 +84,14 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
 
         try {
             setSettingPrimary(addressId);
-            console.log("Setting primary address:", { userId: user.id, addressId, sessionKey: sessionKey ? "Present" : "Missing" });
+            // Debug: Setting primary address
 
             const response = await addressApi.setPrimaryAddress(parseInt(user.id), addressId, sessionKey);
 
-            console.log("Set primary address response:", response);
+            // Debug: Set primary address response
 
             if (response.success !== false) {
-                console.log("Primary address set successfully, updating local state and refreshing parent");
+                // Debug: Primary address set successfully, updating local state and refreshing parent
 
                 // Update local state to reflect the change
                 setSavedAddresses(prev =>
@@ -223,15 +223,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 is_primary: isEditMode ? editingAddress?.is_primary || 0 : 1, // Keep existing primary status when editing
             };
 
-            console.log(`${isEditMode ? 'Updating' : 'Saving'} address with data:`, {
-                addressData,
-                address2Value: addressData.address2,
-                address2Type: typeof addressData.address2,
-                sessionKey: sessionKey ? "Present" : "Missing",
-                userId: user.id,
-                isEditMode,
-                editingAddressId: editingAddress?.id
-            });
+            // Debug: Saving/Updating address with data
 
             let response;
             if (isEditMode && editingAddress) {
@@ -243,10 +235,10 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 response = await addressApi.saveAddress(addressData, sessionKey);
             }
 
-            console.log("Address save response:", response);
+            // Debug: Address save response
 
             if (response.success !== false) {
-                console.log(`Address ${isEditMode ? 'updated' : 'saved'} successfully:`, response);
+                // Debug: Address saved/updated successfully
                 // Reset form and edit mode
                 setForm({
                     fullName: "",

@@ -73,7 +73,7 @@ const CustomerReviews = ({ productId, productName, designSlug }: { productId?: n
                     }
                 }
                 if (process.env.NODE_ENV === 'development') {
-                    console.log("🔎 Reviews resolver:", { productName, designSlug, resolvedId, listCount: list?.length || 0 });
+                    // Debug: Reviews resolver
                 }
             } catch {
                 // ignore list fetch errors; we'll fallback to provided id

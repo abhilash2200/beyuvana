@@ -133,7 +133,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (storedCart) {
           const parsedCart = JSON.parse(storedCart);
           if (Array.isArray(parsedCart)) {
-            console.log(`Loaded cart for user ${user.id} from localStorage:`, parsedCart);
+            // Debug: Loaded cart for user from localStorage
             setCartItems(parsedCart);
           }
         }
@@ -143,7 +143,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (storedCart) {
           const parsedCart = JSON.parse(storedCart);
           if (Array.isArray(parsedCart)) {
-            console.log("Loaded legacy cart from localStorage:", parsedCart);
+            // Debug: Loaded legacy cart from localStorage
             setCartItems(parsedCart);
           }
         }
@@ -192,11 +192,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // Save to user-specific cart key
         const userCartKey = `cart_${user.id}`;
         localStorage.setItem(userCartKey, JSON.stringify(cartItems));
-        console.log(`Saved cart for user ${user.id} to localStorage`);
+        // Debug: Saved cart for user to localStorage
       } else {
         // Fallback to legacy cart key for non-authenticated users
         localStorage.setItem("cart", JSON.stringify(cartItems));
-        console.log("Saved cart to legacy localStorage key");
+        // Debug: Saved cart to legacy localStorage key
       }
     } catch (error) {
       console.warn("Failed to save cart to localStorage:", error);
@@ -206,7 +206,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Handle user login - restore user-specific cart
   useEffect(() => {
     if (authInitialized && user && sessionKey && cartLoadedFromStorage) {
-      console.log(`User ${user.id} logged in, checking for user-specific cart`);
+      // Debug: User logged in, checking for user-specific cart
 
       // Check if there's a user-specific cart to restore
       const userCartKey = `cart_${user.id}`;
@@ -216,7 +216,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         try {
           const parsedUserCart = JSON.parse(userCart);
           if (Array.isArray(parsedUserCart) && parsedUserCart.length > 0) {
-            console.log(`Restoring cart for user ${user.id}:`, parsedUserCart);
+            // Debug: Restoring cart for user
             setCartItems(parsedUserCart);
 
             // Enhance with product details
@@ -235,7 +235,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Enhance cart items with product details when user logs in
   useEffect(() => {
     if (authInitialized && user && sessionKey && cartLoadedFromStorage && cartItems.length > 0) {
-      console.log("Enhancing cart items with product details");
+      // Debug: Enhancing cart items with product details
       enhanceCartItemsWithDetails(cartItems).then((enhancedItems) => {
         setCartItems(enhancedItems);
       });
@@ -254,7 +254,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (authInitialized && (!user || !sessionKey) && !isPageRefresh) {
       // This is a real logout, clear the cart
-      console.log("User logged out, clearing cart");
+      // Debug: User logged out, clearing cart
       setCartItems([]);
       try {
         // Clear both legacy and user-specific cart keys
@@ -268,7 +268,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } catch { }
     } else if (authInitialized && (!user || !sessionKey) && isPageRefresh) {
       // This is a page refresh, don't clear the cart
-      console.log("Page refresh detected, keeping cart");
+      // Debug: Page refresh detected, keeping cart
     }
   }, [user, sessionKey, authInitialized, isPageRefresh]);
 
@@ -588,12 +588,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         } else {
           // Empty server cart → keep local cart if it exists, don't clear it
           // This prevents the cart from being cleared on page refresh when server cart is empty
-          console.log("Server cart is empty, keeping local cart if it exists");
+          // Debug: Server cart is empty, keeping local cart if it exists
           // Only clear if local cart is also empty (user actually cleared it)
           if (cartItems.length === 0) {
-            console.log("Both server and local cart are empty, no action needed");
+            // Debug: Both server and local cart are empty, no action needed
           } else {
-            console.log("Keeping local cart with", cartItems.length, "items");
+            // Debug: Keeping local cart with items
           }
         }
       }
@@ -647,7 +647,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Manual refresh function for product details
   const refreshProductDetails = async () => {
     if (user && sessionKey && cartItems.length > 0) {
-      console.log("Manually refreshing product details for all cart items");
+      // Debug: Manually refreshing product details for all cart items
       const enhancedItems = await enhanceCartItemsWithDetails(cartItems);
       setCartItems(enhancedItems);
     }

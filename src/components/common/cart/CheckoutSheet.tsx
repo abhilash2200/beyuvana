@@ -104,7 +104,7 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                 }
             };
 
-            console.log("Processing checkout with data:", checkoutData);
+            // Debug: Processing checkout with data
 
             const response = await checkoutApi.processCheckout(checkoutData, sessionKey);
 

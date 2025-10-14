@@ -61,12 +61,6 @@ export default function LoginForm({ onClose }: LoginFormProps) {
                 null;
 
             // Debug logging for session key extraction
-            console.log("🔍 Login Response Debug:", {
-                apiData,
-                sessionKey,
-                sessionKeyType: typeof sessionKey,
-                sessionKeyLength: typeof sessionKey === 'string' ? sessionKey.length : 0
-            });
 
             if (!normalizedUser) {
                 setError("Invalid login response.");
@@ -94,7 +88,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
             });
             */
 
-            toast.success("Login successful!");
+            // Debug: Login successful
             onClose?.();
         } catch (err: unknown) {
             console.error(err);

@@ -45,43 +45,32 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
       setLoading(true);
       setError(null);
 
-      console.log("Fetching addresses with:", {
-        userId: user.id,
-        sessionKey: sessionKey ? "Present" : "Missing"
-      });
+      // Debug: Fetching addresses
 
       const response = await addressApi.getAddresses(parseInt(user.id), sessionKey);
 
-      console.log("Address fetch response:", response);
+      // Debug: Address fetch response
 
       if (response.data && Array.isArray(response.data)) {
         // Log all addresses to see their structure
-        console.log("DeliveryAddress: All addresses from API:", response.data);
-        response.data.forEach((addr, index) => {
-          console.log(`Address ${index + 1}:`, {
-            id: addr.id,
-            fullname: addr.fullname,
-            is_primary: addr.is_primary,
-            is_primary_type: typeof addr.is_primary
-          });
-        });
+        // Debug: DeliveryAddress: All addresses from API
 
         // Only show the primary address - check for different possible values
         const primaryAddress = response.data.find(addr => isPrimaryAddress(addr));
-        console.log("DeliveryAddress: Found addresses:", response.data.length, "Primary address:", primaryAddress);
+        // Debug: DeliveryAddress: Found addresses and primary address
 
         if (primaryAddress) {
           setAddresses([primaryAddress]); // Only set the primary address
-          console.log("DeliveryAddress: Set primary address as selected:", primaryAddress.fullname);
+          // Debug: DeliveryAddress: Set primary address as selected
         } else {
           // If no primary address is found, show the first address as a fallback
           // This handles cases where the API doesn't have any address marked as primary
           if (response.data.length > 0) {
-            console.log("DeliveryAddress: No primary address found, using first address as fallback");
+            // Debug: DeliveryAddress: No primary address found, using first address as fallback
             setAddresses([response.data[0]]);
           } else {
             setAddresses([]);
-            console.log("DeliveryAddress: No addresses found at all");
+            // Debug: DeliveryAddress: No addresses found at all
           }
         }
       } else if (response.code === 401) {

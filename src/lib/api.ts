@@ -626,12 +626,6 @@ export const cartApi = {
       }
 
       // Debug logging for cart API
-      console.log("🔍 Cart API Debug:", {
-        sessionKey: sessionKey ? "Present" : "Missing",
-        sessionKeyLength: sessionKey?.length || 0,
-        headers,
-        endpoint: "/cart/lists/v1/",
-      });
 
       // Try query parameter approach
       const endpoint = sessionKey
@@ -767,10 +761,7 @@ export const orderDetailsApi = {
       try {
         requestBodyString = JSON.stringify(requestBody);
         if (isDevelopment) {
-          console.log("📤 Sending order details request:", {
-            bodyLength: requestBodyString.length,
-            bodyPreview: requestBodyString.substring(0, 200)
-          });
+          // Debug: Sending order details request
         }
       } catch (jsonError) {
         console.error("❌ Failed to serialize request body:", {
@@ -861,12 +852,7 @@ export const ordersApi = {
 
       // Debug logging for headers
       if (isDevelopment) {
-        console.log("🔍 Orders API Debug:", {
-          sessionKey: sessionKey ? "Present" : "Missing",
-          sessionKeyLength: sessionKey?.length || 0,
-          headers,
-          endpoint: "/api/order_list",
-        });
+        // Debug: Orders API Debug
       }
 
       const uid = userId ? Number(userId) : null;
@@ -881,9 +867,6 @@ export const ordersApi = {
         const listLocal: BackendOrderItem[] = Array.isArray(rawLocal?.data) ? (rawLocal.data as BackendOrderItem[]) : [];
 
         // Debug: Log the raw backend response to see what fields are available
-        if (isDevelopment && listLocal.length > 0) {
-          console.log("🔍 Raw backend order data:", listLocal[0]);
-        }
         const mappedLocal: Order[] = listLocal.map((o): Order => {
           const id = String(o?.id ?? "");
           const productName = String(o?.product_name ?? o?.order_no ?? "Order");
@@ -902,12 +885,7 @@ export const ordersApi = {
           const thumbnail = o?.thumbnail;
           const product_id = o?.product_id ? String(o.product_id) : undefined;
 
-          console.log("🔍 Order mapping:", {
-            orderId: id,
-            productName,
-            product_id,
-            hasProductId: !!product_id
-          });
+          // Debug: Order mapping
 
           return { id, productName, description, price, status: statusMapped, date, image, thumbnail, product_id };
         });
@@ -1002,13 +980,7 @@ export const addressApi = {
 
       // Debug logging for headers
       if (isDevelopment) {
-        console.log("🔍 Save Address API Debug:", {
-          addressData,
-          sessionKey: sessionKey ? "Present" : "Missing",
-          sessionKeyLength: sessionKey?.length || 0,
-          headers,
-          endpoint: "/api/save_address/",
-        });
+        // Debug: Save Address API Debug
       }
 
       // Ensure all required fields are present
@@ -1025,7 +997,7 @@ export const addressApi = {
         session_key: sessionKey,
       };
 
-      console.log("API Request Data:", requestData);
+      // Debug: API Request Data
 
       return await apiFetch("/api/save_address/", {
         method: "POST",
@@ -1074,19 +1046,6 @@ export const addressApi = {
       }
 
       // Debug logging for headers - Force show for debugging
-      console.log("🔍 Address API Debug:", {
-        userId,
-        sessionKey: sessionKey ? "Present" : "Missing",
-        sessionKeyLength: sessionKey?.length || 0,
-        headers,
-        endpoint: "/api/get_address/",
-      });
-      console.log("📋 Exact Headers Being Sent:", headers);
-      console.log(
-        "🔑 Session Key Preview:",
-        sessionKey?.substring(0, 20) + "..."
-      );
-      console.log("🌍 Environment:", process.env.NODE_ENV);
 
       return await apiFetch<SavedAddress[]>("/api/get_address/", {
         method: "POST",
@@ -1178,13 +1137,7 @@ export const addressApi = {
 
       // Debug logging for headers
       if (isDevelopment) {
-        console.log("🔍 Update Address API Debug:", {
-          addressData,
-          sessionKey: sessionKey ? "Present" : "Missing",
-          sessionKeyLength: sessionKey?.length || 0,
-          headers,
-          endpoint: "/api/update_address/",
-        });
+        // Debug: Update Address API Debug
       }
 
       // Ensure all required fields are present with correct field names
@@ -1202,7 +1155,7 @@ export const addressApi = {
         session_key: sessionKey, // Add session key to request body as well
       };
 
-      console.log("API Update Request Data:", requestData);
+      // Debug: API Update Request Data
 
       return await apiFetch("/api/update_address/", {
         method: "POST",
@@ -1256,14 +1209,7 @@ export const addressApi = {
 
       // Debug logging for headers
       if (isDevelopment) {
-        console.log("🔍 Delete Address API Debug:", {
-          userId,
-          addressId,
-          sessionKey: sessionKey ? "Present" : "Missing",
-          sessionKeyLength: sessionKey?.length || 0,
-          headers,
-          endpoint: "/api/delete_address/",
-        });
+        // Debug: Delete Address API Debug
       }
 
       const requestData = {
@@ -1272,7 +1218,7 @@ export const addressApi = {
         session_key: sessionKey, // Add session key to request body as well
       };
 
-      console.log("API Delete Request Data:", requestData);
+      // Debug: API Delete Request Data
 
       return await apiFetch("/api/delete_address/", {
         method: "POST",
@@ -1326,14 +1272,7 @@ export const addressApi = {
 
       // Debug logging for headers
       if (isDevelopment) {
-        console.log("🔍 Set Primary Address API Debug:", {
-          userId,
-          addressId,
-          sessionKey: sessionKey ? "Present" : "Missing",
-          sessionKeyLength: sessionKey?.length || 0,
-          headers,
-          endpoint: "/api/set_primary_address/",
-        });
+        // Debug: Set Primary Address API Debug
       }
 
       return await apiFetch("/api/set_primary_address/", {
@@ -1392,14 +1331,7 @@ export const addressApi = {
 
       // Debug logging for headers
       if (isDevelopment) {
-        console.log("🔍 Get Address Details API Debug:", {
-          userId,
-          addressId,
-          sessionKey: sessionKey ? "Present" : "Missing",
-          sessionKeyLength: sessionKey?.length || 0,
-          headers,
-          endpoint: "/api/get_address_details/",
-        });
+        // Debug: Get Address Details API Debug
       }
 
       return await apiFetch<SavedAddress>("/api/get_address_details/", {
@@ -1456,13 +1388,7 @@ export const checkoutApi = {
 
       // Debug logging for checkout API
       if (isDevelopment) {
-        console.log("🔍 Checkout API Debug:", {
-          checkoutData,
-          sessionKey: sessionKey ? "Present" : "Missing",
-          sessionKeyLength: sessionKey?.length || 0,
-          headers,
-          endpoint: "/api/checkout/",
-        });
+        // Debug: Checkout API Debug
       }
 
       return await apiFetch("/api/checkout/", {
@@ -1515,13 +1441,7 @@ export const reviewApi = {
 
       // Debug logging for review API
       if (isDevelopment) {
-        console.log("🔍 Review API Debug:", {
-          reviewData,
-          sessionKey: sessionKey ? "Present" : "Missing",
-          sessionKeyLength: sessionKey?.length || 0,
-          headers,
-          endpoint: "/product-reviews/add/v1/",
-        });
+        // Debug: Review API Debug
       }
 
       return await apiFetch("/product-reviews/add/v1/", {

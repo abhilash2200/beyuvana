@@ -62,12 +62,12 @@ const ProductReview = ({ productId }: ProductReviewProps) => {
                 star_ratting: rating,
             };
 
-            console.log("Review to submit:", reviewData);
+            // Debug: Review to submit
 
             const response = await reviewApi.addReview(reviewData, sessionKey || undefined);
 
             if (response.success !== false) {
-                console.log("Review saved successfully:", response);
+                // Debug: Review saved successfully
 
                 // Update local state
                 setReview({

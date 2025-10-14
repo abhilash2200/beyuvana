@@ -27,7 +27,6 @@ import LogoutButton from "@/app/auth/LogoutButton";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Cart from "../cart/Cart";
 import { RiLogoutCircleLine } from "react-icons/ri";
-import { toast } from "react-toastify";
 import { TbSettings2 } from "react-icons/tb";
 import { useState } from "react";
 import { TbUserSquareRounded } from "react-icons/tb";
@@ -126,7 +125,7 @@ const Header = () => {
                                             <Link
                                                 href="/profile"
                                                 className="w-full block"
-                                                onClick={() => toast.info("Navigating to profile...")}
+                                                onClick={() => {}}
                                             >
                                                 Profile
                                             </Link>
@@ -135,7 +134,7 @@ const Header = () => {
                                             <Link
                                                 href="/orders"
                                                 className="w-full block"
-                                                onClick={() => toast.info("Navigating to orders...")}
+                                                onClick={() => { }}
                                             >
                                                 My Orders
                                             </Link>

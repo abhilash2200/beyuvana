@@ -36,14 +36,14 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
         setLoading(true);
 
         try {
-            const data = await authApi.register({
+            await authApi.register({
                 fullname: form.name,
                 email: form.email,
                 phonenumber: form.phone,
                 password: form.password,
             });
 
-            console.log("Signup success:", data);
+            // Debug: Signup success
             toast.success("Signup successful!");
             onClose?.();
         } catch (err) {
