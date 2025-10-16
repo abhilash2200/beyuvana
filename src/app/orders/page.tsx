@@ -116,7 +116,7 @@ const OrdersPage = () => {
           />
 
           {loading && (
-            <div className="flex justify-center items-center py-10">
+            <div className="flex justify-center items-center py-10 min-h-[400px]">
               <div className="text-gray-600">Loading your orders...</div>
             </div>
           )}
@@ -155,7 +155,7 @@ const OrdersPage = () => {
           )}
 
           {!loading && !error && orders.length === 0 && (
-            <div className="flex justify-center items-center py-10">
+            <div className="flex justify-center items-center py-10 min-h-[400px]">
               <div className="text-gray-600 text-center">
                 <p>No orders found</p>
                 <Link href="/product" className="text-blue-600 underline mt-2 block">
@@ -200,7 +200,7 @@ const OrdersPage = () => {
                         )}
                       </div>
 
-                      <div className="flex-1 flex flex-col justify-between">
+                      <div className="flex-1 flex flex-col">
                         <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
                         <h2 className="font-[Grafiels] md:text-[18px] text-[16px] md:line-clamp-2 line-clamp-1 leading-tight mb-1 text-[#1A2819]">{order.productName}</h2>
                         <p className="text-gray-600 md:text-[15px] text-[13px] line-clamp-2">{order.description}</p>

@@ -170,7 +170,7 @@ const OrderDetailPage = () => {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 min-h-[400px]">
                 <div className="flex justify-center items-center py-10">
                     <div className="text-gray-600">Loading order details...</div>
                 </div>
@@ -180,7 +180,7 @@ const OrderDetailPage = () => {
 
     if (error) {
         return (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 min-h-[400px]">
                 <div className="flex justify-center items-center py-10">
                     <div className="text-center max-w-md">
                         <div className="text-red-600">
@@ -227,7 +227,7 @@ const OrderDetailPage = () => {
 
     if (!order) {
         return (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 min-h-[400px]">
                 <div className="flex justify-center items-center py-10">
                     <div className="text-center max-w-md">
                         <div className="text-red-600">
@@ -289,9 +289,9 @@ const OrderDetailPage = () => {
                         )}
                     </div>
 
-                    <div className="flex-1 flex flex-col justify-between md:text-[18px] text-[16px]">
+                    <div className="flex-1 flex flex-col md:text-[18px] text-[16px]">
                         <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
-                        <h2 className="font-[Grafiels] md:text-[18px] text-[13px] md:line-clamp-2 line-clamp-1 leading-tight md:mb-2 text-[#1A2819]">{order.productName}</h2>
+                        <h2 className="font-[Grafiels] md:text-[18px] text-[13px] md:line-clamp-2 line-clamp-1 leading-tight md:mb-1 text-[#1A2819]">{order.productName}</h2>
                         <p className="text-gray-600 md:text-[15px] text-[12px] md:mb-1 mb-0">Quantity: {order.quantity}</p>
                         <p className="text-gray-600 md:text-[15px] text-[13px] md:max-w-[70%] md:line-clamp-2 line-clamp-1">{order.shortdecs}</p>
                     </div>
@@ -307,7 +307,10 @@ const OrderDetailPage = () => {
 
             {/* Product Review */}
             <div className="py-4">
-                <ProductReview productId={orderDetails?.item_list[0]?.product_id || order.id} />
+                <ProductReview
+                    productId={orderDetails?.item_list[0]?.product_id || order.id}
+                    productName={order.productName}
+                />
             </div>
 
 

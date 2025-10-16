@@ -15,11 +15,7 @@ const Page = () => {
                 <p>Last updated: October 2025</p>
             </div>
 
-            <p className="mt-6">
-                Before unboxing video If approved we&apos;ll provide a replacement for the damaged product within 2-3 days ( we&apos;ll deliver the product within 2-3 days).
-            </p>
-
-            {/* <h2 className="mt-8 font-semibold text-lg">1. Shipping Coverage</h2>
+            <h2 className="mt-8 font-semibold text-lg">1. Shipping Coverage</h2>
             <p className="mt-2">
                 We currently ship all orders across India through our trusted logistics partner Shiprocket. International shipping will be introduced soon.
             </p>
@@ -63,7 +59,11 @@ const Page = () => {
             </p>
             <p className="mt-1">
                 Replacements are only provided for damaged or incorrect shipments reported within 24 hours of delivery.
-            </p> */}
+            </p>
+
+            <p className="mt-6">
+                Before unboxing video If approved we&apos;ll provide a replacement for the damaged product within 2-3 days ( we&apos;ll deliver the product within 2-3 days).
+            </p>
         </div>
     );
 };

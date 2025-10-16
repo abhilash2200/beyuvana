@@ -57,10 +57,10 @@ interface StatCard {
 }
 
 const stats: StatCard[] = [
-  { percent: "75%", title: "Increase in", subtitle: "Skin Hydration" },
-  { percent: "70%", title: "Increase in", subtitle: "Skin Glow" },
-  { percent: "68%", title: "Increase in", subtitle: "Skin Elasticity" },
-  { percent: "60%", title: "Reduce in", subtitle: "Pigmentation" },
+  { percent: "85%", title: "Brighter Skin –", subtitle: "Improvement" },
+  { percent: "80%", title: "Acne Reduction – ", subtitle: "Clearer Skin" },
+  { percent: "72%", title: "Hydration – More", subtitle: "Hydrated & Plump Skin" },
+  { percent: "60%", title: "Gut Balance – Better", subtitle: "Gut-Skin Harmony" },
 ]
 
 export default function Product2Layout({ product }: { product: Product }) {
@@ -123,9 +123,9 @@ export default function Product2Layout({ product }: { product: Product }) {
               <div className="flex flex-wrap">
                 <div className="w-full md:w-[50%] md:py-26 md:pl-10">
                   <div className="mb-6">
-                    <p className="border border-[#B00404] text-[#B00404] rounded-[8px] px-4 py-2 text-[15px] inline-flex">10 ACTIONS. 1 SMART SACHET</p>
+                    <p className="border border-[#B00404] text-[#B00404] rounded-[8px] px-4 py-2 text-[15px] inline-flex">10 Transformative Actions. 1 Smart Sachet.</p>
                   </div>
-                  <h2 className="font-[Grafiels] md:text-[25px] text-[18px] text-[#303030] leading-tight md:leading-relaxed mb-3 max-w-[80%]">A Premium Collagen Builder Powered by 21 Synergistic Plant-Based Actives</h2>
+                  <h2 className="font-[Grafiels] md:text-[25px] text-[18px] text-[#303030] leading-tight md:leading-relaxed mb-3 max-w-[80%]">BEYUVANA™ Glow Essence + 18 Synergistic Ingredients</h2>
                 </div>
                 <div className="w-full md:w-[50%] hidden md:block">
                   <div className="absolute bottom-0.5 right-0">
@@ -157,15 +157,7 @@ export default function Product2Layout({ product }: { product: Product }) {
             <div className="w-full md:w-[48%]">
               <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-3">Experience Visible Transformation in 10 Weeks</h2>
               <p className="mb-4 md:leading-relaxed text-[15px] leading-tight font-light">
-                Our clinical-style transformation chart reflects the powerful effects of BEYUVANA™ Glow Essence.
-              </p>
-              <p className="mb-4 md:leading-relaxed text-[15px] leading-tight font-light">
-                With consistent use, you’ll notice real, measurable improvements—designed by nature, proven by
-                science.Within just 10 weeks .
-              </p>
-              <p className="mb-4 md:leading-relaxed text-[15px] leading-tight font-light">
-                Results may vary by individual. Based on ingredient research and regular
-                usage.
+              Our clinical-style transformation chart reflects the powerful effects of BEYUVANA™  Glow Essence. With consistent use, you’ll notice real, measurable improvements—designed by nature, proven by science.Within just 10 weeks . Results may vary by individual. Based on ingredient research and regular usage.
               </p>
             </div>
           </div>
@@ -201,8 +193,8 @@ export default function Product2Layout({ product }: { product: Product }) {
           </div>
         </div>
         <div className="md:py-10 py-6">
-          <HeaderText textalign="text-center" heading="Why the BEYUVANA™ PREMIUM COLLAGEN BUILDER Works" textcolor="text-[#1A2819]" />
-          <p className="text-center mb-4">BEYUVANA™ isn’t just another supplement — it’s a multi-action, plant-powered skin nutrition system designed to target the root causes of aging, not just the symptoms. Heres why it delivers real, visible results:</p>
+          <HeaderText textalign="text-center" heading="WHY BEYUVANA™ GLOW ESSENCE WORKS" textcolor="text-[#1A2819]" />
+          <p className="text-center mb-4">Glow Essence is not just a skin product. It’s a skin nutrition revolution from within — combining glow boosters, antioxidants, collagen supporters, gut balancers, and anti-inflammatories in one intelligent formula.</p>
           <WhyBeyuvana product={product} />
         </div>
         <div className="md:py-10 py-6">

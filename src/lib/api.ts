@@ -812,9 +812,6 @@ export const orderDetailsApi = {
 };
 
 // Orders API functions
-// Note: The /order/v1/ endpoint currently returns internal server error
-// This might be due to the endpoint not being fully implemented yet
-// or requiring different parameters/authentication format
 export const ordersApi = {
   getOrderList: async (sessionKey?: string, userId?: string, status: string = "PENDING") => {
     try {
@@ -852,12 +849,20 @@ export const ordersApi = {
 
       // Debug logging for headers
       if (isDevelopment) {
-        // Debug: Orders API Debug
+        console.log("🔑 Orders API Debug - Session Key:", sessionKey);
+        console.log("🔑 Session Key Type:", typeof sessionKey);
+        console.log("🔑 Session Key Length:", sessionKey?.length || 0);
+        console.log("🔑 Headers being sent:", headers);
       }
 
       const uid = userId ? Number(userId) : null;
 
       async function fetchAndMap(payload: { user_id: number | null; status?: string; session_key: string | null }) {
+        if (isDevelopment) {
+          console.log("🔑 fetchAndMap - Payload session_key:", payload.session_key);
+          console.log("🔑 fetchAndMap - Full payload:", payload);
+        }
+        
         const respLocal = await apiFetch<BackendOrderItem[]>("/api/order_list", {
           method: "POST",
           headers,

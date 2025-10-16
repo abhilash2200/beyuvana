@@ -5,12 +5,12 @@ import Image from "next/image"
 const DetailsOfRedCollagen = () => {
   const coreActivities = [
     {
-      title: "Brightens skin tone",
+      title: " Brightens skin tone",
       desc: "Glutathione + Vitamin C reduce melanin & even out skin tone",
     },
     {
       title: "Reduces dark spots",
-      desc: "Liposomal Glutathione lightens pigmentation and fades blemishes",
+      desc: "Liposomal Glutathione lightens pigmentation and fades blemishes ",
     },
     {
       title: "Combats acne",
@@ -26,11 +26,7 @@ const DetailsOfRedCollagen = () => {
     },
     {
       title: "Strengthens skin barrier",
-      desc: "Biotin + Vitamin E support skin elasticity & repair",
-    },
-    {
-      title: "Combats Stress-Induced Aging",
-      desc: "Reduces cortisol impact, improves skin resilience, and balances stress-aging responses. Key Ingredients: Ashwagandha · Shatavari · Gotu Kola",
+      desc: "Biotin + Vitamin E support skin elasticity & repair ",
     },
     {
       title: "Boosts antioxidant defense",
@@ -60,13 +56,11 @@ const DetailsOfRedCollagen = () => {
               WHY CHOOSE BEYUVANA™ Glow Essence
             </h2>
             <p className="text-white mb-2 leading-relaxed font-light">
-              BEYUVANA™ Glow Essence is India’s 1st sachet-based glow therapy powered by 18 elite plant actives.
-            </p>
-            <p className="text-white mb-2 leading-relaxed font-light">
-              It brightens skin, reduces pigmentation, and supports collagen with Glutathione, Vitamin C & Bamboo.
+            BEYUVANA™ Glow Essence is India’s 1st sachet-based glow therapy powered by 18 elite plant actives. It brightens skin, reduces pigmentation, and supports collagen with Glutathione, Vitamin C & Bamboo. Amla, Inulin, and Guava Leaf help heal your gut—because glow starts from within. 
             </p>
             <p className="text-white mb-6 leading-relaxed font-light">
-              Amla, Inulin, and Guava Leaf help heal your gut—because glow starts from within. Ashwagandha and Turmeric calm stress and fight inflammation, while Black Pepper boosts absorption. Each sugar-free, vegetarian sachet is your daily dose of skin radiance, gut vitality, and inner balance.
+            Ashwagandha and Turmeric calm stress and fight inflammation, while Black Pepper boosts absorption. 
+            Each sugar-free, vegetarian sachet is your daily dose of skin radiance, gut vitality, and inner balance. 
             </p>
             <Image
               src="/assets/img/product-details/green-1.png"
@@ -88,10 +82,10 @@ const DetailsOfRedCollagen = () => {
                   key={index}
                   className="flex items-center justify-between border-b border-white last:border-b-0 border-dashed text-white py-4"
                 >
-                  <div className="max-w-[35%]">
+                  <div className="w-[35%]">
                     <p className="font-light text-[15px]">{item.title}</p>
                   </div>
-                  <div className="font-light text-[13px] max-w-[60%]">
+                  <div className="font-light text-[13px] w-[60%]">
                     <p className="mb-1">{item.desc}</p>
                   </div>
                 </div>
