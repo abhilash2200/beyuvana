@@ -103,19 +103,23 @@ const TabData = ({ productId }: TabDataProps) => {
                                         ))}
                                     </div>
 
-                                    <hr className="my-4" />
-                                    <div>
-                                        <h2
-                                            className="text-[30px] font-[Grafiels] mb-2"
-                                            style={{ color: tab.headingColor }}
-                                        >
-                                            {tab.extra.title}
-                                        </h2>
-                                        <p className="text-[16px] mb-2">{tab.extra.description}</p>
-                                        <p className="text-[12px] text-gray-500">
-                                            Source: {tab.extra.source}
-                                        </p>
-                                    </div>
+                                    {product.design_type !== "PINK" && (
+                                        <>
+                                            <hr className="my-4" />
+                                            <div>
+                                                <h2
+                                                    className="text-[30px] font-[Grafiels] mb-2"
+                                                    style={{ color: tab.headingColor }}
+                                                >
+                                                    {tab.extra.title}
+                                                </h2>
+                                                <p className="text-[16px] mb-2">{tab.extra.description}</p>
+                                                <p className="text-[12px] text-gray-500">
+                                                    Source: {tab.extra.source}
+                                                </p>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </TabsContent>
