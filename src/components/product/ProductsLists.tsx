@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { ShoppingCart, ShoppingBag } from "lucide-react";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
 import type { PriceTier } from "@/lib/api";
-import { useCart } from "@/context/CartProvider";
+import { productDesignSlugs } from "@/app/data/productConfigs";
 import ProductRating from "./ProductRating";
 
 // Product interface
@@ -42,27 +42,15 @@ interface ProductsListsProps {
 }
 
 export default function ProductsLists({ products }: ProductsListsProps) {
-  const { addToCart, loading, openCart } = useCart();
-
   const formatINR = (value: number): string => {
     const rounded = Math.round(value || 0);
     return new Intl.NumberFormat("en-IN").format(rounded);
   };
 
-  const handleAddToCart = async (product: Product) => {
-    await addToCart({
-      id: product.id.toString(),
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-      image: product.image,
-      product_id: product.id.toString(), // Use the same ID as product_id for API
-    });
-  };
-
-  const handleShopNow = async (product: Product) => {
-    await handleAddToCart(product);
-    openCart();
+  const getProductDetailUrl = (product: Product): string => {
+    // Use design slug if available, otherwise fallback to slugified name
+    const designSlug = productDesignSlugs[product.id];
+    return designSlug ? `/product/${designSlug}` : `/product/${slugify(product.name)}`;
   };
 
   return (
@@ -103,7 +91,7 @@ export default function ProductsLists({ products }: ProductsListsProps) {
               <div className="w-full md:w-[65%]">
                 <div className="flex flex-col">
                   <Link href={`/product/${slugify(product.name)}`} className="flex items-center justify-start">
-                    <h2 className="text-[#1A2819] font-[Grafiels] text-[25px] leading-tight mb-4">{product.name}</h2>
+                    <h2 className="text-[#1A2819] hover:text-[#057A37] hover:cursor-pointer font-[Grafiels] text-[25px] leading-tight mb-4">{product.name}</h2>
                   </Link>
                   <div>
                     {product.tagline && <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">{product.tagline}</p>}
@@ -156,17 +144,12 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                   )}
 
                   <div className="flex gap-4">
-                    <Button onClick={() => { handleShopNow(product); }} className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal capitalize transition-colors bg-[#057A37] text-white border-[#057A37]">
-                      <ShoppingBag size={16} /> shop now
-                    </Button>
-                    <Button
-                      onClick={() => handleAddToCart(product)}
-                      disabled={loading}
-                      className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal capitalize transition-colors bg-white text-black border border-black hover:!border-black disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ShoppingCart size={16} />
-                      {loading ? "Adding..." : "add to cart"}
-                    </Button>
+                    <Link href={getProductDetailUrl(product)}>
+                      <Button className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal capitalize transition-colors bg-[#057A37] text-white border-[#057A37] hover:bg-[#04662a]">
+                        {/* <Eye size={16} />  */}
+                        view more
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
