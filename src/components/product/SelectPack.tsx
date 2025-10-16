@@ -187,7 +187,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
         try {
             handleAddToCart();
             openCart();
-            toast.info("Opening your cart...");
         } catch {
             toast.error("Failed to proceed to checkout. Please try again.");
         }

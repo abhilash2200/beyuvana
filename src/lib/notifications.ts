@@ -27,11 +27,10 @@ export const notifications = {
   // Product notifications
   product: {
     packSelectionRequired: () => toast.warning("Please select a pack size first!"),
-    addToCartSuccess: (productName: string, packSize: number) => 
+    addToCartSuccess: (productName: string, packSize: number) =>
       toast.success(`${productName} (Pack of ${packSize}) added to cart!`),
     reviewSuccess: () => toast.success("Thank you for your review! Your feedback helps other customers."),
     reviewError: () => toast.error("Failed to submit review. Please try again."),
-    openingCart: () => toast.info("Opening your cart..."),
   },
 
   // Order notifications
@@ -100,9 +99,9 @@ export const showValidationError = (errors: Record<string, string>) => {
 // Helper function for API error handling
 export const handleApiError = (error: unknown) => {
   console.error("API Error:", error);
-  
+
   const apiError = error as { response?: { status: number }; code?: string; message?: string };
-  
+
   if (apiError?.response?.status === 401) {
     notifications.network.unauthorized();
   } else if ((apiError?.response?.status ?? 0) >= 500) {

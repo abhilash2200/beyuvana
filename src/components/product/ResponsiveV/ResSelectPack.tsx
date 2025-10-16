@@ -186,7 +186,6 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
         }
         handleAddToCart();
         openCart();
-        toast.info("Opening your cart...");
     };
 
     if (!product) return <p>Product not found</p>;

@@ -58,7 +58,6 @@ const OrdersPage = () => {
             // Debug: No orders found
           } else {
             // Debug: Found orders
-            toast.success(`Found ${response.data.length} order(s)`);
           }
         } else {
           setError(response.message || "Failed to fetch orders");

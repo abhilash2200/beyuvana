@@ -161,7 +161,6 @@ const ProductsList = () => {
   const handleShopNow = async (product: DisplayProduct) => {
     await handleAddToCart(product);
     openCart();
-    toast.info("Opening your cart...");
   };
 
   if (isLoading) {
