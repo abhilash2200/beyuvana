@@ -23,8 +23,8 @@ interface Review {
 }
 
 interface ProductReviewProps {
-    productId: string; // product id for API
-    productName?: string; // product name for display
+    productId: string;
+    productName?: string;
 }
 
 const ProductReview = ({ productId, productName }: ProductReviewProps) => {
@@ -45,12 +45,10 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [existingReview, setExistingReview] = useState<ApiReviewItem | null>(null);
 
-    // Memoize user reviews to prevent unnecessary re-renders
     const currentUserReviews = useMemo(() => {
         if (!user?.id) return [];
 
         return allReviews.filter(review => {
-            // Use the actual API field names
             const reviewUserName = review.customer_name;
             const reviewUserId = review.customer_id;
 
@@ -61,7 +59,6 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
         });
     }, [allReviews, user?.id, user?.name]);
 
-    // Fetch reviews for this product from API
     useEffect(() => {
         const fetchReviews = async () => {
             if (!productId) {
@@ -73,13 +70,10 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
                 setReviewsLoading(true);
                 const response = await reviewApi.getReviews(parseInt(productId), sessionKey || undefined);
 
-                // Handle both possible response structures
                 let reviews: ProductReviewItem[] = [];
                 if (response.data && Array.isArray(response.data)) {
-                    // Direct array in data field
                     reviews = response.data;
                 } else if (response.data?.reviews && Array.isArray(response.data.reviews)) {
-                    // Array in data.reviews field
                     reviews = response.data.reviews;
                 }
 
@@ -91,23 +85,20 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
             } catch (err) {
                 console.error("Error fetching reviews:", err);
                 setAllReviews([]);
-                // Don't show error to user for fetch failures, just log it
             } finally {
                 setReviewsLoading(false);
             }
         };
 
         fetchReviews();
-    }, [productId, sessionKey]); // Removed user?.id dependency to fetch all reviews regardless of user state
+    }, [productId, sessionKey]);
 
     // Refetch reviews when user changes (login/logout)
     useEffect(() => {
         if (user?.id && productId) {
-            // User logged in, refetch reviews to get their review
             const refetchReviews = async () => {
                 try {
                     const response = await reviewApi.getReviews(parseInt(productId), sessionKey || undefined);
-                    // Handle both possible response structures
                     let reviews: ProductReviewItem[] = [];
                     if (response.data && Array.isArray(response.data)) {
                         reviews = response.data;
@@ -124,31 +115,25 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
             };
             refetchReviews();
         } else if (!user?.id) {
-            // User logged out, clear user-specific state but keep all reviews
             setUserReviews([]);
             setHasReviewed(false);
             setExistingReview(null);
         }
     }, [user?.id, productId, sessionKey]);
 
-    // Update user reviews and hasReviewed when allReviews or user changes
     useEffect(() => {
         setUserReviews(currentUserReviews);
         setHasReviewed(currentUserReviews.length > 0);
-        // Set the existing review (user can only have one review per product)
         setExistingReview(currentUserReviews.length > 0 ? currentUserReviews[0] : null);
 
-        // Update state based on filtered reviews
     }, [currentUserReviews]);
 
     const toggleForm = useCallback(() => {
         if (hasReviewed && existingReview) {
-            // If editing existing review, pre-fill the form
             setMessage(existingReview.review);
             setRating(existingReview.star_ratting);
             setIsEditing(true);
         } else {
-            // If adding new review, clear the form
             setMessage("");
             setRating(0);
             setIsEditing(false);
@@ -156,7 +141,6 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
         setShowForm(!showForm);
     }, [showForm, hasReviewed, existingReview]);
 
-    // Input validation and sanitization
     const validateInput = (text: string): string => {
         return text.trim().replace(/[<>]/g, ''); // Basic XSS prevention
     };
@@ -209,36 +193,30 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
                 star_ratting: rating,
             };
 
-            // Debug: Review to submit
-
             const response = await reviewApi.addReview(reviewData, sessionKey || undefined);
 
             if (response.success !== false) {
-                // Debug: Review saved successfully
                 const successMessage = isEditing
                     ? "Your review has been updated successfully!"
                     : "Thank you for your review! Your feedback helps other customers.";
                 toast.success(successMessage);
 
-                // Create the updated/new review object with correct API field names
                 const reviewItem: ApiReviewItem = {
-                    id: existingReview?.id || Date.now(), // Use existing ID if editing
+                    id: existingReview?.id || Date.now(),
                     user_name: user.name || "Unknown",
-                    customer_name: user.name || "Unknown", // API field name
-                    customer_id: user.id, // API field name
+                    customer_name: user.name || "Unknown",
+                    customer_id: user.id,
                     review: validateInput(trimmedMessage),
                     star_ratting: rating,
                     created_at: existingReview?.created_at || new Date().toISOString(),
                 };
 
                 if (isEditing && existingReview) {
-                    // Update existing review in both arrays
                     setUserReviews([reviewItem]);
                     setAllReviews(prev =>
                         prev.map(r => r.id === existingReview.id ? reviewItem : r)
                     );
                 } else {
-                    // Add new review
                     setUserReviews([reviewItem]);
                     setAllReviews(prev => [...prev, reviewItem]);
                     setHasReviewed(true);
@@ -251,11 +229,9 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
                 setIsEditing(false);
                 setIsValidating(false);
 
-                // Refetch reviews from server to ensure we have the latest data
                 setTimeout(async () => {
                     try {
                         const response = await reviewApi.getReviews(parseInt(productId), sessionKey || undefined);
-                        // Handle both possible response structures
                         let reviews: ProductReviewItem[] = [];
                         if (response.data && Array.isArray(response.data)) {
                             reviews = response.data;
@@ -269,7 +245,7 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
                     } catch (err) {
                         console.error("Error refetching reviews after submission:", err);
                     }
-                }, 1000); // Small delay to ensure server has processed the request
+                }, 1000);
             } else {
                 const errorMsg = response.message || "Failed to submit review. Please try again.";
                 setSubmitError(errorMsg);
@@ -314,18 +290,18 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
     return (
         <div className="space-y-4 w-full">
             {/* Review Summary */}
-            <div className="bg-[#F2F9F3] p-4 rounded-lg transition-all duration-300 ease-in-out">
+            <div className="bg-[#F2F9F3] border border-gray-200 p-4 rounded-[20px] transition-all duration-300 ease-in-out">
 
                 {/* Display User's Existing Reviews */}
                 {userReviews.length > 0 && (
                     <div className="space-y-3 mb-4">
                         <h2 className="font-[Grafiels] text-[18px] text-[#1A2819]">Your Review:</h2>
                         {userReviews.map((review, index) => (
-                            <div key={review.id || index} className="bg-white p-3 rounded border border-[#1A2819] transition-all duration-200 hover:shadow-md">
+                            <div key={review.id || index} className="p-3 rounded bg-white border border-gray-200 transition-all duration-200 hover:shadow-md">
                                 <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-2">
                                         <FaUserCircle className="w-6 h-6 text-gray-400" />
-                                        <span className="font-medium text-sm">{review.customer_name || review.user_name}</span>
+                                        <span className="font-medium capitalize text-sm">{review.customer_name || review.user_name}</span>
                                     </div>
                                     {renderStars(review.star_ratting)}
                                 </div>
@@ -426,7 +402,7 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
                         </Button>
                         <Button
                             variant="outline"
-                            className="px-6 py-3 font-normal"
+                            className="px-6 py-3 font-normal border-red-700 text-red-700 hover:bg-red-50 hover:border-red-300 transition-all duration-200 hover:scale-105 active:scale-95 hover:cursor-pointer hover:text-red-900"
                             onClick={() => {
                                 setShowForm(false);
                                 setMessage("");

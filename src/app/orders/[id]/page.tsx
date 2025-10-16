@@ -263,7 +263,7 @@ const OrderDetailPage = () => {
         <div className="container mx-auto px-4 py-8 space-y-10">
             {/* Top Section: Back */}
             <div className="flex items-center justify-between mb-4">
-                <Button variant="default" onClick={() => router.back()} className="text-black font-normal hover:bg-gray-100 hover:text-black">
+                <Button variant="default" onClick={() => router.back()} className="text-black font-normal hover:underline hover:cursor-pointer">
                     ← Back To Orders
                 </Button>
             </div>

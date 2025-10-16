@@ -53,48 +53,49 @@ const BillingPrice = ({ userName, order, orderDetails }: BillingPriceProps) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div>
                             <p className="text-sm text-[#1A2819]">Order Number</p>
-                            <p className="font-medium">{orderDetails.order_details.order_no}</p>
+                            <p className="font-normal text-black text-[14px]">{orderDetails.order_details.order_no}</p>
                         </div>
                         <div>
                             <p className="text-sm text-[#1A2819]">Transaction ID</p>
-                            <p className="font-medium">{orderDetails.order_details.txn_id}</p>
+                            <p className="font-normal text-black text-[14px]">{orderDetails.order_details.txn_id}</p>
                         </div>
                         <div>
                             <p className="text-sm text-[#1A2819]">Order Date</p>
-                            <p className="font-medium">{new Date(orderDetails.order_details.created_date).toLocaleDateString()}</p>
+                            <p className="font-normal text-black text-[14px]">{new Date(orderDetails.order_details.created_date).toLocaleDateString()}</p>
                         </div>
                         <div>
                             <p className="text-sm text-[#1A2819]">Payment Status</p>
-                            <p className={`font-medium ${orderDetails.order_details.pay_status === 'SUCCESS' ? 'text-green-600' : 'text-red-600'}`}>
+                            <p className={`font-normal text-black text-[14px] ${orderDetails.order_details.pay_status === 'SUCCESS' ? 'text-green-600' : 'text-red-600'}`}>
                                 {orderDetails.order_details.pay_status}
                             </p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-[#1A2819]">Payment Method</p>
+                            <p className="font-normal text-black text-[14px]">{orderDetails.order_details.pay_mode}</p>
                         </div>
                     </div>
 
                     {/* Payment Details */}
-                    <div className="mt-4">
+                    {/* <div className="mt-4">
                         <h4 className="text-md font-[Grafiels] text-[#1A2819] mb-2">Payment Details</h4>
                         <div className="p-4 rounded border border-gray-200">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-sm text-gray-600">Payment Method</p>
-                                    <p className="font-medium">{orderDetails.order_details.pay_mode}</p>
-                                </div>
+
                                 <div>
                                     <p className="text-sm text-gray-600">Gateway</p>
                                     <p className="font-medium">{orderDetails.order_details.pay_gateway_name}</p>
                                 </div>
-                                {/* <div>
+                                <div>
                                     <p className="text-sm text-gray-600">Amount Paid</p>
                                     <p className="font-medium">₹{orderDetails.order_details.paid_amount}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Discount</p>
                                     <p className="font-medium text-green-600">₹{orderDetails.order_details.discount_amount}</p>
-                                </div> */}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             )}
             <div className="bg-[#F2F9F3] border border-gray-200 rounded-[20px] p-6 space-y-4">
@@ -142,7 +143,7 @@ const BillingPrice = ({ userName, order, orderDetails }: BillingPriceProps) => {
                             <span className="font-medium">₹0.00</span>
                         </div>
                         <hr className="my-3 border-gray-200 border-dashed" />
-                        <div className="flex justify-between items-center py-2 bg-green-50 px-3 rounded-md">
+                        <div className="flex justify-between items-center py-2 px-3 rounded-md">
                             <span className="font-semibold text-green-700">Total Payable</span>
                             <span className="font-bold text-lg text-green-700">₹{orderDetails?.order_details?.paid_amount || "0.00"}</span>
                         </div>
