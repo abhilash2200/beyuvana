@@ -3,6 +3,8 @@ import { Rating } from '@mui/material'
 import React, { useEffect, useMemo, useState } from 'react'
 import { reviewApi, productsApi, type Product, type ProductsListRequest } from '@/lib/api'
 import { useAuth } from '@/context/AuthProvider'
+import { Button } from '@/components/ui/button'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
 interface ReviewItem {
     id: number
@@ -28,6 +30,7 @@ const CustomerReviews = ({ productId, productName, designSlug }: { productId?: n
     const [reviews, setReviews] = useState<ReviewItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [showAllReviews, setShowAllReviews] = useState<boolean>(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -124,19 +127,28 @@ const CustomerReviews = ({ productId, productName, designSlug }: { productId?: n
         return () => { cancelled = true };
     }, [productId, productName, designSlug, sessionKey]);
 
+    const displayedReviews = useMemo(() => {
+        return showAllReviews ? reviews : reviews.slice(0, 5);
+    }, [reviews, showAllReviews]);
+
     const content = useMemo(() => {
         if (loading) {
             return (
-                <div className='flex flex-col gap-4'>
+                <div className='flex flex-col gap-6'>
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className='animate-pulse flex flex-wrap gap-4 border-b-1 border-gray-300 md:pb-4 pb-2'>
-                            <div className='w-full md:w-[88%]'>
-                                <div className='h-5 bg-gray-200 rounded w-40 mb-4'></div>
-                                <div className='h-4 bg-gray-100 rounded w-full mb-2'></div>
-                                <div className='h-4 bg-gray-100 rounded w-3/4'></div>
-                            </div>
-                            <div className='w-full md:w-[8%]'>
-                                <div className='h-4 bg-gray-100 rounded w-16'></div>
+                        <div key={i} className='animate-pulse bg-white rounded-lg p-6 shadow-sm border border-gray-100'>
+                            <div className='flex items-start gap-4'>
+                                <div className='w-10 h-10 bg-gray-200 rounded-full'></div>
+                                <div className='flex-1 space-y-3'>
+                                    <div className='flex items-center gap-3'>
+                                        <div className='h-4 bg-gray-200 rounded w-24'></div>
+                                        <div className='h-4 bg-gray-200 rounded w-20'></div>
+                                    </div>
+                                    <div className='space-y-2'>
+                                        <div className='h-4 bg-gray-100 rounded w-full'></div>
+                                        <div className='h-4 bg-gray-100 rounded w-3/4'></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -144,42 +156,92 @@ const CustomerReviews = ({ productId, productName, designSlug }: { productId?: n
             )
         }
         if (error) {
-            return <p className='text-sm text-red-600'>{error}</p>
+            return (
+                <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+                    <p className='text-sm text-red-600'>{error}</p>
+                </div>
+            )
         }
         if ((!productId || Number.isNaN(Number(productId))) && !reviews.length && !loading && !error) {
-            return <p className='text-sm text-gray-500'>Reviews unavailable.</p>
+            return (
+                <div className='bg-gray-50 border border-gray-200 rounded-lg p-6 text-center'>
+                    <p className='text-sm text-gray-500'>Reviews unavailable.</p>
+                </div>
+            )
         }
         if (!reviews.length) {
-            return <p className='text-sm text-gray-500'>No reviews yet.</p>
+            return (
+                <div className='bg-gray-50 border border-gray-200 rounded-lg p-6 text-center'>
+                    <p className='text-sm text-gray-500'>No reviews yet.</p>
+                </div>
+            )
         }
 
         return (
-            <div className='flex flex-col gap-4'>
-                {reviews.map((r) => (
-                    <div key={r.id} className='flex flex-wrap gap-4 border-b-1 border-gray-300 md:pb-4 pb-2'>
-                        <div className='w-full md:w-[88%]'>
-                            <div className='flex mb-5 gap-x-2'>
-                                <h2 className=''>{r.user_name || 'Anonymous'}</h2>
-                                <Rating
-                                    name="rating-read"
-                                    value={Number(r.star_ratting) || 0}
-                                    precision={0.5}
-                                    readOnly
-                                    className='text-green-500 md:text-2xl text-xl'
-                                />
+            <div className='space-y-6'>
+                <div className={`space-y-4 transition-all duration-500 ease-in-out ${showAllReviews ? 'opacity-100' : 'opacity-100'}`}>
+                    {displayedReviews.map((r, index) => (
+                        <div
+                            key={r.id}
+                            className={`bg-white rounded-lg p-6 border-b border-dashed border-gray-500 hover:shadow-md transition-all duration-300 ease-in-out ${index >= 5 && !showAllReviews ? 'hidden' : ''
+                                }`}
+                            style={{
+                                animationDelay: `${index * 100}ms`,
+                                animation: showAllReviews ? 'slideInUp 0.5s ease-out forwards' : 'none'
+                            }}
+                        >
+                            <div className='flex items-start gap-4'>
+                                {/* <div className='w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-semibold text-sm'>
+                                    {(r.user_name || 'A').charAt(0).toUpperCase()}
+                                </div> */}
+                                <div className='flex-1'>
+                                    <div className='flex items-center justify-between mb-3'>
+                                        <div className='flex items-center gap-3'>
+                                            <h3 className='font-semibold capitalize text-gray-900'>{r.user_name || 'Anonymous'}</h3>
+                                            <Rating
+                                                name="rating-read"
+                                                value={Number(r.star_ratting) || 0}
+                                                precision={0.5}
+                                                readOnly
+                                                size="small"
+                                                className='text-green-500'
+                                            />
+                                        </div>
+                                        <span className='text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full'>
+                                            {timeAgo(r.created_at)}
+                                        </span>
+                                    </div>
+                                    <p className='text-gray-700 text-[15px] leading-relaxed'>{r.review}</p>
+                                </div>
                             </div>
-                            <p className='md:text-[15px] text-[13px] leading-tight font-light'>{r.review}</p>
                         </div>
-                        <div className='w-full md:w-[8%]'>
-                            <div>
-                                <p className='md:text-[15px] text-[13px] leading-tight font-light'>{timeAgo(r.created_at)}</p>
-                            </div>
-                        </div>
+                    ))}
+                </div>
+
+                {reviews.length > 5 && (
+                    <div className='flex justify-center pt-4'>
+                        <Button
+                            onClick={() => setShowAllReviews(!showAllReviews)}
+                            variant="outline"
+                            className='flex text-[15px] font-medium items-center gap-2 px-6 py-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:scale-105 active:scale-95 hover:cursor-pointer hover:text-gray-900'
+                        >
+                            {showAllReviews ? (
+                                <>
+                                    <ChevronUp className='w-4 h-4' />
+                                    Show Less
+                                </>
+                            ) : (
+                                <>
+                                    <ChevronDown className='w-4 h-4' />
+                                    See More ({reviews.length - 5} more)
+                                </>
+                            )}
+                        </Button>
                     </div>
-                ))}
+                )}
             </div>
         )
-    }, [loading, error, reviews, productId])
+    }, [loading, error, reviews, productId, displayedReviews, showAllReviews])
 
     return (
         <div>
