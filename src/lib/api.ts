@@ -370,7 +370,6 @@ async function apiFetch<T = unknown>(
     ? `${PROXY_URL}?endpoint=${encodeURIComponent(endpoint)}`
     : `${API_BASE_URL}${endpoint}`;
 
-
   const defaultHeaders = {
     "Content-Type": "application/json",
   };
@@ -388,11 +387,51 @@ async function apiFetch<T = unknown>(
     signal: controller.signal,
   };
 
+  // Console logging for session and headers
+  console.log("🌐 API Request:", {
+    endpoint,
+    url,
+    method: options.method || "GET",
+    headers: config.headers,
+    hasBody: !!options.body,
+    bodyPreview: options.body ? (typeof options.body === 'string' ? options.body.substring(0, 200) + '...' : 'Object') : null
+  });
+
+  // Extract and log session information
+  const sessionHeaders = Object.entries(config.headers || {}).filter(([key]) =>
+    key.toLowerCase().includes('session') ||
+    key.toLowerCase().includes('auth') ||
+    key.toLowerCase().includes('token') ||
+    key.toLowerCase().includes('authorization')
+  );
+
+  if (sessionHeaders.length > 0) {
+    console.log("🔑 Session Headers:", sessionHeaders);
+  }
+
+  // Extract user ID from body if present
+  if (options.body && typeof options.body === 'string') {
+    try {
+      const bodyData = JSON.parse(options.body);
+      if (bodyData.user_id) {
+        console.log("👤 User ID in Request:", bodyData.user_id);
+      }
+    } catch {
+      // Body might not be JSON, ignore
+    }
+  }
 
   try {
-
     const response = await fetch(url, config);
     clearTimeout(timeoutId);
+
+    console.log("📡 API Response:", {
+      endpoint,
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      headers: Object.fromEntries(response.headers.entries())
+    });
 
 
     if (!response.ok) {
@@ -429,7 +468,15 @@ async function apiFetch<T = unknown>(
     let data;
     try {
       data = JSON.parse(responseText);
+      console.log("✅ API Success:", {
+        endpoint,
+        dataKeys: data ? Object.keys(data) : null,
+        hasUserData: data && (data.user_id || data.user || data.id),
+        responseSize: responseText.length
+      });
     } catch (parseError) {
+      console.error("❌ JSON parse error:", parseError);
+      console.error("Response text that failed to parse:", responseText);
       throw new Error(
         `Failed to parse JSON response. The server may be returning invalid JSON or HTML. Error: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`
       );
@@ -437,6 +484,13 @@ async function apiFetch<T = unknown>(
     return data;
   } catch (error) {
     clearTimeout(timeoutId);
+
+    console.error("❌ API fetch error:", {
+      endpoint,
+      error: error instanceof Error ? error.message : error,
+      type: typeof error,
+      name: error instanceof Error ? error.name : null
+    });
 
     // Handle timeout errors
     if (error instanceof Error && error.name === "AbortError") {
@@ -535,6 +589,17 @@ export const cartApi = {
     sessionKey?: string,
     userId?: string | number
   ) => {
+    console.log("🛒 Cart API - Add to Cart:", {
+      userId,
+      sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null,
+      cartData: {
+        product_id: cartData.product_id,
+        quantity: cartData.quantity,
+        price_qty: cartData.price_qty,
+        price_unit_name: cartData.price_unit_name
+      }
+    });
+
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -591,6 +656,11 @@ export const cartApi = {
   // For now, we'll use local storage and only sync add operations
 
   getCart: async (sessionKey?: string) => {
+    console.log("🛒 Cart API - Get Cart:", {
+      sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null,
+      hasSessionKey: !!sessionKey
+    });
+
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -862,7 +932,7 @@ export const ordersApi = {
           console.log("🔑 fetchAndMap - Payload session_key:", payload.session_key);
           console.log("🔑 fetchAndMap - Full payload:", payload);
         }
-        
+
         const respLocal = await apiFetch<BackendOrderItem[]>("/api/order_list", {
           method: "POST",
           headers,
@@ -1017,6 +1087,12 @@ export const addressApi = {
 
   // Get all addresses for a user
   getAddresses: async (userId: number, sessionKey?: string) => {
+    console.log("🏠 Address API - Get Addresses:", {
+      userId,
+      sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null,
+      hasSessionKey: !!sessionKey
+    });
+
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -1358,6 +1434,15 @@ export const addressApi = {
 // Checkout API functions
 export const checkoutApi = {
   processCheckout: async (checkoutData: CheckoutRequest, sessionKey?: string) => {
+    console.log("💳 Checkout API - Process Checkout:", {
+      userId: checkoutData.user_id,
+      sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null,
+      hasSessionKey: !!sessionKey,
+      cartItems: checkoutData.cart?.length || 0,
+      totalAmount: checkoutData.paid_amount,
+      paymentMode: checkoutData.pay_mode
+    });
+
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",

@@ -16,7 +16,6 @@ async function handler(request: NextRequest) {
       );
     }
 
-
     const headers: Record<string, string> = {};
     request.headers.forEach((value, key) => {
       headers[key] = value;
@@ -25,6 +24,22 @@ async function handler(request: NextRequest) {
     if (!headers["content-type"] && !headers["Content-Type"]) {
       headers["Content-Type"] = "application/json";
     }
+
+    // Console logging for proxy requests
+    console.log("🔄 Proxy Request:", {
+      endpoint,
+      method: request.method,
+      hasSessionHeaders: Object.keys(headers).some(key =>
+        key.toLowerCase().includes('session') ||
+        key.toLowerCase().includes('auth') ||
+        key.toLowerCase().includes('token')
+      ),
+      sessionHeaders: Object.entries(headers).filter(([key]) =>
+        key.toLowerCase().includes('session') ||
+        key.toLowerCase().includes('auth') ||
+        key.toLowerCase().includes('token')
+      )
+    });
 
 
     const queryParams = new URLSearchParams(searchParams);
@@ -35,8 +50,23 @@ async function handler(request: NextRequest) {
     let body: string | undefined = undefined;
     if (["POST", "PUT", "PATCH"].includes(request.method)) {
       body = await request.text();
+
+      // Log user ID from request body if present
+      try {
+        const bodyData = JSON.parse(body);
+        if (bodyData.user_id) {
+          console.log("👤 Proxy - User ID in request body:", bodyData.user_id);
+        }
+      } catch {
+        // Body might not be JSON, ignore
+      }
     }
 
+    console.log("🌐 Proxy - Forwarding to backend:", {
+      url,
+      method: request.method,
+      hasBody: !!body
+    });
 
     const response = await fetch(url, {
       method: request.method,
@@ -44,6 +74,12 @@ async function handler(request: NextRequest) {
       body,
     });
 
+    console.log("📡 Proxy - Backend response:", {
+      endpoint,
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok
+    });
 
     const textData = await response.text();
 

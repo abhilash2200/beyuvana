@@ -23,10 +23,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedUser = localStorage.getItem("user");
     const storedSession = localStorage.getItem("session_key");
 
+    console.log("🔐 AuthProvider - Loading from localStorage:", {
+      hasStoredUser: !!storedUser,
+      hasStoredSession: !!storedSession,
+      sessionPreview: storedSession ? `${storedSession.substring(0, 10)}...` : null
+    });
+
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
+        console.log("👤 AuthProvider - User loaded:", {
+          userId: parsedUser.id,
+          userName: parsedUser.name,
+          userEmail: parsedUser.email
+        });
       } catch (err) {
         console.warn("Failed to parse user from localStorage:", err);
         localStorage.removeItem("user"); // Optional: remove invalid data
@@ -35,6 +46,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedSession) {
       setSessionKey(storedSession);
+      console.log("🔑 AuthProvider - Session loaded:", {
+        sessionPreview: `${storedSession.substring(0, 10)}...`,
+        sessionLength: storedSession.length
+      });
     }
   }, []);
 
@@ -43,6 +58,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       if (user && sessionKey) {
         localStorage.setItem("session_key", sessionKey);
+        console.log("💾 AuthProvider - Session persisted:", {
+          userId: user.id,
+          sessionPreview: `${sessionKey.substring(0, 10)}...`
+        });
       }
     } catch (err) {
       console.warn("Failed to persist session key:", err);
@@ -50,8 +69,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user, sessionKey]);
 
   const logout = async () => {
+    console.log("🚪 AuthProvider - Logout initiated:", {
+      userId: user?.id,
+      hasSessionKey: !!sessionKey,
+      sessionPreview: sessionKey ? `${sessionKey.substring(0, 10)}...` : null
+    });
+
     try {
       if (sessionKey && user?.id) {
+        console.log("🌐 AuthProvider - Calling logout API");
         // Use proxy to avoid CORS issues
         const response = await fetch("/api/proxy?endpoint=/logout/v1/", {
           method: "POST",
@@ -64,6 +90,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           console.warn("Logout API call failed, but continuing with local logout");
+        } else {
+          console.log("✅ AuthProvider - Logout API successful");
         }
       }
     } catch (err) {
@@ -71,6 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Continue with local logout even if API fails
     } finally {
       // Always clean up local state
+      console.log("🧹 AuthProvider - Clearing local state and storage");
       localStorage.removeItem("user");
       localStorage.removeItem("session_key");
 
@@ -78,7 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (user?.id) {
         try {
           localStorage.removeItem(`cart_${user.id}`);
-          // Debug: Cleared cart data for user on logout
+          console.log("🛒 AuthProvider - Cleared cart data for user:", user.id);
         } catch (error) {
           console.warn("Failed to clear user cart data:", error);
         }

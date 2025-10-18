@@ -182,19 +182,8 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
       {/* Content */}
       <div className="py-2">
         {addresses.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Home className="w-10 h-10 text-gray-400" />
-            </div>
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">No Address Found</h4>
-            <p className="text-gray-600 mb-6">You haven&apos;t saved any delivery addresses yet. Add your first address to get started!</p>
-            <Button
-              onClick={onAddAddress}
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium text-base"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add Address
-            </Button>
+          <div className="text-center py-2">
+            <p className="text-[13px] font-medium text-gray-800">No Address Found</p>
           </div>
         ) : (
           <div className="space-y-4">

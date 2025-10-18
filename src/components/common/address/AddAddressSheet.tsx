@@ -13,6 +13,7 @@ import { addressApi, SaveAddressRequest, SavedAddress } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
 import { MapPin, Star, Check, Edit } from "lucide-react";
 import { toast } from "react-toastify";
+import MobileAddAddressSheet from "./MobileAddAddressSheet";
 
 interface AddAddressSheetProps {
     open: boolean;
@@ -30,6 +31,19 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
     const [editingAddress, setEditingAddress] = useState<SavedAddress | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Check if device is mobile
+    useEffect(() => {
+        const checkIsMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkIsMobile();
+        window.addEventListener('resize', checkIsMobile);
+
+        return () => window.removeEventListener('resize', checkIsMobile);
+    }, []);
 
     // Helper function to check if an address is primary (same as DeliveryAddress)
     const isPrimaryAddress = (address: SavedAddress): boolean => {
@@ -49,7 +63,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
         address2: "",
         city: "",
         pincode: "",
-        landmark: "",
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,10 +149,9 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
             email: address.email,
             phone: address.mobile,
             address1: address.address1,
-            address2: address.address2,
+            address2: address.address2, // address2 contains landmark data
             city: address.city,
             pincode: address.pincode,
-            landmark: "", // Landmark field doesn't exist in SavedAddress interface
         });
         setError(null);
     };
@@ -156,7 +168,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
             address2: "",
             city: "",
             pincode: "",
-            landmark: "",
         });
         setError(null);
     };
@@ -181,7 +192,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 address2: "",
                 city: "",
                 pincode: "",
-                landmark: "",
             });
             setError(null);
             setSuccessMessage(null);
@@ -189,9 +199,9 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
     }, [open]);
 
     const handleSave = async () => {
-        // Validate required fields
-        if (!form.fullName || !form.email || !form.phone || !form.address1 || !form.city || !form.pincode) {
-            setError("Please fill in all required fields");
+        // Validate required fields (address2 is now landmark)
+        if (!form.fullName || !form.email || !form.phone || !form.address1 || !form.address2 || !form.city || !form.pincode) {
+            setError("Please fill in all required fields including landmark");
             return;
         }
 
@@ -219,7 +229,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 user_id: parseInt(user.id),
                 fullname: form.fullName.trim(),
                 address1: form.address1.trim(),
-                address2: form.address2.trim() || "", // Send empty string if field is empty
+                address2: form.address2.trim(), // Using address2 field as landmark
                 mobile: form.phone.trim(),
                 email: form.email.trim(),
                 city: form.city.trim(),
@@ -254,7 +264,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     address2: "",
                     city: "",
                     pincode: "",
-                    landmark: "",
                 });
                 setEditingAddress(null);
                 setIsEditMode(false);
@@ -283,6 +292,11 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
             setLoading(false);
         }
     };
+
+    // Render mobile address sheet on mobile devices
+    if (isMobile) {
+        return <MobileAddAddressSheet open={open} onOpenChange={onOpenChange} onAddressSaved={onAddressSaved} />;
+    }
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -328,7 +342,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="text"
                         name="fullName"
-                        placeholder="Full Name"
+                        placeholder="Full Name *"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.fullName}
                         onChange={handleChange}
@@ -337,7 +351,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="email"
                         name="email"
-                        placeholder="Email Address"
+                        placeholder="Email Address *"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.email}
                         onChange={handleChange}
@@ -346,7 +360,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="tel"
                         name="phone"
-                        placeholder="Phone Number"
+                        placeholder="Phone Number *"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.phone}
                         onChange={handleChange}
@@ -355,7 +369,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="text"
                         name="address1"
-                        placeholder="Address Line 1"
+                        placeholder="Address Line 1 *"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.address1}
                         onChange={handleChange}
@@ -364,7 +378,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="text"
                         name="address2"
-                        placeholder="Address Line 2"
+                        placeholder="Landmark *"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.address2}
                         onChange={handleChange}
@@ -374,7 +388,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                         <input
                             type="text"
                             name="city"
-                            placeholder="City"
+                            placeholder="City *"
                             className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                             value={form.city}
                             onChange={handleChange}
@@ -383,22 +397,13 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                         <input
                             type="text"
                             name="pincode"
-                            placeholder="Pincode"
+                            placeholder="Pincode *"
                             className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                             value={form.pincode}
                             onChange={handleChange}
                             required
                         />
                     </div>
-                    <input
-                        type="text"
-                        name="landmark"
-                        placeholder="Landmark"
-                        className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
-                        value={form.landmark}
-                        onChange={handleChange}
-                        required
-                    />
                 </div>
 
                 {/* Saved Addresses Section */}
@@ -470,7 +475,8 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                                         </div>
 
                                         <div className="text-[12px] text-gray-600 space-y-1">
-                                            <p className="capitalize">{address.address1}{address.address2 && `, ${address.address2}`}</p>
+                                            <p className="capitalize">{address.address1}</p>
+                                            {address.address2 && <p className="capitalize text-[#057A37]">📍 {address.address2}</p>}
                                             <p className="capitalize">{address.city}, {address.pincode}</p>
                                             <div className="flex gap-4 text-xs text-gray-500">
                                                 <span className="capitalize">{address.mobile}</span>

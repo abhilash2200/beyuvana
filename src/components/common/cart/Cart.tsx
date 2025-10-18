@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import React from "react";
 import Confetti from "react-confetti";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import MobileCart from "./MobileCart";
 
 export default function Cart() {
     const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading, isCartOpen, setCartOpen } = useCart();
@@ -21,6 +22,19 @@ export default function Cart() {
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [lastIncreaseTime, setLastIncreaseTime] = React.useState<number>(0);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
+    const [isMobile, setIsMobile] = React.useState(false);
+
+    // Check if device is mobile
+    React.useEffect(() => {
+        const checkIsMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkIsMobile();
+        window.addEventListener('resize', checkIsMobile);
+
+        return () => window.removeEventListener('resize', checkIsMobile);
+    }, []);
 
     const handleSheetOpenChange = (open: boolean) => {
         setCartOpen(open);
@@ -44,6 +58,11 @@ export default function Cart() {
         increaseItemQuantity(itemId);
         setLastIncreaseTime(Date.now());
     };
+
+    // Render mobile cart on mobile devices
+    if (isMobile) {
+        return <MobileCart />;
+    }
 
     return (
         <Sheet open={isCartOpen} onOpenChange={handleSheetOpenChange}>

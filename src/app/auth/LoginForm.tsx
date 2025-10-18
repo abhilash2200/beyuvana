@@ -23,6 +23,11 @@ export default function LoginForm({ onClose }: LoginFormProps) {
         setError("");
         setLoading(true);
 
+        console.log("🔐 LoginForm - Login attempt:", {
+            email: form.email,
+            hasPassword: !!form.password
+        });
+
         if (!form.email || !form.password) {
             setError("Please enter both email and password.");
             setLoading(false);
@@ -30,6 +35,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
         }
 
         try {
+            console.log("🌐 LoginForm - Calling login API");
             const data = await authApi.login({ email: form.email, password: form.password });
 
             // 🔹 Normalize API response
@@ -60,7 +66,13 @@ export default function LoginForm({ onClose }: LoginFormProps) {
                 (apiData.data as Record<string, unknown>)?.token ||
                 null;
 
-            // Debug logging for session key extraction
+            console.log("✅ LoginForm - Login successful:", {
+                userId: normalizedUser?.id,
+                userName: normalizedUser?.name,
+                userEmail: normalizedUser?.email,
+                hasSessionKey: !!sessionKey,
+                sessionPreview: sessionKey ? `${String(sessionKey).substring(0, 10)}...` : null
+            });
 
             if (!normalizedUser) {
                 setError("Invalid login response.");
@@ -70,6 +82,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
             }
 
             // 🔹 Save user + session in context + localStorage
+            console.log("💾 LoginForm - Saving user and session to context");
             setUser(normalizedUser);
             if (sessionKey) setSessionKey(String(sessionKey));
 
@@ -92,7 +105,11 @@ export default function LoginForm({ onClose }: LoginFormProps) {
             toast.success(`Welcome back, ${normalizedUser.name}!`);
             onClose?.();
         } catch (err: unknown) {
-            console.error(err);
+            console.error("❌ LoginForm - Login failed:", {
+                error: err instanceof Error ? err.message : err,
+                type: typeof err,
+                email: form.email
+            });
             setError("Something went wrong. Please try again later.");
             toast.error("Login failed. Please try again.");
         } finally {
