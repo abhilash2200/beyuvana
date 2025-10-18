@@ -14,6 +14,7 @@ import Nav from "./Nav";
 import MobileNav from "./MobileNav";
 import RegisterForm from "@/app/auth/RegisterForm";
 import LoginForm from "@/app/auth/LoginForm";
+import OtpVerifyForm from "@/app/auth/OtpVerifyForm";
 import { useAuth } from "@/context/AuthProvider";
 import {
     DropdownMenu,
@@ -37,6 +38,44 @@ const Header = () => {
     // const { cartItems } = useCart();
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+    const [registerStep, setRegisterStep] = useState<"form" | "otp">("form");
+    const [loginStep, setLoginStep] = useState<"form" | "otp">("form");
+    const [otpData, setOtpData] = useState<{
+        phone: string;
+        userData?: { name: string; email: string; phone: string };
+    } | null>(null);
+
+    const handleRegisterOtpSent = (phone: string, userData?: { name: string; email: string; phone: string }) => {
+        setOtpData({ phone, userData });
+        setRegisterStep("otp");
+    };
+
+    const handleRegisterOtpVerified = () => {
+        setRegisterStep("form");
+        setOtpData(null);
+        setIsRegisterOpen(false);
+    };
+
+    const handleBackToRegister = () => {
+        setRegisterStep("form");
+        setOtpData(null);
+    };
+
+    const handleLoginOtpSent = (phone: string) => {
+        setOtpData({ phone });
+        setLoginStep("otp");
+    };
+
+    const handleLoginOtpVerified = () => {
+        setLoginStep("form");
+        setOtpData(null);
+        setIsLoginOpen(false);
+    };
+
+    const handleBackToLogin = () => {
+        setLoginStep("form");
+        setOtpData(null);
+    };
 
     return (
         <header className="sticky top-0 z-50 w-full">
@@ -76,13 +115,36 @@ const Header = () => {
                                         <DialogContent className="bg-[#F4FFF9] border border-[#1E2C1E] text-white rounded-2xl w-[90%] max-w-[800px]">
                                             <DialogHeader>
                                                 <VisuallyHidden>
-                                                    <DialogTitle>Login</DialogTitle>
+                                                    <DialogTitle>{loginStep === "otp" ? "Verify OTP" : "Login"}</DialogTitle>
                                                 </VisuallyHidden>
                                             </DialogHeader>
-                                            <LoginForm
-                                                onClose={() => setIsLoginOpen(false)}
-                                            // 🔹 OTP API comment preserved inside LoginForm
-                                            />
+
+                                            {loginStep === "otp" && otpData ? (
+                                                <div className="space-y-4">
+                                                    {/* <div className="text-center">
+                                                        <p className="text-sm text-gray-600">
+                                                            We&apos;ve sent a 6-digit OTP to {otpData.phone}
+                                                        </p>
+                                                    </div> */}
+                                                    <OtpVerifyForm
+                                                        onVerified={handleLoginOtpVerified}
+                                                        phone={otpData.phone}
+                                                        isRegistration={false}
+                                                    />
+                                                    {/* <Button
+                                                        variant="outline"
+                                                        onClick={handleBackToLogin}
+                                                        className="w-full"
+                                                    >
+                                                        Back to Login
+                                                    </Button> */}
+                                                </div>
+                                            ) : (
+                                                <LoginForm
+                                                    onClose={() => setIsLoginOpen(false)}
+                                                    onOtpSent={handleLoginOtpSent}
+                                                />
+                                            )}
                                         </DialogContent>
                                     </Dialog>
 
@@ -101,11 +163,38 @@ const Header = () => {
                                             <DialogHeader>
                                                 <VisuallyHidden>
                                                     <DialogTitle className="text-xl font-bold mb-3">
-                                                        Create your account
+                                                        {registerStep === "otp" ? "Verify OTP" : "Create your account"}
                                                     </DialogTitle>
                                                 </VisuallyHidden>
                                             </DialogHeader>
-                                            <RegisterForm onClose={() => setIsRegisterOpen(false)} />
+
+                                            {registerStep === "otp" && otpData ? (
+                                                <div className="space-y-4">
+                                                    {/* <div className="text-center">
+                                                        <p className="text-sm text-gray-600">
+                                                            We&apos;ve sent a 6-digit OTP to {otpData.phone}
+                                                        </p>
+                                                    </div> */}
+                                                    <OtpVerifyForm
+                                                        onVerified={handleRegisterOtpVerified}
+                                                        phone={otpData.phone}
+                                                        userData={otpData.userData}
+                                                        isRegistration={true}
+                                                    />
+                                                    {/* <Button
+                                                        variant="outline"
+                                                        onClick={handleBackToRegister}
+                                                        className="w-full"
+                                                    >
+                                                        Back to Registration
+                                                    </Button> */}
+                                                </div>
+                                            ) : (
+                                                <RegisterForm
+                                                    onClose={() => setIsRegisterOpen(false)}
+                                                    onOtpSent={handleRegisterOtpSent}
+                                                />
+                                            )}
                                         </DialogContent>
                                     </Dialog>
                                 </>

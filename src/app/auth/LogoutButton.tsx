@@ -15,10 +15,34 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+
   const handleLogout = async () => {
-    if (!user || !sessionKey) {
+
+    if (!user) {
       toast.warning("No user logged in.");
       return;
+    }
+
+    if (!sessionKey) {
+      // User exists but no session key - do local logout only
+      try {
+        // Clear localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("session_key");
+
+        // Clear user-specific cart data
+        if (user.id) {
+          localStorage.removeItem(`cart_${user.id}`);
+        }
+
+        toast.success("You have been logged out successfully.");
+        router.push("/");
+        return;
+      } catch (error) {
+        console.error("Local logout failed:", error);
+        toast.error("Logout failed. Please try again.");
+        return;
+      }
     }
 
     setLoading(true);
@@ -29,7 +53,15 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
-      toast.error("Logout failed. Please try again.");
+      // Even if logout API fails, the AuthProvider should have cleared local state
+      // Check if user is still logged in
+      if (user || sessionKey) {
+        toast.error("Logout failed. Please try again.");
+      } else {
+        // Local logout was successful even if API failed
+        toast.success("You have been logged out successfully.");
+        router.push("/");
+      }
     } finally {
       setLoading(false);
     }

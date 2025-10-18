@@ -9,11 +9,13 @@ import { authApi } from "@/lib/api";
 
 interface RegisterFormProps {
     onClose?: () => void;
+    onOtpSent?: (phone: string, userData: { name: string; email: string; phone: string }) => void;
 }
 
-export default function RegisterForm({ onClose }: RegisterFormProps) {
+export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
+    console.log("🔍 RegisterForm - onOtpSent prop:", onOtpSent);
     const [loading, setLoading] = useState(false);
-    const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
+    const [form, setForm] = useState({ name: "", email: "", phone: "" });
     const [error, setError] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -21,35 +23,105 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
 
         setError("");
 
-        // Basic phone validation
+        // Basic phone validation - ensure it's exactly 10 digits
         const phoneRegex = /^\d{10}$/;
         if (!phoneRegex.test(form.phone)) {
             setError("Please enter a valid 10-digit phone number.");
             return;
         }
 
-        if (!form.password || form.password.length < 6) {
-            setError("Password must be at least 6 characters.");
+        // Ensure phone number is exactly 10 digits for API
+        const cleanPhone = form.phone.replace(/\D/g, "");
+        if (cleanPhone.length !== 10) {
+            setError("Phone number must be exactly 10 digits.");
+            return;
+        }
+
+        // Additional validation: Check if phone number starts with valid Indian mobile prefixes
+        const validPrefixes = ['6', '7', '8', '9'];
+        if (!validPrefixes.includes(cleanPhone[0])) {
+            setError("Please enter a valid Indian mobile number (starting with 6, 7, 8, or 9).");
+            return;
+        }
+
+        if (!form.name.trim()) {
+            setError("Please enter your name.");
+            return;
+        }
+
+        if (!form.email.trim()) {
+            setError("Please enter your email.");
             return;
         }
 
         setLoading(true);
 
         try {
-            await authApi.register({
-                fullname: form.name,
+
+            // First, check if user already exists using register API with dummy data
+            try {
+                const userCheckResponse = await authApi.register({
+                    fullname: "dummy",
+                    email: "dummy@example.com",
+                    phonenumber: cleanPhone,
+                    otp: "000000" // Dummy OTP
+                });
+
+
+                // If user already exists, show error and return
+                if (userCheckResponse.status === false &&
+                    userCheckResponse.message?.includes("Already Exists")) {
+                    setError("This phone number is already registered. Please try logging in instead.");
+                    return;
+                }
+            } catch {
+                // Continue with OTP sending even if check fails
+            }
+
+            // Try different phone number formats that the API might accept
+            const phoneFormats = [
+                cleanPhone,                    // 7003810162
+                `+91${cleanPhone}`,           // +917003810162
+                `91${cleanPhone}`,            // 917003810162
+                `0${cleanPhone}`,             // 07003810162
+                `+91-${cleanPhone}`,          // +91-7003810162
+                `91-${cleanPhone}`,           // 91-7003810162
+            ];
+
+            let response;
+            let successfulFormat = null;
+
+            for (const phoneFormat of phoneFormats) {
+                try {
+                    response = await authApi.sendOtp({ phonenumber: phoneFormat });
+
+                    if (response.status !== false) {
+                        successfulFormat = phoneFormat;
+                        break;
+                    }
+                } catch {
+                    // Continue trying other formats
+                }
+            }
+
+            if (!successfulFormat || !response) {
+                throw new Error("Failed to send OTP with any phone number format. Please check your phone number.");
+            }
+
+            // Store user data for after OTP verification
+            onOtpSent?.(successfulFormat, {
+                name: form.name,
                 email: form.email,
-                phonenumber: form.phone,
-                password: form.password,
+                phone: successfulFormat
             });
 
-            // Debug: Signup success
-            toast.success(`Welcome to BEYUVANA, ${form.name}! Your account has been created successfully.`);
-            onClose?.();
-        } catch (err) {
-            console.error(err);
-            setError("Something went wrong. Please try again later.");
-            toast.error("Signup failed. Please try again.");
+            toast.success("OTP sent to your phone number. Please verify to complete registration.");
+        } catch (err: unknown) {
+            console.error("❌ RegisterForm - OTP send failed:", err);
+            // Try to extract error message from API response
+            const errorMessage = (err as Error)?.message || "Failed to send OTP. Please try again later.";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -97,13 +169,6 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
                         maxLength={10}
                         required
                     />
-                    <Input
-                        type="password"
-                        placeholder="Password"
-                        value={form.password}
-                        onChange={(e) => setForm({ ...form, password: e.target.value })}
-                        required
-                    />
 
                     {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -117,7 +182,7 @@ export default function RegisterForm({ onClose }: RegisterFormProps) {
                         className={`w-full text-white bg-green-700 hover:bg-green-800 rounded-[5px] py-2 font-light ${loading ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                     >
-                        {loading ? "Registering..." : "Register"}
+                        {loading ? "Sending OTP..." : "Send OTP"}
                     </Button>
                 </form>
             </div>

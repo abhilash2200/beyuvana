@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
-// import OtpVerifyForm from "./OtpVerifyForm"; // OTP temporarily disabled
+import OtpVerifyForm from "./OtpVerifyForm";
 import { useAuth } from "@/context/AuthProvider";
 import LogoutButton from "./LogoutButton";
 import { Button } from "@/components/ui/button";
@@ -21,11 +21,43 @@ import {
 
 export default function AuthDialog() {
     const { user } = useAuth();
-    const [step, setStep] = useState<"login" | "register" | null>("login"); 
-    // default step = login
+    const [step, setStep] = useState<"login" | "register" | "otp" | null>("login");
+    const [otpData, setOtpData] = useState<{
+        phone: string;
+        userData?: { name: string; email: string; phone: string };
+        isRegistration: boolean;
+    } | null>(null);
+
+    const handleOtpSent = (phone: string, userData?: { name: string; email: string; phone: string }) => {
+        console.log("🔄 AuthDialog - handleOtpSent called with:", { phone, userData });
+        console.log("🔄 AuthDialog - Current step before change:", step);
+        setOtpData({
+            phone,
+            userData,
+            isRegistration: !!userData
+        });
+        console.log("🔄 AuthDialog - Setting step to 'otp'");
+        setStep("otp");
+        console.log("🔄 AuthDialog - Step should now be 'otp'");
+    };
+
+    const handleOtpVerified = () => {
+        setStep(null);
+        setOtpData(null);
+    };
+
+    const handleBackToAuth = () => {
+        setStep(otpData?.isRegistration ? "register" : "login");
+        setOtpData(null);
+    };
 
     return (
-        <Dialog onOpenChange={(o) => !o && setStep("login")}>
+        <Dialog onOpenChange={(o) => {
+            if (!o) {
+                setStep("login");
+                setOtpData(null);
+            }
+        }}>
             <DialogTrigger asChild>
                 {user ? (
                     <DropdownMenu>
@@ -52,23 +84,60 @@ export default function AuthDialog() {
                 <DialogContent className="max-w-md">
                     <DialogHeader>
                         <DialogTitle>
-                            Login or Register
+                            {step === "otp" ? "Verify OTP" : "Login or Register"}
                         </DialogTitle>
                     </DialogHeader>
 
-                    <Tabs value={step ?? "login"} onValueChange={(val) => setStep(val as "login" | "register")} className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="login">Login</TabsTrigger>
-                            <TabsTrigger value="register">Register</TabsTrigger>
-                        </TabsList>
+                    {/* Debug info */}
+                    <div className="text-xs text-gray-500 p-2 bg-gray-100 rounded">
+                        Debug: step={step}, hasOtpData={!!otpData}, otpPhone={otpData?.phone}
+                    </div>
 
-                        <TabsContent value="login">
-                            <LoginForm />
-                        </TabsContent>
-                        <TabsContent value="register">
-                            <RegisterForm />
-                        </TabsContent>
-                    </Tabs>
+                    {step === "otp" && otpData ? (
+                        <div className="space-y-4">
+                            <div className="text-center">
+                                <p className="text-sm text-gray-600">
+                                    We&apos;ve sent a 6-digit OTP to {otpData.phone}
+                                </p>
+                            </div>
+                            <OtpVerifyForm
+                                onVerified={handleOtpVerified}
+                                phone={otpData.phone}
+                                userData={otpData.userData}
+                                isRegistration={otpData.isRegistration}
+                            />
+                            <Button
+                                variant="outline"
+                                onClick={handleBackToAuth}
+                                className="w-full"
+                            >
+                                Back to {otpData.isRegistration ? "Registration" : "Login"}
+                            </Button>
+                        </div>
+                    ) : (
+                        <Tabs value={step ?? "login"} onValueChange={(val) => setStep(val as "login" | "register")} className="w-full">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="login">Login</TabsTrigger>
+                                <TabsTrigger value="register">Register</TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="login">
+                                <LoginForm onOtpSent={(phone) => {
+                                    console.log("🔍 AuthDialog - LoginForm callback called with:", { phone });
+                                    handleOtpSent(phone);
+                                }} />
+                            </TabsContent>
+                            <TabsContent value="register">
+                                <RegisterForm
+                                    key="register-form"
+                                    onOtpSent={(phone, userData) => {
+                                        console.log("🔍 AuthDialog - RegisterForm callback called with:", { phone, userData });
+                                        handleOtpSent(phone, userData);
+                                    }}
+                                />
+                            </TabsContent>
+                        </Tabs>
+                    )}
                 </DialogContent>
             )}
         </Dialog>

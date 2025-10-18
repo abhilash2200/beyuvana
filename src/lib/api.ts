@@ -117,16 +117,25 @@ interface LegacyProduct {
   prices?: PriceTier[];
 }
 
-interface LoginRequest {
-  email: string;
-  password: string;
+interface SendOtpRequest {
+  phonenumber: string;
+}
+
+interface VerifyOtpRequest {
+  phonenumber: string;
+  otp: string;
 }
 
 interface RegisterRequest {
   fullname: string;
   email: string;
   phonenumber: string;
-  password: string;
+  otp_code: string;
+}
+
+interface LoginRequest {
+  phonenumber: string;
+  otp_code: string;
 }
 
 // Dynamic product list request to match backend (filter/sort/search/pagination)
@@ -387,15 +396,6 @@ async function apiFetch<T = unknown>(
     signal: controller.signal,
   };
 
-  // Console logging for session and headers
-  console.log("🌐 API Request:", {
-    endpoint,
-    url,
-    method: options.method || "GET",
-    headers: config.headers,
-    hasBody: !!options.body,
-    bodyPreview: options.body ? (typeof options.body === 'string' ? options.body.substring(0, 200) + '...' : 'Object') : null
-  });
 
   // Extract and log session information
   const sessionHeaders = Object.entries(config.headers || {}).filter(([key]) =>
@@ -406,7 +406,6 @@ async function apiFetch<T = unknown>(
   );
 
   if (sessionHeaders.length > 0) {
-    console.log("🔑 Session Headers:", sessionHeaders);
   }
 
   // Extract user ID from body if present
@@ -425,13 +424,6 @@ async function apiFetch<T = unknown>(
     const response = await fetch(url, config);
     clearTimeout(timeoutId);
 
-    console.log("📡 API Response:", {
-      endpoint,
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-      headers: Object.fromEntries(response.headers.entries())
-    });
 
 
     if (!response.ok) {
@@ -468,12 +460,6 @@ async function apiFetch<T = unknown>(
     let data;
     try {
       data = JSON.parse(responseText);
-      console.log("✅ API Success:", {
-        endpoint,
-        dataKeys: data ? Object.keys(data) : null,
-        hasUserData: data && (data.user_id || data.user || data.id),
-        responseSize: responseText.length
-      });
     } catch (parseError) {
       console.error("❌ JSON parse error:", parseError);
       console.error("Response text that failed to parse:", responseText);
@@ -518,30 +504,129 @@ async function apiFetch<T = unknown>(
 
 // Auth API functions with fallback
 export const authApi = {
-  login: async (credentials: LoginRequest) => {
+
+  sendOtp: async (otpData: SendOtpRequest) => {
     try {
-      return await apiFetch("/login/v1/", {
+
+      return await apiFetch("/otp/send/v1/", {
         method: "POST",
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(otpData),
+      });
+    } catch (error: unknown) {
+      console.error("Send OTP API failed:", error);
+
+      // Try to extract the actual error message from the API response
+      if ((error as Error)?.message && (error as Error).message.includes("API error:")) {
+        // Parse the API error response
+        try {
+          const errorText = (error as Error).message.split(" - ")[1];
+          const errorData = JSON.parse(errorText);
+          if (errorData.message) {
+            throw new Error(errorData.message);
+          }
+        } catch {
+          // If parsing fails, use the original error
+        }
+      }
+
+      throw new Error(
+        "Failed to send OTP. Please check your internet connection and try again."
+      );
+    }
+  },
+
+  verifyOtp: async (otpData: { phonenumber: string; otp: string }) => {
+    try {
+      console.log("🔐 Verifying OTP for phone:", otpData.phonenumber);
+      return await apiFetch("/otp/verify/v1/", {
+        method: "POST",
+        body: JSON.stringify(otpData),
       });
     } catch (error) {
-      console.error("Login API failed, this might be a CORS issue:", error);
+      console.error("Verify OTP API failed:", error);
+      throw new Error(
+        "OTP verification failed. Please check your internet connection and try again."
+      );
+    }
+  },
+
+  register: async (userData: { fullname: string; email: string; phonenumber: string; otp: string }) => {
+    try {
+
+      // Transform the data to match API expectations
+      const apiData = {
+        fullname: userData.fullname,
+        email: userData.email,
+        phonenumber: userData.phonenumber,
+        otp_code: userData.otp
+      };
+
+      const response = await apiFetch("/signup/v1/", {
+        method: "POST",
+        body: JSON.stringify(apiData),
+      });
+
+      return response;
+    } catch (error) {
+      console.error("Register API failed:", error);
+      console.error("Register API error details:", {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : null,
+        userData: userData
+      });
+      throw new Error(
+        "Registration failed. Please check your internet connection and try again."
+      );
+    }
+  },
+
+  login: async (loginData: { phonenumber: string; otp: string }) => {
+    try {
+
+      // Transform the data to match API expectations
+      const apiData = {
+        phonenumber: loginData.phonenumber,
+        otp_code: loginData.otp
+      };
+
+      return await apiFetch("/login/v1/", {
+        method: "POST",
+        body: JSON.stringify(apiData),
+      });
+    } catch (error) {
+      console.error("Login API failed:", error);
       throw new Error(
         "Login failed. Please check your internet connection and try again."
       );
     }
   },
 
-  register: async (userData: RegisterRequest) => {
+  logout: async (sessionKey: string, userId: string) => {
     try {
-      return await apiFetch("/signup/v1/", {
+      console.log("🚪 Logging out user:", userId);
+      console.log("🚪 Session key preview:", sessionKey ? `${sessionKey.substring(0, 10)}...` : 'No session key');
+      console.log("🚪 API endpoint: /logout/v1/");
+
+      const response = await apiFetch("/logout/v1/", {
         method: "POST",
-        body: JSON.stringify(userData),
+        headers: {
+          "session_key": sessionKey,
+        },
+        body: JSON.stringify({ user_id: userId }),
       });
+
+      console.log("🚪 Logout API response:", response);
+      return response;
     } catch (error) {
-      console.error("Register API failed, this might be a CORS issue:", error);
+      console.error("Logout API failed:", error);
+      console.error("Logout API error details:", {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : null,
+        userId: userId,
+        hasSessionKey: !!sessionKey
+      });
       throw new Error(
-        "Registration failed. Please check your internet connection and try again."
+        "Logout failed. Please check your internet connection and try again."
       );
     }
   },
@@ -919,18 +1004,12 @@ export const ordersApi = {
 
       // Debug logging for headers
       if (isDevelopment) {
-        console.log("🔑 Orders API Debug - Session Key:", sessionKey);
-        console.log("🔑 Session Key Type:", typeof sessionKey);
-        console.log("🔑 Session Key Length:", sessionKey?.length || 0);
-        console.log("🔑 Headers being sent:", headers);
       }
 
       const uid = userId ? Number(userId) : null;
 
       async function fetchAndMap(payload: { user_id: number | null; status?: string; session_key: string | null }) {
         if (isDevelopment) {
-          console.log("🔑 fetchAndMap - Payload session_key:", payload.session_key);
-          console.log("🔑 fetchAndMap - Full payload:", payload);
         }
 
         const respLocal = await apiFetch<BackendOrderItem[]>("/api/order_list", {
@@ -1669,8 +1748,10 @@ export type {
   ProductReview,
   LegacyProduct,
   PriceTier,
-  LoginRequest,
+  SendOtpRequest,
+  VerifyOtpRequest,
   RegisterRequest,
+  LoginRequest,
   ProductsListRequest,
   AddToCartRequest,
   CartItem,

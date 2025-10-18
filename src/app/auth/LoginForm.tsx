@@ -3,19 +3,18 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthProvider";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { authApi } from "@/lib/api";
 
 interface LoginFormProps {
     onClose?: () => void;
+    onOtpSent?: (phone: string) => void;
 }
 
-export default function LoginForm({ onClose }: LoginFormProps) {
+export default function LoginForm({ onOtpSent }: LoginFormProps) {
     const [loading, setLoading] = useState(false);
-    const { setUser, setSessionKey } = useAuth();
-    const [form, setForm] = useState({ email: "", password: "" });
+    const [form, setForm] = useState({ phone: "" });
     const [error, setError] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -23,95 +22,72 @@ export default function LoginForm({ onClose }: LoginFormProps) {
         setError("");
         setLoading(true);
 
-        console.log("🔐 LoginForm - Login attempt:", {
-            email: form.email,
-            hasPassword: !!form.password
-        });
 
-        if (!form.email || !form.password) {
-            setError("Please enter both email and password.");
+        // Basic phone validation - ensure it's exactly 10 digits
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(form.phone)) {
+            setError("Please enter a valid 10-digit phone number.");
+            setLoading(false);
+            return;
+        }
+
+        // Ensure phone number is exactly 10 digits for API
+        const cleanPhone = form.phone.replace(/\D/g, "");
+        if (cleanPhone.length !== 10) {
+            setError("Phone number must be exactly 10 digits.");
+            setLoading(false);
+            return;
+        }
+
+        // Additional validation: Check if phone number starts with valid Indian mobile prefixes
+        const validPrefixes = ['6', '7', '8', '9'];
+        if (!validPrefixes.includes(cleanPhone[0])) {
+            setError("Please enter a valid Indian mobile number (starting with 6, 7, 8, or 9).");
             setLoading(false);
             return;
         }
 
         try {
-            console.log("🌐 LoginForm - Calling login API");
-            const data = await authApi.login({ email: form.email, password: form.password });
 
-            // 🔹 Normalize API response
-            const apiData = data as Record<string, unknown>;
-            const rawUser =
-                apiData.user ||
-                (apiData.data as Record<string, unknown>)?.user ||
-                apiData.user_data ||
-                apiData.profile ||
-                (apiData.data as Record<string, unknown>)?.profile ||
-                apiData.data ||
-                apiData;
+            // Try different phone number formats that the API might accept
+            const phoneFormats = [
+                cleanPhone,                    // 7003810162
+                `+91${cleanPhone}`,           // +917003810162
+                `91${cleanPhone}`,            // 917003810162
+                `0${cleanPhone}`,             // 07003810162
+                `+91-${cleanPhone}`,          // +91-7003810162
+                `91-${cleanPhone}`,           // 91-7003810162
+            ];
 
-            const normalizedUser = rawUser
-                ? {
-                    id: String((rawUser as Record<string, unknown>).id || (rawUser as Record<string, unknown>).user_id || (rawUser as Record<string, unknown>).userid || ""),
-                    name: String((rawUser as Record<string, unknown>).name || (rawUser as Record<string, unknown>).fullname || (rawUser as Record<string, unknown>).username || ""),
-                    email: String((rawUser as Record<string, unknown>).email || ""),
-                    phone: String((rawUser as Record<string, unknown>).phone || (rawUser as Record<string, unknown>).phonenumber || ""),
+            let response;
+            let successfulFormat = null;
+
+            for (const phoneFormat of phoneFormats) {
+                try {
+                    response = await authApi.sendOtp({ phonenumber: phoneFormat });
+
+                    if (response.status !== false) {
+                        successfulFormat = phoneFormat;
+                        break;
+                    }
+                } catch {
+                    // Continue trying other formats
                 }
-                : null;
-
-            const sessionKey =
-                apiData.session_key ||
-                (apiData.data as Record<string, unknown>)?.session_key ||
-                apiData.sessionKey ||
-                apiData.token ||
-                (apiData.data as Record<string, unknown>)?.token ||
-                null;
-
-            console.log("✅ LoginForm - Login successful:", {
-                userId: normalizedUser?.id,
-                userName: normalizedUser?.name,
-                userEmail: normalizedUser?.email,
-                hasSessionKey: !!sessionKey,
-                sessionPreview: sessionKey ? `${String(sessionKey).substring(0, 10)}...` : null
-            });
-
-            if (!normalizedUser) {
-                setError("Invalid login response.");
-                toast.error("Login failed: Invalid server response.");
-                setLoading(false);
-                return;
             }
 
-            // 🔹 Save user + session in context + localStorage
-            console.log("💾 LoginForm - Saving user and session to context");
-            setUser(normalizedUser);
-            if (sessionKey) setSessionKey(String(sessionKey));
-
-            try {
-                localStorage.setItem("user", JSON.stringify(normalizedUser));
-                if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
-            } catch (err) {
-                console.warn("Failed to save user in localStorage:", err);
+            if (!successfulFormat || !response) {
+                throw new Error("Failed to send OTP with any phone number format. Please check your phone number.");
             }
 
-            // 🔹 OTP API (commented out)
-            /*
-            const otpResponse = await apiFetch("/auth/send-otp", {
-                method: "POST",
-                body: JSON.stringify({ phone: normalizedUser.phone }),
-            });
-            */
+            // Store phone for OTP verification
+            onOtpSent?.(successfulFormat);
 
-            // Debug: Login successful
-            toast.success(`Welcome back, ${normalizedUser.name}!`);
-            onClose?.();
+            toast.success("OTP sent to your phone number. Please verify to login.");
         } catch (err: unknown) {
-            console.error("❌ LoginForm - Login failed:", {
-                error: err instanceof Error ? err.message : err,
-                type: typeof err,
-                email: form.email
-            });
-            setError("Something went wrong. Please try again later.");
-            toast.error("Login failed. Please try again.");
+            // Try to extract error message from API response
+            const errorMessage = (err as Error)?.message || "Failed to send OTP. Please try again later.";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -136,17 +112,13 @@ export default function LoginForm({ onClose }: LoginFormProps) {
 
                 <form onSubmit={handleSubmit} className="space-y-3">
                     <Input
-                        type="email"
-                        placeholder="Enter your email"
-                        value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        required
-                    />
-                    <Input
-                        type="password"
-                        placeholder="Enter your password"
-                        value={form.password}
-                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                        placeholder="Enter your phone number"
+                        value={form.phone}
+                        onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, "");
+                            setForm({ ...form, phone: val });
+                        }}
+                        maxLength={10}
                         required
                     />
 
@@ -162,7 +134,7 @@ export default function LoginForm({ onClose }: LoginFormProps) {
                         className={`w-full text-white bg-green-700 hover:bg-green-800 rounded-[5px] py-2 font-light ${loading ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                     >
-                        {loading ? "Logging in..." : "Login"}
+                        {loading ? "Sending OTP..." : "Send OTP"}
                     </Button>
                 </form>
             </div>
