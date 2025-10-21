@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { ChevronDown, Plus } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
+import { Minus, Plus } from "lucide-react";
+import React from "react";
 
 interface QuantityDropdownProps {
     itemId: string;
@@ -14,118 +12,83 @@ interface QuantityDropdownProps {
 }
 
 export default function QuantityDropdown({ itemId, currentQuantity, loading }: QuantityDropdownProps) {
-    const { updateItemQuantity } = useCart();
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [customQuantity, setCustomQuantity] = useState(currentQuantity.toString());
+    const { increaseItemQuantity, decreaseItemQuantity, updateItemQuantity } = useCart();
+    const [localQuantity, setLocalQuantity] = React.useState(currentQuantity);
 
-    const handleQuantitySelect = (quantity: number) => {
-        updateItemQuantity(itemId, quantity);
-        setIsDropdownOpen(false);
-    };
+    // Sync local quantity with prop changes
+    React.useEffect(() => {
+        setLocalQuantity(currentQuantity);
+    }, [currentQuantity]);
 
-    const handleCustomQuantitySubmit = () => {
-        const quantity = parseInt(customQuantity);
-        if (quantity > 0) {
-            updateItemQuantity(itemId, quantity);
-            setIsDialogOpen(false);
-            setIsDropdownOpen(false);
+    const handleIncrease = async () => {
+        try {
+            await increaseItemQuantity(itemId);
+        } catch (error) {
+            console.error("Failed to increase quantity:", error);
         }
     };
 
-    const handleMoreClick = () => {
-        setCustomQuantity(currentQuantity.toString());
-        setIsDialogOpen(true);
-        setIsDropdownOpen(false);
+    const handleDecrease = async () => {
+        try {
+            await decreaseItemQuantity(itemId);
+        } catch (error) {
+            console.error("Failed to decrease quantity:", error);
+        }
+    };
+
+    const handleQuantityChange = async (newQuantity: number) => {
+        const validQuantity = Math.max(1, Math.min(10, newQuantity)); // Limit between 1-10 for better UX
+        setLocalQuantity(validQuantity);
+
+        if (validQuantity !== currentQuantity) {
+            try {
+                await updateItemQuantity(itemId, validQuantity);
+            } catch (error) {
+                console.error("Failed to update quantity:", error);
+                // Revert on error
+                setLocalQuantity(currentQuantity);
+            }
+        }
     };
 
     return (
-        <div className="relative">
-            {/* Dropdown Trigger */}
+        <div className="flex items-center justify-between gap-2 bg-white w-24 rounded-full border border-[#057A37] px-2 py-1">
             <Button
-                variant="outline"
-                className="flex items-center justify-between w-16 rounded-[5px] h-7 px-2 py-1 text-[12px] border-[#057A37] text-[#057A37] hover:bg-[#F2F9F3]"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                disabled={loading}
+                variant="ghost"
+                size="default"
+                disabled={loading || localQuantity <= 1}
+                className="text-[#057A37] text-[14px] px-1 h-6 w-6 p-0 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleDecrease}
             >
-                <span className="font-medium">{currentQuantity}</span>
-                <ChevronDown size={12} className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                <Minus size={12} />
             </Button>
 
-            {/* Dropdown Menu */}
-            {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 w-32 bg-white border border-[#057A37] rounded-lg shadow-lg z-50">
-                    <div className="py-1">
-                        {[1, 2, 3].map((quantity) => (
-                            <button
-                                key={quantity}
-                                className={`w-full px-3 py-2 text-left text-[12px] hover:bg-[#F2F9F3] transition-colors ${currentQuantity === quantity ? 'bg-[#F2F9F3] text-[#057A37] font-medium' : 'text-gray-700'
-                                    }`}
-                                onClick={() => handleQuantitySelect(quantity)}
-                            >
-                                {quantity}
-                            </button>
-                        ))}
-                        <div className="border-t border-gray-200 my-1"></div>
-                        <button
-                            className="w-full px-3 py-2 text-left text-[12px] text-[#057A37] hover:bg-[#F2F9F3] transition-colors flex items-center gap-2"
-                            onClick={handleMoreClick}
-                        >
-                            <Plus size={12} />
-                            Add more
-                        </button>
-                    </div>
-                </div>
-            )}
+            <input
+                type="number"
+                min={1}
+                max={10}
+                value={localQuantity}
+                onChange={(e) => {
+                    const newQuantity = Number(e.target.value) || 1;
+                    handleQuantityChange(newQuantity);
+                }}
+                onBlur={(e) => {
+                    const newQuantity = Number(e.target.value) || 1;
+                    handleQuantityChange(newQuantity);
+                }}
+                className="w-8 text-center outline-none text-[#057A37] bg-transparent text-[12px] font-medium"
+                disabled={loading}
+            />
 
-            {/* Custom Quantity Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-md bg-white border border-[#057A37]">
-                    <DialogHeader>
-                        <DialogTitle className="text-[#057A37] font-[Grafiels] text-lg font-normal">
-                            Enter Quantity
-                        </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                How many would you like?
-                            </label>
-                            <Input
-                                type="number"
-                                min="1"
-                                value={customQuantity}
-                                onChange={(e) => setCustomQuantity(e.target.value)}
-                                className="border-[#057A37] focus:border-[#057A37] focus:ring-[#057A37]"
-                                placeholder="Enter quantity"
-                            />
-                        </div>
-                        <div className="flex gap-3 justify-end">
-                            <Button
-                                variant="outline"
-                                onClick={() => setIsDialogOpen(false)}
-                                className="border-red-500 text-red-500 hover:bg-[#F2F9F3] text-[12px] px-2 font-normal"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={handleCustomQuantitySubmit}
-                                className="bg-[#057A37] hover:bg-[#0C4B33] text-white px-2 py-1 text-[12px] font-normal"
-                            >
-                                Update
-                            </Button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* Overlay to close dropdown when clicking outside */}
-            {isDropdownOpen && (
-                <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setIsDropdownOpen(false)}
-                />
-            )}
+            <Button
+                variant="ghost"
+                size="default"
+                disabled={loading || localQuantity >= 10}
+                className="text-[#057A37] text-[14px] px-1 h-6 w-6 p-0 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleIncrease}
+            >
+                <Plus size={12} />
+            </Button>
         </div>
     );
 }

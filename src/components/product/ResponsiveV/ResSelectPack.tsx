@@ -25,6 +25,7 @@ type Product = {
     name: string;
     packs: Pack[];
     image: string;
+    product_details?: ApiProduct; // Store the full product details from API
 };
 
 function formatINR(value: number): string {
@@ -68,25 +69,22 @@ function buildPacksFromPrices(
     prices: PriceTier[] | undefined,
     designType: "green" | "pink" | undefined
 ): Pack[] {
-    if (!Array.isArray(prices)) return [];
+    if (!Array.isArray(prices) || prices.length === 0) return [];
+
     return prices
         .map((tier) => {
             const qty = Number(tier.qty);
+            // Use the exact backend price structure
             const mrp = parseFloat(tier.mrp || "0");
             const final = parseFloat(tier.final_price || "0");
-            const percent = tier.discount_off_inpercent || tier.discount || "";
-            const discount = percent
-                ? `${String(percent).replace(/%/g, "").trim()}% Off`
-                : mrp > 0 && final > 0
-                    ? `${Math.round(((mrp - final) / mrp) * 100)}% Off`
-                    : "";
+            const discountPercent = parseFloat(tier.discount_off_inpercent || "0");
 
             return {
                 qty,
                 sachets: getDefaultSachets(designType, qty),
-                price: Math.round(isNaN(final) ? 0 : final),
-                originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
-                discount,
+                price: Math.round(final), // Use final_price as selling price
+                originalPrice: Math.round(mrp), // Use mrp as original price
+                discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
                 tagline: getPackTagline(designType, qty),
             } as Pack;
         })
@@ -146,6 +144,7 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                     name: apiProduct.product_name,
                     packs,
                     image,
+                    product_details: apiProduct, // Store the full API product details
                 };
 
                 if (!ignore) {
@@ -163,28 +162,43 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
         };
     }, [productId, designType]);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!product || !selectedPack) {
             toast.warning("Please select a pack size first!");
             return;
         }
-        addToCart({
+
+        const matchingPriceTier = product.product_details?.prices?.find((tier: PriceTier) =>
+            Number(tier.qty) === selectedPack.qty
+        );
+
+        if (!matchingPriceTier?.product_price_id) {
+            toast.error("Unable to add to cart: Missing price information. Please try again.");
+            return;
+        }
+
+        await addToCart({
             id: `${product.id}-${selectedPack.qty}`,
             name: `${product.name} - Pack of ${selectedPack.qty}`,
             quantity: 1,
             price: selectedPack.price,
             image: product.image,
-            product_id: product.id, // Add product_id for API integration
+            product_id: product.id,
+            mrp_price: selectedPack.originalPrice,
+            discount_percent: selectedPack.discount,
+            pack_qty: selectedPack.qty,
+            product_price_id: matchingPriceTier.product_price_id,
         });
+
         toast.success(`${product.name} (Pack of ${selectedPack.qty}) added to cart!`);
     };
 
-    const handleShopNow = () => {
+    const handleShopNow = async () => {
         if (!product || !selectedPack) {
             toast.warning("Please select a pack size first!");
             return;
         }
-        handleAddToCart();
+        await handleAddToCart();
         openCart();
     };
 

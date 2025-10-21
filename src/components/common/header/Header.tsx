@@ -56,10 +56,6 @@ const Header = () => {
         setIsRegisterOpen(false);
     };
 
-    const handleBackToRegister = () => {
-        setRegisterStep("form");
-        setOtpData(null);
-    };
 
     const handleLoginOtpSent = (phone: string) => {
         setOtpData({ phone });
@@ -72,10 +68,6 @@ const Header = () => {
         setIsLoginOpen(false);
     };
 
-    const handleBackToLogin = () => {
-        setLoginStep("form");
-        setOtpData(null);
-    };
 
     return (
         <header className="sticky top-0 z-50 w-full">

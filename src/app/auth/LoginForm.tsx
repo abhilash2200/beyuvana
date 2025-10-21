@@ -48,7 +48,6 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
         }
 
         try {
-
             // Try different phone number formats that the API might accept
             const phoneFormats = [
                 cleanPhone,                    // 7003810162
@@ -61,22 +60,28 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
 
             let response;
             let successfulFormat = null;
+            let lastError = null;
 
             for (const phoneFormat of phoneFormats) {
                 try {
                     response = await authApi.sendOtp({ phonenumber: phoneFormat });
 
-                    if (response.status !== false) {
+                    if (response.status !== false && response.success !== false) {
                         successfulFormat = phoneFormat;
                         break;
+                    } else {
+                        lastError = response.message || "OTP send failed";
                     }
-                } catch {
+                } catch (err) {
+                    console.error(`Error with format ${phoneFormat}:`, err);
+                    lastError = (err as Error)?.message || "Network error";
                     // Continue trying other formats
                 }
             }
 
             if (!successfulFormat || !response) {
-                throw new Error("Failed to send OTP with any phone number format. Please check your phone number.");
+                const errorMsg = lastError || "Failed to send OTP with any phone number format. Please check your phone number.";
+                throw new Error(errorMsg);
             }
 
             // Store phone for OTP verification
@@ -84,8 +89,23 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
 
             toast.success("OTP sent to your phone number. Please verify to login.");
         } catch (err: unknown) {
+            console.error("Login form error:", err);
             // Try to extract error message from API response
-            const errorMessage = (err as Error)?.message || "Failed to send OTP. Please try again later.";
+            let errorMessage = "Failed to send OTP. Please try again later.";
+
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            }
+
+            // Provide more helpful error messages
+            if (errorMessage.includes("Invalid phone number") || errorMessage.includes("phone")) {
+                errorMessage = "Please enter a valid 10-digit Indian mobile number.";
+            } else if (errorMessage.includes("network") || errorMessage.includes("connection")) {
+                errorMessage = "Network error. Please check your internet connection and try again.";
+            } else if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
+                errorMessage = "Too many attempts. Please wait a few minutes before trying again.";
+            }
+
             setError(errorMessage);
             toast.error(errorMessage);
         } finally {

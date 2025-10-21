@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }) {
     const { cartItems, loading, clearCart } = useCart();
     const { user, sessionKey } = useAuth();
-    const total = cartItems.reduce((acc, item) => acc + Math.round(item.price * item.quantity), 0);
+    const total = Math.round(cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0));
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
@@ -72,8 +72,16 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                 const totalSalePrice = Math.round((item.price * item.quantity) * 100) / 100;
                 const discountAmount = Math.round((totalMrpPrice - totalSalePrice) * 100) / 100;
 
+                // Safely parse product_id, ensuring it's a valid number
+                const productId = item.product_id || item.id;
+                const parsedProductId = typeof productId === 'string' ? parseInt(productId, 10) : Number(productId);
+
+                if (isNaN(parsedProductId)) {
+                    throw new Error(`Invalid product ID: ${productId}`);
+                }
+
                 return {
-                    product_id: parseInt(item.product_id || item.id),
+                    product_id: parsedProductId,
                     sale_price: Math.round(item.price * 100) / 100,
                     mrp_price: Math.round(originalPrice * 100) / 100,
                     sale_unit: 1,
@@ -86,7 +94,7 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
 
             const checkoutData: CheckoutRequest = {
                 cart: checkoutCartItems,
-                user_id: parseInt(user.id),
+                user_id: typeof user.id === 'string' ? parseInt(user.id, 10) : Number(user.id),
                 qty: pricing.totalQty,
                 paid_amount: pricing.paidAmount,
                 discount_amount: pricing.discountAmount,
@@ -184,7 +192,7 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
                                                 <p className="font-[Grafiels] text-[14px] line-clamp-2">{item.name}</p>
-                                                <p className="text-[13px] text-[#057A37]">₹{Math.round(item.price * item.quantity).toLocaleString("en-IN")}</p>
+                                                <p className="text-[13px] text-[#057A37]">₹{(item.price * item.quantity).toLocaleString("en-IN")}</p>
                                             </div>
                                             <p className="text-[11px] text-[#747474] mt-1">Qty: {item.quantity}</p>
                                             {item.short_description && (

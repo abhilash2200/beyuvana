@@ -15,7 +15,7 @@ import QuantityDropdown from "./QuantityDropdown";
 
 export default function MobileCart() {
     const { cartItems, loading, isCartOpen, setCartOpen } = useCart();
-    const total = cartItems.reduce((acc, item) => acc + Math.round(item.price * item.quantity), 0);
+    const total = Math.round(cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0));
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
@@ -179,13 +179,13 @@ export default function MobileCart() {
                                                     {/* Price and Discount */}
                                                     <div className="flex items-center gap-2 mb-0">
                                                         <p className="font-semibold text-[13px] text-[#057A37]">
-                                                            ₹{Math.round(item.price * item.quantity).toLocaleString("en-IN")}
+                                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
                                                         </p>
                                                         {item.mrp_price && item.discount_percent && (
                                                             <>
                                                                 <span className="text-[10px] text-gray-400">|</span>
                                                                 <p className="text-[10px] text-[#747474]">
-                                                                    MRP ₹{Math.round(item.mrp_price * item.quantity).toLocaleString("en-IN")}
+                                                                    MRP ₹{(item.mrp_price * item.quantity).toLocaleString("en-IN")}
                                                                     <span className="text-[#057A37] ml-1">{item.discount_percent}% Off</span>
                                                                 </p>
                                                             </>
@@ -202,7 +202,7 @@ export default function MobileCart() {
 
 
                                                         <p className="text-[13px] font-semibold text-[#057A37]">
-                                                            ₹{Math.round(item.price * item.quantity).toLocaleString("en-IN")}
+                                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
                                                         </p>
                                                     </div>
                                                 </div>

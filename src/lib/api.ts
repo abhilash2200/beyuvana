@@ -58,6 +58,7 @@ interface Product {
 interface ProductDetailsResponse {
   total_star_ratting: string;
   id: string;
+  design_type?: string; // Add design_type field from API
   categorykey: string;
   category: string;
   product_code: string;
@@ -158,15 +159,42 @@ interface AddToCartRequest {
   quantity: number;
   price_qty?: number;
   price_unit_name?: string;
+  product_price?: number;
+  discount_price?: number;
+  product_price_id?: string;
+  discount_percent?: string;
 }
 
 interface CartItem {
-  id: string;
+  // Frontend cart item fields
+  id?: string;
   product_id: string;
-  name: string;
-  price: number;
-  quantity: number;
+  name?: string;
+  product_name?: string;
+  price?: number;
+  sale_price?: number;
+  quantity?: number;
+  qty?: number;
   image?: string;
+  product_image?: string;
+  mrp_price?: number;
+  discount_percent?: string;
+  discount_off_inpercent?: string;
+  short_description?: string;
+  product_description?: string;
+  in_stock?: string;
+  pack_qty?: number;
+  product_price_id?: string;
+
+  // Backend cart response fields
+  cart_id?: string;
+  product_price?: string;
+  discount_price?: string;
+  price_unit_name?: string;
+  posted_on?: string;
+  product_code?: string;
+  sku_number?: string;
+  gst_rate?: string;
 }
 
 interface Order {
@@ -397,34 +425,11 @@ async function apiFetch<T = unknown>(
   };
 
 
-  // Extract and log session information
-  const sessionHeaders = Object.entries(config.headers || {}).filter(([key]) =>
-    key.toLowerCase().includes('session') ||
-    key.toLowerCase().includes('auth') ||
-    key.toLowerCase().includes('token') ||
-    key.toLowerCase().includes('authorization')
-  );
 
-  if (sessionHeaders.length > 0) {
-  }
-
-  // Extract user ID from body if present
-  if (options.body && typeof options.body === 'string') {
-    try {
-      const bodyData = JSON.parse(options.body);
-      if (bodyData.user_id) {
-        console.log("👤 User ID in Request:", bodyData.user_id);
-      }
-    } catch {
-      // Body might not be JSON, ignore
-    }
-  }
 
   try {
     const response = await fetch(url, config);
     clearTimeout(timeoutId);
-
-
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -437,10 +442,8 @@ async function apiFetch<T = unknown>(
     const contentType = response.headers.get('content-type');
     const isJson = contentType && contentType.includes('application/json');
 
-
     // Always read the response as text first to validate content
     const responseText = await response.text();
-
 
     // Check if response body is actually HTML despite content-type claims
     if (responseText.trim().startsWith('<') || responseText.includes('<html') || responseText.includes('<div')) {
@@ -450,7 +453,6 @@ async function apiFetch<T = unknown>(
     }
 
     if (!isJson) {
-
       throw new Error(
         `Expected JSON response but got ${contentType || 'unknown content type'}. Response: ${responseText.substring(0, 200)}`
       );
@@ -507,7 +509,6 @@ export const authApi = {
 
   sendOtp: async (otpData: SendOtpRequest) => {
     try {
-
       return await apiFetch("/otp/send/v1/", {
         method: "POST",
         body: JSON.stringify(otpData),
@@ -537,7 +538,6 @@ export const authApi = {
 
   verifyOtp: async (otpData: { phonenumber: string; otp: string }) => {
     try {
-      console.log("🔐 Verifying OTP for phone:", otpData.phonenumber);
       return await apiFetch("/otp/verify/v1/", {
         method: "POST",
         body: JSON.stringify(otpData),
@@ -552,7 +552,6 @@ export const authApi = {
 
   register: async (userData: { fullname: string; email: string; phonenumber: string; otp: string }) => {
     try {
-
       // Transform the data to match API expectations
       const apiData = {
         fullname: userData.fullname,
@@ -582,7 +581,6 @@ export const authApi = {
 
   login: async (loginData: { phonenumber: string; otp: string }) => {
     try {
-
       // Transform the data to match API expectations
       const apiData = {
         phonenumber: loginData.phonenumber,
@@ -603,9 +601,6 @@ export const authApi = {
 
   logout: async (sessionKey: string, userId: string) => {
     try {
-      console.log("🚪 Logging out user:", userId);
-      console.log("🚪 Session key preview:", sessionKey ? `${sessionKey.substring(0, 10)}...` : 'No session key');
-      console.log("🚪 API endpoint: /logout/v1/");
 
       const response = await apiFetch("/logout/v1/", {
         method: "POST",
@@ -615,7 +610,6 @@ export const authApi = {
         body: JSON.stringify({ user_id: userId }),
       });
 
-      console.log("🚪 Logout API response:", response);
       return response;
     } catch (error) {
       console.error("Logout API failed:", error);
@@ -674,16 +668,6 @@ export const cartApi = {
     sessionKey?: string,
     userId?: string | number
   ) => {
-    console.log("🛒 Cart API - Add to Cart:", {
-      userId,
-      sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null,
-      cartData: {
-        product_id: cartData.product_id,
-        quantity: cartData.quantity,
-        price_qty: cartData.price_qty,
-        price_unit_name: cartData.price_unit_name
-      }
-    });
 
     try {
       const headers: Record<string, string> = {
@@ -691,31 +675,9 @@ export const cartApi = {
       };
 
       if (sessionKey) {
-        // Broad header coverage (match getCart/orders/get_address)
+        headers["sessionkey"] = sessionKey;
         headers["session_key"] = sessionKey;
         headers["Authorization"] = `Bearer ${sessionKey}`;
-        headers["X-Session-Key"] = sessionKey;
-        headers["X-Auth-Token"] = sessionKey;
-        headers["X-API-Key"] = sessionKey;
-        headers["token"] = sessionKey;
-        headers["auth-token"] = sessionKey;
-        headers["Session-Key"] = sessionKey;
-        headers["Auth-Token"] = sessionKey;
-        headers["API-Key"] = sessionKey;
-        // More variations
-        headers["sessionkey"] = sessionKey;
-        headers["session-key"] = sessionKey;
-        headers["authkey"] = sessionKey;
-        headers["auth_key"] = sessionKey;
-        headers["apikey"] = sessionKey;
-        headers["api_key"] = sessionKey;
-        headers["access_token"] = sessionKey;
-        headers["access-token"] = sessionKey;
-        // Authorization without Bearer
-        headers["Authorization"] = sessionKey;
-        headers["X-Authorization"] = sessionKey;
-        headers["X-Token"] = sessionKey;
-        headers["X-Access-Token"] = sessionKey;
       }
 
       const payload = {
@@ -724,78 +686,79 @@ export const cartApi = {
         qty: Number(cartData.quantity),
         price_qty: cartData.price_qty ?? 0,
         price_unit_name: cartData.price_unit_name ?? "",
+        product_price_id: cartData.product_price_id,
+        mrp: (cartData.product_price ?? 0).toFixed(2),
+        sale_price: (cartData.discount_price ?? 0).toFixed(2),
+        final_price: (cartData.discount_price ?? 0).toFixed(2),
+        product_price: (cartData.product_price ?? 0).toFixed(2),
+        discount_price: (cartData.discount_price ?? 0).toFixed(2),
+        unit_id: "6",
+        unit_name: "Pack of",
+        discount: "0.00",
+        discount_off_inpercent: cartData.discount_percent || "0.00",
+        discount_amount: ((cartData.product_price ?? 0) - (cartData.discount_price ?? 0)).toFixed(2)
       };
 
-      return await apiFetch<CartItem[]>("/cart/add/v1/", {
+
+      const response = await apiFetch<CartItem[]>("/cart/add/v1/", {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
       });
+
+      return response;
     } catch (error) {
       console.error("Add to cart API failed:", error);
       throw new Error("Failed to add item to cart. Please try again later.");
     }
   },
 
-  // Note: These endpoints may not be implemented yet on the server
-  // For now, we'll use local storage and only sync add operations
 
-  getCart: async (sessionKey?: string) => {
-    console.log("🛒 Cart API - Get Cart:", {
-      sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null,
-      hasSessionKey: !!sessionKey
-    });
+  getCart: async (sessionKey?: string, userId?: string | number) => {
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    if (sessionKey) {
+      headers["sessionkey"] = sessionKey;
+      headers["session_key"] = sessionKey;
+      headers["Authorization"] = `Bearer ${sessionKey}`;
+    }
 
     try {
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
+      const payload = {
+        user_id: userId ? Number(userId) : undefined,
+        limit: 0
       };
 
-      if (sessionKey) {
-        // Try different header combinations - prioritize session_key
-        headers["session_key"] = sessionKey;
-        headers["Authorization"] = `Bearer ${sessionKey}`;
-        headers["X-Session-Key"] = sessionKey;
-        headers["X-Auth-Token"] = sessionKey;
-        headers["X-API-Key"] = sessionKey;
-        headers["token"] = sessionKey;
-        headers["auth-token"] = sessionKey;
-        // Additional formats
-        headers["Session-Key"] = sessionKey;
-        headers["Auth-Token"] = sessionKey;
-        headers["API-Key"] = sessionKey;
-        // Try more variations
-        headers["sessionkey"] = sessionKey;
-        headers["session-key"] = sessionKey;
-        headers["authkey"] = sessionKey;
-        headers["auth_key"] = sessionKey;
-        headers["apikey"] = sessionKey;
-        headers["api_key"] = sessionKey;
-        headers["access_token"] = sessionKey;
-        headers["access-token"] = sessionKey;
-        // Try specific format that might be expected
-        headers["Authorization"] = sessionKey; // Without Bearer prefix
-        headers["X-Authorization"] = sessionKey;
-        headers["X-Token"] = sessionKey;
-        headers["X-Access-Token"] = sessionKey;
-      }
 
-      // Debug logging for cart API
-
-      // Try query parameter approach
-      const endpoint = sessionKey
-        ? `/cart/lists/v1/?session_key=${encodeURIComponent(sessionKey)}`
-        : "/cart/lists/v1/";
-
-      return await apiFetch<CartItem[]>(endpoint, {
+      const response = await apiFetch<CartItem[]>("/cart/lists/v1/", {
         method: "POST",
         headers,
-        body: JSON.stringify({
-          session_key: sessionKey, // Add session key to request body as well
-        }),
+        body: JSON.stringify(payload),
       });
+
+      return response;
     } catch (error) {
       console.error("Get cart API failed:", error);
+
+      try {
+        const altPayload = {
+          user_id: userId ? Number(userId) : undefined,
+          limit: 0
+        };
+
+        const altResponse = await apiFetch<CartItem[]>("/cart/get/v1/", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(altPayload),
+        });
+
+        return altResponse;
+      } catch (altError) {
+        console.error("Alternative cart endpoint also failed:", altError);
+      }
 
       // Check if it's a 401 error (authentication issue)
       if (error instanceof Error && error.message.includes("401")) {
@@ -816,7 +779,6 @@ export const cartApi = {
   },
 
   updateCart: async (cartData: AddToCartRequest, sessionKey?: string, userId?: string | number) => {
-    // This endpoint doesn't exist yet, use add to cart instead
     console.warn("Update cart API not implemented yet, using add to cart");
     return await cartApi.addToCart(cartData, sessionKey, userId);
   },
@@ -845,7 +807,6 @@ export const cartApi = {
     }
   },
 
-  // Specific function for decreasing quantity by one
   decreaseQuantity: async (productId: string, sessionKey?: string) => {
     try {
       const headers: Record<string, string> = {
@@ -868,7 +829,6 @@ export const cartApi = {
     }
   },
 
-  // Function for clearing the entire cart
   clearCart: async (sessionKey?: string) => {
     try {
       const headers: Record<string, string> = {
@@ -883,11 +843,38 @@ export const cartApi = {
       return await apiFetch<CartItem[]>("/cart/remove/v1/", {
         method: "POST",
         headers,
-        body: JSON.stringify({}), // Empty body for clearing entire cart
+        body: JSON.stringify({}),
       });
     } catch (error) {
       console.error("Clear cart API failed:", error);
       throw new Error("Failed to clear cart. Please try again later.");
+    }
+  },
+
+  removeAllFromCart: async (userId: number, sessionKey?: string) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (sessionKey) {
+        headers["sessionkey"] = sessionKey;
+        headers["session_key"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
+      }
+
+      const payload = {
+        user_id: userId,
+      };
+
+      return await apiFetch<CartItem[]>("/cart/remove/v1/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      console.error("Remove all from cart API failed:", error);
+      throw new Error("Failed to remove all items from cart. Please try again later.");
     }
   },
 };
@@ -1105,31 +1092,9 @@ export const addressApi = {
       };
 
       if (sessionKey) {
-        // Broad header coverage (match cart/orders behavior)
-        headers["Authorization"] = `Bearer ${sessionKey}`;
-        headers["session_key"] = sessionKey;
-        headers["X-Session-Key"] = sessionKey;
-        headers["X-Auth-Token"] = sessionKey;
-        headers["X-API-Key"] = sessionKey;
-        headers["token"] = sessionKey;
-        headers["auth-token"] = sessionKey;
-        headers["Session-Key"] = sessionKey;
-        headers["Auth-Token"] = sessionKey;
-        headers["API-Key"] = sessionKey;
-        // More variations
         headers["sessionkey"] = sessionKey;
-        headers["session-key"] = sessionKey;
-        headers["authkey"] = sessionKey;
-        headers["auth_key"] = sessionKey;
-        headers["apikey"] = sessionKey;
-        headers["api_key"] = sessionKey;
-        headers["access_token"] = sessionKey;
-        headers["access-token"] = sessionKey;
-        // Authorization without Bearer
-        headers["Authorization"] = sessionKey;
-        headers["X-Authorization"] = sessionKey;
-        headers["X-Token"] = sessionKey;
-        headers["X-Access-Token"] = sessionKey;
+        headers["session_key"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
       }
 
       // Debug logging for headers

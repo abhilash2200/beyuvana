@@ -1228,7 +1228,7 @@ export const fallbackProducts: Product[] = [
     compare: [
       {
         id: 1,
-        img: "/assets/img/product-details/compare-12.png",
+        img: "/assets/img/product-details/compare-14.png",
         title: "“My skin started glowing from within — no filters needed.” ",
         desc: "I began noticing a visible difference in just 2 weeks. The dark spots around my cheeks started fading, my skin felt more hydrated, and even my gut felt lighter. By week 4, people were asking what I’m using — and I haven’t changed my skincare. It’s just Glow Essence. ",
         bgColor: "#B00404",

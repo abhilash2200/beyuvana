@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 import { useState, useEffect } from "react";
-// Removed static products import; prices and data come from API
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { productsApi } from "@/lib/api";
 import type { Product, PriceTier } from "@/lib/api";
@@ -24,31 +23,27 @@ interface DisplayProduct {
   discount: { 1: string; 2: string; 4: string };
   benefits: { img: string; text: string }[];
   mainImage: string;
-  product_id?: string; // For API integration
+  product_id: string;
+  product_price_ids: { 1: string; 2: string; 4: string };
 }
 
 const ProductsList = () => {
   const { addToCart, loading, openCart } = useCart();
 
-  // State as a map where key is product id and value is selected pack
   const [selectedPacks, setSelectedPacks] = useState<Record<string, 1 | 2 | 4>>({});
   const [displayProducts, setDisplayProducts] = useState<DisplayProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch products from API on component mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Fetch products based on design type: first green, then pink
         const [greenResponse, pinkResponse] = await Promise.all([
-          // Fetch green design product
           productsApi.getList({
             filter: { design_type: ["green", "GREEN"] },
             sort: { id: "DESC" },
             page: 1,
             limit: 1,
           }),
-          // Fetch pink design product
           productsApi.getList({
             filter: { design_type: ["pink", "PINK"] },
             sort: { id: "DESC" },
@@ -59,67 +54,77 @@ const ProductsList = () => {
 
         const greenList = greenResponse.data && Array.isArray(greenResponse.data) ? greenResponse.data : [];
         const pinkList = pinkResponse.data && Array.isArray(pinkResponse.data) ? pinkResponse.data : [];
-
-        // Combine products: green first, then pink
         const combinedList = [...greenList, ...pinkList];
 
         if (combinedList.length > 0) {
-          // Convert API products to display format (no hardcoded prices)
-          const apiProducts: DisplayProduct[] = combinedList.map((apiProduct: Product, idx: number) => {
-            const tiers: PriceTier[] = Array.isArray(apiProduct.prices) ? (apiProduct.prices as PriceTier[]) : [];
+          const detailedProducts = await Promise.all(
+            combinedList.map(async (apiProduct: Product, idx: number) => {
+              try {
+                const detailsResponse = await productsApi.getDetails(apiProduct.id);
+                if (!detailsResponse.data) return null;
 
-            const getTierPrice = (qty: 1 | 2 | 4): number => {
-              const tier = tiers.find((t) => Number(t.qty) === Number(qty));
-              const price = tier ? parseFloat(tier.final_price) : NaN;
-              return isNaN(price) ? 0 : price;
-            };
+                const productDetails = detailsResponse.data;
+                const tiers: PriceTier[] = Array.isArray(productDetails.prices) ? productDetails.prices : [];
 
-            const getTierMRP = (qty: 1 | 2 | 4): number => {
-              const tier = tiers.find((t) => Number(t.qty) === Number(qty));
-              const mrp = tier ? parseFloat(tier.mrp) : NaN;
-              return isNaN(mrp) ? 0 : mrp;
-            };
+                const getTierData = (qty: 1 | 2 | 4) => {
+                  const tier = tiers.find((t) => Number(t.qty) === Number(qty));
+                  const result = {
+                    price: tier ? parseFloat(tier.final_price) || 0 : 0,
+                    mrp: tier ? parseFloat(tier.mrp) || 0 : 0,
+                    discount: tier ? tier.discount_off_inpercent || "0%" : "0%",
+                    product_price_id: tier ? tier.product_price_id : ""
+                  };
 
-            const getTierDiscount = (qty: 1 | 2 | 4): string => {
-              const tier = tiers.find((t) => Number(t.qty) === Number(qty));
-              return tier ? tier.discount_off_inpercent : "0%";
-            };
+                  return result;
+                };
 
-            const mainImage =
-              apiProduct.image_single ||
-              apiProduct.image ||
-              (Array.isArray(apiProduct.image_all) && apiProduct.image_all.length > 0
-                ? apiProduct.image_all[0]
-                : "/assets/img/green-product.png");
+                const mainImage = Array.isArray(productDetails.image) && productDetails.image.length > 0
+                  ? productDetails.image[0]
+                  : "/assets/img/green-product.png";
 
-            return {
-              id: apiProduct.id,
-              name: apiProduct.product_name,
-              shortdescription: apiProduct.short_description || "",
-              description: apiProduct.product_description || apiProduct.short_description || "",
-              descriptiontext: apiProduct.short_description || "",
-              price: {
-                1: getTierPrice(1),
-                2: getTierPrice(2),
-                4: getTierPrice(4),
-              },
-              mrp: {
-                1: getTierMRP(1),
-                2: getTierMRP(2),
-                4: getTierMRP(4),
-              },
-              discount: {
-                1: getTierDiscount(1),
-                2: getTierDiscount(2),
-                4: getTierDiscount(4),
-              },
-              benefits: staticProducts[idx]?.benefits || [],
-              mainImage,
-              product_id: apiProduct.id,
-            };
-          });
+                const productData = {
+                  id: productDetails.id,
+                  name: productDetails.product_name,
+                  shortdescription: productDetails.short_description || "",
+                  description: productDetails.product_description || productDetails.short_description || "",
+                  descriptiontext: productDetails.short_description || "",
+                  price: {
+                    1: getTierData(1).price,
+                    2: getTierData(2).price,
+                    4: getTierData(4).price,
+                  },
+                  mrp: {
+                    1: getTierData(1).mrp,
+                    2: getTierData(2).mrp,
+                    4: getTierData(4).mrp,
+                  },
+                  discount: {
+                    1: getTierData(1).discount,
+                    2: getTierData(2).discount,
+                    4: getTierData(4).discount,
+                  },
+                  product_price_ids: {
+                    1: getTierData(1).product_price_id,
+                    2: getTierData(2).product_price_id,
+                    4: getTierData(4).product_price_id,
+                  },
+                  benefits: staticProducts[idx]?.benefits || [],
+                  mainImage,
+                  product_id: productDetails.id,
+                };
 
-          setDisplayProducts(apiProducts);
+                return productData;
+              } catch (error) {
+                console.error(`Failed to fetch details for product ${apiProduct.id}:`, error);
+                return null;
+              }
+            })
+          );
+
+          const validProducts = detailedProducts.filter((product): product is DisplayProduct =>
+            product !== null && product.product_id !== undefined
+          );
+          setDisplayProducts(validProducts);
         } else {
           setDisplayProducts([]);
         }
@@ -144,18 +149,37 @@ const ProductsList = () => {
   const handleAddToCart = async (product: DisplayProduct) => {
     const selectedPack: 1 | 2 | 4 = selectedPacks[product.id] ?? 1;
 
-    await addToCart({
+
+    if (!product.product_price_ids) {
+      console.error("❌ Product missing product_price_ids:", product);
+      toast.error("Unable to add to cart: Product data incomplete. Please refresh and try again.");
+      return;
+    }
+
+    const productPriceId = product.product_price_ids[selectedPack];
+
+    if (!productPriceId || productPriceId.trim() === "") {
+      toast.error("Unable to add to cart: Missing price information. Please try again.");
+      return;
+    }
+
+    const cartItem = {
       id: `${product.id}-${selectedPack}`,
       name: `${product.name} - Pack of ${selectedPack}`,
       quantity: 1,
       price: product.price[selectedPack],
       image: product.mainImage,
-      product_id: product.product_id || product.id, // Use product_id for API integration
-      // Pre-populate with correct MRP and discount data
+      product_id: product.product_id,
       mrp_price: product.mrp[selectedPack],
       discount_percent: product.discount[selectedPack],
+      pack_qty: selectedPack,
+      product_price_id: productPriceId,
       short_description: product.shortdescription,
-    });
+    };
+
+
+    await addToCart(cartItem);
+    toast.success(`${product.name} (Pack of ${selectedPack}) added to cart!`);
   };
 
   const handleShopNow = async (product: DisplayProduct) => {
@@ -176,7 +200,6 @@ const ProductsList = () => {
       {displayProducts.map((product: DisplayProduct, index: number) => {
         const isEven = index % 2 === 0;
 
-        // Get the selected pack for this product or default to 1
         const selectedPack = selectedPacks[product.id] || 1;
 
         return (
@@ -188,7 +211,6 @@ const ProductsList = () => {
               className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${index % 2 !== 0 ? "flex-row-reverse" : ""
                 }`}
             >
-              {/* Product Image */}
               <div className="w-full md:w-[28%]">
                 <div className="flex items-center justify-center">
                   <Image
@@ -201,7 +223,6 @@ const ProductsList = () => {
                 </div>
               </div>
 
-              {/* Product Details */}
               <div className="w-full md:w-[68%] flex flex-col gap-4">
                 <h2 className="text-[#1A2819] font-[Grafiels] md:text-[30px] text-[20px] leading-tight mb-2">
                   {product.name}
@@ -223,7 +244,6 @@ const ProductsList = () => {
                   </div>
                 )}
 
-                {/* Benefits */}
                 <div className="flex flex-wrap justify-between gap-4 mb-3">
                   {product.benefits.map((b, i) => (
                     <div
@@ -244,7 +264,6 @@ const ProductsList = () => {
                   ))}
                 </div>
 
-                {/* Pack Selection */}
                 <div className="flex flex-wrap md:flex-row gap-2 items-center mt-2">
                   <p className="font-light">
                     Select
@@ -255,7 +274,6 @@ const ProductsList = () => {
                   {packs.map((pack) => {
                     const isSelected = selectedPack === pack;
 
-                    // Product-specific colors
                     const colors = isEven
                       ? {
                         selected: "bg-[#057A37] text-white border-[#057A37]",
@@ -280,7 +298,6 @@ const ProductsList = () => {
                   })}
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex gap-2 mt-2 justify-center md:justify-start">
                   <Button
                     onClick={() => handleShopNow(product)}

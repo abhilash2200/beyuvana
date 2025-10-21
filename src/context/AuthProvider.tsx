@@ -75,14 +75,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("user");
       localStorage.removeItem("session_key");
 
-      // Clear user-specific cart data
-      if (user?.id) {
-        try {
-          localStorage.removeItem(`cart_${user.id}`);
-        } catch (error) {
-          console.warn("Failed to clear user cart data:", error);
-        }
-      }
+      // DON'T clear user-specific cart data on logout
+      // This allows cart to persist across login sessions
+      // The cart will be synced with server when user logs back in
 
       setUser(null);
       setSessionKey(null);

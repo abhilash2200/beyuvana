@@ -82,7 +82,7 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                 const rawUser = apiData.user || apiData.data || apiData;
 
                 const normalizedUser = rawUser ? {
-                    id: String((rawUser as Record<string, unknown>).id || ""),
+                    id: String((rawUser as Record<string, unknown>).userid || (rawUser as Record<string, unknown>).id || ""),
                     name: String((rawUser as Record<string, unknown>).name || (rawUser as Record<string, unknown>).fullname || userData.name),
                     email: String((rawUser as Record<string, unknown>).email || userData.email),
                     phone: String((rawUser as Record<string, unknown>).phone || (rawUser as Record<string, unknown>).phonenumber || phone),
@@ -128,8 +128,14 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                     const errorMessage = String(apiData.message || "Login failed. Please try again.");
 
                     // Provide more helpful error messages
-                    if (errorMessage.includes("Phone No. or OTP Not Found")) {
+                    if (errorMessage.includes("Phone No. or OTP Not Found") || errorMessage.includes("OTP Not Found")) {
                         toast.error("Invalid OTP or phone number. Please check your OTP and try again, or the OTP may have expired.");
+                    } else if (errorMessage.includes("expired") || errorMessage.includes("timeout")) {
+                        toast.error("OTP has expired. Please request a new OTP.");
+                    } else if (errorMessage.includes("invalid") || errorMessage.includes("incorrect")) {
+                        toast.error("Invalid OTP. Please check the 6-digit code and try again.");
+                    } else if (errorMessage.includes("network") || errorMessage.includes("connection")) {
+                        toast.error("Network error. Please check your internet connection and try again.");
                     } else {
                         toast.error(errorMessage);
                     }
@@ -139,12 +145,14 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                 // Only proceed if status is true or undefined (for backward compatibility)
                 const rawUser = apiData.user || apiData.data || apiData;
 
+
                 const normalizedUser = rawUser ? {
-                    id: String((rawUser as Record<string, unknown>).id || ""),
+                    id: String((rawUser as Record<string, unknown>).userid || (rawUser as Record<string, unknown>).id || ""),
                     name: String((rawUser as Record<string, unknown>).name || (rawUser as Record<string, unknown>).fullname || ""),
                     email: String((rawUser as Record<string, unknown>).email || ""),
                     phone: String((rawUser as Record<string, unknown>).phone || (rawUser as Record<string, unknown>).phonenumber || phone),
                 } : null;
+
 
                 // Extract session key from data field
                 const sessionKey = apiData.session_key || apiData.sessionKey || apiData.token || apiData.access_token || apiData.auth_token || apiData.jwt ||
@@ -185,7 +193,7 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
         <div className="flex flex-col md:flex-row overflow-hidden">
             <div className="w-full md:w-1/2 hidden md:block">
                 <Image
-                    src="/assets/img/login-img.png"
+                    src="/assets/img/otp-img.png"
                     width={491}
                     height={780}
                     alt="OTP Illustration"

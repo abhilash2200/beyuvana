@@ -9,21 +9,38 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { cartApi, CartItem, productsApi, ProductDetailsResponse } from "@/lib/api";
+import { cartApi, productsApi, ProductDetailsResponse } from "@/lib/api";
 import { useAuth } from "./AuthProvider";
 import { toast } from "react-toastify";
 
-// Type for a cart item (local format)
+type ServerCartItem = {
+  id?: string;
+  product_id: string;
+  name?: string;
+  product_name?: string;
+  price?: number;
+  sale_price?: number;
+  quantity?: number;
+  qty?: number;
+  image?: string;
+  product_image?: string;
+  mrp_price?: number;
+  discount_percent?: string;
+  discount_off_inpercent?: string;
+  short_description?: string;
+  product_description?: string;
+  in_stock?: string;
+};
+
 type LocalCartItem = {
   id: string;
   name: string;
   price: number;
   quantity: number;
   image?: string;
-  product_id?: string; // Add product_id for API integration
-  // Pack-specific information
-  pack_qty?: number; // The pack size (1, 2, 3, 4, etc.)
-  // Enhanced product details from product details API
+  product_id?: string;
+  pack_qty?: number;
+  product_price_id?: string;
   product_details?: ProductDetailsResponse;
   mrp_price?: number;
   discount_percent?: string;
@@ -41,10 +58,12 @@ type CartContextType = {
   decreaseItemQuantity: (id: string) => Promise<void>;
   updateItemQuantity: (id: string, qty: number) => Promise<void>;
   syncWithServer: () => Promise<void>;
-  refreshCart: () => Promise<void>; // Manual refresh function
-  refreshProductDetails: () => Promise<void>; // Refresh product details for all items
+  syncLocalToServer: () => Promise<void>;
+  refreshCart: () => Promise<void>;
+  refreshProductDetails: () => Promise<void>;
+  cleanupCorruptedCart: () => void;
+  clearLocalStorageAndSync: () => Promise<void>;
   loading: boolean;
-  // Cart UI controls
   isCartOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
@@ -53,20 +72,27 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// CartProvider component
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<LocalCartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [authInitialized, setAuthInitialized] = useState(false);
   const [cartLoadedFromStorage, setCartLoadedFromStorage] = useState(false);
-  const [isPageRefresh, setIsPageRefresh] = useState(true); // Track if this is a page refresh
+  const [isPageRefresh, setIsPageRefresh] = useState(true);
   const { user, sessionKey } = useAuth();
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Store timeout references to clear them
   const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const syncLockRef = useRef<boolean>(false);
+  useEffect(() => {
+    const currentTimeoutRefs = timeoutRefs.current;
+    return () => {
+      currentTimeoutRefs.forEach((timeout) => {
+        clearTimeout(timeout);
+      });
+      currentTimeoutRefs.clear();
+    };
+  }, []);
 
-  // Function to fetch product details for a cart item
   const fetchProductDetails = useCallback(async (productId: string, userId?: string | number): Promise<ProductDetailsResponse | null> => {
     try {
       const response = await productsApi.getDetails(productId, userId);
@@ -80,7 +106,28 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Function to enhance cart items with product details
+  const isValidCartItem = (item: unknown): item is LocalCartItem => {
+    if (item === null || typeof item !== 'object') return false;
+
+    const obj = item as Record<string, unknown>;
+
+    return 'id' in obj &&
+      'name' in obj &&
+      'price' in obj &&
+      'quantity' in obj &&
+      typeof obj.id === 'string' &&
+      obj.id.length > 0 &&
+      typeof obj.name === 'string' &&
+      obj.name.length > 0 &&
+      typeof obj.price === 'number' &&
+      !isNaN(obj.price) &&
+      obj.price >= 0 &&
+      typeof obj.quantity === 'number' &&
+      !isNaN(obj.quantity) &&
+      obj.quantity > 0 &&
+      obj.quantity <= 10;
+  };
+
   const enhanceCartItemsWithDetails = useCallback(async (items: LocalCartItem[]): Promise<LocalCartItem[]> => {
     if (!user || !sessionKey) {
       return items;
@@ -88,39 +135,52 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const enhancedItems = await Promise.all(
       items.map(async (item) => {
+        // Validate item data first
+        if (!item || !item.id || !item.name) {
+          return null;
+        }
+
         // Always fetch fresh product details to ensure we have the latest pricing
         if (!item.product_id) {
           return item;
         }
 
-        const productDetails = await fetchProductDetails(item.product_id, user.id);
-        if (productDetails) {
-          // Find the matching price tier based on pack size (not quantity)
-          // For pack-specific items, we use the pack_qty to find the correct tier
-          const packSize = item.pack_qty || item.quantity;
-          const matchingPriceTier = productDetails.prices?.find(tier =>
-            Number(tier.qty) === packSize
-          );
+        try {
+          const productDetails = await fetchProductDetails(item.product_id, user.id);
+          if (productDetails) {
+            const packSize = item.pack_qty || item.quantity;
+            const matchingPriceTier = productDetails.prices?.find(tier =>
+              Number(tier.qty) === packSize
+            );
 
-          return {
-            ...item,
-            product_details: productDetails,
-            // Use the matching price tier data for the pack size
-            mrp_price: matchingPriceTier ? parseFloat(matchingPriceTier.mrp) : 0,
-            discount_percent: matchingPriceTier?.discount_off_inpercent,
-            price: matchingPriceTier ? parseFloat(matchingPriceTier.final_price) : item.price,
-            short_description: productDetails.short_description,
-            product_description: productDetails.product_description,
-            in_stock: productDetails.in_stock,
-            // Update image if available from product details
-            image: productDetails.image?.[0] || item.image,
-          };
+            if (matchingPriceTier) {
+              return {
+                ...item,
+                product_details: productDetails,
+                mrp_price: parseFloat(matchingPriceTier.mrp) || 0,
+                discount_percent: matchingPriceTier.discount_off_inpercent,
+                price: parseFloat(matchingPriceTier.final_price) || 0,
+                product_price_id: matchingPriceTier.product_price_id,
+                short_description: productDetails.short_description || item.short_description,
+                product_description: productDetails.product_description || item.product_description,
+                in_stock: productDetails.in_stock || item.in_stock,
+                image: productDetails.image?.[0] || item.image,
+              };
+            }
+
+            return item;
+          } else {
+            return item; // Return original item if product details fetch fails
+          }
+        } catch (error) {
+          console.error("Error enhancing cart item:", error);
+          return item; // Return original item if enhancement fails
         }
-        return item;
       })
     );
 
-    return enhancedItems;
+    // Filter out null items (invalid items)
+    return enhancedItems.filter((item): item is LocalCartItem => item !== null);
   }, [user, sessionKey, fetchProductDetails]);
 
   // Load cart from localStorage on mount (only once)
@@ -133,8 +193,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (storedCart) {
           const parsedCart = JSON.parse(storedCart);
           if (Array.isArray(parsedCart)) {
-            // Debug: Loaded cart for user from localStorage
-            setCartItems(parsedCart);
+            // Validate cart items before setting
+            const validCartItems = parsedCart.filter(isValidCartItem);
+
+            if (validCartItems.length !== parsedCart.length) {
+            }
+
+            setCartItems(validCartItems);
           }
         }
       } else {
@@ -143,8 +208,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (storedCart) {
           const parsedCart = JSON.parse(storedCart);
           if (Array.isArray(parsedCart)) {
-            // Debug: Loaded legacy cart from localStorage
-            setCartItems(parsedCart);
+            // Validate cart items before setting
+            const validCartItems = parsedCart.filter(isValidCartItem);
+
+            if (validCartItems.length !== parsedCart.length) {
+            }
+
+            setCartItems(validCartItems);
           }
         }
       }
@@ -192,11 +262,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // Save to user-specific cart key
         const userCartKey = `cart_${user.id}`;
         localStorage.setItem(userCartKey, JSON.stringify(cartItems));
-        // Debug: Saved cart for user to localStorage
       } else {
         // Fallback to legacy cart key for non-authenticated users
         localStorage.setItem("cart", JSON.stringify(cartItems));
-        // Debug: Saved cart to legacy localStorage key
       }
     } catch (error) {
       console.warn("Failed to save cart to localStorage:", error);
@@ -206,7 +274,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Handle user login - restore user-specific cart
   useEffect(() => {
     if (authInitialized && user && sessionKey && cartLoadedFromStorage) {
-      // Debug: User logged in, checking for user-specific cart
 
       // Check if there's a user-specific cart to restore
       const userCartKey = `cart_${user.id}`;
@@ -216,7 +283,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         try {
           const parsedUserCart = JSON.parse(userCart);
           if (Array.isArray(parsedUserCart) && parsedUserCart.length > 0) {
-            // Debug: Restoring cart for user
             setCartItems(parsedUserCart);
 
             // Enhance with product details
@@ -235,7 +301,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Enhance cart items with product details when user logs in
   useEffect(() => {
     if (authInitialized && user && sessionKey && cartLoadedFromStorage && cartItems.length > 0) {
-      // Debug: Enhancing cart items with product details
       enhanceCartItemsWithDetails(cartItems).then((enhancedItems) => {
         setCartItems(enhancedItems);
       });
@@ -245,7 +310,34 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Sync with server when user logs in (only after auth is initialized and cart is loaded)
   useEffect(() => {
     if (authInitialized && user && sessionKey && cartLoadedFromStorage) {
-      syncWithServer();
+      let isMounted = true;
+
+      const performSync = async () => {
+        try {
+          // Store local cart items before server sync
+          const localCartBeforeSync = [...cartItems];
+
+          // First try to sync from server to local
+          if (isMounted) {
+            await syncWithServer();
+          }
+
+          // If we had local items before sync and component is still mounted, sync them to server
+          if (isMounted && localCartBeforeSync.length > 0) {
+            await syncLocalToServer();
+          }
+        } catch (error) {
+          console.error("Cart sync error:", error);
+        }
+      };
+
+      // Use a single timeout to prevent race conditions
+      const timeoutId = setTimeout(performSync, 500);
+
+      return () => {
+        isMounted = false;
+        clearTimeout(timeoutId);
+      };
     }
   }, [user, sessionKey, authInitialized, cartLoadedFromStorage]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -254,7 +346,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (authInitialized && (!user || !sessionKey) && !isPageRefresh) {
       // This is a real logout, clear the cart
-      // Debug: User logged out, clearing cart
       setCartItems([]);
       try {
         // Clear both legacy and user-specific cart keys
@@ -268,7 +359,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } catch { }
     } else if (authInitialized && (!user || !sessionKey) && isPageRefresh) {
       // This is a page refresh, don't clear the cart
-      // Debug: Page refresh detected, keeping cart
     }
   }, [user, sessionKey, authInitialized, isPageRefresh]);
 
@@ -280,15 +370,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         toast.info("Please login to add items to your cart.");
         return;
       }
+
+
       // If user is logged in, sync with server
-      if (item.product_id) {
-        await cartApi.addToCart({
-          product_id: item.product_id,
-          quantity: item.quantity,
-          price_qty: 0,
-          price_unit_name: item.name,
-        }, sessionKey, user.id);
-        toast.success(`${item.name} added to cart!`);
+      if (item.product_id && item.product_price_id) {
+        try {
+          const cartData = {
+            product_id: item.product_id,
+            quantity: item.quantity,
+            price_qty: Number(item.product_price_id),
+            price_unit_name: item.name,
+            product_price: item.mrp_price || 0,
+            discount_price: item.price || 0,
+            product_price_id: item.product_price_id,
+          };
+
+          await cartApi.addToCart(cartData, sessionKey, user.id);
+        } catch (apiError) {
+          console.warn("API add to cart failed:", apiError);
+        }
       }
 
       // Update local state
@@ -331,6 +431,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                         mrp_price: matchingPriceTier ? parseFloat(matchingPriceTier.mrp) : 0,
                         discount_percent: matchingPriceTier?.discount_off_inpercent,
                         price: matchingPriceTier ? parseFloat(matchingPriceTier.final_price) : currentItem.price,
+                        product_price_id: matchingPriceTier?.product_price_id,
                         short_description: productDetails.short_description,
                         product_description: productDetails.product_description,
                         in_stock: productDetails.in_stock,
@@ -340,6 +441,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                   )
                 );
               }
+            }).catch((error) => {
+              console.warn("Failed to fetch product details for cart item:", error);
             });
           }
           return newItems;
@@ -373,11 +476,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           cartApi.updateCart({
             product_id: item.product_id!,
             quantity: newQuantity,
-            price_qty: 0,
+            price_qty: Number(item.product_price_id) || 0,
             price_unit_name: item.name,
           }, sessionKey, user.id).catch((apiError) => {
             console.warn("API update failed, using local storage:", apiError);
-            toast.error("Failed to sync with server. Please try again.");
+            // Don't show error toast for background sync failures
           });
           timeoutRefs.current.delete(id);
         }, 2000); // 2 seconds delay
@@ -430,7 +533,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           const timeout = setTimeout(() => {
             cartApi.removeFromCart(item.product_id!, sessionKey).catch((apiError) => {
               console.warn("API remove failed, using local storage:", apiError);
-              toast.error("Failed to sync with server. Please try again.");
+              // Don't show error toast for background sync failures
             });
             timeoutRefs.current.delete(id);
           }, 2000); // 2 seconds delay
@@ -446,7 +549,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           const timeout = setTimeout(() => {
             cartApi.decreaseQuantity(item.product_id!, sessionKey).catch((apiError) => {
               console.warn("API update failed, using local storage:", apiError);
-              toast.error("Failed to sync with server. Please try again.");
+              // Don't show error toast for background sync failures
             });
             timeoutRefs.current.delete(id);
           }, 2000); // 2 seconds delay
@@ -480,7 +583,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [user, sessionKey]);
 
   const updateItemQuantity = useCallback(async (id: string, qty: number) => {
-    const newQuantity = qty < 1 ? 1 : qty;
+    // Validate quantity input
+    if (typeof qty !== 'number' || isNaN(qty)) {
+      console.error("Invalid quantity provided:", qty);
+      return;
+    }
+
+    const newQuantity = Math.max(1, Math.min(10, Math.round(qty))); // Clamp between 1-10 and round
 
     // Update local state immediately for better UX
     setCartItems((prev) => {
@@ -499,11 +608,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           cartApi.updateCart({
             product_id: item.product_id!,
             quantity: newQuantity,
-            price_qty: 0,
+            price_qty: Number(item.product_price_id) || 0,
             price_unit_name: item.name,
           }, sessionKey, user.id).catch((apiError) => {
             console.warn("API update failed, using local storage:", apiError);
-            toast.error("Failed to sync with server. Please try again.");
+            // Don't show error toast for background sync failures
           });
           timeoutRefs.current.delete(id);
         }, 2000); // 2 seconds delay
@@ -565,41 +674,118 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cartItems, user, sessionKey]);
 
   const syncWithServer = async () => {
-    if (!user || !sessionKey) return;
+    if (!user || !sessionKey) {
+      return;
+    }
 
+    // Prevent multiple simultaneous sync operations
+    if (syncLockRef.current) {
+      return;
+    }
+
+    syncLockRef.current = true;
     setLoading(true);
+
     try {
-      const response = await cartApi.getCart(sessionKey);
+      const response = await cartApi.getCart(sessionKey, user.id);
+
       if (Array.isArray(response.data)) {
         if (response.data.length > 0) {
-          // Convert API cart items to local format
-          const serverCartItems: LocalCartItem[] = response.data.map((item: CartItem) => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.image,
-            product_id: item.product_id,
-          }));
+          // Convert API cart items to local format with validation
+          const serverCartItems: LocalCartItem[] = response.data
+            .map((item: ServerCartItem) => {
+              // Handle different server response formats
+              const mappedItem = {
+                id: item.id || item.product_id || `${item.product_id}-${item.qty || 1}`,
+                name: item.name || item.product_name || 'Unknown Product',
+                price: typeof item.price === 'number' ? item.price :
+                  typeof item.sale_price === 'number' ? item.sale_price :
+                    parseFloat(String(item.sale_price || 0)) || parseFloat(String(item.price || 0)) || 0,
+                quantity: typeof item.quantity === 'number' ? item.quantity :
+                  typeof item.qty === 'number' ? item.qty :
+                    parseInt(String(item.qty || 1)) || parseInt(String(item.quantity || 1)) || 1,
+                image: item.image || item.product_image || '/placeholder.png',
+                product_id: item.product_id || item.id,
+                // Additional fields that might be useful
+                mrp_price: item.mrp_price ? parseFloat(String(item.mrp_price)) : undefined,
+                discount_percent: item.discount_percent || item.discount_off_inpercent,
+                short_description: item.short_description || item.product_description,
+                product_description: item.product_description,
+                in_stock: item.in_stock,
+              };
 
-          // Enhance cart items with product details
-          const enhancedItems = await enhanceCartItemsWithDetails(serverCartItems);
-          setCartItems(enhancedItems);
-        } else {
-          // Empty server cart → keep local cart if it exists, don't clear it
-          // This prevents the cart from being cleared on page refresh when server cart is empty
-          // Debug: Server cart is empty, keeping local cart if it exists
-          // Only clear if local cart is also empty (user actually cleared it)
-          if (cartItems.length === 0) {
-            // Debug: Both server and local cart are empty, no action needed
-          } else {
-            // Debug: Keeping local cart with items
+              return mappedItem;
+            })
+            .filter((item: LocalCartItem) => {
+              // Validate server cart items
+              const isValid = item &&
+                item.id &&
+                item.name &&
+                typeof item.price === 'number' &&
+                !isNaN(item.price) &&
+                typeof item.quantity === 'number' &&
+                item.quantity > 0;
+
+              if (!isValid) {
+              }
+
+              return isValid;
+            });
+
+          if (serverCartItems.length > 0) {
+            // Enhance cart items with product details
+            const enhancedItems = await enhanceCartItemsWithDetails(serverCartItems);
+            setCartItems(enhancedItems);
           }
         }
       }
     } catch (error) {
       console.error("Failed to sync cart with server:", error);
       // Don't show error toast for sync failures, just use local storage
+      // This ensures the cart continues to work even when server is unavailable
+    } finally {
+      setLoading(false);
+      syncLockRef.current = false; // Release the sync lock
+    }
+  };
+
+  // New function to sync local cart to server
+  const syncLocalToServer = async () => {
+    if (!user || !sessionKey) {
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      return;
+    }
+    setLoading(true);
+
+    try {
+      // First check what's on the server
+      await cartApi.getCart(sessionKey, user.id);
+
+      // Send each local cart item to server
+      for (const item of cartItems) {
+        if (item.product_id && item.product_price_id) {
+          try {
+            const cartData = {
+              product_id: item.product_id,
+              quantity: item.quantity,
+              price_qty: Number(item.product_price_id),
+              price_unit_name: item.name,
+              product_price: item.mrp_price || 0,
+              discount_price: item.price || 0,
+              product_price_id: item.product_price_id,
+            };
+
+            await cartApi.addToCart(cartData, sessionKey, user.id);
+          } catch (itemError) {
+            console.warn("Failed to sync item to server:", item.name, itemError);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to sync local cart to server:", error);
     } finally {
       setLoading(false);
     }
@@ -611,7 +797,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       // Try to sync with server if user is logged in
       if (user && sessionKey) {
         try {
-          await cartApi.clearCart(sessionKey);
+          // Use the new removeAllFromCart API function that matches the curl command
+          await cartApi.removeAllFromCart(Number(user.id), sessionKey);
         } catch (apiError) {
           console.warn("API clear cart failed, using local storage:", apiError);
         }
@@ -641,15 +828,63 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const refreshCart = async () => {
     if (user && sessionKey) {
       await syncWithServer();
+    } else {
+      await refreshProductDetails();
     }
   };
 
   // Manual refresh function for product details
   const refreshProductDetails = async () => {
     if (user && sessionKey && cartItems.length > 0) {
-      // Debug: Manually refreshing product details for all cart items
       const enhancedItems = await enhanceCartItemsWithDetails(cartItems);
       setCartItems(enhancedItems);
+    }
+  };
+
+  // Function to clean up corrupted cart data
+  const cleanupCorruptedCart = () => {
+
+    // Filter out invalid items
+    const validItems = cartItems.filter((item) => {
+      const isValid = item &&
+        item.id &&
+        item.name &&
+        typeof item.price === 'number' &&
+        !isNaN(item.price) &&
+        typeof item.quantity === 'number' &&
+        item.quantity > 0;
+
+      if (!isValid) {
+        console.warn("Removing corrupted item:", item);
+      }
+
+      return isValid;
+    });
+
+    if (validItems.length !== cartItems.length) {
+      setCartItems(validItems);
+    }
+  };
+
+  // Function to clear localStorage and force fresh sync (for debugging)
+  const clearLocalStorageAndSync = async () => {
+
+    try {
+      // Clear all cart-related localStorage
+      if (user?.id) {
+        localStorage.removeItem(`cart_${user.id}`);
+      }
+      localStorage.removeItem("cart");
+
+      // Clear current cart state
+      setCartItems([]);
+
+      // Force sync with server
+      if (user && sessionKey) {
+        await syncWithServer();
+      }
+    } catch (error) {
+      console.error("Failed to clear localStorage and sync:", error);
     }
   };
 
@@ -664,8 +899,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         decreaseItemQuantity,
         updateItemQuantity,
         syncWithServer,
+        syncLocalToServer,
         refreshCart,
         refreshProductDetails,
+        cleanupCorruptedCart,
+        clearLocalStorageAndSync,
         loading,
         // Cart UI controls
         isCartOpen,

@@ -158,15 +158,19 @@
 }
 
 .comparearrow-btn {
-  @apply !w-8 !h-8 !rounded-[4px] bg-white/50;
+  @apply !w-8 !h-8 !rounded-full !bg-white;
 }
 
 .comparearrow-next {
-  @apply !bg-white/50;
+  @apply !bg-white;
 }
 
 .comparearrow-prev {
-  @apply !bg-white/50;
+  @apply !bg-white;
+}
+
+.comparearrow-btn:hover {
+  @apply !bg-gray-100;
 }
 
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { addressApi, SavedAddress } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
-import { MapPin, Plus, User, Home, RefreshCw } from "lucide-react";
+import { MapPin, Plus, RefreshCw } from "lucide-react";
 
 interface DeliveryAddressProps {
   onAddAddress: () => void;
@@ -140,19 +140,18 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
 
   if (!user?.id) {
     return (
-      <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 mb-[100px]">
+      <div className="mt-6 p-6 bg-gradient-to-br from-green-50 to-green-50 rounded-xl border border-green-200 mb-[100px]">
         <div className="text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <User className="w-8 h-8 text-blue-600" />
+          <div className="mb-4">
+            <MapPin className="w-12 h-12 text-green-600 mx-auto mb-3" />
+            <h3 className="text-lg font-medium text-gray-800 mb-2">Login Required</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Please login to save and manage your delivery addresses
+            </p>
           </div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Login Required</h3>
-          <p className="text-gray-600 mb-4">Please login to view and manage your saved addresses</p>
-          <p className="text-sm text-gray-500 mb-4">
-            After login, you can save multiple addresses and select them for delivery
-          </p>
           <Button
             onClick={onAddAddress}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
+            className="bg-green-600 rounded-[5px] hover:bg-green-700 text-white px-6 py-2 font-normal"
           >
             <Plus className="w-4 h-4 mr-2" />
             Login & Add Address

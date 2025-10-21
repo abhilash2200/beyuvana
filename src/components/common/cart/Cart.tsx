@@ -16,13 +16,14 @@ import MobileCart from "./MobileCart";
 
 export default function Cart() {
     const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading, isCartOpen, setCartOpen } = useCart();
-    const total = cartItems.reduce((acc, item) => acc + Math.round(item.price * item.quantity), 0);
+    const total = Math.round(cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0));
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [lastIncreaseTime, setLastIncreaseTime] = React.useState<number>(0);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
     const [isMobile, setIsMobile] = React.useState(false);
+    const [cartError, setCartError] = React.useState<string | null>(null);
 
     // Check if device is mobile
     React.useEffect(() => {
@@ -54,9 +55,55 @@ export default function Cart() {
         }
     }, [lastIncreaseTime]);
 
-    const handleIncreaseQuantity = (itemId: string) => {
-        increaseItemQuantity(itemId);
-        setLastIncreaseTime(Date.now());
+    const handleIncreaseQuantity = async (itemId: string) => {
+        try {
+            setCartError(null);
+            await increaseItemQuantity(itemId);
+            setLastIncreaseTime(Date.now());
+        } catch (error) {
+            console.error("Failed to increase quantity:", error);
+            setCartError("Failed to update quantity. Please try again.");
+        }
+    };
+
+    const handleDecreaseQuantity = async (itemId: string) => {
+        try {
+            setCartError(null);
+            await decreaseItemQuantity(itemId);
+        } catch (error) {
+            console.error("Failed to decrease quantity:", error);
+            setCartError("Failed to update quantity. Please try again.");
+        }
+    };
+
+    const handleUpdateQuantity = async (itemId: string, quantity: number) => {
+        try {
+            setCartError(null);
+            await updateItemQuantity(itemId, quantity);
+        } catch (error) {
+            console.error("Failed to update quantity:", error);
+            setCartError("Failed to update quantity. Please try again.");
+        }
+    };
+
+    const handleRefreshCart = async () => {
+        try {
+            setCartError(null);
+            await refreshCart();
+        } catch (error) {
+            console.error("Failed to refresh cart:", error);
+            setCartError("Failed to refresh cart. Please try again.");
+        }
+    };
+
+    const handleClearCart = async () => {
+        try {
+            setCartError(null);
+            await clearCart();
+        } catch (error) {
+            console.error("Failed to clear cart:", error);
+            setCartError("Failed to clear cart. Please try again.");
+        }
     };
 
     // Render mobile cart on mobile devices
@@ -136,7 +183,7 @@ export default function Cart() {
                                 <Tooltip delayDuration={300}>
                                     <TooltipTrigger asChild>
                                         <Button
-                                            onClick={refreshCart}
+                                            onClick={handleRefreshCart}
                                             disabled={loading}
                                             variant="default"
                                             className="flex items-center gap-2 px-3 py-1 text-sm"
@@ -158,7 +205,7 @@ export default function Cart() {
                                     <Tooltip delayDuration={300}>
                                         <TooltipTrigger asChild>
                                             <Button
-                                                onClick={clearCart}
+                                                onClick={handleClearCart}
                                                 disabled={loading}
                                                 variant="default"
                                                 className="flex items-center gap-2 px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -189,6 +236,20 @@ export default function Cart() {
                             </p>
                         </div>
                     )}
+
+                    {cartError && (
+                        <div className="bg-red-50 border border-red-200 p-3 text-sm text-center">
+                            <p className="text-red-600">
+                                {cartError}
+                            </p>
+                            <button
+                                onClick={() => setCartError(null)}
+                                className="text-red-500 underline mt-1"
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {
@@ -201,18 +262,22 @@ export default function Cart() {
                         </div>
                     ) : cartItems.length === 0 ? (
                         <div className="flex flex-1 justify-center items-center">
-                            <p className="text-center text-gray-500 text-lg">Your cart is empty</p>
+                            <div className="text-center">
+                                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                <p className="text-center text-gray-500 text-lg mb-2">Your cart is empty</p>
+                                <p className="text-center text-gray-400 text-sm">Add some products to get started!</p>
+                            </div>
                         </div>
                     ) : (
                         <>
                             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
                                 <div className="flex flex-col gap-4 bg-[#F2F9F3] rounded-[10px] px-2 py-3">
-                                    {cartItems.map((item) => (
-                                        <div key={item.id} className="flex items-center gap-4 border-b pb-4">
+                                    {cartItems.map((item, index) => (
+                                        <div key={`${item.id}-${item.product_id || 'no-product'}-${index}`} className="flex items-center gap-4 border-b pb-4">
                                             <div className="w-24 h-28 relative rounded-md overflow-hidden bg-gray-200">
                                                 <Image
                                                     src={item.image || "/placeholder.png"}
-                                                    alt={item.name}
+                                                    alt={item.name || "Product image"}
                                                     fill
                                                     className="object-cover"
                                                 />
@@ -225,13 +290,13 @@ export default function Cart() {
                                                 <div className="flex justify-between items-center mt-2">
                                                     <div className="flex items-center gap-2">
                                                         <p className="font-normal text-[14px] text-[#057A37]">
-                                                            ₹{Math.round(item.price * item.quantity).toLocaleString("en-IN")}
+                                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
                                                         </p>
                                                         <span className="text-[11px]">|</span>
                                                         <p className="text-[#747474] text-[10px]">
                                                             {item.mrp_price && item.discount_percent ? (
                                                                 <>
-                                                                    MRP ₹{Math.round(item.mrp_price * item.quantity).toLocaleString("en-IN")}
+                                                                    MRP ₹{(item.mrp_price * item.quantity).toLocaleString("en-IN")}
                                                                     <span className="text-[#057A37]"> {item.discount_percent}% Off</span>
                                                                 </>
                                                             ) : (
@@ -247,7 +312,7 @@ export default function Cart() {
                                                             variant="default"
                                                             disabled={loading}
                                                             className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                            onClick={() => decreaseItemQuantity(item.id)}
+                                                            onClick={() => handleDecreaseQuantity(item.id)}
                                                         >
                                                             -
                                                         </Button>
@@ -258,7 +323,7 @@ export default function Cart() {
                                                             value={item.quantity}
                                                             onChange={(e) => {
                                                                 const newQuantity = Number(e.target.value) || 1;
-                                                                updateItemQuantity(item.id, newQuantity);
+                                                                handleUpdateQuantity(item.id, newQuantity);
                                                             }}
                                                             className="w-10 text-center outline-none text-[#057A37] bg-transparent"
                                                         />
@@ -279,7 +344,7 @@ export default function Cart() {
                                                         {item.short_description || item.product_description || "Loading product details..."}
                                                     </p>
                                                     <p className="text-[14px] text-[#057A37]">
-                                                        ₹{Math.round(item.price * item.quantity).toLocaleString("en-IN")}
+                                                        ₹{(item.price * item.quantity).toLocaleString("en-IN")}
                                                     </p>
                                                 </div>
                                             </div>

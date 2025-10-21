@@ -62,7 +62,7 @@ export default function ProductsLists({ products }: ProductsListsProps) {
 
               {/* Image Section */}
               <div className="w-full md:w-[35%]">
-                <Link href={`/product/${slugify(product.name)}`} className="flex items-center justify-center">
+                <Link href={getProductDetailUrl(product)} className="flex items-center justify-center">
                   <div
                     className="p-6 flex items-center justify-center rounded-[10px]"
                     style={{ backgroundColor: product.bgColor }}
@@ -90,11 +90,11 @@ export default function ProductsLists({ products }: ProductsListsProps) {
               {/* Text Section */}
               <div className="w-full md:w-[65%]">
                 <div className="flex flex-col">
-                  <Link href={`/product/${slugify(product.name)}`} className="flex items-center justify-start">
+                  <Link href={getProductDetailUrl(product)} className="flex items-center justify-start">
                     <h2 className="text-[#1A2819] hover:text-[#057A37] hover:cursor-pointer font-[Grafiels] text-[25px] leading-tight mb-4">{product.name}</h2>
                   </Link>
                   <div>
-                    {product.tagline && <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">{product.tagline}</p>}
+                    {index === 0 && product.tagline && <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">{product.tagline}</p>}
                   </div>
                   {/* <div className="flex flex-wrap gap-2 items-center mb-3 text-[12px] text-[#555]">
                     {product.brand && <span className="px-2 py-1 border rounded">Brand: {product.brand}</span>}
@@ -112,6 +112,11 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                       className="text-[12px]"
                     />
                   </div>
+                  {index === 1 && (
+                    <div>
+                      <p className="mb-3 text-[15px]">{product.short_description}</p>
+                    </div>
+                  )}
                   {product.description.map((desc, i) => (
                     <p key={i} className="text-[15px] mb-3">{desc}</p>
                   ))}
