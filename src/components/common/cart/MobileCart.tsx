@@ -24,7 +24,7 @@ export default function MobileCart() {
         clearCart,
         removeFromCart
     } = useCart();
-    const total = Math.round(cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0));
+    const total = Math.round(cartItems.reduce((acc, item) => acc + ((item.price || 0) * item.quantity), 0));
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
@@ -236,7 +236,7 @@ export default function MobileCart() {
                                                     {/* Price and Discount */}
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <p className="font-semibold text-[13px] text-[#057A37]">
-                                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                                                            ₹{((item.price || 0) * item.quantity).toLocaleString("en-IN")}
                                                         </p>
                                                         {item.mrp_price && item.discount_percent && (
                                                             <>
@@ -288,7 +288,7 @@ export default function MobileCart() {
                                                         </div>
 
                                                         <p className="text-[14px] font-semibold text-[#057A37]">
-                                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                                                            ₹{((item.price || 0) * item.quantity).toLocaleString("en-IN")}
                                                         </p>
                                                     </div>
                                                 </div>

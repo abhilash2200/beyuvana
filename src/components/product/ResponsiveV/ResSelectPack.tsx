@@ -188,7 +188,7 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             product_price_id: selectedPack.product_price_id,
         });
 
-        toast.success(`${product.name} (Pack of ${selectedPack.qty}) added to cart!`);
+        // Success toast is now handled by CartProvider
     };
 
     const handleShopNow = async () => {

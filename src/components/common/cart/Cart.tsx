@@ -16,7 +16,7 @@ import MobileCart from "./MobileCart";
 
 export default function Cart() {
     const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading, isCartOpen, setCartOpen } = useCart();
-    const total = Math.round(cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0));
+    const total = Math.round(cartItems.reduce((acc, item) => acc + ((item.price || 0) * item.quantity), 0));
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [showConfetti, setShowConfetti] = React.useState(false);
@@ -290,7 +290,7 @@ export default function Cart() {
                                                 <div className="flex justify-between items-center mt-2">
                                                     <div className="flex items-center gap-2">
                                                         <p className="font-normal text-[14px] text-[#057A37]">
-                                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                                                            ₹{((item.price || 0) * item.quantity).toLocaleString("en-IN")}
                                                         </p>
                                                         <span className="text-[11px]">|</span>
                                                         <p className="text-[#747474] text-[10px]">
@@ -344,7 +344,7 @@ export default function Cart() {
                                                         {item.short_description || item.product_description || "Loading product details..."}
                                                     </p>
                                                     <p className="text-[14px] text-[#057A37]">
-                                                        ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                                                        ₹{((item.price || 0) * item.quantity).toLocaleString("en-IN")}
                                                     </p>
                                                 </div>
                                             </div>

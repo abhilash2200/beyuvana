@@ -179,7 +179,7 @@ const ProductsList = () => {
 
 
     await addToCart(cartItem);
-    toast.success(`${product.name} (Pack of ${selectedPack}) added to cart!`);
+    // Success toast is now handled by CartProvider
   };
 
   const handleShopNow = async (product: DisplayProduct) => {

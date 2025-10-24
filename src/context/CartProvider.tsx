@@ -18,12 +18,15 @@ type ServerCartItem = {
   product_id: string;
   name?: string;
   product_name?: string;
+  price_unit_name?: string;
   price?: number;
-  sale_price?: number;
+  sale_price?: string | number;
+  final_price?: string | number;
   quantity?: number;
-  qty?: number;
+  qty?: string | number;
   image?: string;
   product_image?: string;
+  mrp?: string | number;
   mrp_price?: number;
   discount_percent?: string;
   discount_off_inpercent?: string;
@@ -31,12 +34,19 @@ type ServerCartItem = {
   product_description?: string;
   in_stock?: string;
   cart_id?: string;
+  // New fields from API response
+  unit_qty?: string | number;
+  unit_name?: string;
+  product_code?: string;
+  sku_number?: string;
+  posted_on?: string;
+  discount_amount?: number;
 };
 
 type LocalCartItem = {
   id: string;
   name: string;
-  price: number;
+  price?: number;
   quantity: number;
   image?: string;
   product_id?: string;
@@ -49,6 +59,7 @@ type LocalCartItem = {
   product_description?: string;
   in_stock?: string;
   cart_id?: string;
+  unit_name?: string;
 };
 
 type CartContextType = {
@@ -62,8 +73,6 @@ type CartContextType = {
   syncWithServer: () => Promise<void>;
   refreshCart: () => Promise<void>;
   refreshProductDetails: () => Promise<void>;
-  cleanupCorruptedCart: () => void;
-  clearLocalStorageAndSync: () => Promise<void>;
   loading: boolean;
   isCartOpen: boolean;
   openCart: () => void;
@@ -75,6 +84,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<LocalCartItem[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [authInitialized, setAuthInitialized] = useState(false);
   const [cartLoadedFromStorage, setCartLoadedFromStorage] = useState(false);
@@ -108,7 +118,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // No longer needed - cart is server-only
 
   const syncWithServer = useCallback(async () => {
     if (!user || !sessionKey) {
@@ -124,65 +133,53 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
 
     try {
-      console.log("🔄 Syncing with server");
       const response = await cartApi.getCart(sessionKey, user.id);
-      console.log("🔄 Server response:", response);
 
       if (Array.isArray(response.data)) {
-        console.log("🔄 Server cart items:", response.data.length);
         if (response.data.length > 0) {
           // Convert API cart items to local format with validation
           const serverCartItems: LocalCartItem[] = response.data
             .map((item: ServerCartItem) => {
-              // Handle different server response formats
+              // Map cart items with proper structure using server data
               const mappedItem = {
-                id: item.id || item.product_id || `${item.product_id}-${item.qty || 1}`,
-                name: item.name || item.product_name || 'Unknown Product',
-                price: typeof item.price === 'number' ? item.price :
-                  typeof item.sale_price === 'number' ? item.sale_price :
-                    parseFloat(String(item.sale_price || 0)) || parseFloat(String(item.price || 0)) || 0,
-                quantity: typeof item.quantity === 'number' ? item.quantity :
-                  typeof item.qty === 'number' ? item.qty :
-                    parseInt(String(item.qty || 1)) || parseInt(String(item.quantity || 1)) || 1,
+                id: item.cart_id || item.id || `${item.product_id}-${item.qty || 1}`,
+                name: item.price_unit_name || item.name || item.product_name || 'Unknown Product',
+                price: parseFloat(String(item.final_price || item.sale_price || 0)) || 0,
+                quantity: typeof item.qty === 'number' ? item.qty :
+                  parseInt(String(item.qty || 1)) || 1,
                 image: item.image || item.product_image || '/placeholder.png',
                 product_id: item.product_id || item.id,
-                // Additional fields that might be useful
-                mrp_price: item.mrp_price ? parseFloat(String(item.mrp_price)) : undefined,
-                discount_percent: item.discount_percent || item.discount_off_inpercent,
-                short_description: item.short_description || item.product_description,
+                cart_id: item.cart_id,
+                // Additional fields from server response
+                mrp_price: parseFloat(String(item.mrp || 0)) || 0,
+                discount_percent: item.discount_off_inpercent || item.discount_percent,
+                short_description: item.product_description,
                 product_description: item.product_description,
                 in_stock: item.in_stock,
-                cart_id: item.cart_id,
+                // Pack information
+                pack_qty: parseFloat(String(item.unit_qty || 1)) || 1,
+                unit_name: item.unit_name || 'Pack of',
               };
 
               return mappedItem;
             })
             .filter((item: LocalCartItem) => {
-              // Validate server cart items
               const isValid = item &&
                 item.id &&
                 item.name &&
-                typeof item.price === 'number' &&
-                !isNaN(item.price) &&
                 typeof item.quantity === 'number' &&
                 item.quantity > 0;
-
-              if (!isValid) {
-              }
 
               return isValid;
             });
 
           if (serverCartItems.length > 0) {
-            // Set cart items directly - enhancement will happen in separate effect
             setCartItems(serverCartItems);
           }
         }
       }
     } catch (error) {
       console.error("Failed to sync cart with server:", error);
-      // Don't show error toast for sync failures, just use local storage
-      // This ensures the cart continues to work even when server is unavailable
     } finally {
       setLoading(false);
       syncLockRef.current = false; // Release the sync lock
@@ -217,12 +214,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [authInitialized]);
 
-  // No local storage - cart is server-only
 
   // Load cart from server when user logs in
   useEffect(() => {
     if (authInitialized && user && sessionKey && cartLoadedFromStorage) {
-      console.log("🔄 User logged in, loading cart from server...");
       syncWithServer();
     }
   }, [user, sessionKey, authInitialized, cartLoadedFromStorage, syncWithServer]);
@@ -232,6 +227,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (authInitialized && user && sessionKey && cartItems.length > 0) {
       // Only enhance if items don't already have product details and enhancement is not in progress
       const needsEnhancement = cartItems.some(item => !item.product_details);
+
       if (needsEnhancement && !enhancementInProgressRef.current) {
         enhancementInProgressRef.current = true;
 
@@ -304,10 +300,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [cartItems, user, sessionKey, authInitialized, fetchProductDetails]);
 
-  // No complex sync logic needed - cart is server-only
 
   // When user logs out, clear the cart
   useEffect(() => {
+
     if (authInitialized && (!user || !sessionKey) && !isPageRefresh) {
       // This is a real logout, clear the cart
       setCartItems([]);
@@ -323,38 +319,46 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      // Validate required fields
+      if (!item.product_id) {
+        toast.error("Unable to add to cart: Missing product information.");
+        return;
+      }
+
+      if (!item.product_price_id) {
+        toast.error("Unable to add to cart: Missing price information. Please try again.");
+        return;
+      }
+
       // Add to server cart
-      if (item.product_id && item.product_price_id) {
-        try {
-          const cartData = {
-            product_id: item.product_id,
-            quantity: item.quantity,
-            price_qty: item.pack_qty || 0,
-            price_unit_name: item.name,
-            product_price: item.mrp_price || 0,
-            discount_price: item.price || 0,
-            product_price_id: item.product_price_id,
-          };
+      try {
+        const cartData = {
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price_qty: item.pack_qty || 0,
+          price_unit_name: item.name,
+          product_price: item.mrp_price || 0,
+          discount_price: item.price || 0,
+          product_price_id: item.product_price_id,
+        };
 
-          // Debug logging
-          console.log("🛒 CartProvider - Cart data being sent to API:", {
-            originalItem: item,
-            cartData: cartData,
-            userId: user.id
-          });
 
-          await cartApi.addToCart(cartData, sessionKey, user.id);
+        await cartApi.addToCart(cartData, sessionKey, user.id);
 
-          // Refresh cart from server after adding
-          await syncWithServer();
-        } catch (apiError) {
-          console.error("Failed to add to cart:", apiError);
-          toast.error("Failed to add item to cart. Please try again.");
-        }
+        // Refresh cart from server after adding
+        await syncWithServer();
+
+        // Show success message
+        toast.success(`${item.name} added to cart!`);
+      } catch (apiError) {
+        console.error("Failed to add to cart:", apiError);
+        toast.error("Failed to add item to cart. Please try again.");
+        throw apiError; // Re-throw to let the calling component handle it
       }
     } catch (error) {
       console.error("Failed to add to cart:", error);
       toast.error("Failed to add item to cart. Please try again.");
+      throw error; // Re-throw to let the calling component handle it
     } finally {
       setLoading(false);
     }
@@ -488,9 +492,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [cartItems, user, sessionKey, syncWithServer]);
 
-  // syncWithServer function moved above
-
-  // No local-to-server sync needed - cart is server-only
 
   const clearCart = async () => {
     setLoading(true);
@@ -508,14 +509,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Manual refresh function that can be called from components
   const refreshCart = async () => {
     if (user && sessionKey) {
       await syncWithServer();
     }
   };
 
-  // Manual refresh function for product details
   const refreshProductDetails = async () => {
     if (user && sessionKey && cartItems.length > 0) {
       // Reset the enhancement progress flag to allow re-enhancement
@@ -525,62 +524,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Function to clean up corrupted cart data
-  const cleanupCorruptedCart = () => {
-
-    // Filter out invalid items
-    const validItems = cartItems.filter((item) => {
-      const isValid = item &&
-        item.id &&
-        item.name &&
-        typeof item.price === 'number' &&
-        !isNaN(item.price) &&
-        typeof item.quantity === 'number' &&
-        item.quantity > 0;
-
-      if (!isValid) {
-        console.warn("Removing corrupted item:", item);
-      }
-
-      return isValid;
-    });
-
-    if (validItems.length !== cartItems.length) {
-      setCartItems(validItems);
-    }
-  };
-
-  // Function to force fresh sync (for debugging)
-  const clearLocalStorageAndSync = async () => {
-    try {
-      // Clear current cart state
-      setCartItems([]);
-
-      // Force sync with server
-      if (user && sessionKey) {
-        await syncWithServer();
-      }
-    } catch (error) {
-      console.error("Failed to clear and sync:", error);
-    }
-  };
-
-  // Debug function to log current cart state
-  const debugCartState = () => {
-    console.log("🔍 Cart Debug Info:", {
-      cartItems: cartItems.length,
-      cartData: cartItems,
-      userId: user?.id,
-      hasSessionKey: !!sessionKey,
-      authInitialized,
-      cartLoadedFromStorage
-    });
-  };
-
-  // Make debug function available globally for console access
-  if (typeof window !== 'undefined') {
-    (window as unknown as { debugCart: () => void }).debugCart = debugCartState;
-  }
 
   return (
     <CartContext.Provider
@@ -595,8 +538,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         syncWithServer,
         refreshCart,
         refreshProductDetails,
-        cleanupCorruptedCart,
-        clearLocalStorageAndSync,
         loading,
         // Cart UI controls
         isCartOpen,

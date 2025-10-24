@@ -16,6 +16,7 @@ interface Pack {
     originalPrice: number;
     discount: string;
     tagline: string;
+    product_price_id?: string; // Add product_price_id for cart API
 }
 
 interface Product {
@@ -63,7 +64,12 @@ function buildPacksFromPrices(
     prices: PriceTier[] | undefined,
     designType: "green" | "pink" | undefined
 ): Pack[] {
-    if (!Array.isArray(prices)) return [];
+    if (!Array.isArray(prices)) {
+        console.warn("⚠️ buildPacksFromPrices: No prices array provided");
+        return [];
+    }
+
+
     return prices
         .map((tier) => {
             const qty = Number(tier.qty);
@@ -76,14 +82,18 @@ function buildPacksFromPrices(
                     ? `${Math.round(((mrp - final) / mrp) * 100)}% Off`
                     : "";
 
-            return {
+            const pack = {
                 qty,
                 sachets: getDefaultSachets(designType, qty),
                 price: Math.round(isNaN(final) ? 0 : final),
                 originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
                 discount,
                 tagline: getPackTagline(designType, qty),
+                product_price_id: tier.product_price_id, // Include product_price_id
             } as Pack;
+
+
+            return pack;
         })
         .sort((a, b) => a.qty - b.qty);
 }
@@ -135,6 +145,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 const image = apiProduct.image_single || apiProduct.image || (Array.isArray(apiProduct.image_all) && apiProduct.image_all[0]) || "/assets/img/green-product.png";
                 const packs = buildPacksFromPrices(apiProduct.prices, designType);
 
+
                 const hydrated: Product = {
                     id: String(apiProduct.id),
                     name: apiProduct.product_name,
@@ -157,37 +168,48 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
         };
     }, [productId, designType]);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!product || !selectedPack) {
             toast.warning("Please select a pack size first!");
             return;
         }
 
+        // Validate required fields before attempting to add to cart
+        if (!selectedPack.product_price_id) {
+            toast.error("Unable to add to cart: Missing price information. Please try again.");
+            return;
+        }
+
         try {
-            addToCart({
+            await addToCart({
                 id: `${product.id}-${selectedPack.qty}`,
                 name: `${product.name} - Pack of ${selectedPack.qty}`,
                 quantity: 1,
                 price: selectedPack.price,
                 image: product.image,
-                product_id: product.id, // Add product_id for API integration
+                product_id: product.id,
+                pack_qty: selectedPack.qty, // Add pack quantity
+                product_price_id: selectedPack.product_price_id, // Add product_price_id for API
+                mrp_price: selectedPack.originalPrice, // Add MRP price
             });
-            toast.success(`${product.name} (Pack of ${selectedPack.qty}) added to cart!`);
-        } catch {
-            toast.error("Failed to add to cart. Please try again.");
+            // Success toast is now handled by CartProvider
+        } catch (error) {
+            console.error("Add to cart error:", error);
+            // Error toast is now handled by CartProvider
         }
     };
 
-    const handleShopNow = () => {
+    const handleShopNow = async () => {
         if (!product || !selectedPack) {
             toast.warning("Please select a pack size first!");
             return;
         }
 
         try {
-            handleAddToCart();
+            await handleAddToCart();
             openCart();
-        } catch {
+        } catch (error) {
+            console.error("Shop now error:", error);
             toast.error("Failed to proceed to checkout. Please try again.");
         }
     };
