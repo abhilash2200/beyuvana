@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { ShoppingCart, Trash2 } from "lucide-react";
+import { ShoppingCart, Trash2, X } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
 import Image from "next/image";
 import CheckoutSheet from "./CheckoutSheet";
@@ -68,7 +68,7 @@ export default function MobileCart() {
             <SheetContent
                 side="bottom"
                 aria-describedby={undefined}
-                className="bg-white p-0 h-[85vh] flex flex-col relative gap-0 rounded-t-2xl"
+                className="bg-white p-0 h-[85vh] flex flex-col relative gap-0 rounded-t-2xl [&>button]:hidden"
                 style={{
                     zIndex: 1002,
                     width: '100vw',
@@ -95,6 +95,13 @@ export default function MobileCart() {
                                 <SheetDescription className="sr-only">Items in your shopping cart</SheetDescription>
                                 <hr className="bg-[#057A37] w-20 h-0.5 mt-1" />
                             </div>
+                            <Button
+                                variant="ghost"
+                                onClick={() => setCartOpen(false)}
+                                className="p-2 h-8 w-8 text-gray-500 hover:text-gray-700"
+                            >
+                                <X size={16} />
+                            </Button>
                             {/* {cartItems.length > 0 && (
                                 <div className="flex gap-2">
                                     <Tooltip delayDuration={300}>
@@ -234,108 +241,108 @@ export default function MobileCart() {
                                         </div>
                                         // </div>
                                     ))}
-                            </div>
-
-                            {/* Payment Method Selection */}
-                            <div className="mt-2">
-                                <h4 className="text-[14px] font-medium text-gray-800 mb-3">Payment Method</h4>
-                                <div className="flex gap-3 mb-3 w-[80%] mx-auto">
-                                    <button
-                                        className={`flex-1 py-2 px-4 rounded-full border text-[12px] font-medium ${selectedPayment === "prepaid"
-                                            ? "border-green-600 bg-green-100 text-green-700"
-                                            : "border-gray-300 text-gray-600"
-                                            }`}
-                                        onClick={() => setSelectedPayment("prepaid")}
-                                    >
-                                        Prepaid
-                                    </button>
-                                    <button
-                                        className={`flex-1 py-2 px-4 rounded-full border text-[12px] font-medium ${selectedPayment === "cod"
-                                            ? "border-green-600 bg-green-100 text-green-700"
-                                            : "border-gray-300 text-gray-600"
-                                            }`}
-                                        onClick={() => setSelectedPayment("cod")}
-                                    >
-                                        COD
-                                    </button>
                                 </div>
 
-                                {selectedPayment === "prepaid" && (
-                                    <div className="flex justify-center">
-                                        <Image src="/assets/img/prepaid-image.png" alt="Prepaid" width={350} height={60} className="rounded-lg" />
+                                {/* Payment Method Selection */}
+                                <div className="mt-2">
+                                    <h4 className="text-[14px] font-medium text-gray-800 mb-3">Payment Method</h4>
+                                    <div className="flex gap-3 mb-3 w-[80%] mx-auto">
+                                        <button
+                                            className={`flex-1 py-2 px-4 rounded-full border text-[12px] font-medium ${selectedPayment === "prepaid"
+                                                ? "border-green-600 bg-green-100 text-green-700"
+                                                : "border-gray-300 text-gray-600"
+                                                }`}
+                                            onClick={() => setSelectedPayment("prepaid")}
+                                        >
+                                            Prepaid
+                                        </button>
+                                        <button
+                                            className={`flex-1 py-2 px-4 rounded-full border text-[12px] font-medium ${selectedPayment === "cod"
+                                                ? "border-green-600 bg-green-100 text-green-700"
+                                                : "border-gray-300 text-gray-600"
+                                                }`}
+                                            onClick={() => setSelectedPayment("cod")}
+                                        >
+                                            COD
+                                        </button>
                                     </div>
-                                )}
-                                {selectedPayment === "cod" && (
-                                    <div className="flex justify-center">
-                                        <Image src="/assets/img/postpaid-image.png" alt="COD" width={350} height={60} className="rounded-lg" />
-                                    </div>
-                                )}
+
+                                    {selectedPayment === "prepaid" && (
+                                        <div className="flex justify-center">
+                                            <Image src="/assets/img/prepaid-image.png" alt="Prepaid" width={350} height={60} className="rounded-lg" />
+                                        </div>
+                                    )}
+                                    {selectedPayment === "cod" && (
+                                        <div className="flex justify-center">
+                                            <Image src="/assets/img/postpaid-image.png" alt="COD" width={350} height={60} className="rounded-lg" />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Delivery Address */}
+                                <div className="mt-2">
+                                    <DeliveryAddress
+                                        key={addressRefreshKey}
+                                        onAddAddress={() => setIsAddAddressOpen(true)}
+                                    />
+                                </div>
                             </div>
 
-                            {/* Delivery Address */}
-                            <div className="mt-2">
-                                <DeliveryAddress
-                                    key={addressRefreshKey}
-                                    onAddAddress={() => setIsAddAddressOpen(true)}
-                                />
+                            {/* Mobile Footer */}
+                            <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
+                                <div className="flex-1">
+                                    <p className="text-lg font-bold">₹{total.toLocaleString("en-IN")}</p>
+                                    {selectedPayment === "cod" && (
+                                        <p className="text-[10px] text-gray-300">
+                                            Delivery charges may apply on COD
+                                        </p>
+                                    )}
+                                    {selectedPayment === "prepaid" && (
+                                        <p className="text-[10px] text-gray-300">
+                                            Free gifts added + upto ₹150 off
+                                        </p>
+                                    )}
+                                    {!selectedPayment && (
+                                        <p className="text-[10px] text-gray-300">
+                                            Select a payment method to see offers
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="bg-[#FFF] px-4 py-2 rounded-full ml-3">
+                                    <CheckoutSheet
+                                        trigger={
+                                            <Button
+                                                className="text-[#122014] font-medium text-[13px]"
+                                                onClick={(e) => {
+                                                    if (cartItems.length === 0) {
+                                                        e.preventDefault();
+                                                        toast.warning("Your cart is empty!");
+                                                        return;
+                                                    }
+                                                    if (!selectedPayment) {
+                                                        e.preventDefault();
+                                                        toast.warning("Please select a payment method!");
+                                                        return;
+                                                    }
+                                                }}
+                                            >
+                                                Proceed to pay
+                                            </Button>
+                                        }
+                                    />
+                                </div>
                             </div>
-                        </div>
-
-                {/* Mobile Footer */}
-                <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
-                    <div className="flex-1">
-                        <p className="text-lg font-bold">₹{total.toLocaleString("en-IN")}</p>
-                        {selectedPayment === "cod" && (
-                            <p className="text-[10px] text-gray-300">
-                                Delivery charges may apply on COD
-                            </p>
-                        )}
-                        {selectedPayment === "prepaid" && (
-                            <p className="text-[10px] text-gray-300">
-                                Free gifts added + upto ₹150 off
-                            </p>
-                        )}
-                        {!selectedPayment && (
-                            <p className="text-[10px] text-gray-300">
-                                Select a payment method to see offers
-                            </p>
-                        )}
-                    </div>
-                    <div className="bg-[#FFF] px-4 py-2 rounded-full ml-3">
-                        <CheckoutSheet
-                            trigger={
-                                <Button
-                                    className="text-[#122014] font-medium text-[13px]"
-                                    onClick={(e) => {
-                                        if (cartItems.length === 0) {
-                                            e.preventDefault();
-                                            toast.warning("Your cart is empty!");
-                                            return;
-                                        }
-                                        if (!selectedPayment) {
-                                            e.preventDefault();
-                                            toast.warning("Please select a payment method!");
-                                            return;
-                                        }
-                                    }}
-                                >
-                                    Proceed to pay
-                                </Button>
-                            }
-                        />
-                    </div>
-                </div>
-                <AddAddressSheet
-                    open={isAddAddressOpen}
-                    onOpenChange={setIsAddAddressOpen}
-                    onAddressSaved={() => {
-                        setAddressRefreshKey(prev => prev + 1);
-                    }}
-                />
-            </>
-            )
+                            <AddAddressSheet
+                                open={isAddAddressOpen}
+                                onOpenChange={setIsAddAddressOpen}
+                                onAddressSaved={() => {
+                                    setAddressRefreshKey(prev => prev + 1);
+                                }}
+                            />
+                        </>
+                    )
                 }
-        </SheetContent>
+            </SheetContent>
         </Sheet >
     );
 }

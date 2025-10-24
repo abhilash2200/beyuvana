@@ -85,7 +85,7 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
                 <DropdownMenuContent
                     align="start"
                     className="w-20"
-                    style={{ zIndex: 10000 }}
+                    style={{ zIndex: 1003 }}
                     side="bottom"
                     sideOffset={5}
                     avoidCollisions={true}
@@ -118,7 +118,7 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
             </DropdownMenu>
 
             <Dialog open={isCustomDialogOpen} onOpenChange={setIsCustomDialogOpen}>
-                <DialogContent className="sm:max-w-[300px] bg-white" style={{ zIndex: 10001 }}>
+                <DialogContent className="sm:max-w-[300px] bg-white" style={{ zIndex: 1004 }}>
                     <DialogHeader>
                         <DialogTitle className="text-[#057A37] text-center">Enter Quantity</DialogTitle>
                         <DialogDescription>

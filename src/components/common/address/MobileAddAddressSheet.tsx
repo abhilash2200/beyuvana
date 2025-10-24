@@ -292,7 +292,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                 }}
             >
                 {/* Mobile Header */}
-                <div className="shrink-0 border-b border-gray-200 bg-white rounded-t-2xl">
+                <div className="shrink-0 border-b border-gray-200 bg-white rounded-t-2xl relative z-10">
                     <SheetHeader className="p-4 pb-2">
                         <div className="flex justify-between items-center">
                             <div className="flex-1">
@@ -307,7 +307,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                             <Button
                                 variant="ghost"
                                 onClick={() => onOpenChange(false)}
-                                className="p-2 h-8 w-8"
+                                className="p-2 h-8 w-8 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
                             >
                                 <X size={16} />
                             </Button>
@@ -346,7 +346,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                         <input
                             type="text"
                             name="fullName"
-                            placeholder="Full Name *"
+                            placeholder="Full Name"
                             className="w-full border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37]"
                             value={form.fullName}
                             onChange={handleChange}
@@ -355,7 +355,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                         <input
                             type="email"
                             name="email"
-                            placeholder="Email Address *"
+                            placeholder="Email Address"
                             className="w-full border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37]"
                             value={form.email}
                             onChange={handleChange}
@@ -364,7 +364,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                         <input
                             type="tel"
                             name="phone"
-                            placeholder="Phone Number *"
+                            placeholder="Phone Number"
                             className="w-full border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37]"
                             value={form.phone}
                             onChange={handleChange}
@@ -373,7 +373,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                         <input
                             type="text"
                             name="address1"
-                            placeholder="Address Line 1 *"
+                            placeholder="Address Line 1"
                             className="w-full border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37]"
                             value={form.address1}
                             onChange={handleChange}
@@ -382,7 +382,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                         <input
                             type="text"
                             name="address2"
-                            placeholder="Landmark *"
+                            placeholder="Landmark"
                             className="w-full border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37]"
                             value={form.address2}
                             onChange={handleChange}
@@ -392,8 +392,8 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                             <input
                                 type="text"
                                 name="city"
-                                placeholder="City *"
-                                className="flex-1 border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37]"
+                                placeholder="City"
+                                className="flex-1 border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37] !w-42"
                                 value={form.city}
                                 onChange={handleChange}
                                 required
@@ -401,8 +401,8 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                             <input
                                 type="text"
                                 name="pincode"
-                                placeholder="Pincode *"
-                                className="flex-1 border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37]"
+                                placeholder="Pincode"
+                                className="flex-1 border border-gray-300 rounded-lg p-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#057A37] focus:ring-1 focus:ring-[#057A37] !w-42"
                                 value={form.pincode}
                                 onChange={handleChange}
                                 required
@@ -452,7 +452,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                                                             {address.fullname}
                                                         </h4>
                                                         {isPrimaryAddress(address) && (
-                                                            <span className="inline-flex items-center gap-1 text-xs bg-[#057A37] text-white px-2 py-1 rounded-full font-medium">
+                                                            <span className="inline-flex items-center gap-1 text-[10px] font-light bg-[#057A37] text-white px-2 py-1 rounded-full">
                                                                 <Star className="w-3 h-3 fill-current" />
                                                                 Selected
                                                             </span>
@@ -485,7 +485,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
 
                                                 <div className="text-xs text-gray-600 space-y-1">
                                                     <p className="capitalize">{address.address1}</p>
-                                                    {address.address2 && <p className="capitalize text-[#057A37]">📍 {address.address2}</p>}
+                                                    {address.address2 && <p className="capitalize">{address.address2}</p>}
                                                     <p className="capitalize">{address.city}, {address.pincode}</p>
                                                     <div className="flex gap-4 text-xs text-gray-500">
                                                         <span className="capitalize">{address.mobile}</span>

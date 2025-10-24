@@ -342,7 +342,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="text"
                         name="fullName"
-                        placeholder="Full Name *"
+                        placeholder="Full Name"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.fullName}
                         onChange={handleChange}
@@ -351,7 +351,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="email"
                         name="email"
-                        placeholder="Email Address *"
+                        placeholder="Email Address"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.email}
                         onChange={handleChange}
@@ -360,7 +360,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="tel"
                         name="phone"
-                        placeholder="Phone Number *"
+                        placeholder="Phone Number"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.phone}
                         onChange={handleChange}
@@ -369,7 +369,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="text"
                         name="address1"
-                        placeholder="Address Line 1 *"
+                        placeholder="Address Line 1"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.address1}
                         onChange={handleChange}
@@ -378,7 +378,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <input
                         type="text"
                         name="address2"
-                        placeholder="Landmark *"
+                        placeholder="Landmark"
                         className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                         value={form.address2}
                         onChange={handleChange}
@@ -388,7 +388,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                         <input
                             type="text"
                             name="city"
-                            placeholder="City *"
+                            placeholder="City"
                             className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                             value={form.city}
                             onChange={handleChange}
@@ -397,7 +397,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                         <input
                             type="text"
                             name="pincode"
-                            placeholder="Pincode *"
+                            placeholder="Pincode"
                             className="w-full border border-gray-500 rounded-[5px] leading-tight inline-flex p-2 placeholder:text-gray-400 placeholder:text-[13px] focus:outline-none"
                             value={form.pincode}
                             onChange={handleChange}
