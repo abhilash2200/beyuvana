@@ -145,14 +145,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
               const mappedItem = {
                 id: item.cart_id || item.id || `${item.product_id}-${item.qty || 1}`,
                 name: item.price_unit_name || item.name || item.product_name || 'Unknown Product',
-                price: parseFloat(String(item.final_price || item.sale_price || 0)) || 0,
+                price: Math.round(parseFloat(String(item.final_price || item.sale_price || 0)) || 0),
                 quantity: typeof item.qty === 'number' ? item.qty :
                   parseInt(String(item.qty || 1)) || 1,
                 image: item.image || item.product_image || '/placeholder.png',
                 product_id: item.product_id || item.id,
                 cart_id: item.cart_id,
                 // Additional fields from server response
-                mrp_price: parseFloat(String(item.mrp || 0)) || 0,
+                mrp_price: Math.round(parseFloat(String(item.mrp || 0)) || 0),
                 discount_percent: item.discount_off_inpercent || item.discount_percent,
                 short_description: item.product_description,
                 product_description: item.product_description,
@@ -264,9 +264,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                       return {
                         ...item,
                         product_details: productDetails,
-                        mrp_price: parseFloat(matchingPriceTier.mrp) || 0,
+                        mrp_price: Math.round(parseFloat(matchingPriceTier.mrp) || 0),
                         discount_percent: matchingPriceTier.discount_off_inpercent,
-                        price: parseFloat(matchingPriceTier.final_price) || 0,
+                        price: Math.round(parseFloat(matchingPriceTier.final_price) || 0),
                         product_price_id: matchingPriceTier.product_price_id,
                         short_description: productDetails.short_description || item.short_description,
                         product_description: productDetails.product_description || item.product_description,
@@ -369,13 +369,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const item = cartItems.find((i) => i.id === id);
     if (!item || !user || !sessionKey || !item.product_id) return;
 
+    // Optimistic update - immediately update the UI
+    setCartItems(prevItems =>
+      prevItems.map(cartItem =>
+        cartItem.id === id
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      )
+    );
+
     // Clear existing timeout for this item
     const existingTimeout = timeoutRefs.current.get(id);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
     }
 
-    // Debounced server update after 1 second
+    // Debounced server update after 500ms (reduced from 1 second)
     const timeout = setTimeout(async () => {
       try {
         // Add one more of the same item to the backend
@@ -396,9 +405,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error("Failed to increase quantity:", error);
         toast.error("Failed to update quantity. Please try again.");
+        // Revert optimistic update on error
+        await syncWithServer();
       }
       timeoutRefs.current.delete(id);
-    }, 1000); // 1 second delay
+    }, 500); // Reduced delay for better UX
 
     timeoutRefs.current.set(id, timeout);
   }, [cartItems, user, sessionKey, syncWithServer]);
@@ -407,13 +418,28 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const item = cartItems.find((i) => i.id === id);
     if (!item || !user || !sessionKey || !item.product_id) return;
 
+    // Optimistic update - immediately update the UI
+    setCartItems(prevItems => {
+      if (item.quantity <= 1) {
+        // Remove item from UI immediately
+        return prevItems.filter(cartItem => cartItem.id !== id);
+      } else {
+        // Decrease quantity
+        return prevItems.map(cartItem =>
+          cartItem.id === id
+            ? { ...cartItem, quantity: cartItem.quantity - 1 }
+            : cartItem
+        );
+      }
+    });
+
     // Clear existing timeout for this item
     const existingTimeout = timeoutRefs.current.get(id);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
     }
 
-    // Debounced server update after 1 second
+    // Debounced server update after 500ms (reduced from 1 second)
     const timeout = setTimeout(async () => {
       try {
         if (item.quantity <= 1) {
@@ -430,9 +456,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error("Failed to decrease quantity:", error);
         toast.error("Failed to update quantity. Please try again.");
+        // Revert optimistic update on error
+        await syncWithServer();
       }
       timeoutRefs.current.delete(id);
-    }, 1000); // 1 second delay
+    }, 500); // Reduced delay for better UX
 
     timeoutRefs.current.set(id, timeout);
   }, [cartItems, user, sessionKey, syncWithServer]);
@@ -449,29 +477,52 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     if (!item || !user || !sessionKey || !item.product_id) return;
 
-    try {
-      // Remove the item first, then add with new quantity
-      await cartApi.removeFromCart(item.product_id, sessionKey, user.id, item.cart_id);
+    // Optimistic update - immediately update the UI
+    setCartItems(prevItems =>
+      prevItems.map(cartItem =>
+        cartItem.id === id
+          ? { ...cartItem, quantity: newQuantity }
+          : cartItem
+      )
+    );
 
-      // Add with new quantity
-      const cartData = {
-        product_id: item.product_id,
-        quantity: newQuantity,
-        price_qty: Number(item.product_price_id) || 0,
-        price_unit_name: item.name,
-        product_price: item.mrp_price || 0,
-        discount_price: item.price || 0,
-        product_price_id: item.product_price_id,
-      };
-
-      await cartApi.addToCart(cartData, sessionKey, user.id);
-
-      // Refresh cart from server
-      await syncWithServer();
-    } catch (error) {
-      console.error("Failed to update quantity:", error);
-      toast.error("Failed to update quantity. Please try again.");
+    // Clear existing timeout for this item
+    const existingTimeout = timeoutRefs.current.get(id);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
     }
+
+    // Debounced server update after 800ms (slightly longer for input changes)
+    const timeout = setTimeout(async () => {
+      try {
+        // Remove the item first, then add with new quantity
+        await cartApi.removeFromCart(item.product_id!, sessionKey, user.id, item.cart_id);
+
+        // Add with new quantity
+        const cartData = {
+          product_id: item.product_id!,
+          quantity: newQuantity,
+          price_qty: Number(item.product_price_id) || 0,
+          price_unit_name: item.name,
+          product_price: item.mrp_price || 0,
+          discount_price: item.price || 0,
+          product_price_id: item.product_price_id!,
+        };
+
+        await cartApi.addToCart(cartData, sessionKey, user.id);
+
+        // Refresh cart from server
+        await syncWithServer();
+      } catch (error) {
+        console.error("Failed to update quantity:", error);
+        toast.error("Failed to update quantity. Please try again.");
+        // Revert optimistic update on error
+        await syncWithServer();
+      }
+      timeoutRefs.current.delete(id);
+    }, 800); // Slightly longer delay for input changes
+
+    timeoutRefs.current.set(id, timeout);
   }, [cartItems, user, sessionKey, syncWithServer]);
 
   const removeFromCart = useCallback(async (id: string) => {

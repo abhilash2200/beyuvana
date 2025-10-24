@@ -213,7 +213,7 @@ const OrdersPage = () => {
 
                   {/* Price */}
                   <div className="w-full md:w-[20%] hidden md:block">
-                    <p className="font-semibold">₹{order.price.toFixed(2)}</p>
+                    <p className="font-semibold">₹{Math.round(order.price)}</p>
                   </div>
 
                   {/* Status */}

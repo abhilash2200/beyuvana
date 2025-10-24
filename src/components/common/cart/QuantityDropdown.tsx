@@ -66,10 +66,7 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
     };
 
     const getDisplayText = () => {
-        if (localQuantity <= 3) {
-            return localQuantity.toString();
-        }
-        return "More";
+        return localQuantity.toString();
     };
 
     return (
@@ -85,7 +82,14 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
                         <ChevronDown size={10} />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-20">
+                <DropdownMenuContent
+                    align="start"
+                    className="w-20"
+                    style={{ zIndex: 10000 }}
+                    side="bottom"
+                    sideOffset={5}
+                    avoidCollisions={true}
+                >
                     <DropdownMenuItem
                         onClick={() => handlePresetQuantity(1)}
                         className="text-center justify-center cursor-pointer"
@@ -114,9 +118,9 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
             </DropdownMenu>
 
             <Dialog open={isCustomDialogOpen} onOpenChange={setIsCustomDialogOpen}>
-                <DialogContent className="sm:max-w-[300px]">
+                <DialogContent className="sm:max-w-[300px] bg-white" style={{ zIndex: 10001 }}>
                     <DialogHeader>
-                        <DialogTitle className="text-[#057A37]">Enter Quantity</DialogTitle>
+                        <DialogTitle className="text-[#057A37] text-center">Enter Quantity</DialogTitle>
                         <DialogDescription>
                             Enter a custom quantity (1-99)
                         </DialogDescription>
@@ -129,13 +133,14 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
                             value={customQuantity}
                             onChange={(e) => setCustomQuantity(e.target.value)}
                             placeholder="Enter quantity"
-                            className="text-center text-lg"
+                            className="text-center text-lg bg-white"
                             autoFocus
                         />
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="flex flex-row justify-center gap-2">
                         <Button
                             variant="outline"
+                            className="bg-white px-2 text-[12px] text-[#057A37] hover:bg-[#057A37] hover:text-white font-normal"
                             onClick={() => {
                                 setIsCustomDialogOpen(false);
                                 setCustomQuantity("");
@@ -146,7 +151,7 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
                         <Button
                             onClick={handleCustomQuantitySubmit}
                             disabled={!customQuantity || parseInt(customQuantity) < 1 || parseInt(customQuantity) > 99}
-                            className="bg-[#057A37] hover:bg-[#0C4B33]"
+                            className="bg-[#057A37] hover:bg-[#0C4B33] px-2 text-[12px] text-white font-normal"
                         >
                             Set Quantity
                         </Button>

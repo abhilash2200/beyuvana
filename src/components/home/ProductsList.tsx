@@ -69,8 +69,8 @@ const ProductsList = () => {
                 const getTierData = (qty: 1 | 2 | 4) => {
                   const tier = tiers.find((t) => Number(t.qty) === Number(qty));
                   const result = {
-                    price: tier ? parseFloat(tier.final_price) || 0 : 0,
-                    mrp: tier ? parseFloat(tier.mrp) || 0 : 0,
+                    price: tier ? Math.round(parseFloat(tier.final_price) || 0) : 0,
+                    mrp: tier ? Math.round(parseFloat(tier.mrp) || 0) : 0,
                     discount: tier ? tier.discount_off_inpercent || "0%" : "0%",
                     product_price_id: tier ? tier.product_price_id : ""
                   };

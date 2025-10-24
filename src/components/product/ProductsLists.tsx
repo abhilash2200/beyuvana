@@ -134,10 +134,10 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                           <div key={idx} className="border border-[#057A37] rounded-[15px] px-3 py-2 bg-[#EBF2EC] min-w-[130px] md:min-w-0">
                             <div className="flex items-center justify-between text-[13px] mb-1 md:mb-0">
                               <span>{tier.unit_name} {tier.qty}</span>
-                              <span className="text-[#057A37] font-medium">₹{formatINR(parseFloat(tier.final_price))}</span>
+                              <span className="text-[#057A37] font-medium">₹{formatINR(Math.round(parseFloat(tier.final_price)))}</span>
                             </div>
                             <div className="text-[11px] text-[#777]">
-                              <span className="line-through">₹{formatINR(parseFloat(tier.mrp))}</span>
+                              <span className="line-through">₹{formatINR(Math.round(parseFloat(tier.mrp)))}</span>
                               {tier.discount_off_inpercent && parseFloat(tier.discount_off_inpercent) > 0 && (
                                 <span className="ml-2">{tier.discount_off_inpercent}% Off</span>
                               )}

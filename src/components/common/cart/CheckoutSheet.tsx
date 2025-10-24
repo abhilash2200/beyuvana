@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }) {
     const { cartItems, loading, clearCart } = useCart();
     const { user, sessionKey } = useAuth();
-    const total = Math.round(cartItems.reduce((acc, item) => acc + ((item.price || 0) * item.quantity), 0));
+    const total = Math.round(cartItems.reduce((acc, item) => acc + (Math.round((item.price || 0) * item.quantity)), 0));
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
@@ -27,7 +27,7 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
         const grossAmount = cartItems.reduce((acc, item) => {
             // Use actual MRP price from the matching price tier
             const originalPrice = item.mrp_price || item.price || 0; // Use sale price as fallback only
-            return acc + (originalPrice * item.quantity);
+            return acc + (Math.round(originalPrice * item.quantity));
         }, 0);
 
         const paidAmount = total;
@@ -35,9 +35,9 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
         const totalQty = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
         return {
-            grossAmount: Math.round(grossAmount * 100) / 100,
-            paidAmount: Math.round(paidAmount * 100) / 100,
-            discountAmount: Math.round(discountAmount * 100) / 100,
+            grossAmount: Math.round(grossAmount),
+            paidAmount: Math.round(paidAmount),
+            discountAmount: Math.round(discountAmount),
             totalQty
         };
     };
@@ -68,9 +68,9 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
             // Convert cart items to checkout format
             const checkoutCartItems: CheckoutCartItem[] = cartItems.map(item => {
                 const originalPrice = item.mrp_price || item.price || 0; // Use actual MRP from API only
-                const totalMrpPrice = Math.round((originalPrice * item.quantity) * 100) / 100;
-                const totalSalePrice = Math.round(((item.price || 0) * item.quantity) * 100) / 100;
-                const discountAmount = Math.round((totalMrpPrice - totalSalePrice) * 100) / 100;
+                const totalMrpPrice = Math.round(originalPrice * item.quantity);
+                const totalSalePrice = Math.round((item.price || 0) * item.quantity);
+                const discountAmount = Math.round(totalMrpPrice - totalSalePrice);
 
                 // Safely parse product_id, ensuring it's a valid number
                 const productId = item.product_id || item.id;
@@ -82,8 +82,8 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
 
                 return {
                     product_id: parsedProductId,
-                    sale_price: Math.round((item.price || 0) * 100) / 100,
-                    mrp_price: Math.round(originalPrice * 100) / 100,
+                    sale_price: Math.round(item.price || 0),
+                    mrp_price: Math.round(originalPrice),
                     sale_unit: 1,
                     qty: item.quantity,
                     total_mrp_price: totalMrpPrice,
@@ -192,7 +192,7 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
                                                 <p className="font-[Grafiels] text-[14px] line-clamp-2">{item.name}</p>
-                                                <p className="text-[13px] text-[#057A37]">₹{((item.price || 0) * item.quantity).toLocaleString("en-IN")}</p>
+                                                <p className="text-[13px] text-[#057A37]">₹{Math.round((item.price || 0) * item.quantity).toLocaleString("en-IN")}</p>
                                             </div>
                                             <p className="text-[11px] text-[#747474] mt-1">Qty: {item.quantity}</p>
                                             {item.short_description && (

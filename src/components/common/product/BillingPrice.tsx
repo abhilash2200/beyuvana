@@ -111,15 +111,15 @@ const BillingPrice = ({ userName, order, orderDetails }: BillingPriceProps) => {
                     <div className="text-[13px]">
                         <div className="flex justify-between items-center py-1">
                             <span className="text-gray-700">Bag Price</span>
-                            <span className="font-medium">₹{order.bagPrice.toFixed(2)}</span>
+                            <span className="font-medium">₹{Math.round(order.bagPrice)}</span>
                         </div>
                         <div className="flex justify-between items-center py-1">
                             <span className="text-gray-700">Discounted Price</span>
-                            <span className="font-medium text-green-600">-₹{order.discount.toFixed(2)}</span>
+                            <span className="font-medium text-green-600">-₹{Math.round(order.discount)}</span>
                         </div>
                         <div className="flex justify-between items-center py-1">
                             <span className="text-gray-700">Delivery Price</span>
-                            <span className="font-medium">₹{order.deliveryPrice.toFixed(2)}</span>
+                            <span className="font-medium">₹{Math.round(order.deliveryPrice)}</span>
                         </div>
                     </div>
 
