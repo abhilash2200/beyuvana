@@ -16,7 +16,7 @@ import MobileCart from "./MobileCart";
 
 export default function Cart() {
     const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading, isCartOpen, setCartOpen } = useCart();
-    const total = Math.round(cartItems.reduce((acc, item) => acc + ((item.price || 0) * item.quantity), 0));
+    const total = Math.round(cartItems.reduce((acc, item) => acc + (Math.round((item.price || 0) * item.quantity)), 0));
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [showConfetti, setShowConfetti] = React.useState(false);
@@ -290,13 +290,13 @@ export default function Cart() {
                                                 <div className="flex justify-between items-center mt-2">
                                                     <div className="flex items-center gap-2">
                                                         <p className="font-normal text-[14px] text-[#057A37]">
-                                                            ₹{((item.price || 0) * item.quantity).toLocaleString("en-IN")}
+                                                            ₹{Math.round((item.price || 0) * item.quantity).toLocaleString("en-IN")}
                                                         </p>
                                                         <span className="text-[11px]">|</span>
                                                         <p className="text-[#747474] text-[10px]">
                                                             {item.mrp_price && item.discount_percent ? (
                                                                 <>
-                                                                    MRP ₹{(item.mrp_price * item.quantity).toLocaleString("en-IN")}
+                                                                    MRP ₹{Math.round(item.mrp_price * item.quantity).toLocaleString("en-IN")}
                                                                     <span className="text-[#057A37]"> {item.discount_percent}% Off</span>
                                                                 </>
                                                             ) : (
@@ -311,7 +311,7 @@ export default function Cart() {
                                                         <Button
                                                             variant="default"
                                                             disabled={loading}
-                                                            className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#057A37] hover:text-white transition-colors duration-200"
                                                             onClick={() => handleDecreaseQuantity(item.id)}
                                                         >
                                                             -
@@ -320,18 +320,28 @@ export default function Cart() {
                                                         <input
                                                             type="number"
                                                             min={1}
+                                                            max={10}
                                                             value={item.quantity}
                                                             onChange={(e) => {
                                                                 const newQuantity = Number(e.target.value) || 1;
-                                                                handleUpdateQuantity(item.id, newQuantity);
+                                                                if (newQuantity >= 1 && newQuantity <= 10) {
+                                                                    handleUpdateQuantity(item.id, newQuantity);
+                                                                }
                                                             }}
-                                                            className="w-10 text-center outline-none text-[#057A37] bg-transparent"
+                                                            onBlur={(e) => {
+                                                                const newQuantity = Number(e.target.value) || 1;
+                                                                const clampedQuantity = Math.max(1, Math.min(10, newQuantity));
+                                                                if (clampedQuantity !== item.quantity) {
+                                                                    handleUpdateQuantity(item.id, clampedQuantity);
+                                                                }
+                                                            }}
+                                                            className="w-10 text-center outline-none text-[#057A37] bg-transparent focus:bg-gray-50 rounded transition-colors duration-200"
                                                         />
 
                                                         <Button
                                                             variant="default"
                                                             disabled={loading}
-                                                            className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            className="text-[#057A37] text-[18px] px-2 h-6 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#057A37] hover:text-white transition-colors duration-200"
                                                             onClick={() => handleIncreaseQuantity(item.id)}
                                                         >
                                                             +
@@ -344,7 +354,7 @@ export default function Cart() {
                                                         {item.short_description || item.product_description || "Loading product details..."}
                                                     </p>
                                                     <p className="text-[14px] text-[#057A37]">
-                                                        ₹{((item.price || 0) * item.quantity).toLocaleString("en-IN")}
+                                                        ₹{Math.round((item.price || 0) * item.quantity).toLocaleString("en-IN")}
                                                     </p>
                                                 </div>
                                             </div>
