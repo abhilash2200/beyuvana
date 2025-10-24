@@ -36,29 +36,24 @@ interface Product {
   brandkey: string;
   product_code: string;
   product_name: string;
-  // Legacy flat prices (some backends)
   product_price?: string;
   discount_price?: string;
   discount_off_inpercent?: string;
-  // New tiered pricing structure
   prices?: PriceTier[];
   sku_number: string;
   short_description: string;
   product_description: string;
   in_stock: string;
-  // Image fields may vary per backend
   image?: string;
   image_single?: string;
   image_all?: string[];
-  // Optional design type used to select layout on product detail page
   design_type?: "green" | "pink" | "GREEN" | "PINK";
 }
 
-// Product Details API response interface
 interface ProductDetailsResponse {
   total_star_ratting: string;
   id: string;
-  design_type?: string; // Add design_type field from API
+  design_type?: string;
   categorykey: string;
   category: string;
   product_code: string;
@@ -90,7 +85,6 @@ interface ProductReview {
   star_ratting: string;
 }
 
-// Legacy product interface for backward compatibility
 interface LegacyProduct {
   id: number;
   name: string;
@@ -101,9 +95,7 @@ interface LegacyProduct {
   discount: string;
   image: string;
   bgColor: string;
-  // Bubble through the design type if backend sends it
   design_type?: "green" | "pink";
-  // Pass-through fields so frontend can show everything when needed
   category?: string;
   categorykey?: string;
   brand?: string;
@@ -166,13 +158,13 @@ interface AddToCartRequest {
 }
 
 interface CartItem {
-  // Frontend cart item fields
   id?: string;
   product_id: string;
   name?: string;
   product_name?: string;
   price?: number;
   sale_price?: number;
+  final_price?: string | number;
   quantity?: number;
   qty?: number;
   image?: string;
@@ -185,9 +177,10 @@ interface CartItem {
   in_stock?: string;
   pack_qty?: number;
   product_price_id?: string;
-
-  // Backend cart response fields
+  unit_qty?: string | number;
+  unit_name?: string;
   cart_id?: string;
+
   product_price?: string;
   discount_price?: string;
   price_unit_name?: string;
@@ -203,13 +196,12 @@ interface Order {
   description: string;
   price: number;
   status: "arriving" | "cancelled" | "delivered";
-  date?: string; // cancelled/delivered date
+  date?: string;
   image: string;
-  thumbnail?: string; // Direct image URL from API
-  product_id?: string; // Add product_id for better product matching
+  thumbnail?: string;
+  product_id?: string;
 }
 
-// Raw order shape from backend
 interface BackendOrderItem {
   id?: string | number;
   user_id?: string | number;
@@ -223,14 +215,14 @@ interface BackendOrderItem {
   product_name?: string;
   product_id?: string | number;
   updated_at?: string;
-  thumbnail?: string; // Direct image URL from API
+  thumbnail?: string;
 }
 
 interface SaveAddressRequest {
   user_id: number;
   fullname: string;
   address1: string;
-  address2: string; // Required by API, but can be empty string
+  address2: string;
   mobile: string;
   email: string;
   city: string;
@@ -260,7 +252,6 @@ interface ProductReviewRequest {
   star_ratting: number;
 }
 
-// Order Details API interfaces
 interface OrderDetailsItem {
   product_code: string;
   product_name: string;
@@ -339,7 +330,7 @@ interface OrderDetailsData {
     address_id: string;
     completed_date: string | null;
     remarks: string | null;
-    thumbnail: string; // Direct image URL from API
+    thumbnail: string;
     shipment_shipment_id: string;
     shipment_order_id: string;
     payment_app_type: string;
@@ -402,7 +393,6 @@ async function apiFetch<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  // Use proxy for browser requests to avoid CORS issues
   const url = isBrowser
     ? `${PROXY_URL}?endpoint=${encodeURIComponent(endpoint)}`
     : `${API_BASE_URL}${endpoint}`;
@@ -411,9 +401,8 @@ async function apiFetch<T = unknown>(
     "Content-Type": "application/json",
   };
 
-  // Add timeout handling
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
 
   const config: RequestInit = {
     ...options,
@@ -438,14 +427,11 @@ async function apiFetch<T = unknown>(
       );
     }
 
-    // Check if response is JSON before trying to parse
     const contentType = response.headers.get('content-type');
     const isJson = contentType && contentType.includes('application/json');
 
-    // Always read the response as text first to validate content
     const responseText = await response.text();
 
-    // Check if response body is actually HTML despite content-type claims
     if (responseText.trim().startsWith('<') || responseText.includes('<html') || responseText.includes('<div')) {
       throw new Error(
         `Backend returned HTML error page instead of JSON data. This indicates a server error. Status: ${response.status}`
@@ -458,7 +444,6 @@ async function apiFetch<T = unknown>(
       );
     }
 
-    // Try to parse as JSON
     let data;
     try {
       data = JSON.parse(responseText);
@@ -480,20 +465,17 @@ async function apiFetch<T = unknown>(
       name: error instanceof Error ? error.name : null
     });
 
-    // Handle timeout errors
     if (error instanceof Error && error.name === "AbortError") {
       throw new Error(`Request timeout: API call to ${endpoint} took too long`);
     }
 
 
-    // Provide more specific error messages
     if (error instanceof TypeError && error.message === "Failed to fetch") {
       throw new Error(
         `Network error: Unable to connect to ${url}. This might be a CORS issue or the server is unreachable.`
       );
     }
 
-    // Handle AbortError (timeout)
     if (error instanceof Error && error.name === "AbortError") {
       throw new Error(
         `Request timeout: API call to ${endpoint} took too long (15s timeout)`
@@ -504,7 +486,6 @@ async function apiFetch<T = unknown>(
   }
 }
 
-// Auth API functions with fallback
 export const authApi = {
 
   sendOtp: async (otpData: SendOtpRequest) => {
@@ -516,9 +497,7 @@ export const authApi = {
     } catch (error: unknown) {
       console.error("Send OTP API failed:", error);
 
-      // Try to extract the actual error message from the API response
       if ((error as Error)?.message && (error as Error).message.includes("API error:")) {
-        // Parse the API error response
         try {
           const errorText = (error as Error).message.split(" - ")[1];
           const errorData = JSON.parse(errorText);
@@ -526,7 +505,6 @@ export const authApi = {
             throw new Error(errorData.message);
           }
         } catch {
-          // If parsing fails, use the original error
         }
       }
 
@@ -552,7 +530,6 @@ export const authApi = {
 
   register: async (userData: { fullname: string; email: string; phonenumber: string; otp: string }) => {
     try {
-      // Transform the data to match API expectations
       const apiData = {
         fullname: userData.fullname,
         email: userData.email,
@@ -581,7 +558,6 @@ export const authApi = {
 
   login: async (loginData: { phonenumber: string; otp: string }) => {
     try {
-      // Transform the data to match API expectations
       const apiData = {
         phonenumber: loginData.phonenumber,
         otp_code: loginData.otp
@@ -626,14 +602,12 @@ export const authApi = {
   },
 };
 
-// Products API functions
 export const productsApi = {
   getList: async (params: ProductsListRequest = {}) => {
     try {
       return await apiFetch<Product[]>("/products/lists/v1/", {
         method: "POST",
         body: JSON.stringify({
-          // provide safe defaults if caller omits values
           page: 1,
           limit: 10,
           filter: {},
@@ -661,7 +635,6 @@ export const productsApi = {
   },
 };
 
-// Cart API functions
 export const cartApi = {
   addToCart: async (
     cartData: AddToCartRequest & { price_qty?: number; price_unit_name?: string },

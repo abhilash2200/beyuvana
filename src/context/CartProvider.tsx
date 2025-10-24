@@ -136,6 +136,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const response = await cartApi.getCart(sessionKey, user.id);
 
       if (Array.isArray(response.data)) {
+
         if (response.data.length > 0) {
           // Convert API cart items to local format with validation
           const serverCartItems: LocalCartItem[] = response.data
@@ -330,7 +331,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      // Add to server cart
+      // Add to server cart - always make the API call
       try {
         const cartData = {
           product_id: item.product_id,
@@ -377,11 +378,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     // Debounced server update after 1 second
     const timeout = setTimeout(async () => {
       try {
-        // Add one more of the same item to server cart
+        // Add one more of the same item to the backend
         const cartData = {
           product_id: item.product_id!,
           quantity: 1, // Add just 1 more
-          price_qty: Number(item.product_price_id) || 0,
+          price_qty: item.pack_qty || 0,
           price_unit_name: item.name,
           product_price: item.mrp_price || 0,
           discount_price: item.price || 0,
@@ -390,7 +391,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
         await cartApi.addToCart(cartData, sessionKey, user.id);
 
-        // Refresh cart from server
+        // Refresh cart from server - backend will consolidate and update quantity
         await syncWithServer();
       } catch (error) {
         console.error("Failed to increase quantity:", error);
@@ -420,7 +421,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           await cartApi.removeFromCart(item.product_id!, sessionKey, user.id, item.cart_id);
           toast.success(`${item.name} removed from cart!`);
         } else {
-          // Decrease quantity by 1
+          // Decrease quantity by 1 using the decrease API
           await cartApi.decreaseQuantity(item.product_id!, sessionKey);
         }
 

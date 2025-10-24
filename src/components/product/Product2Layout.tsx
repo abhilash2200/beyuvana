@@ -129,7 +129,7 @@ export default function Product2Layout({ product }: { product: Product }) {
                 </div>
                 <div className="w-full md:w-[50%] hidden md:block">
                   <div className="absolute bottom-0.5 right-0">
-                    <Image src="/assets/img/product-details/action-green.png" alt="action" width={448} height={368} className="w-full h-auto" />
+                    <Image src="/assets/img/product-details/action-pink.png" alt="action" width={448} height={368} className="w-full h-auto" />
                   </div>
                 </div>
               </div>
@@ -183,7 +183,7 @@ export default function Product2Layout({ product }: { product: Product }) {
             </div>
             <div className="w-full md:w-[48%]">
               <Image
-                src="/assets/img/product-details/green-lady.png"
+                src="/assets/img/product-details/pink-lady.jpg"
                 width={880}
                 height={580}
                 alt="detail info"
@@ -200,7 +200,7 @@ export default function Product2Layout({ product }: { product: Product }) {
         <div className="md:py-10 py-6">
           <div className="flex flex-wrap items-center justify-between">
             <div className="w-full md:w-[48%]">
-              <Image src="/assets/img/product-details/green-288484.png" width={772} height={684} alt="detail info" className="w-full h-auto" />
+              <Image src="/assets/img/product-details/pink-288484.png" width={772} height={684} alt="detail info" className="w-full h-auto" />
             </div>
             <div className="w-full md:w-[48%]">
               <Compare product={product} />
