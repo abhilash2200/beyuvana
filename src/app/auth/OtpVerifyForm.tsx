@@ -101,7 +101,11 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
 
                 // Always set user data for registration completion
                 setUser(normalizedUser);
-                if (sessionKey) setSessionKey(String(sessionKey));
+                if (sessionKey) {
+                    setSessionKey(String(sessionKey));
+                    // Log complete session key once during registration
+                    console.log("🔐 Complete Session Key (Registration):", String(sessionKey));
+                }
 
                 // Save to localStorage
                 try {
@@ -162,7 +166,11 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
 
                 if (normalizedUser) {
                     setUser(normalizedUser);
-                    if (sessionKey) setSessionKey(String(sessionKey));
+                    if (sessionKey) {
+                        setSessionKey(String(sessionKey));
+                        // Log complete session key once during login
+                        console.log("🔐 Complete Session Key (Login):", String(sessionKey));
+                    }
 
                     // Save to localStorage
                     try {

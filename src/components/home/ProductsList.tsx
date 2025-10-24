@@ -205,7 +205,7 @@ const ProductsList = () => {
         return (
           <div
             key={product.id}
-            className={`px-4 md:px-0 ${index % 2 !== 0 ? "w-full bg-[#FAFAFA]" : ""}`}
+            className={`px-4 ${index % 2 !== 0 ? "w-full bg-[#FAFAFA]" : ""}`}
           >
             <div
               className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${index % 2 !== 0 ? "flex-row-reverse" : ""
@@ -264,45 +264,51 @@ const ProductsList = () => {
                   ))}
                 </div>
 
-                <div className="flex flex-wrap md:flex-row gap-2 items-center mt-2">
-                  <p className="font-light">
-                    Select
-                    <br />
-                    Pack:
-                    <br />
-                  </p>
-                  {packs.map((pack) => {
-                    const isSelected = selectedPack === pack;
+                <div className="flex flex-col gap-2 md:flex-row mt-2">
+                  <div className="md:w-[10%] w-[20%]">
+                    <p className="font-light">
+                      Select
+                      <br className="hidden md:block" />
+                      Pack:
+                      <br />
+                    </p>
+                  </div>
+                  <div className="md:w-[90%] w-[80%] flex md:flex-wrap gap-2">
+                    {packs.map((pack) => {
+                      const isSelected = selectedPack === pack;
 
-                    const colors = isEven
-                      ? {
-                        selected: "bg-[#057A37] text-white border-[#057A37]",
-                        unselected: "bg-[#DFF5E6] text-[#057A37] border-[#057A37]",
-                      }
-                      : {
-                        selected: "bg-[#B00404] text-white border-[#B00404]",
-                        unselected: "bg-[#F5DADA] text-[#B00404] border-[#B00404]",
-                      };
+                      const colors = isEven
+                        ? {
+                          selected: "bg-[#057A37] text-white border-[#057A37] w-28 md:w-36",
+                          unselected: "bg-[#DFF5E6] text-[#057A37] border-[#057A37] w-28 md:w-36",
+                        }
+                        : {
+                          selected: "bg-[#B00404] text-white border-[#B00404] w-28 md:w-36",
+                          unselected: "bg-[#F5DADA] text-[#B00404] border-[#B00404] w-28 md:w-36",
+                        };
 
-                    return (
-                      <Button
-                        key={pack}
-                        onClick={() => handleSelectPack(product.id, pack)}
-                        className={`rounded-[10px] py-2 px-4 border font-semibold transition-colors ${isSelected ? colors.selected : colors.unselected
-                          }`}
-                      >
-                        <span className="text-[10px] pr-3">Pack {pack}</span> ₹
-                        {Math.round(product.price[pack]).toLocaleString()}
-                      </Button>
-                    );
-                  })}
+                      return (
+                        <Button
+                          key={pack}
+                          onClick={() => handleSelectPack(product.id, pack)}
+                          className={`rounded-[10px] py-2 px-4 border font-semibold transition-colors ${isSelected ? colors.selected : colors.unselected
+                            }`}
+                        >
+                          <span className="text-[10px] md:pr-3 pr-2">Pack {pack}</span> ₹
+                          <div className="text-center text-[13px] md:text-[16px]">
+                            {Math.round(product.price[pack]).toLocaleString()}
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div className="flex gap-2 mt-2 justify-center md:justify-start">
                   <Button
                     onClick={() => handleShopNow(product)}
                     disabled={loading}
-                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex items-center gap-2 rounded-[10px] w-40 py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <ShoppingBag size={16} />
                     {loading ? "Processing..." : "Buy Now"}
@@ -311,7 +317,7 @@ const ProductsList = () => {
                   <Button
                     onClick={() => handleAddToCart(product)}
                     disabled={loading}
-                    className={`flex items-center gap-2 rounded-[10px] py-2 px-4 font-semibold transition-colors bg-white text-black border border-black hover:!border-black disabled:opacity-50 disabled:cursor-not-allowed`}
+                    className={`flex items-center gap-2 rounded-[10px] w-40 py-2 px-4 font-semibold transition-colors bg-white text-black border border-black hover:!border-black disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <ShoppingCart size={16} />
                     {loading ? "Adding..." : "Add to Cart"}

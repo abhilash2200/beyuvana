@@ -18,6 +18,7 @@ type Pack = {
     originalPrice: number;
     discount: string;
     tagline: string;
+    product_price_id?: string;
 };
 
 type Product = {
@@ -86,6 +87,7 @@ function buildPacksFromPrices(
                 originalPrice: Math.round(mrp), // Use mrp as original price
                 discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
                 tagline: getPackTagline(designType, qty),
+                product_price_id: tier.product_price_id,
             } as Pack;
         })
         .sort((a, b) => a.qty - b.qty);
@@ -168,11 +170,7 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             return;
         }
 
-        const matchingPriceTier = product.product_details?.prices?.find((tier: PriceTier) =>
-            Number(tier.qty) === selectedPack.qty
-        );
-
-        if (!matchingPriceTier?.product_price_id) {
+        if (!selectedPack.product_price_id) {
             toast.error("Unable to add to cart: Missing price information. Please try again.");
             return;
         }
@@ -185,9 +183,9 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             image: product.image,
             product_id: product.id,
             mrp_price: selectedPack.originalPrice,
-            discount_percent: selectedPack.discount,
+            discount_percent: selectedPack.discount.replace('% Off', ''),
             pack_qty: selectedPack.qty,
-            product_price_id: matchingPriceTier.product_price_id,
+            product_price_id: selectedPack.product_price_id,
         });
 
         toast.success(`${product.name} (Pack of ${selectedPack.qty}) added to cart!`);

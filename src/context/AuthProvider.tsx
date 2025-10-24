@@ -37,6 +37,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedSession) {
       setSessionKey(storedSession);
+      // Log complete session key when loaded from localStorage
+      console.log("🔐 Complete Session Key (Loaded from localStorage):", storedSession);
     } else {
     }
   }, []);

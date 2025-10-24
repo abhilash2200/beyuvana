@@ -340,7 +340,7 @@ export default function Cart() {
                                                 </div>
 
                                                 <div className="flex justify-between items-center mt-2">
-                                                    <p className="text-[10px] text-[#747474]">
+                                                    <p className="text-[10px] text-[#747474] line-clamp-1 w-3/4">
                                                         {item.short_description || item.product_description || "Loading product details..."}
                                                     </p>
                                                     <p className="text-[14px] text-[#057A37]">

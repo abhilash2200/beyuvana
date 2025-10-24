@@ -680,25 +680,22 @@ export const cartApi = {
         headers["Authorization"] = `Bearer ${sessionKey}`;
       }
 
+      // Updated payload to match the new API structure
       const payload = {
         user_id: userId != null ? Number(userId) : undefined,
         product_id: Number(cartData.product_id),
+        product_price_id: cartData.product_price_id ? Number(cartData.product_price_id) : undefined,
         qty: Number(cartData.quantity),
         price_qty: cartData.price_qty ?? 0,
-        price_unit_name: cartData.price_unit_name ?? "",
-        product_price_id: cartData.product_price_id,
-        mrp: (cartData.product_price ?? 0).toFixed(2),
-        sale_price: (cartData.discount_price ?? 0).toFixed(2),
-        final_price: (cartData.discount_price ?? 0).toFixed(2),
-        product_price: (cartData.product_price ?? 0).toFixed(2),
-        discount_price: (cartData.discount_price ?? 0).toFixed(2),
-        unit_id: "6",
-        unit_name: "Pack of",
-        discount: "0.00",
-        discount_off_inpercent: cartData.discount_percent || "0.00",
-        discount_amount: ((cartData.product_price ?? 0) - (cartData.discount_price ?? 0)).toFixed(2)
+        price_unit_name: cartData.price_unit_name ?? ""
       };
 
+      // Debug logging
+      console.log("🛒 cartApi.addToCart - Final API payload:", {
+        originalCartData: cartData,
+        finalPayload: payload,
+        sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null
+      });
 
       const response = await apiFetch<CartItem[]>("/cart/add/v1/", {
         method: "POST",
@@ -715,7 +712,6 @@ export const cartApi = {
 
 
   getCart: async (sessionKey?: string, userId?: string | number) => {
-
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
@@ -727,11 +723,11 @@ export const cartApi = {
     }
 
     try {
+      // Updated payload to match the new API structure exactly
       const payload = {
         user_id: userId ? Number(userId) : undefined,
         limit: 0
       };
-
 
       const response = await apiFetch<CartItem[]>("/cart/lists/v1/", {
         method: "POST",
@@ -742,23 +738,6 @@ export const cartApi = {
       return response;
     } catch (error) {
       console.error("Get cart API failed:", error);
-
-      try {
-        const altPayload = {
-          user_id: userId ? Number(userId) : undefined,
-          limit: 0
-        };
-
-        const altResponse = await apiFetch<CartItem[]>("/cart/get/v1/", {
-          method: "POST",
-          headers,
-          body: JSON.stringify(altPayload),
-        });
-
-        return altResponse;
-      } catch (altError) {
-        console.error("Alternative cart endpoint also failed:", altError);
-      }
 
       // Check if it's a 401 error (authentication issue)
       if (error instanceof Error && error.message.includes("401")) {
@@ -783,21 +762,31 @@ export const cartApi = {
     return await cartApi.addToCart(cartData, sessionKey, userId);
   },
 
-  removeFromCart: async (productId: string, sessionKey?: string) => {
+  removeFromCart: async (productId: string, sessionKey?: string, userId?: string | number, cartId?: string) => {
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
 
       if (sessionKey) {
-        headers["Authorization"] = `Bearer ${sessionKey}`;
+        headers["sessionkey"] = sessionKey;
         headers["session_key"] = sessionKey;
+        headers["Authorization"] = `Bearer ${sessionKey}`;
       }
+
+      // Updated payload to match the new API structure
+      const payload = {
+        user_id: userId ? Number(userId) : undefined,
+        product_id: Number(productId),
+        cart_id: cartId ? Number(cartId) : undefined
+      };
+
+      console.log("🗑️ Remove from Cart API - Payload:", payload);
 
       return await apiFetch<CartItem[]>("/cart/removeone/v1/", {
         method: "POST",
         headers,
-        body: JSON.stringify({ product_id: productId }),
+        body: JSON.stringify(payload),
       });
     } catch (error) {
       console.error("Remove from cart API failed:", error);

@@ -2,8 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
-import { Minus, Plus } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import React from "react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface QuantityDropdownProps {
     itemId: string;
@@ -12,32 +27,18 @@ interface QuantityDropdownProps {
 }
 
 export default function QuantityDropdown({ itemId, currentQuantity, loading }: QuantityDropdownProps) {
-    const { increaseItemQuantity, decreaseItemQuantity, updateItemQuantity } = useCart();
+    const { updateItemQuantity } = useCart();
     const [localQuantity, setLocalQuantity] = React.useState(currentQuantity);
+    const [isCustomDialogOpen, setIsCustomDialogOpen] = React.useState(false);
+    const [customQuantity, setCustomQuantity] = React.useState("");
 
     // Sync local quantity with prop changes
     React.useEffect(() => {
         setLocalQuantity(currentQuantity);
     }, [currentQuantity]);
 
-    const handleIncrease = async () => {
-        try {
-            await increaseItemQuantity(itemId);
-        } catch (error) {
-            console.error("Failed to increase quantity:", error);
-        }
-    };
-
-    const handleDecrease = async () => {
-        try {
-            await decreaseItemQuantity(itemId);
-        } catch (error) {
-            console.error("Failed to decrease quantity:", error);
-        }
-    };
-
     const handleQuantityChange = async (newQuantity: number) => {
-        const validQuantity = Math.max(1, Math.min(10, newQuantity)); // Limit between 1-10 for better UX
+        const validQuantity = Math.max(1, Math.min(99, newQuantity)); // Allow up to 99
         setLocalQuantity(validQuantity);
 
         if (validQuantity !== currentQuantity) {
@@ -51,44 +52,107 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
         }
     };
 
+    const handlePresetQuantity = (quantity: number) => {
+        handleQuantityChange(quantity);
+    };
+
+    const handleCustomQuantitySubmit = () => {
+        const quantity = parseInt(customQuantity);
+        if (quantity >= 1 && quantity <= 99) {
+            handleQuantityChange(quantity);
+            setIsCustomDialogOpen(false);
+            setCustomQuantity("");
+        }
+    };
+
+    const getDisplayText = () => {
+        if (localQuantity <= 3) {
+            return localQuantity.toString();
+        }
+        return "More";
+    };
+
     return (
-        <div className="flex items-center justify-between gap-2 bg-white w-24 rounded-full border border-[#057A37] px-2 py-1">
-            <Button
-                variant="ghost"
-                size="default"
-                disabled={loading || localQuantity <= 1}
-                className="text-[#057A37] text-[14px] px-1 h-6 w-6 p-0 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleDecrease}
-            >
-                <Minus size={12} />
-            </Button>
+        <>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="outline"
+                        disabled={loading}
+                        className="flex items-center gap-1 bg-white border border-[#057A37] text-[#057A37] hover:bg-green-50 px-2 py-1 h-7 text-[11px] font-medium min-w-[50px] justify-between"
+                    >
+                        {getDisplayText()}
+                        <ChevronDown size={10} />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-20">
+                    <DropdownMenuItem
+                        onClick={() => handlePresetQuantity(1)}
+                        className="text-center justify-center cursor-pointer"
+                    >
+                        1
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => handlePresetQuantity(2)}
+                        className="text-center justify-center cursor-pointer"
+                    >
+                        2
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => handlePresetQuantity(3)}
+                        className="text-center justify-center cursor-pointer"
+                    >
+                        3
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => setIsCustomDialogOpen(true)}
+                        className="text-center justify-center cursor-pointer text-[#057A37] font-medium"
+                    >
+                        More
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
 
-            <input
-                type="number"
-                min={1}
-                max={10}
-                value={localQuantity}
-                onChange={(e) => {
-                    const newQuantity = Number(e.target.value) || 1;
-                    handleQuantityChange(newQuantity);
-                }}
-                onBlur={(e) => {
-                    const newQuantity = Number(e.target.value) || 1;
-                    handleQuantityChange(newQuantity);
-                }}
-                className="w-8 text-center outline-none text-[#057A37] bg-transparent text-[12px] font-medium"
-                disabled={loading}
-            />
-
-            <Button
-                variant="ghost"
-                size="default"
-                disabled={loading || localQuantity >= 10}
-                className="text-[#057A37] text-[14px] px-1 h-6 w-6 p-0 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleIncrease}
-            >
-                <Plus size={12} />
-            </Button>
-        </div>
+            <Dialog open={isCustomDialogOpen} onOpenChange={setIsCustomDialogOpen}>
+                <DialogContent className="sm:max-w-[300px]">
+                    <DialogHeader>
+                        <DialogTitle className="text-[#057A37]">Enter Quantity</DialogTitle>
+                        <DialogDescription>
+                            Enter a custom quantity (1-99)
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Input
+                            type="number"
+                            min="1"
+                            max="99"
+                            value={customQuantity}
+                            onChange={(e) => setCustomQuantity(e.target.value)}
+                            placeholder="Enter quantity"
+                            className="text-center text-lg"
+                            autoFocus
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setIsCustomDialogOpen(false);
+                                setCustomQuantity("");
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleCustomQuantitySubmit}
+                            disabled={!customQuantity || parseInt(customQuantity) < 1 || parseInt(customQuantity) > 99}
+                            className="bg-[#057A37] hover:bg-[#0C4B33]"
+                        >
+                            Set Quantity
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
