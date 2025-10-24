@@ -4,7 +4,6 @@ const PROXY_URL = process.env.NEXT_PUBLIC_PROXY_URL || "/api/proxy";
 
 // Environment detection
 const isBrowser = typeof window !== "undefined";
-const isDevelopment = process.env.NODE_ENV === "development";
 
 interface ApiResponse<T = unknown> {
   data?: T;
@@ -413,9 +412,6 @@ async function apiFetch<T = unknown>(
     signal: controller.signal,
   };
 
-
-
-
   try {
     const response = await fetch(url, config);
     clearTimeout(timeoutId);
@@ -448,8 +444,6 @@ async function apiFetch<T = unknown>(
     try {
       data = JSON.parse(responseText);
     } catch (parseError) {
-      console.error("❌ JSON parse error:", parseError);
-      console.error("Response text that failed to parse:", responseText);
       throw new Error(
         `Failed to parse JSON response. The server may be returning invalid JSON or HTML. Error: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`
       );
@@ -458,12 +452,6 @@ async function apiFetch<T = unknown>(
   } catch (error) {
     clearTimeout(timeoutId);
 
-    console.error("❌ API fetch error:", {
-      endpoint,
-      error: error instanceof Error ? error.message : error,
-      type: typeof error,
-      name: error instanceof Error ? error.name : null
-    });
 
     if (error instanceof Error && error.name === "AbortError") {
       throw new Error(`Request timeout: API call to ${endpoint} took too long`);
@@ -495,7 +483,6 @@ export const authApi = {
         body: JSON.stringify(otpData),
       });
     } catch (error: unknown) {
-      console.error("Send OTP API failed:", error);
 
       if ((error as Error)?.message && (error as Error).message.includes("API error:")) {
         try {
@@ -520,8 +507,7 @@ export const authApi = {
         method: "POST",
         body: JSON.stringify(otpData),
       });
-    } catch (error) {
-      console.error("Verify OTP API failed:", error);
+    } catch {
       throw new Error(
         "OTP verification failed. Please check your internet connection and try again."
       );
@@ -543,13 +529,7 @@ export const authApi = {
       });
 
       return response;
-    } catch (error) {
-      console.error("Register API failed:", error);
-      console.error("Register API error details:", {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : null,
-        userData: userData
-      });
+    } catch {
       throw new Error(
         "Registration failed. Please check your internet connection and try again."
       );
@@ -567,8 +547,7 @@ export const authApi = {
         method: "POST",
         body: JSON.stringify(apiData),
       });
-    } catch (error) {
-      console.error("Login API failed:", error);
+    } catch {
       throw new Error(
         "Login failed. Please check your internet connection and try again."
       );
@@ -587,14 +566,7 @@ export const authApi = {
       });
 
       return response;
-    } catch (error) {
-      console.error("Logout API failed:", error);
-      console.error("Logout API error details:", {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : null,
-        userId: userId,
-        hasSessionKey: !!sessionKey
-      });
+    } catch {
       throw new Error(
         "Logout failed. Please check your internet connection and try again."
       );
@@ -614,8 +586,7 @@ export const productsApi = {
           ...params,
         }),
       });
-    } catch (error) {
-      console.error("Products API failed:", error);
+    } catch {
       throw new Error("Failed to fetch products. Please try again later.");
     }
   },
@@ -628,8 +599,7 @@ export const productsApi = {
           user_id: userId,
         }),
       });
-    } catch (error) {
-      console.error("Product details API failed:", error);
+    } catch {
       throw new Error("Failed to fetch product details. Please try again later.");
     }
   },
@@ -663,12 +633,6 @@ export const cartApi = {
         price_unit_name: cartData.price_unit_name ?? ""
       };
 
-      // Debug logging
-      console.log("🛒 cartApi.addToCart - Final API payload:", {
-        originalCartData: cartData,
-        finalPayload: payload,
-        sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null
-      });
 
       const response = await apiFetch<CartItem[]>("/cart/add/v1/", {
         method: "POST",
@@ -677,8 +641,7 @@ export const cartApi = {
       });
 
       return response;
-    } catch (error) {
-      console.error("Add to cart API failed:", error);
+    } catch {
       throw new Error("Failed to add item to cart. Please try again later.");
     }
   },
@@ -696,7 +659,6 @@ export const cartApi = {
     }
 
     try {
-      // Updated payload to match the new API structure exactly
       const payload = {
         user_id: userId ? Number(userId) : undefined,
         limit: 0
@@ -710,7 +672,6 @@ export const cartApi = {
 
       return response;
     } catch (error) {
-      console.error("Get cart API failed:", error);
 
       // Check if it's a 401 error (authentication issue)
       if (error instanceof Error && error.message.includes("401")) {
@@ -731,7 +692,6 @@ export const cartApi = {
   },
 
   updateCart: async (cartData: AddToCartRequest, sessionKey?: string, userId?: string | number) => {
-    console.warn("Update cart API not implemented yet, using add to cart");
     return await cartApi.addToCart(cartData, sessionKey, userId);
   },
 
@@ -754,15 +714,13 @@ export const cartApi = {
         cart_id: cartId ? Number(cartId) : undefined
       };
 
-      console.log("🗑️ Remove from Cart API - Payload:", payload);
 
       return await apiFetch<CartItem[]>("/cart/removeone/v1/", {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
       });
-    } catch (error) {
-      console.error("Remove from cart API failed:", error);
+    } catch {
       throw new Error(
         "Failed to remove item from cart. Please try again later."
       );
@@ -785,8 +743,7 @@ export const cartApi = {
         headers,
         body: JSON.stringify({ product_id: productId }),
       });
-    } catch (error) {
-      console.error("Decrease quantity API failed:", error);
+    } catch {
       throw new Error("Failed to decrease quantity. Please try again later.");
     }
   },
@@ -807,8 +764,7 @@ export const cartApi = {
         headers,
         body: JSON.stringify({}),
       });
-    } catch (error) {
-      console.error("Clear cart API failed:", error);
+    } catch {
       throw new Error("Failed to clear cart. Please try again later.");
     }
   },
@@ -834,8 +790,7 @@ export const cartApi = {
         headers,
         body: JSON.stringify(payload),
       });
-    } catch (error) {
-      console.error("Remove all from cart API failed:", error);
+    } catch {
       throw new Error("Failed to remove all items from cart. Please try again later.");
     }
   },
@@ -860,19 +815,10 @@ export const orderDetailsApi = {
       };
 
 
-      // Validate request body before sending
       let requestBodyString;
       try {
         requestBodyString = JSON.stringify(requestBody);
-        if (isDevelopment) {
-          // Debug: Sending order details request
-        }
-      } catch (jsonError) {
-        console.error("❌ Failed to serialize request body:", {
-          error: jsonError,
-          requestBody,
-          orderId
-        });
+      } catch {
         throw new Error("Failed to serialize request data");
       }
 
@@ -882,22 +828,7 @@ export const orderDetailsApi = {
         body: requestBodyString,
       });
     } catch (error) {
-      // Enhanced error logging for order details
-      console.error("Order details API failed:", {
-        error: error instanceof Error ? {
-          name: error.name,
-          message: error.message,
-          stack: error.stack
-        } : error,
-        errorType: typeof error,
-        errorString: String(error),
-        orderId,
-        userId,
-        sessionKeyPresent: !!sessionKey,
-        timestamp: new Date().toISOString()
-      });
 
-      // Provide more specific error messages
       if (error instanceof Error) {
         if (error.message.includes("404")) {
           throw new Error("Order not found. Please check the order ID.");
@@ -951,15 +882,10 @@ export const ordersApi = {
         headers["X-Access-Token"] = sessionKey;
       }
 
-      // Debug logging for headers
-      if (isDevelopment) {
-      }
 
       const uid = userId ? Number(userId) : null;
 
       async function fetchAndMap(payload: { user_id: number | null; status?: string; session_key: string | null }) {
-        if (isDevelopment) {
-        }
 
         const respLocal = await apiFetch<BackendOrderItem[]>("/api/order_list", {
           method: "POST",
@@ -969,12 +895,11 @@ export const ordersApi = {
         const rawLocal = respLocal as ApiResponse<BackendOrderItem[]>;
         const listLocal: BackendOrderItem[] = Array.isArray(rawLocal?.data) ? (rawLocal.data as BackendOrderItem[]) : [];
 
-        // Debug: Log the raw backend response to see what fields are available
         const mappedLocal: Order[] = listLocal.map((o): Order => {
           const id = String(o?.id ?? "");
           const productName = String(o?.product_name ?? o?.order_no ?? "Order");
           const description = `Order ${o?.order_no ?? id} • Qty ${o?.qty ?? "1"}`;
-          const price = parseFloat(String(o?.paid_amount ?? o?.gross_amount ?? 0)) || 0;
+          const price = Math.round(parseFloat(String(o?.paid_amount ?? o?.gross_amount ?? 0)) || 0);
           const backendStatus = String(o?.status ?? "").toUpperCase();
           const payStatus = String(o?.pay_status ?? "").toUpperCase();
           const statusMapped: Order["status"] = backendStatus === "DELIVERED" || backendStatus === "COMPLETED"
@@ -988,8 +913,6 @@ export const ordersApi = {
           const thumbnail = o?.thumbnail;
           const product_id = o?.product_id ? String(o.product_id) : undefined;
 
-          // Debug: Order mapping
-
           return { id, productName, description, price, status: statusMapped, date, image, thumbnail, product_id };
         });
         return { resp: respLocal, mapped: mappedLocal } as { resp: ApiResponse<BackendOrderItem[]>; mapped: Order[] };
@@ -997,7 +920,6 @@ export const ordersApi = {
 
       // 1) Try with given status
       let { resp: resp, mapped } = await fetchAndMap({ user_id: uid, status, session_key: sessionKey || null });
-      // Note: response mapped below from subsequent fetches if needed
       // 2) If empty, try without status
       if (mapped.length === 0) {
         const result = await fetchAndMap({ user_id: uid, session_key: sessionKey || null });
@@ -1014,9 +936,7 @@ export const ordersApi = {
       }
       return { ...resp, data: mapped } as ApiResponse<Order[]>;
     } catch (error) {
-      console.error("Get order list API failed:", error);
 
-      // Check if it's a 500 error (backend method not implemented)
       if (error instanceof Error && error.message.includes("500")) {
         return {
           data: [],
@@ -1026,7 +946,6 @@ export const ordersApi = {
         };
       }
 
-      // Check if it's a 401 error (authentication issue)
       if (error instanceof Error && error.message.includes("401")) {
         return {
           data: [],
@@ -1035,7 +954,6 @@ export const ordersApi = {
         };
       }
 
-      // Generic fallback for other errors
       return {
         data: [],
         status: false,
@@ -1059,10 +977,6 @@ export const addressApi = {
         headers["Authorization"] = `Bearer ${sessionKey}`;
       }
 
-      // Debug logging for headers
-      if (isDevelopment) {
-        // Debug: Save Address API Debug
-      }
 
       // Ensure all required fields are present
       const requestData = {
@@ -1078,26 +992,18 @@ export const addressApi = {
         session_key: sessionKey,
       };
 
-      // Debug: API Request Data
-
       return await apiFetch("/api/save_address/", {
         method: "POST",
         headers,
         body: JSON.stringify(requestData),
       });
-    } catch (error) {
-      console.error("Save address API failed:", error);
+    } catch {
       throw new Error("Failed to save address. Please try again later.");
     }
   },
 
   // Get all addresses for a user
   getAddresses: async (userId: number, sessionKey?: string) => {
-    console.log("🏠 Address API - Get Addresses:", {
-      userId,
-      sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null,
-      hasSessionKey: !!sessionKey
-    });
 
     try {
       const headers: Record<string, string> = {
@@ -1132,8 +1038,6 @@ export const addressApi = {
         headers["X-Access-Token"] = sessionKey;
       }
 
-      // Debug logging for headers - Force show for debugging
-
       return await apiFetch<SavedAddress[]>("/api/get_address/", {
         method: "POST",
         headers,
@@ -1143,9 +1047,7 @@ export const addressApi = {
           // address_id is optional - if not provided, returns all addresses for user
         }),
       });
-    } catch (error) {
-      console.error("Get addresses API failed:", error);
-      // Return empty array as fallback instead of throwing error
+    } catch {
       return {
         data: [],
         status: false,
@@ -1178,8 +1080,7 @@ export const addressApi = {
           address_id: addressId,
         }),
       });
-    } catch (error) {
-      console.error("Get address by ID API failed:", error);
+    } catch {
       throw new Error("Failed to fetch address. Please try again later.");
     }
   },
@@ -1222,10 +1123,6 @@ export const addressApi = {
         headers["X-Access-Token"] = sessionKey;
       }
 
-      // Debug logging for headers
-      if (isDevelopment) {
-        // Debug: Update Address API Debug
-      }
 
       // Ensure all required fields are present with correct field names
       const requestData = {
@@ -1242,15 +1139,12 @@ export const addressApi = {
         session_key: sessionKey, // Add session key to request body as well
       };
 
-      // Debug: API Update Request Data
-
       return await apiFetch("/api/update_address/", {
         method: "POST",
         headers,
         body: JSON.stringify(requestData),
       });
-    } catch (error) {
-      console.error("Update address API failed:", error);
+    } catch {
       throw new Error("Failed to update address. Please try again later.");
     }
   },
@@ -1294,10 +1188,6 @@ export const addressApi = {
         headers["X-Access-Token"] = sessionKey;
       }
 
-      // Debug logging for headers
-      if (isDevelopment) {
-        // Debug: Delete Address API Debug
-      }
 
       const requestData = {
         user_id: userId,
@@ -1305,15 +1195,12 @@ export const addressApi = {
         session_key: sessionKey, // Add session key to request body as well
       };
 
-      // Debug: API Delete Request Data
-
       return await apiFetch("/api/delete_address/", {
         method: "POST",
         headers,
         body: JSON.stringify(requestData),
       });
-    } catch (error) {
-      console.error("Delete address API failed:", error);
+    } catch {
       throw new Error("Failed to delete address. Please try again later.");
     }
   },
@@ -1357,10 +1244,6 @@ export const addressApi = {
         headers["X-Access-Token"] = sessionKey;
       }
 
-      // Debug logging for headers
-      if (isDevelopment) {
-        // Debug: Set Primary Address API Debug
-      }
 
       return await apiFetch("/api/set_primary_address/", {
         method: "POST",
@@ -1371,8 +1254,7 @@ export const addressApi = {
           session_key: sessionKey, // Add session key to request body as well
         }),
       });
-    } catch (error) {
-      console.error("Set primary address API failed:", error);
+    } catch {
       throw new Error("Failed to set primary address. Please try again later.");
     }
   },
@@ -1416,10 +1298,6 @@ export const addressApi = {
         headers["X-Access-Token"] = sessionKey;
       }
 
-      // Debug logging for headers
-      if (isDevelopment) {
-        // Debug: Get Address Details API Debug
-      }
 
       return await apiFetch<SavedAddress>("/api/get_address_details/", {
         method: "POST",
@@ -1430,8 +1308,7 @@ export const addressApi = {
           session_key: sessionKey, // Add session key to request body as well
         }),
       });
-    } catch (error) {
-      console.error("Get address details API failed:", error);
+    } catch {
       throw new Error("Failed to fetch address details. Please try again later.");
     }
   },
@@ -1440,14 +1317,6 @@ export const addressApi = {
 // Checkout API functions
 export const checkoutApi = {
   processCheckout: async (checkoutData: CheckoutRequest, sessionKey?: string) => {
-    console.log("💳 Checkout API - Process Checkout:", {
-      userId: checkoutData.user_id,
-      sessionKey: sessionKey ? `${sessionKey.substring(0, 10)}...` : null,
-      hasSessionKey: !!sessionKey,
-      cartItems: checkoutData.cart?.length || 0,
-      totalAmount: checkoutData.paid_amount,
-      paymentMode: checkoutData.pay_mode
-    });
 
     try {
       const headers: Record<string, string> = {
@@ -1482,18 +1351,13 @@ export const checkoutApi = {
         headers["X-Access-Token"] = sessionKey;
       }
 
-      // Debug logging for checkout API
-      if (isDevelopment) {
-        // Debug: Checkout API Debug
-      }
 
       return await apiFetch("/api/checkout/", {
         method: "POST",
         headers,
         body: JSON.stringify(checkoutData),
       });
-    } catch (error) {
-      console.error("Checkout API failed:", error);
+    } catch {
       throw new Error("Failed to process checkout. Please try again later.");
     }
   },
@@ -1535,18 +1399,13 @@ export const reviewApi = {
         headers["X-Access-Token"] = sessionKey;
       }
 
-      // Debug logging for review API
-      if (isDevelopment) {
-        // Debug: Review API Debug
-      }
 
       return await apiFetch("/product-reviews/add/v1/", {
         method: "POST",
         headers,
         body: JSON.stringify(reviewData),
       });
-    } catch (error) {
-      console.error("Add review API failed:", error);
+    } catch {
       throw new Error("Failed to submit review. Please try again later.");
     }
   },
@@ -1592,9 +1451,7 @@ export const reviewApi = {
         headers,
         body: JSON.stringify({ product_id: productId }),
       });
-    } catch (error) {
-      console.error("Get reviews API failed:", error);
-      // Return empty structure on failure to avoid UI crash
+    } catch {
       return {
         data: { reviews: [] },
         status: false,
@@ -1606,7 +1463,6 @@ export const reviewApi = {
 
 // Utility function to convert API product to legacy format
 export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
-  // Choose best available image
   const image =
     apiProduct.image_single ||
     apiProduct.image ||
@@ -1614,24 +1470,22 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
       ? apiProduct.image_all[0]
       : "/assets/img/green-product.png");
 
-  // Determine pricing: prefer first tier if provided
   const firstTier = Array.isArray(apiProduct.prices) && apiProduct.prices.length > 0
     ? apiProduct.prices[0]
     : undefined;
 
   const price = firstTier
-    ? parseFloat(firstTier.final_price)
-    : parseFloat(apiProduct.discount_price || "0") || 0;
+    ? Math.round(parseFloat(firstTier.final_price))
+    : Math.round(parseFloat(apiProduct.discount_price || "0") || 0);
 
   const originalPrice = firstTier
-    ? parseFloat(firstTier.mrp)
-    : parseFloat(apiProduct.product_price || "0") || 0;
+    ? Math.round(parseFloat(firstTier.mrp))
+    : Math.round(parseFloat(apiProduct.product_price || "0") || 0);
 
   const discountPercent = firstTier
     ? firstTier.discount_off_inpercent
     : apiProduct.discount_off_inpercent || "0";
 
-  // Normalize design type to lowercase for UI switching
   const normalizedDesign = (() => {
     const dt = apiProduct.design_type;
     if (!dt) return undefined;
@@ -1650,7 +1504,6 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
     image,
     bgColor: "#FAFAFA",
     design_type: normalizedDesign,
-    // Pass-throughs
     category: apiProduct.category,
     categorykey: apiProduct.categorykey,
     brand: apiProduct.brand,
