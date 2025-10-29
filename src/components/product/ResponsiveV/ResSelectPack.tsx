@@ -19,6 +19,8 @@ type Pack = {
     discount: string;
     tagline: string;
     product_price_id?: string;
+    unit_name?: string; // Unit name from API (e.g., "Pc" for trial pack)
+    isTrialPack?: boolean; // Flag to identify trial pack
 };
 
 type Product = {
@@ -72,10 +74,36 @@ function buildPacksFromPrices(
 ): Pack[] {
     if (!Array.isArray(prices) || prices.length === 0) return [];
 
-    return prices
+    // Separate trial pack (unit_name === "Pc") from regular packs
+    const trialPackTier = prices.find((tier) => tier.unit_name === "Pc");
+    const regularPacksTiers = prices.filter((tier) => tier.unit_name !== "Pc");
+
+    // Build trial pack if it exists
+    const trialPack: Pack | null = trialPackTier
+        ? (() => {
+            const qty = Number(trialPackTier.qty);
+            const mrp = parseFloat(trialPackTier.mrp || "0");
+            const final = parseFloat(trialPackTier.final_price || "0");
+            const discountPercent = parseFloat(trialPackTier.discount_off_inpercent || "0");
+
+            return {
+                qty,
+                sachets: 5, // Trial pack always has 5 sachets
+                price: Math.round(final),
+                originalPrice: Math.round(mrp),
+                discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
+                tagline: "Free Trial", // Special tagline for trial pack
+                product_price_id: trialPackTier.product_price_id,
+                unit_name: trialPackTier.unit_name,
+                isTrialPack: true,
+            } as Pack;
+        })()
+        : null;
+
+    // Build regular packs
+    const regularPacks = regularPacksTiers
         .map((tier) => {
             const qty = Number(tier.qty);
-            // Use the exact backend price structure
             const mrp = parseFloat(tier.mrp || "0");
             const final = parseFloat(tier.final_price || "0");
             const discountPercent = parseFloat(tier.discount_off_inpercent || "0");
@@ -83,14 +111,19 @@ function buildPacksFromPrices(
             return {
                 qty,
                 sachets: getDefaultSachets(designType, qty),
-                price: Math.round(final), // Use final_price as selling price
-                originalPrice: Math.round(mrp), // Use mrp as original price
+                price: Math.round(final),
+                originalPrice: Math.round(mrp),
                 discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
                 tagline: getPackTagline(designType, qty),
                 product_price_id: tier.product_price_id,
+                unit_name: tier.unit_name,
+                isTrialPack: false,
             } as Pack;
         })
         .sort((a, b) => a.qty - b.qty);
+
+    // Return trial pack first, then regular packs sorted by quantity
+    return trialPack ? [trialPack, ...regularPacks] : regularPacks;
 }
 
 const ResSelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
@@ -175,9 +208,13 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             return;
         }
 
+        const packName = selectedPack.isTrialPack
+            ? `${product.name} - Trial Pack`
+            : `${product.name} - Pack of ${selectedPack.qty}`;
+
         await addToCart({
             id: `${product.id}-${selectedPack.qty}`,
-            name: `${product.name} - Pack of ${selectedPack.qty}`,
+            name: packName,
             quantity: 1,
             price: selectedPack.price,
             image: product.image,
@@ -223,10 +260,16 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                         rewind: true,
                     }}
                 >
-                    {product.packs.map((pack: Pack) => {
-                        const isSelected = selectedPack?.qty === pack.qty;
+                    {product.packs.map((pack: Pack, index) => {
+                        // Check if this pack is selected (using product_price_id for accurate comparison, fallback to qty + isTrialPack)
+                        const isSelected = selectedPack
+                            ? (selectedPack.product_price_id && pack.product_price_id
+                                ? selectedPack.product_price_id === pack.product_price_id
+                                : selectedPack.qty === pack.qty && selectedPack.isTrialPack === pack.isTrialPack)
+                            : false;
+
                         return (
-                            <SplideSlide key={pack.qty}>
+                            <SplideSlide key={`${pack.qty}-${pack.isTrialPack ? 'trial' : 'regular'}-${pack.product_price_id || index}`}>
                                 <div
                                     onClick={() => setSelectedPack(pack)}
                                     className={`p-3 rounded-md border cursor-pointer transition ${isSelected
@@ -235,7 +278,10 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                                         }`}
                                 >
                                     <p className="text-sm font-normal text-[#1A2819] leading-tight">
-                                        {pack.qty} Pack <br /> <span className="text-xs text-[#747474]">{pack.sachets} Sachets</span>
+                                        {pack.isTrialPack ? "Trial Pack" : `${pack.qty} Pack`} <br />
+                                        <span className="text-xs text-[#747474]">
+                                            {pack.sachets} Sachets
+                                        </span>
                                     </p>
 
                                     <p className="text-lg font-bold text-[#057A37] mt-1">

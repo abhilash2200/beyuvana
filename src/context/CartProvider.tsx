@@ -256,9 +256,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                   const productDetails = await fetchProductDetails(item.product_id, user.id);
                   if (productDetails) {
                     const packSize = item.pack_qty || item.quantity;
-                    const matchingPriceTier = productDetails.prices?.find(tier =>
-                      Number(tier.qty) === packSize
-                    );
+                    const matchingPriceTier = productDetails.prices?.find(tier => {
+                      const qtyMatches = Number(tier.qty) === packSize;
+                      if (item.unit_name) {
+                        return qtyMatches && tier.unit_name === item.unit_name;
+                      }
+                      return qtyMatches;
+                    });
 
                     if (matchingPriceTier) {
                       return {
@@ -277,11 +281,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
                     return item;
                   } else {
-                    return item; // Return original item if product details fetch fails
+                    return item;
                   }
                 } catch (error) {
                   console.error("Error enhancing cart item:", error);
-                  return item; // Return original item if enhancement fails
+                  return item;
                 }
               })
             );

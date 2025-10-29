@@ -17,6 +17,8 @@ interface Pack {
     discount: string;
     tagline: string;
     product_price_id?: string; // Add product_price_id for cart API
+    unit_name?: string; // Unit name from API (e.g., "Pc" for trial pack)
+    isTrialPack?: boolean; // Flag to identify trial pack
 }
 
 interface Product {
@@ -37,7 +39,7 @@ function getDefaultSachets(designType: "green" | "pink" | undefined, qty: number
         return qty * base;
     }
     if (designType === "pink") {
-        const base = 20;
+        const base = 15;
         return qty * base;
     }
     return qty;
@@ -69,8 +71,39 @@ function buildPacksFromPrices(
         return [];
     }
 
+    // Separate trial pack (unit_name === "Pc") from regular packs
+    const trialPackTier = prices.find((tier) => tier.unit_name === "Pc");
+    const regularPacksTiers = prices.filter((tier) => tier.unit_name !== "Pc");
 
-    return prices
+    // Build trial pack if it exists
+    const trialPack: Pack | null = trialPackTier
+        ? (() => {
+            const qty = Number(trialPackTier.qty);
+            const mrp = parseFloat(trialPackTier.mrp || "0");
+            const final = parseFloat(trialPackTier.final_price || "0");
+            const percent = trialPackTier.discount_off_inpercent || trialPackTier.discount || "";
+            const discount = percent
+                ? `${String(percent).replace(/%/g, "").trim()}% Off`
+                : mrp > 0 && final > 0
+                    ? `${Math.round(((mrp - final) / mrp) * 100)}% Off`
+                    : "";
+
+            return {
+                qty,
+                sachets: 5, // Trial pack always has 5 sachets
+                price: Math.round(isNaN(final) ? 0 : final),
+                originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
+                discount,
+                tagline: "Free Trial", // Special tagline for trial pack
+                product_price_id: trialPackTier.product_price_id,
+                unit_name: trialPackTier.unit_name,
+                isTrialPack: true,
+            } as Pack;
+        })()
+        : null;
+
+    // Build regular packs
+    const regularPacks = regularPacksTiers
         .map((tier) => {
             const qty = Number(tier.qty);
             const mrp = parseFloat(tier.mrp || "0");
@@ -82,20 +115,22 @@ function buildPacksFromPrices(
                     ? `${Math.round(((mrp - final) / mrp) * 100)}% Off`
                     : "";
 
-            const pack = {
+            return {
                 qty,
                 sachets: getDefaultSachets(designType, qty),
                 price: Math.round(isNaN(final) ? 0 : final),
                 originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
                 discount,
                 tagline: getPackTagline(designType, qty),
-                product_price_id: tier.product_price_id, // Include product_price_id
+                product_price_id: tier.product_price_id,
+                unit_name: tier.unit_name,
+                isTrialPack: false,
             } as Pack;
-
-
-            return pack;
         })
         .sort((a, b) => a.qty - b.qty);
+
+    // Return trial pack first, then regular packs sorted by quantity
+    return trialPack ? [trialPack, ...regularPacks] : regularPacks;
 }
 
 const SelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
@@ -181,16 +216,20 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
         }
 
         try {
+            const packName = selectedPack.isTrialPack
+                ? `${product.name} - Trial Pack`
+                : `${product.name} - Pack of ${selectedPack.qty}`;
+
             await addToCart({
                 id: `${product.id}-${selectedPack.qty}`,
-                name: `${product.name} - Pack of ${selectedPack.qty}`,
+                name: packName,
                 quantity: 1,
                 price: selectedPack.price,
                 image: product.image,
                 product_id: product.id,
-                pack_qty: selectedPack.qty, // Add pack quantity
-                product_price_id: selectedPack.product_price_id, // Add product_price_id for API
-                mrp_price: selectedPack.originalPrice, // Add MRP price
+                pack_qty: selectedPack.qty,
+                product_price_id: selectedPack.product_price_id,
+                mrp_price: selectedPack.originalPrice,
             });
             // Success toast is now handled by CartProvider
         } catch (error) {
@@ -216,6 +255,14 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
 
     if (!product) return <p>Product not found</p>;
 
+    // Calculate middle index for Best Seller badge (excluding trial pack)
+    // If trial pack exists, middle is calculated from regular packs only
+    const hasTrialPack = product.packs[0]?.isTrialPack === true;
+    const regularPacksCount = hasTrialPack ? product.packs.length - 1 : product.packs.length;
+    const bestSellerIndex = hasTrialPack
+        ? Math.floor(regularPacksCount / 2) + 1  // +1 because trial pack is at index 0
+        : Math.floor(product.packs.length / 2);   // Middle of all packs if no trial
+
     return (
         <div className="border border-gray-900 rounded-[20px] p-4">
             <div className="flex items-center justify-center gap-2">
@@ -227,51 +274,59 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 />
             </div>
 
-            {product.packs.map((pack, index) => (
-                <div
-                    key={pack.qty}
-                    onClick={() => setSelectedPack(pack)}
-                    className={`relative p-4 border rounded-[20px] my-4 cursor-pointer 
-            ${selectedPack?.qty === pack.qty
-                            ? "border-green-600 bg-green-100"
-                            : "border-gray-900"} 
-            ${index === 1 ? "border-2 border-[#057A37]" : ""} // special border for 2nd pack
-        `}
-                >
-                    {/* Best Seller Label */}
-                    {index === 1 && (
-                        <p className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FFAA00] text-black text-xs px-3 py-1 rounded-full shadow">
-                            Best Seller
-                        </p>
-                    )}
+            {product.packs.map((pack, index) => {
+                const isBestSeller = index === bestSellerIndex;
+                // Check if this pack is selected (using product_price_id for accurate comparison, fallback to qty + isTrialPack)
+                const isSelected = selectedPack
+                    ? (selectedPack.product_price_id && pack.product_price_id
+                        ? selectedPack.product_price_id === pack.product_price_id
+                        : selectedPack.qty === pack.qty && selectedPack.isTrialPack === pack.isTrialPack)
+                    : false;
 
-                    <div className="flex flex-wrap justify-between">
-                        <div className="w-full md:w-[40%]">
-                            <p className="md:text-[25px] text-[16px] uppercase text-[#1A2819] leading-tight">
-                                {pack.qty} pack
+                return (
+                    <div
+                        key={`${pack.qty}-${pack.isTrialPack ? 'trial' : 'regular'}-${pack.product_price_id || index}`}
+                        onClick={() => setSelectedPack(pack)}
+                        className={`relative p-4 border rounded-[20px] my-4 cursor-pointer 
+                            ${isSelected ? "border-green-600 bg-green-100" : "border-gray-900"} 
+                            ${isBestSeller ? "border-2 border-[#057A37]" : ""}
+                        `}
+                    >
+                        {/* Best Seller Label */}
+                        {isBestSeller && (
+                            <p className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FFAA00] text-black text-xs px-3 py-1 rounded-full shadow">
+                                Best Seller
                             </p>
-                            <p className="md:text-[16px] text-[13px] capitalize text-[#1A2819]">
-                                {pack.sachets} sachets
-                            </p>
-                        </div>
+                        )}
 
-                        <div className="w-full md:w-[40%]">
-                            <p className="md:text-[30px] text-[16px] capitalize text-[#057A37] leading-tight font-bold">
-                                ₹{formatINR(pack.price)}
-                            </p>
-                            <div className="flex items-center gap-2">
-                                <p className="text-[12px] text-[#747474] line-through">
-                                    ₹{formatINR(pack.originalPrice)}
+                        <div className="flex flex-wrap justify-between">
+                            <div className="w-full md:w-[40%]">
+                                <p className="md:text-[20px] text-[16px] uppercase text-[#1A2819] leading-tight">
+                                    {pack.isTrialPack ? "Trial Pack" : `${pack.qty} pack`}
                                 </p>
-                                <p className="text-[12px] text-[#D31714]">{pack.discount}</p>
+                                <p className="md:text-[16px] text-[13px] capitalize text-[#1A2819]">
+                                    {pack.sachets} sachets
+                                </p>
+                            </div>
+
+                            <div className="w-full md:w-[40%]">
+                                <p className="md:text-[30px] text-[16px] capitalize text-[#057A37] leading-tight font-bold">
+                                    ₹{formatINR(pack.price)}
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-[12px] text-[#747474] line-through">
+                                        ₹{formatINR(pack.originalPrice)}
+                                    </p>
+                                    <p className="text-[12px] text-[#D31714]">{pack.discount}</p>
+                                </div>
                             </div>
                         </div>
+                        <p className="md:text-[16px] text-[16px] capitalize text-[#1A2819] text-center mt-2">
+                            {pack.tagline}
+                        </p>
                     </div>
-                    <p className="md:text-[16px] text-[16px] capitalize text-[#1A2819] text-center mt-5">
-                        {pack.tagline}
-                    </p>
-                </div>
-            ))}
+                );
+            })}
 
 
             <div className="bg-[#FFE2E2] px-4 py-2 my-5">
