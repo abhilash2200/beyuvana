@@ -1624,7 +1624,7 @@ export const fallbackProducts: Product[] = [
     plants: [
       {
         id: 1,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/insulin.jpg",
         title: "Inulin",
         description:
           "Supports healthy digestion by feeding good gut bacteria and improving nutrient absorption.",
@@ -1636,7 +1636,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/lemon.gif",
         title: "Lemon Powder",
         description:
           "Gently detoxifies, brightens skin from within, and supports natural collagen synthesis.",
@@ -1648,7 +1648,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 3,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/amla.gif",
         title: "Amla Dry Extract",
         description:
           "A powerful source of Vitamin C to boost collagen, immunity, and skin radiance.",
@@ -1660,7 +1660,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 4,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/guava.gif",
         title: "Guava Leaf Extract",
         description:
           "Rich in antioxidants that support clear skin, reduce inflammation, and help in acne control.",
@@ -1684,7 +1684,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 6,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/neem.gif",
         title: "Neem Extract",
         description:
           "Purifies the skin and blood, helps fight acne-causing bacteria, and soothes irritation.",
@@ -1708,7 +1708,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 8,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/bamboo.gif",
         title: "Bamboo Extract",
         description:
           "A rich plant source of silica, promoting firm skin, strong nails, and healthy hair.",
@@ -1720,7 +1720,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 9,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/ashwagandha.gif",
         title: "Ashwagandha Powder",
         description:
           "An adaptogen that balances cortisol, reduces stress, and prevents stress-related skin aging.",
@@ -1770,7 +1770,7 @@ export const fallbackProducts: Product[] = [
       // 💊 Chemical / Nutrient-Based (Functional Compounds)
       {
         id: 13,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/l-glutathione.jpg",
         title: "L-Glutathione",
         description:
           "The body’s master antioxidant that brightens skin, reduces pigmentation, and fights oxidative stress.",
@@ -1782,7 +1782,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 14,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/l-lysine.jpg",
         title: "L-Lysine",
         description:
           "An essential amino acid that helps rebuild collagen and supports youthful, firm skin.",
@@ -1794,7 +1794,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 15,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/vitamin-c.jpg",
         title: "Vitamin C",
         description:
           "Boosts natural collagen production, protects skin from damage, and supports a healthy glow.",
@@ -1806,7 +1806,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 16,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/hyaluronic-acid.jpg",
         title: "Hyaluronic Acid",
         description:
           "Deeply hydrates from within, plumping the skin and smoothing out fine lines.",
@@ -1830,7 +1830,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 18,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/gif/vitamin-e.jpg",
         title: "Vitamin E",
         description:
           "A skin-protecting antioxidant that supports hydration, repair, and barrier function.",
