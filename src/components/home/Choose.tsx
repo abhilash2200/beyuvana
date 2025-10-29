@@ -111,6 +111,7 @@ const Choose: React.FC = () => {
                         muted
                         playsInline
                         className="w-full h-full object-cover"
+                        poster="/assets/img/about-logo.png"
                     />
                 </div>
             </div>

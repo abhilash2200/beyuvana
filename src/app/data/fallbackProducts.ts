@@ -728,9 +728,10 @@ export const fallbackProducts: Product[] = [
       },
     ],
     plants: [
+      // 🌿 --- Natural extracts & plant-based items first ---
       {
         id: 1,
-        img: "/assets/gifs/astaxanthin.gif",
+        img: "/assets/img/product-details/gifs/ashwagandha.jpg",
         title: "Ashwagandha Extract",
         description:
           "Rich in natural Vitamin C, it boosts collagen synthesis and combats oxidative stress—promoting firmer, more even-toned skin. ",
@@ -754,10 +755,10 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 3,
-        img: "/assets/gifs/l-lysine.gif",
-        title: "L-Lysine",
+        img: "/assets/gifs/horstail-plant.gif",
+        title: "Horsetail Extract",
         description:
-          "Essential amino acid that supports collagen cross-linking, enhancing skin firmness and reducing signs of sagging. ",
+          "Natural source of silica and antioxidants that reinforce skin structure and combat age-related degradation.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -766,150 +767,6 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 4,
-        img: "/assets/gifs/l-plorine.gif",
-        title: "L-Proline",
-        description:
-          "Vital for collagen regeneration, it helps maintain skin texture, elasticity, and smoothness. ",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 5,
-        img: "/assets/gifs/horstail-plant.gif",
-        title: "Horsetail Extract",
-        description:
-          "Natural source of silica and antioxidants that reinforce skin structure and combat agerelated degradation.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 6,
-        img: "/assets/gifs/coenzyme.gif",
-        title: "Coenzyme Q10",
-        description:
-          "Powers cellular energy, reduces wrinkle depth, and protects skin from oxidative damage.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 7,
-        img: "/assets/gifs/astaxanthin.gif",
-        title: "Astaxanthin",
-        description:
-          "One of the most potent natural antioxidants—helps reduce UV damage, boosts elasticity, and fights premature aging. ",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 8,
-        img: "/assets/gifs/reserveratrol.gif",
-        title: "Resveratrol",
-        description:
-          "A powerful polyphenol that neutralizes free radicals and supports youthful skin regeneration.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 9,
-        img: "/assets/gifs/glutathione.gif",
-        title: "Glutathione",
-        description:
-          "Brightens skin, reduces pigmentation, and supports liver detox to promote a clearer, radiant complexion. ",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 10,
-        img: "/assets/gifs/hyaluronic-acid.gif",
-        title: "Hyaluronic Acid",
-        description:
-          "Holds up to 1000x its weight in water—deeply hydrates and plumps skin for smoother texture and suppleness.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 11,
-        img: "/assets/gifs/vitamin-c.gif",
-        title: "Vitamin C",
-        description:
-          "Essential for collagen biosynthesis, it reduces dullness and pigmentation while enhancing glow.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 12,
-        img: "/assets/gifs/vitamin-e.gif",
-        title: "Vitamin E",
-        description:
-          "Antioxidant that protects against environmental damage, soothes inflammation, and promotes moisture retention.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 13,
-        img: "/assets/gifs/biotin.gif",
-        title: "Biotin",
-        description:
-          "Supports healthy skin, hair, and nails by strengthening keratin structure and maintaining hydration. ",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 14,
-        img: "/assets/gifs/zinc.gif",
-        title: "Zinc",
-        description:
-          "Promotes healing, reduces acne, and balances sebum production for clearer skin.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 15,
-        img: "/assets/gifs/selenium.gif",
-        title: "Selenium",
-        description:
-          "Antioxidant that protects skin cells, enhances elasticity, and supports immune and thyroid health.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 16,
         img: "/assets/gifs/grape.gif",
         title: "Grape Seed Extract",
         description:
@@ -921,7 +778,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 17,
+        id: 5,
         img: "/assets/gifs/pomegranate.gif",
         title: "Pomegranate Extract",
         description:
@@ -933,7 +790,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 18,
+        id: 6,
         img: "/assets/gifs/tea.gif",
         title: "Green Tea Extract",
         description:
@@ -945,19 +802,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 19,
-        img: "/assets/img/product-details/plant.png",
-        title: "Ashwagandha Extract",
-        description:
-          "Reduces stress-induced aging and cortisol imbalance, supporting hormonal harmony and skin health.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 20,
+        id: 7,
         img: "/assets/gifs/gotu-kola.gif",
         title: "Gotu Kola Extract",
         description:
@@ -969,11 +814,169 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 21,
+        id: 8,
         img: "/assets/gifs/shatavari.gif",
         title: "Shatavari Extract",
         description:
-          "Balances hormones, reduces inflammation, and improves hydration and skin resilience from within. ",
+          "Balances hormones, reduces inflammation, and improves hydration and skin resilience from within.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 9,
+        img: "/assets/img/product-details/plant.png",
+        title: "Stevia",
+        description:
+          "Zero sugar or aftertaste—keeping the formulation clean and holistic.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 10,
+        img: "/assets/img/product-details/plant.png",
+        title: "Pineapple Flavor",
+        description:
+          "Adds a refreshing tropical taste that makes daily consumption enjoyable. Naturally derived.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 11,
+        img: "/assets/img/product-details/gifs/ashwagandha.jpg",
+        title: "Ashwagandha (alt note)",
+        description:
+          "Reduces stress-induced aging and cortisol imbalance, supporting hormonal harmony and skin health.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+    
+      // ⚗️ --- Chemical / nutrient compounds after ---
+      {
+        id: 12,
+        img: "/assets/img/product-details/gifs/l-lysine.jpg",
+        title: "L-Lysine",
+        description:
+          "Essential amino acid that supports collagen cross-linking, enhancing skin firmness and reducing signs of sagging.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 13,
+        img: "/assets/img/product-details/gifs/l-plorine.jpg",
+        title: "L-Proline",
+        description:
+          "Vital for collagen regeneration, it helps maintain skin texture, elasticity, and smoothness.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 14,
+        img: "/assets/img/product-details/gifs/coenzyme.jpg",
+        title: "Coenzyme Q10",
+        description:
+          "Powers cellular energy, reduces wrinkle depth, and protects skin from oxidative damage.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 15,
+        img: "/assets/img/product-details/gifs/astaxanthin.jpg",
+        title: "Astaxanthin",
+        description:
+          "One of the most potent natural antioxidants—helps reduce UV damage, boosts elasticity, and fights premature aging.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 16,
+        img: "/assets/img/product-details/gifs/reserveratrol.jpg",
+        title: "Resveratrol",
+        description:
+          "A powerful polyphenol that neutralizes free radicals and supports youthful skin regeneration.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 17,
+        img: "/assets/img/product-details/gifs/glutathione.jpg",
+        title: "Glutathione",
+        description:
+          "Brightens skin, reduces pigmentation, and supports liver detox to promote a clearer, radiant complexion.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 18,
+        img: "/assets/img/product-details/gifs/hyaluronic-acid.jpg",
+        title: "Hyaluronic Acid",
+        description:
+          "Holds up to 1000x its weight in water—deeply hydrates and plumps skin for smoother texture and suppleness.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 19,
+        img: "/assets/img/product-details/gifs/vitamin-c.jpg",
+        title: "Vitamin C",
+        description:
+          "Essential for collagen biosynthesis, it reduces dullness and pigmentation while enhancing glow.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 20,
+        img: "/assets/img/product-details/gifs/vitamin-e.jpg",
+        title: "Vitamin E",
+        description:
+          "Antioxidant that protects against environmental damage, soothes inflammation, and promotes moisture retention.",
+        bgColor: "#F0F8F0",
+        headingColor: "#057A37",
+        paragraphColor: "#666666",
+        plusColor: "#057A37",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 21,
+        img: "/assets/img/product-details/gifs/biotin.jpg",
+        title: "Biotin",
+        description:
+          "Supports healthy skin, hair, and nails by strengthening keratin structure and maintaining hydration.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -982,10 +985,10 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 22,
-        img: "/assets/img/product-details/plant.png",
-        title: "Stevia",
+        img: "/assets/img/product-details/gifs/zinc.jpg",
+        title: "Zinc",
         description:
-          "zero sugar or aftertaste—keeping the formulation clean and holistic.",
+          "Promotes healing, reduces acne, and balances sebum production for clearer skin.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -994,10 +997,10 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 23,
-        img: "/assets/img/product-details/plant.png",
-        title: "Pineapple Flavor",
+        img: "/assets/img/product-details/gifs/selenium.jpg",
+        title: "Selenium",
         description:
-          "Adds a refreshing tropical taste that makes daily consumption enjoyable. Naturally derived ",
+          "Antioxidant that protects skin cells, enhances elasticity, and supports immune and thyroid health.",
         bgColor: "#F0F8F0",
         headingColor: "#057A37",
         paragraphColor: "#666666",
@@ -1636,7 +1639,7 @@ export const fallbackProducts: Product[] = [
         img: "/assets/img/product-details/plant.png",
         title: "Lemon Powder",
         description:
-          "Gently detoxifies, brightens skin from within, and supports natural collagen synthesis. ",
+          "Gently detoxifies, brightens skin from within, and supports natural collagen synthesis.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1646,9 +1649,9 @@ export const fallbackProducts: Product[] = [
       {
         id: 3,
         img: "/assets/img/product-details/plant.png",
-        title: "Amla Dry Extract ",
+        title: "Amla Dry Extract",
         description:
-          "A powerful source of Vitamin C to boost collagen, immunity, and skin radiance. ",
+          "A powerful source of Vitamin C to boost collagen, immunity, and skin radiance.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1658,9 +1661,9 @@ export const fallbackProducts: Product[] = [
       {
         id: 4,
         img: "/assets/img/product-details/plant.png",
-        title: "L-Glutathione",
+        title: "Guava Leaf Extract",
         description:
-          "The body’s master antioxidant that brightens skin, reduces pigmentation, and fights oxidative stress. ",
+          "Rich in antioxidants that support clear skin, reduce inflammation, and help in acne control.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1670,9 +1673,9 @@ export const fallbackProducts: Product[] = [
       {
         id: 5,
         img: "/assets/img/product-details/plant.png",
-        title: "Guava Leaf Extract",
+        title: "Liquorice Extract",
         description:
-          "Rich in antioxidants that support clear skin, reduce inflammation, and help in acne control. ",
+          "Naturally brightens skin, reduces dark spots, and calms inflammation.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1682,9 +1685,9 @@ export const fallbackProducts: Product[] = [
       {
         id: 6,
         img: "/assets/img/product-details/plant.png",
-        title: "L-Lysine",
+        title: "Neem Extract",
         description:
-          "An essential amino acid that helps rebuild collagen and supports youthful, firm skin. ",
+          "Purifies the skin and blood, helps fight acne-causing bacteria, and soothes irritation.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1694,9 +1697,9 @@ export const fallbackProducts: Product[] = [
       {
         id: 7,
         img: "/assets/img/product-details/plant.png",
-        title: "Liquorice Extract",
+        title: "Green Tea Extract",
         description:
-          "Naturally brightens skin, reduces dark spots, and calms inflammation. ",
+          "Fights free radicals, controls oil, reduces breakouts, and supports clear, calm skin.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1706,31 +1709,7 @@ export const fallbackProducts: Product[] = [
       {
         id: 8,
         img: "/assets/img/product-details/plant.png",
-        title: "Neem Extract",
-        description:
-          "Purifies the skin and blood, helps fight acne-causing bacteria, and soothes irritation. ",
-        bgColor: "#FFE7E7",
-        headingColor: "#B00404",
-        paragraphColor: "#666666",
-        plusColor: "#B00404",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 9,
-        img: "/assets/img/product-details/plant.png",
-        title: "Green Tea Extract",
-        description:
-          "Fights free radicals, controls oil, reduces breakouts, and supports clear, calm skin. ",
-        bgColor: "#FFE7E7",
-        headingColor: "#B00404",
-        paragraphColor: "#666666",
-        plusColor: "#B00404",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 10,
-        img: "/assets/img/product-details/plant.png",
-        title: "Bamboo Extract ",
+        title: "Bamboo Extract",
         description:
           "A rich plant source of silica, promoting firm skin, strong nails, and healthy hair.",
         bgColor: "#FFE7E7",
@@ -1740,7 +1719,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 11,
+        id: 9,
         img: "/assets/img/product-details/plant.png",
         title: "Ashwagandha Powder",
         description:
@@ -1752,9 +1731,9 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 12,
+        id: 10,
         img: "/assets/img/product-details/plant.png",
-        title: "Curcuma Longa (Turmeric) ",
+        title: "Curcuma Longa (Turmeric)",
         description:
           "Fights inflammation and pigmentation, helping brighten and even out skin tone.",
         bgColor: "#FFE7E7",
@@ -1764,11 +1743,11 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 13,
+        id: 11,
         img: "/assets/img/product-details/plant.png",
-        title: " Vitamin C",
+        title: "Piper Nigrum (Black Pepper)",
         description:
-          " Boosts natural collagen production, protects skin from damage, and supports a healthy glow.",
+          "Enhances the bioavailability of nutrients for better absorption and effectiveness.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1776,19 +1755,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 14,
-        img: "/assets/img/product-details/plant.png",
-        title: " Hyaluronic Acid ",
-        description:
-          "Deeply hydrates from within, plumping the skin and smoothing out fine lines.",
-        bgColor: "#FFE7E7",
-        headingColor: "#B00404",
-        paragraphColor: "#666666",
-        plusColor: "#B00404",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 15,
+        id: 12,
         img: "/assets/img/product-details/plant.png",
         title: "Steviol Glycosides",
         description:
@@ -1799,12 +1766,50 @@ export const fallbackProducts: Product[] = [
         plusColor: "#B00404",
         xColor: "#FFFFFF",
       },
+    
+      // 💊 Chemical / Nutrient-Based (Functional Compounds)
+      {
+        id: 13,
+        img: "/assets/img/product-details/plant.png",
+        title: "L-Glutathione",
+        description:
+          "The body’s master antioxidant that brightens skin, reduces pigmentation, and fights oxidative stress.",
+        bgColor: "#FFE7E7",
+        headingColor: "#B00404",
+        paragraphColor: "#666666",
+        plusColor: "#B00404",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 14,
+        img: "/assets/img/product-details/plant.png",
+        title: "L-Lysine",
+        description:
+          "An essential amino acid that helps rebuild collagen and supports youthful, firm skin.",
+        bgColor: "#FFE7E7",
+        headingColor: "#B00404",
+        paragraphColor: "#666666",
+        plusColor: "#B00404",
+        xColor: "#FFFFFF",
+      },
+      {
+        id: 15,
+        img: "/assets/img/product-details/plant.png",
+        title: "Vitamin C",
+        description:
+          "Boosts natural collagen production, protects skin from damage, and supports a healthy glow.",
+        bgColor: "#FFE7E7",
+        headingColor: "#B00404",
+        paragraphColor: "#666666",
+        plusColor: "#B00404",
+        xColor: "#FFFFFF",
+      },
       {
         id: 16,
         img: "/assets/img/product-details/plant.png",
-        title: "Vitamin B3 (Niacinamide)",
+        title: "Hyaluronic Acid",
         description:
-          " Improves skin texture, reduces enlarged pores, and enhances skin brightness.",
+          "Deeply hydrates from within, plumping the skin and smoothing out fine lines.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1814,9 +1819,9 @@ export const fallbackProducts: Product[] = [
       {
         id: 17,
         img: "/assets/img/product-details/plant.png",
-        title: "Piper Nigrum (Black Pepper)",
+        title: "Vitamin B3 (Niacinamide)",
         description:
-          " Enhances the bioavailability of nutrients for better absorption and effectiveness.",
+          "Improves skin texture, reduces enlarged pores, and enhances skin brightness.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
@@ -1828,7 +1833,7 @@ export const fallbackProducts: Product[] = [
         img: "/assets/img/product-details/plant.png",
         title: "Vitamin E",
         description:
-          "A skin-protecting antioxidant that supports hydration, repair, and barrier function. ",
+          "A skin-protecting antioxidant that supports hydration, repair, and barrier function.",
         bgColor: "#FFE7E7",
         headingColor: "#B00404",
         paragraphColor: "#666666",
