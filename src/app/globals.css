@@ -187,7 +187,7 @@
 
 /* Flat pagination for Splide (used via classes: pagination: flatpagination, page: flatpage) */
 .flatpagination {
-  @apply !absolute left-0 md:!bottom-[-1.2rem] !bottom-[-2.2rem] !flex gap-2;
+  @apply !absolute left-0 md:!bottom-[-1.2rem] !bottom-[-1.8rem] !flex gap-2;
 }
 .flatpage {
   @apply !w-4 !h-[3px] !rounded-[2px] bg-gray-300 transition-all;

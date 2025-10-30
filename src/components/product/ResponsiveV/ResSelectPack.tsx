@@ -319,13 +319,13 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             <div className="flex gap-4 items-center my-2 justify-center">
                 <Button
                     onClick={handleShopNow}
-                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-[#057A37] text-white"
+                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-[#057A37] text-white w-42"
                 >
                     <ShoppingBag size={16} /> Buy Now
                 </Button>
                 <Button
                     onClick={handleAddToCart}
-                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-white text-black border border-black"
+                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-white text-black border border-black w-42"
                 >
                     <ShoppingCart size={16} /> Add to Cart
                 </Button>

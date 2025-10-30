@@ -31,7 +31,7 @@ const ResDropdown = ({ productId }: ResDropdownProps) => {
         : tabItems[0];
 
     return (
-        <div className="w-full py-6 md:hidden">
+        <div className="w-full pt-6 md:hidden">
             {/* Dropdown */}
             <select
                 value={active || tabItems[0].id}

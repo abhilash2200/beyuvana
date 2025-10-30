@@ -89,7 +89,7 @@ export default function Product1Layout({ product }: { product: Product }) {
     return (
         <>
             <div className="container mx-auto px-4 py-10">
-                <div className="flex flex-wrap justify-between gap-x-2">
+                <div className="flex flex-wrap justify-between gap-y-4">
                     <div className="w-full md:w-[30%]">
                         <div className="hidden md:block">
                             <ProductImg images={product.images} />

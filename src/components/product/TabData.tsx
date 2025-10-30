@@ -28,7 +28,7 @@ const TabData = ({ productId }: TabDataProps) => {
     }));
 
     return (
-        <Tabs value={active || tabItems[0].id} onValueChange={setActive} className="w-full py-10">
+        <Tabs value={active || tabItems[0].id} onValueChange={setActive} className="w-full md:py-10">
             <div className="flex gap-6">
                 <TabsList
                     className={`flex flex-col items-start justify-center w-[30%] h-auto rounded-[20px] shadow-lg p-4 space-y-3`}
