@@ -2,11 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  compress: true, // enable gzip compression for responses
+  compress: true,
 
   images: {
-    formats: ["image/avif", "image/webp"], // auto optimized formats
-    minimumCacheTTL: 31536000, // 1 year cache for images
+    unoptimized: false,
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 86400,
     remotePatterns: [
       {
         protocol: "https",
@@ -20,22 +21,47 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Cache static assets (images, css, js, fonts, etc.)
-        source: "/:all*(svg|jpg|jpeg|png|gif|ico|webp|ttf|woff|woff2|js|css)$",
+        source: "/:all*(jpg|jpeg|png|gif|webp|svg|ico)$",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=31536000, immutable", // 1 year browser cache
+            value: "public, max-age=604800, must-revalidate",
           },
         ],
       },
       {
-        // Optional: cache API responses lightly
+        source: "/:all*(mp4|mov|webm|avi|mkv)$",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, must-revalidate",
+          },
+        ],
+      },
+      {
+        source: "/:all*(css|js)$",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, must-revalidate",
+          },
+        ],
+      },
+      {
+        source: "/:all*(ttf|woff|woff2|eot)$",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
         source: "/api/:path*",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=60, s-maxage=120, stale-while-revalidate",
+            value: "no-cache, no-store, must-revalidate",
           },
         ],
       },
@@ -46,7 +72,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://beyuvana.com/api/:path*", // Proxying API
+        destination: "https://beyuvana.com/api/:path*",
       },
     ];
   },

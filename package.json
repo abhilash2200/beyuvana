@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "clean": "rimraf .next && rimraf node_modules/.cache",
+    "clean:next": "rimraf .next"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
