@@ -16,9 +16,9 @@ interface Pack {
     originalPrice: number;
     discount: string;
     tagline: string;
-    product_price_id?: string; // Add product_price_id for cart API
-    unit_name?: string; // Unit name from API (e.g., "Pc" for trial pack)
-    isTrialPack?: boolean; // Flag to identify trial pack
+    product_price_id?: string;
+    unit_name?: string;
+    isTrialPack?: boolean;
 }
 
 interface Product {
@@ -90,11 +90,11 @@ function buildPacksFromPrices(
 
             return {
                 qty,
-                sachets: 5, // Trial pack always has 5 sachets
+                sachets: 5,
                 price: Math.round(isNaN(final) ? 0 : final),
                 originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
                 discount,
-                tagline: "Free Trial", // Special tagline for trial pack
+                tagline: "Free Trial",
                 product_price_id: trialPackTier.product_price_id,
                 unit_name: trialPackTier.unit_name,
                 isTrialPack: true,
@@ -102,7 +102,6 @@ function buildPacksFromPrices(
         })()
         : null;
 
-    // Build regular packs
     const regularPacks = regularPacksTiers
         .map((tier) => {
             const qty = Number(tier.qty);
@@ -129,7 +128,6 @@ function buildPacksFromPrices(
         })
         .sort((a, b) => a.qty - b.qty);
 
-    // Return trial pack first, then regular packs sorted by quantity
     return trialPack ? [trialPack, ...regularPacks] : regularPacks;
 }
 
@@ -139,7 +137,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
-    // Load from API by matching design slug -> id, fall back by name contains
     useEffect(() => {
         let ignore = false;
 
@@ -158,7 +155,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 if (numericId) {
                     apiProduct = data.find((p) => String(p.id) === String(numericId));
                 }
-                // Prefer matching by design_type when provided
                 if (!apiProduct && designType) {
                     const desired = designType.toLowerCase();
                     apiProduct = data.find((p) => {
@@ -209,7 +205,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
             return;
         }
 
-        // Validate required fields before attempting to add to cart
         if (!selectedPack.product_price_id) {
             toast.error("Unable to add to cart: Missing price information. Please try again.");
             return;
@@ -231,10 +226,8 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 product_price_id: selectedPack.product_price_id,
                 mrp_price: selectedPack.originalPrice,
             });
-            // Success toast is now handled by CartProvider
         } catch (error) {
             console.error("Add to cart error:", error);
-            // Error toast is now handled by CartProvider
         }
     };
 
@@ -255,13 +248,11 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
 
     if (!product) return <p>Product not found</p>;
 
-    // Calculate middle index for Best Seller badge (excluding trial pack)
-    // If trial pack exists, middle is calculated from regular packs only
     const hasTrialPack = product.packs[0]?.isTrialPack === true;
     const regularPacksCount = hasTrialPack ? product.packs.length - 1 : product.packs.length;
     const bestSellerIndex = hasTrialPack
-        ? Math.floor(regularPacksCount / 2) + 1  // +1 because trial pack is at index 0
-        : Math.floor(product.packs.length / 2);   // Middle of all packs if no trial
+        ? Math.floor(regularPacksCount / 2) + 1
+        : Math.floor(product.packs.length / 2);
 
     return (
         <div className="border border-gray-900 rounded-[20px] p-4">
@@ -276,7 +267,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
 
             {product.packs.map((pack, index) => {
                 const isBestSeller = index === bestSellerIndex;
-                // Check if this pack is selected (using product_price_id for accurate comparison, fallback to qty + isTrialPack)
                 const isSelected = selectedPack
                     ? (selectedPack.product_price_id && pack.product_price_id
                         ? selectedPack.product_price_id === pack.product_price_id
@@ -292,7 +282,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                             ${isBestSeller ? "border-2 border-[#057A37]" : ""}
                         `}
                     >
-                        {/* Best Seller Label */}
                         {isBestSeller && (
                             <p className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FFAA00] text-black text-xs px-3 py-1 rounded-full shadow">
                                 Best Seller
