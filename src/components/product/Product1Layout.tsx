@@ -21,6 +21,7 @@ import ResSelectPack from "./ResponsiveV/ResSelectPack";
 import ResDropdown from "./ResponsiveV/ResDropdown";
 import { backendProductIdMap } from "@/app/data/productConfigs";
 import InfluencerVideos from "./InfluencerVideos";
+import CompareProduct from "./CompareProduct";
 
 const data = [
     {
@@ -262,7 +263,7 @@ export default function Product1Layout({ product }: { product: Product }) {
             </div>
             <div className="md:py-10 py-6">
                 <div className="container mx-auto px-4">
-                <HeaderText textalign="md:text-center text-left" heading="India’s Most Advanced Anti-Aging Innovation" textcolor="text-[#1A2819]" />
+                    <HeaderText textalign="md:text-center text-left" heading="India’s Most Advanced Anti-Aging Innovation" textcolor="text-[#1A2819]" />
                 </div>
                 <p className="md:text-center text-left mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">Collagen Reglow delivers clinically proven ingredients in precision-dosed sachets for maximum skin transformation.</p>
                 <div className="py-6">
@@ -272,6 +273,13 @@ export default function Product1Layout({ product }: { product: Product }) {
             <div className="md:py-10 py-6">
                 <div className="container mx-auto px-4">
                     <DetailsOfGreenCollagen product={product} />
+                </div>
+            </div>
+            <div className="md:py-10 py-6">
+                <div className="container mx-auto px-4">
+                    <HeaderText textalign="text-center" heading="BEYUVANA™ PREMIUM COLLAGEN BUILDER VS OTHER PRODUCTS" textcolor="text-[#1A2819]" />
+                    <p className="text-center mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">“Powered by 18 precision-selected plant actives to nourish your skin, strengthen your gut, and restore emotional balance.”</p>
+                    <CompareProduct layoutType="green" />
                 </div>
             </div>
             <div className="md:py-10 py-6">

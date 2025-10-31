@@ -3,7 +3,12 @@
 import Image from "next/image"
 import { FaRegCheckCircle, FaRegTimesCircle } from "react-icons/fa"
 
-const CompareProduct = () => {
+interface CompareProductProps {
+  layoutType?: "pink" | "green"
+}
+
+const CompareProduct = ({ layoutType = "pink" }: CompareProductProps) => {
+  const bgColor = layoutType === "pink" ? "#FFF6F6" : "#EBFCEE"
   const leftContent = {
     title: "BEYUVANA™ Glow Essence",
     points: [
@@ -39,7 +44,7 @@ const CompareProduct = () => {
   }
 
   return (
-    <div className="bg-[#FFF6F6] md:p-8 p-4 rounded-[20px] shadow-sm">
+    <div className="md:p-8 p-4 rounded-[20px] shadow-sm" style={{ backgroundColor: bgColor }}>
       <div className="flex flex-wrap justify-between gap-y-10 md:gap-y-8">
         {/* Left content */}
         <div className="w-full md:w-[33%] md:pr-4">

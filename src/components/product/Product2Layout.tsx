@@ -157,7 +157,7 @@ export default function Product2Layout({ product }: { product: Product }) {
             <div className="w-full md:w-[48%]">
               <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-3">Experience Visible Transformation in 10 Weeks</h2>
               <p className="mb-4 md:leading-relaxed text-[15px] leading-tight font-light">
-              Our clinical-style transformation chart reflects the powerful effects of BEYUVANA™  Glow Essence. With consistent use, you’ll notice real, measurable improvements—designed by nature, proven by science.Within just 10 weeks . Results may vary by individual. Based on ingredient research and regular usage.
+                Our clinical-style transformation chart reflects the powerful effects of BEYUVANA™  Glow Essence. With consistent use, you’ll notice real, measurable improvements—designed by nature, proven by science.Within just 10 weeks . Results may vary by individual. Based on ingredient research and regular usage.
               </p>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function Product2Layout({ product }: { product: Product }) {
         <div className="container mx-auto px-4">
           <HeaderText textalign="text-center" heading="GLOW ESSENCE VS OTHER PRODUCTS" textcolor="text-[#1A2819]" />
           <p className="text-center mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">“Powered by 18 precision-selected plant actives to nourish your skin, strengthen your gut, and restore emotional balance.”</p>
-          <CompareProduct />
+          <CompareProduct layoutType="pink" />
         </div>
       </div>
       <div className="md:py-10 py-6">

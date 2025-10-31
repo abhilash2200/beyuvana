@@ -731,7 +731,7 @@ export const fallbackProducts: Product[] = [
       // 🌿 --- Natural extracts & plant-based items first ---
       {
         id: 1,
-        img: "/assets/img/product-details/gifs/ashwagandha.jpg",
+        img: "/assets/img/product-details/gif/ashwagandha.gif",
         title: "Ashwagandha Extract",
         description:
           "Rich in natural Vitamin C, it boosts collagen synthesis and combats oxidative stress—promoting firmer, more even-toned skin. ",
@@ -825,46 +825,10 @@ export const fallbackProducts: Product[] = [
         plusColor: "#057A37",
         xColor: "#FFFFFF",
       },
-      {
-        id: 9,
-        img: "/assets/img/product-details/plant.png",
-        title: "Stevia",
-        description:
-          "Zero sugar or aftertaste—keeping the formulation clean and holistic.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 10,
-        img: "/assets/img/product-details/plant.png",
-        title: "Pineapple Flavor",
-        description:
-          "Adds a refreshing tropical taste that makes daily consumption enjoyable. Naturally derived.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
-      {
-        id: 11,
-        img: "/assets/img/product-details/gifs/ashwagandha.jpg",
-        title: "Ashwagandha (alt note)",
-        description:
-          "Reduces stress-induced aging and cortisol imbalance, supporting hormonal harmony and skin health.",
-        bgColor: "#F0F8F0",
-        headingColor: "#057A37",
-        paragraphColor: "#666666",
-        plusColor: "#057A37",
-        xColor: "#FFFFFF",
-      },
     
       // ⚗️ --- Chemical / nutrient compounds after ---
       {
-        id: 12,
+        id: 9,
         img: "/assets/img/product-details/gifs/l-lysine.jpg",
         title: "L-Lysine",
         description:
@@ -876,7 +840,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 13,
+        id: 10,
         img: "/assets/img/product-details/gifs/l-plorine.jpg",
         title: "L-Proline",
         description:
@@ -888,7 +852,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 14,
+        id: 11,
         img: "/assets/img/product-details/gifs/coenzyme.jpg",
         title: "Coenzyme Q10",
         description:
@@ -900,7 +864,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 15,
+        id: 12,
         img: "/assets/img/product-details/gifs/astaxanthin.jpg",
         title: "Astaxanthin",
         description:
@@ -912,7 +876,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 16,
+        id: 13,
         img: "/assets/img/product-details/gifs/reserveratrol.jpg",
         title: "Resveratrol",
         description:
@@ -924,7 +888,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 17,
+        id: 14,
         img: "/assets/img/product-details/gifs/glutathione.jpg",
         title: "Glutathione",
         description:
@@ -936,7 +900,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 18,
+        id: 15,
         img: "/assets/img/product-details/gifs/hyaluronic-acid.jpg",
         title: "Hyaluronic Acid",
         description:
@@ -948,7 +912,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 19,
+        id: 16,
         img: "/assets/img/product-details/gifs/vitamin-c.jpg",
         title: "Vitamin C",
         description:
@@ -960,7 +924,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 20,
+        id: 17,
         img: "/assets/img/product-details/gifs/vitamin-e.jpg",
         title: "Vitamin E",
         description:
@@ -972,7 +936,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 21,
+        id: 18,
         img: "/assets/img/product-details/gifs/biotin.jpg",
         title: "Biotin",
         description:
@@ -984,7 +948,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 22,
+        id: 19,
         img: "/assets/img/product-details/gifs/zinc.jpg",
         title: "Zinc",
         description:
@@ -996,7 +960,7 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
       {
-        id: 23,
+        id: 20,
         img: "/assets/img/product-details/gifs/selenium.jpg",
         title: "Selenium",
         description:
@@ -1696,7 +1660,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 7,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/gifs/tea.gif",
         title: "Green Tea Extract",
         description:
           "Fights free radicals, controls oil, reduces breakouts, and supports clear, calm skin.",
@@ -1767,7 +1731,6 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
     
-      // 💊 Chemical / Nutrient-Based (Functional Compounds)
       {
         id: 13,
         img: "/assets/img/product-details/gif/l-glutathione.jpg",
