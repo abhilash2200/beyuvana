@@ -72,7 +72,7 @@ const Header = () => {
     return (
         <header className="sticky top-0 z-50 w-full">
             {/* Logo */}
-            <div className="flex items-center justify-center bg-[#1E2C1E]">
+            <div className="flex items-center justify-center bg-[#122014]">
                 <Link href="/" className="transition hover:opacity-80">
                     <Image
                         src="/assets/img/logo.png"
