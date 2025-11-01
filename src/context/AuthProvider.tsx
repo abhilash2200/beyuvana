@@ -19,9 +19,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [sessionKey, setSessionKey] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check if we're in the browser before accessing localStorage
+    if (typeof window === "undefined") return;
+
     const storedUser = localStorage.getItem("user");
     const storedSession = localStorage.getItem("session_key");
-
 
     if (storedUser) {
       try {
@@ -33,7 +35,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         localStorage.removeItem("user");
       }
-    } else {
     }
 
     if (storedSession) {
@@ -42,6 +43,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    // Check if we're in the browser before accessing localStorage
+    if (typeof window === "undefined") return;
+
     try {
       if (user && sessionKey) {
         localStorage.setItem("session_key", sessionKey);
@@ -54,12 +58,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user, sessionKey]);
 
   const logout = async () => {
-
     try {
       if (sessionKey && user?.id) {
         const { authApi } = await import("@/lib/api");
         await authApi.logout(sessionKey, user.id);
-      } else {
       }
     } catch (err) {
       if (process.env.NODE_ENV === "development") {
@@ -72,8 +74,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
       }
     } finally {
-      localStorage.removeItem("user");
-      localStorage.removeItem("session_key");
+      // Check if we're in the browser before accessing localStorage
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("user");
+        localStorage.removeItem("session_key");
+      }
 
       setUser(null);
       setSessionKey(null);

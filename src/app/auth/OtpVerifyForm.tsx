@@ -42,7 +42,9 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
             setCanResend(false);
             toast.success("OTP resent successfully!");
         } catch (error) {
-            console.error("Resend OTP failed:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Resend OTP failed:", error);
+            }
             toast.error("Failed to resend OTP. Please try again.");
         } finally {
             setResending(false);
@@ -105,10 +107,14 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                 }
 
                 try {
-                    localStorage.setItem("user", JSON.stringify(normalizedUser));
-                    if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
+                    if (typeof window !== "undefined") {
+                        localStorage.setItem("user", JSON.stringify(normalizedUser));
+                        if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
+                    }
                 } catch (err) {
-                    console.warn("Failed to save user in localStorage:", err);
+                    if (process.env.NODE_ENV === "development") {
+                        console.warn("Failed to save user in localStorage:", err);
+                    }
                 }
 
                 toast.success(`Welcome to BEYUVANA, ${normalizedUser.name}! Your account has been created successfully.`);
@@ -165,10 +171,14 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                     }
 
                     try {
-                        localStorage.setItem("user", JSON.stringify(normalizedUser));
-                        if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
+                        if (typeof window !== "undefined") {
+                            localStorage.setItem("user", JSON.stringify(normalizedUser));
+                            if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
+                        }
                     } catch (err) {
-                        console.warn("Failed to save user in localStorage:", err);
+                        if (process.env.NODE_ENV === "development") {
+                            console.warn("Failed to save user in localStorage:", err);
+                        }
                     }
 
                     toast.success(`Welcome back, ${normalizedUser.name}!`);
@@ -180,7 +190,9 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
 
             onVerified();
         } catch (error) {
-            console.error("OTP verification failed:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("OTP verification failed:", error);
+            }
             const errorMessage = (error as Error)?.message || "Invalid OTP. Please try again.";
             toast.error(errorMessage);
         } finally {

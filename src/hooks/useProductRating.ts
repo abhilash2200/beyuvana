@@ -71,7 +71,10 @@ export function useProductRating({
 
   useEffect(() => {
     fetchRatingData();
-  }, [productId, sessionKey, enabled, fetchRatingData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId, sessionKey, enabled]);
+  // Note: fetchRatingData is excluded from dependencies as it's already memoized
+  // with useCallback and includes all necessary dependencies (enabled, productId, sessionKey)
 
   return {
     ratingStats,

@@ -62,7 +62,9 @@ export default function Cart() {
             await increaseItemQuantity(itemId);
             setLastIncreaseTime(Date.now());
         } catch (error) {
-            console.error("Failed to increase quantity:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Failed to increase quantity:", error);
+            }
             setCartError("Failed to update quantity. Please try again.");
         }
     };
@@ -72,7 +74,9 @@ export default function Cart() {
             setCartError(null);
             await decreaseItemQuantity(itemId);
         } catch (error) {
-            console.error("Failed to decrease quantity:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Failed to decrease quantity:", error);
+            }
             setCartError("Failed to update quantity. Please try again.");
         }
     };
@@ -82,7 +86,9 @@ export default function Cart() {
             setCartError(null);
             await updateItemQuantity(itemId, quantity);
         } catch (error) {
-            console.error("Failed to update quantity:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Failed to update quantity:", error);
+            }
             setCartError("Failed to update quantity. Please try again.");
         }
     };
@@ -92,7 +98,9 @@ export default function Cart() {
             setCartError(null);
             await refreshCart();
         } catch (error) {
-            console.error("Failed to refresh cart:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Failed to refresh cart:", error);
+            }
             setCartError("Failed to refresh cart. Please try again.");
         }
     };
@@ -102,7 +110,9 @@ export default function Cart() {
             setCartError(null);
             await clearCart();
         } catch (error) {
-            console.error("Failed to clear cart:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Failed to clear cart:", error);
+            }
             setCartError("Failed to clear cart. Please try again.");
         }
     };
