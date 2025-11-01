@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -28,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Cart from "../cart/Cart";
+import { useAuthDialog } from "@/hooks/useAuthDialog";
 
 const links = [
     { label: "Home", href: "/", icon: <RiHome2Line className="text-lg" /> },
@@ -39,42 +39,19 @@ const links = [
 const MobileNav = () => {
     const pathname = usePathname();
     const { user } = useAuth();
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
-    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-    const [registerStep, setRegisterStep] = useState<"form" | "otp">("form");
-    const [loginStep, setLoginStep] = useState<"form" | "otp">("form");
-    const [otpData, setOtpData] = useState<{
-        phone: string;
-        userData?: { name: string; email: string; phone: string };
-    } | null>(null);
-
-    const handleRegisterOtpSent = (phone: string, userData?: { name: string; email: string; phone: string }) => {
-        if (process.env.NODE_ENV === "development") {
-            console.log("🔍 MobileNav - handleRegisterOtpSent called with:", { phone, userData });
-        }
-        setOtpData({ phone, userData });
-        setRegisterStep("otp");
-    };
-
-    const handleRegisterOtpVerified = () => {
-        setRegisterStep("form");
-        setOtpData(null);
-        setIsRegisterOpen(false);
-    };
-
-    const handleLoginOtpSent = (phone: string) => {
-        if (process.env.NODE_ENV === "development") {
-            console.log("🔍 MobileNav - handleLoginOtpSent called with:", { phone });
-        }
-        setOtpData({ phone });
-        setLoginStep("otp");
-    };
-
-    const handleLoginOtpVerified = () => {
-        setLoginStep("form");
-        setOtpData(null);
-        setIsLoginOpen(false);
-    };
+    const {
+        isLoginOpen,
+        isRegisterOpen,
+        loginStep,
+        registerStep,
+        otpData,
+        setIsLoginOpen,
+        setIsRegisterOpen,
+        handleLoginOtpSent,
+        handleLoginOtpVerified,
+        handleRegisterOtpSent,
+        handleRegisterOtpVerified,
+    } = useAuthDialog();
 
     return (
         <div className="sticky top-0 z-50 w-full bg-white px-3 py-2 flex items-center justify-between">

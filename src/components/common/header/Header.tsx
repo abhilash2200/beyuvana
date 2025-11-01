@@ -29,44 +29,25 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Cart from "../cart/Cart";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { TbSettings2 } from "react-icons/tb";
-import { useState } from "react";
 import { TbUserSquareRounded } from "react-icons/tb";
+import { useAuthDialog } from "@/hooks/useAuthDialog";
 
 
 const Header = () => {
     const { user } = useAuth();
-    // const { cartItems } = useCart();
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
-    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-    const [registerStep, setRegisterStep] = useState<"form" | "otp">("form");
-    const [loginStep, setLoginStep] = useState<"form" | "otp">("form");
-    const [otpData, setOtpData] = useState<{
-        phone: string;
-        userData?: { name: string; email: string; phone: string };
-    } | null>(null);
-
-    const handleRegisterOtpSent = (phone: string, userData?: { name: string; email: string; phone: string }) => {
-        setOtpData({ phone, userData });
-        setRegisterStep("otp");
-    };
-
-    const handleRegisterOtpVerified = () => {
-        setRegisterStep("form");
-        setOtpData(null);
-        setIsRegisterOpen(false);
-    };
-
-
-    const handleLoginOtpSent = (phone: string) => {
-        setOtpData({ phone });
-        setLoginStep("otp");
-    };
-
-    const handleLoginOtpVerified = () => {
-        setLoginStep("form");
-        setOtpData(null);
-        setIsLoginOpen(false);
-    };
+    const {
+        isLoginOpen,
+        isRegisterOpen,
+        loginStep,
+        registerStep,
+        otpData,
+        setIsLoginOpen,
+        setIsRegisterOpen,
+        handleLoginOtpSent,
+        handleLoginOtpVerified,
+        handleRegisterOtpSent,
+        handleRegisterOtpVerified,
+    } = useAuthDialog();
 
 
     return (
