@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { authApi } from "@/lib/api";
+import { validatePhone } from "@/lib/validation";
 
 interface LoginFormProps {
     onClose?: () => void;
@@ -23,29 +24,16 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
         setLoading(true);
 
 
-        // Basic phone validation - ensure it's exactly 10 digits
-        const phoneRegex = /^\d{10}$/;
-        if (!phoneRegex.test(form.phone)) {
-            setError("Please enter a valid 10-digit phone number.");
+        // Validate phone number using centralized validation
+        const phoneValidation = validatePhone(form.phone);
+        if (!phoneValidation.isValid) {
+            setError(phoneValidation.error || "Please enter a valid phone number.");
             setLoading(false);
             return;
         }
 
-        // Ensure phone number is exactly 10 digits for API
+        // Clean phone number for API (remove all non-digits)
         const cleanPhone = form.phone.replace(/\D/g, "");
-        if (cleanPhone.length !== 10) {
-            setError("Phone number must be exactly 10 digits.");
-            setLoading(false);
-            return;
-        }
-
-        // Additional validation: Check if phone number starts with valid Indian mobile prefixes
-        const validPrefixes = ['6', '7', '8', '9'];
-        if (!validPrefixes.includes(cleanPhone[0])) {
-            setError("Please enter a valid Indian mobile number (starting with 6, 7, 8, or 9).");
-            setLoading(false);
-            return;
-        }
 
         try {
             // Try different phone number formats that the API might accept
@@ -73,7 +61,9 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
                         lastError = response.message || "OTP send failed";
                     }
                 } catch (err) {
-                    console.error(`Error with format ${phoneFormat}:`, err);
+                    if (process.env.NODE_ENV === "development") {
+                        console.error(`Error with format ${phoneFormat}:`, err);
+                    }
                     lastError = (err as Error)?.message || "Network error";
                     // Continue trying other formats
                 }
@@ -89,7 +79,9 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
 
             toast.success("OTP sent to your phone number. Please verify to login.");
         } catch (err: unknown) {
-            console.error("Login form error:", err);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Login form error:", err);
+            }
             // Try to extract error message from API response
             let errorMessage = "Failed to send OTP. Please try again later.";
 

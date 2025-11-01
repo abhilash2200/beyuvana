@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { authApi } from "@/lib/api";
+import { validatePhone, validateRequired, validateEmail } from "@/lib/validation";
 
 interface RegisterFormProps {
     onClose?: () => void;
@@ -13,7 +14,6 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
-    console.log("🔍 RegisterForm - onOtpSent prop:", onOtpSent);
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({ name: "", email: "", phone: "" });
     const [error, setError] = useState("");
@@ -23,34 +23,27 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
 
         setError("");
 
-        // Basic phone validation - ensure it's exactly 10 digits
-        const phoneRegex = /^\d{10}$/;
-        if (!phoneRegex.test(form.phone)) {
-            setError("Please enter a valid 10-digit phone number.");
+        // Validate phone number using centralized validation
+        const phoneValidation = validatePhone(form.phone);
+        if (!phoneValidation.isValid) {
+            setError(phoneValidation.error || "Please enter a valid phone number.");
             return;
         }
 
-        // Ensure phone number is exactly 10 digits for API
+        // Clean phone number for API (remove all non-digits)
         const cleanPhone = form.phone.replace(/\D/g, "");
-        if (cleanPhone.length !== 10) {
-            setError("Phone number must be exactly 10 digits.");
+
+        // Validate name
+        const nameValidation = validateRequired(form.name, "Name");
+        if (!nameValidation.isValid) {
+            setError(nameValidation.error || "Please enter your name.");
             return;
         }
 
-        // Additional validation: Check if phone number starts with valid Indian mobile prefixes
-        const validPrefixes = ['6', '7', '8', '9'];
-        if (!validPrefixes.includes(cleanPhone[0])) {
-            setError("Please enter a valid Indian mobile number (starting with 6, 7, 8, or 9).");
-            return;
-        }
-
-        if (!form.name.trim()) {
-            setError("Please enter your name.");
-            return;
-        }
-
-        if (!form.email.trim()) {
-            setError("Please enter your email.");
+        // Validate email
+        const emailValidation = validateEmail(form.email);
+        if (!emailValidation.isValid) {
+            setError(emailValidation.error || "Please enter a valid email.");
             return;
         }
 
@@ -117,7 +110,9 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
 
             toast.success("OTP sent to your phone number. Please verify to complete registration.");
         } catch (err: unknown) {
-            console.error("❌ RegisterForm - OTP send failed:", err);
+            if (process.env.NODE_ENV === "development") {
+                console.error("RegisterForm - OTP send failed:", err);
+            }
             // Try to extract error message from API response
             const errorMessage = (err as Error)?.message || "Failed to send OTP. Please try again later.";
             setError(errorMessage);

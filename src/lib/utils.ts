@@ -32,12 +32,12 @@ export function slugify(input: string): string {
  */
 export function getImageUrl(imagePath: string, version?: string): string {
   if (!imagePath) return imagePath;
-  
+
   // If it's already an external URL, return as-is
   if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
     return imagePath;
   }
-  
+
   // Use provided version or generate one based on build time (in production)
   // In development, use current timestamp to always bust cache
   const cacheBuster = version || (
@@ -45,7 +45,29 @@ export function getImageUrl(imagePath: string, version?: string): string {
       ? `t=${Date.now()}`
       : `v=${process.env.NEXT_PUBLIC_BUILD_ID || "1"}`
   );
-  
+
   const separator = imagePath.includes("?") ? "&" : "?";
   return `${imagePath}${separator}cb=${cacheBuster}`;
+}
+
+/**
+ * Formats a number as Indian Rupee currency
+ * @param amount - The amount to format
+ * @returns Formatted currency string (e.g., "1,234.56")
+ * @example
+ * formatCurrency(1234.56) // Returns "1,234.56"
+ */
+export function formatCurrency(amount: number): string {
+  return amount.toLocaleString("en-IN");
+}
+
+/**
+ * Formats a number as Indian Rupee currency with ₹ symbol
+ * @param amount - The amount to format
+ * @returns Formatted currency string with ₹ symbol (e.g., "₹1,234")
+ * @example
+ * formatINR(1234) // Returns "₹1,234"
+ */
+export function formatINR(amount: number): string {
+  return `₹${formatCurrency(Math.round(amount))}`;
 }

@@ -1,6 +1,6 @@
 "use client"
 import { Rating } from '@mui/material'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, memo } from 'react'
 import { reviewApi, productsApi, type Product, type ProductsListRequest } from '@/lib/api'
 import { useAuth } from '@/context/AuthProvider'
 import { Button } from '@/components/ui/button'
@@ -25,7 +25,7 @@ const timeAgo = (iso?: string) => {
     return `${days} days ago`;
 };
 
-const CustomerReviews = ({ productId, productName, designSlug }: { productId?: number; productName?: string; designSlug?: string }) => {
+const CustomerReviews = memo(({ productId, productName, designSlug }: { productId?: number; productName?: string; designSlug?: string }) => {
     const { sessionKey } = useAuth();
     const [reviews, setReviews] = useState<ReviewItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -74,9 +74,6 @@ const CustomerReviews = ({ productId, productName, designSlug }: { productId?: n
                     if (!Number.isNaN(parsed)) {
                         resolvedId = parsed;
                     }
-                }
-                if (process.env.NODE_ENV === 'development') {
-                    // Debug: Reviews resolver
                 }
             } catch {
                 // ignore list fetch errors; we'll fallback to provided id
@@ -248,6 +245,8 @@ const CustomerReviews = ({ productId, productName, designSlug }: { productId?: n
             {content}
         </div>
     )
-}
+});
+
+CustomerReviews.displayName = "CustomerReviews";
 
 export default CustomerReviews

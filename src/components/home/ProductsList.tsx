@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
@@ -27,7 +28,7 @@ interface DisplayProduct {
   product_price_ids: { 1: string; 2: string; 4: string };
 }
 
-const ProductsList = () => {
+const ProductsList = React.memo(() => {
   const { addToCart, loading, openCart } = useCart();
 
   const [selectedPacks, setSelectedPacks] = useState<Record<string, 1 | 2 | 4>>({});
@@ -115,7 +116,9 @@ const ProductsList = () => {
 
                 return productData;
               } catch (error) {
-                console.error(`Failed to fetch details for product ${apiProduct.id}:`, error);
+                if (process.env.NODE_ENV === "development") {
+                  console.error(`Failed to fetch details for product ${apiProduct.id}:`, error);
+                }
                 return null;
               }
             })
@@ -129,7 +132,9 @@ const ProductsList = () => {
           setDisplayProducts([]);
         }
       } catch (error) {
-        console.error("Failed to fetch products:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to fetch products:", error);
+        }
         setDisplayProducts([]);
       } finally {
         setIsLoading(false);
@@ -151,7 +156,9 @@ const ProductsList = () => {
 
 
     if (!product.product_price_ids) {
-      console.error("❌ Product missing product_price_ids:", product);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Product missing product_price_ids:", product);
+      }
       toast.error("Unable to add to cart: Product data incomplete. Please refresh and try again.");
       return;
     }
@@ -330,6 +337,8 @@ const ProductsList = () => {
       })}
     </div>
   );
-};
+});
+
+ProductsList.displayName = "ProductsList";
 
 export default ProductsList;

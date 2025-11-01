@@ -9,6 +9,7 @@ import ProductReview from "@/components/common/product/ProductReview";
 import BillingPrice from "@/components/common/product/BillingPrice";
 import { orderDetailsApi, OrderDetailsData } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
 interface Order {
     id: string;
@@ -62,10 +63,17 @@ const OrderDetailPage = () => {
 
     // Get logged-in user name
     useEffect(() => {
+        if (typeof window === "undefined") return;
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
-            const userObj = JSON.parse(storedUser);
-            setUserName(userObj.name || "User");
+            try {
+                const userObj = JSON.parse(storedUser);
+                setUserName(userObj.name || "User");
+            } catch (err) {
+                if (process.env.NODE_ENV === "development") {
+                    console.warn("Failed to parse user from localStorage:", err);
+                }
+            }
         } else {
             setUserName("User");
         }
@@ -90,7 +98,7 @@ const OrderDetailPage = () => {
             }
 
             // Check if the order ID was sanitized (indicating potentially dangerous characters)
-            if (rawOrderId && sanitizeOrderId(rawOrderId) !== rawOrderId) {
+            if (rawOrderId && sanitizeOrderId(rawOrderId) !== rawOrderId && process.env.NODE_ENV === "development") {
                 console.warn("Order ID was sanitized:", { original: rawOrderId, sanitized: orderId });
             }
 
@@ -104,10 +112,7 @@ const OrderDetailPage = () => {
                 setLoading(true);
                 setError(null);
 
-                // Debug: Order Details Debug
-
                 const response = await orderDetailsApi.getOrderDetails(orderId, user?.id?.toString() || '', sessionKey);
-                // Debug: Order details response
 
                 if (response && response.status && response.data) {
                     const data = response.data;
@@ -117,23 +122,23 @@ const OrderDetailPage = () => {
                     const firstItem = data.item_list[0];
                     if (firstItem) {
                         // Map backend status to frontend status format
-                    const backendStatus = String(data.order_details.status ?? "").toUpperCase();
-                    const payStatus = String(data.order_details.pay_status ?? "").toUpperCase();
-                    let mappedStatus: "arriving" | "cancelled" | "delivered" = "arriving";
-                    let displayStatus = "Processing";
-                    
-                    if (backendStatus === "DELIVERED" || backendStatus === "COMPLETED") {
-                        mappedStatus = "delivered";
-                        displayStatus = "Delivered";
-                    } else if (backendStatus === "CANCELLED" || payStatus === "FAILED") {
-                        mappedStatus = "cancelled";
-                        displayStatus = "Cancelled";
-                    } else if (backendStatus === "PENDING") {
-                        mappedStatus = "arriving";
-                        displayStatus = "Processing";
-                    }
+                        const backendStatus = String(data.order_details.status ?? "").toUpperCase();
+                        const payStatus = String(data.order_details.pay_status ?? "").toUpperCase();
+                        let mappedStatus: "arriving" | "cancelled" | "delivered" = "arriving";
+                        let displayStatus = "Processing";
 
-                    const localOrder: Order = {
+                        if (backendStatus === "DELIVERED" || backendStatus === "COMPLETED") {
+                            mappedStatus = "delivered";
+                            displayStatus = "Delivered";
+                        } else if (backendStatus === "CANCELLED" || payStatus === "FAILED") {
+                            mappedStatus = "cancelled";
+                            displayStatus = "Cancelled";
+                        } else if (backendStatus === "PENDING") {
+                            mappedStatus = "arriving";
+                            displayStatus = "Processing";
+                        }
+
+                        const localOrder: Order = {
                             id: data.order_details.id,
                             productName: firstItem.product_name,
                             productImage: data.order_details.thumbnail || firstItem.image || "", // Use thumbnail from API
@@ -155,7 +160,7 @@ const OrderDetailPage = () => {
                     setError(response?.message || "Order not found");
                 }
             } catch (err) {
-                console.error("Error fetching order details:", err);
+                // Error is handled by error state and user-facing message below
 
                 // Try to provide a more helpful error message
                 if (err instanceof Error) {
@@ -278,71 +283,73 @@ const OrderDetailPage = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8 space-y-10">
-            {/* Top Section: Back */}
-            <div className="flex items-center justify-between mb-4">
-                <Button variant="default" onClick={() => router.back()} className="text-black font-normal hover:underline hover:cursor-pointer">
-                    ← Back To Orders
-                </Button>
-            </div>
+        <ErrorBoundary>
+            <div className="container mx-auto px-4 py-8 space-y-10">
+                {/* Top Section: Back */}
+                <div className="flex items-center justify-between mb-4">
+                    <Button variant="default" onClick={() => router.back()} className="text-black font-normal hover:underline hover:cursor-pointer">
+                        ← Back To Orders
+                    </Button>
+                </div>
 
-            {/* Product Section */}
-            <div className="flex flex-col md:flex-row items-center gap-6 border-b md:pb-6 pb-4">
-                <div className="flex gap-4 flex-1">
-                    <div className="relative md:w-28 md:h-28 w-20 h-20">
-                        {order.productImage ? (
-                            <Image
-                                src={order.productImage}
-                                alt={order.productName}
-                                width={120}
-                                height={120}
-                                className="rounded border"
-                            />
-                        ) : (
-                            <div className="w-full h-full bg-gray-200 rounded border flex items-center justify-center">
-                                <div className="text-gray-400 text-xs text-center p-2">
-                                    No Image
+                {/* Product Section */}
+                <div className="flex flex-col md:flex-row items-center gap-6 border-b md:pb-6 pb-4">
+                    <div className="flex gap-4 flex-1">
+                        <div className="relative md:w-28 md:h-28 w-20 h-20">
+                            {order.productImage ? (
+                                <Image
+                                    src={order.productImage}
+                                    alt={order.productName}
+                                    width={120}
+                                    height={120}
+                                    className="rounded border"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gray-200 rounded border flex items-center justify-center">
+                                    <div className="text-gray-400 text-xs text-center p-2">
+                                        No Image
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
 
-                    <div className="flex-1 flex flex-col md:text-[18px] text-[16px]">
-                        <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
-                        <h2 className="font-[Grafiels] md:text-[18px] text-[13px] md:line-clamp-2 line-clamp-1 leading-tight md:mb-1 text-[#1A2819]">{order.productName}</h2>
-                        <p className="text-gray-600 md:text-[15px] text-[12px] md:mb-1 mb-0">Quantity: {order.quantity}</p>
-                        <p className="text-gray-600 md:text-[15px] text-[13px] md:max-w-[70%] md:line-clamp-2 line-clamp-1">{order.shortdecs}</p>
+                        <div className="flex-1 flex flex-col md:text-[18px] text-[16px]">
+                            <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
+                            <h2 className="font-[Grafiels] md:text-[18px] text-[13px] md:line-clamp-2 line-clamp-1 leading-tight md:mb-1 text-[#1A2819]">{order.productName}</h2>
+                            <p className="text-gray-600 md:text-[15px] text-[12px] md:mb-1 mb-0">Quantity: {order.quantity}</p>
+                            <p className="text-gray-600 md:text-[15px] text-[13px] md:max-w-[70%] md:line-clamp-2 line-clamp-1">{order.shortdecs}</p>
+                        </div>
+                    </div>
+                    <div className="md:block hidden">
+                        <p className={`font-semibold ${getStatusColor(order.status)}`}>{order.status}</p>
+                        <div className="flex items-center gap-2 text-gray-700 md:text-[18px] text-[16px]">
+                            <PiFilePdfBold size={22} />
+                            <span className="text-sm">Invoice</span>
+                        </div>
                     </div>
                 </div>
-                <div className="md:block hidden">
-                    <p className={`font-semibold ${getStatusColor(order.status)}`}>{order.status}</p>
-                    <div className="flex items-center gap-2 text-gray-700 md:text-[18px] text-[16px]">
-                        <PiFilePdfBold size={22} />
-                        <span className="text-sm">Invoice</span>
-                    </div>
+
+                {/* Product Review */}
+                <div className="py-4">
+                    <ProductReview
+                        productId={orderDetails?.item_list[0]?.product_id || order.id}
+                        productName={order.productName}
+                        orderStatus={reviewStatus || undefined}
+                    />
+                </div>
+
+
+
+                {/* Billing / Price Section */}
+                <BillingPrice userName={userName} order={order} orderDetails={orderDetails || undefined} />
+
+                <div className="mt-4 bg-[#F2F9F3] md:p-6 p-4 rounded-[20px] shadow-sm flex items-center justify-center">
+                    <Button variant="link" className="text-black underline hover:cursor-pointer border border-black px-16 py-4" onClick={() => router.push("/contact")}>
+                        Need Help?
+                    </Button>
                 </div>
             </div>
-
-            {/* Product Review */}
-            <div className="py-4">
-                <ProductReview
-                    productId={orderDetails?.item_list[0]?.product_id || order.id}
-                    productName={order.productName}
-                    orderStatus={reviewStatus || undefined}
-                />
-            </div>
-
-
-
-            {/* Billing / Price Section */}
-            <BillingPrice userName={userName} order={order} orderDetails={orderDetails || undefined} />
-
-            <div className="mt-4 bg-[#F2F9F3] md:p-6 p-4 rounded-[20px] shadow-sm flex items-center justify-center">
-                <Button variant="link" className="text-black underline hover:cursor-pointer border border-black px-16 py-4" onClick={() => router.push("/contact")}>
-                    Need Help?
-                </Button>
-            </div>
-        </div>
+        </ErrorBoundary>
     );
 };
 

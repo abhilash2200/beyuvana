@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
@@ -11,7 +12,7 @@ interface ProductImgProps {
   images: string[];
 }
 
-export default function ProductImg({ images }: ProductImgProps) {
+const ProductImg = React.memo(function ProductImg({ images }: ProductImgProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const splideRef = useRef<{ splide: { go: (direction: string | number) => void; index: number } } | null>(null);
 
@@ -21,12 +22,13 @@ export default function ProductImg({ images }: ProductImgProps) {
       <div className="w-full flex items-center justify-center">
         <Lens>
           <Image
-            src={images[selectedIndex]}
-            alt="Product Image"
+            src={images[selectedIndex] || "/assets/img/green-product.png"}
+            alt={`Product image ${selectedIndex + 1} of ${images.length}`}
             width={600}
             height={600}
             className="object-contain w-full h-full rounded-xl overflow-hidden shadow-lg"
             priority
+            aria-label={`Product image ${selectedIndex + 1} of ${images.length}`}
           />
         </Lens>
       </div>
@@ -106,4 +108,8 @@ export default function ProductImg({ images }: ProductImgProps) {
       </div>
     </div>
   );
-}
+});
+
+ProductImg.displayName = "ProductImg";
+
+export default ProductImg;

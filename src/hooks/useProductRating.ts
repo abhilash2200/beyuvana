@@ -17,10 +17,10 @@ interface UseProductRatingReturn {
   refetch: () => Promise<void>;
 }
 
-export function useProductRating({ 
-  productId, 
-  sessionKey, 
-  enabled = true 
+export function useProductRating({
+  productId,
+  sessionKey,
+  enabled = true
 }: UseProductRatingProps): UseProductRatingReturn {
   const [ratingStats, setRatingStats] = useState<RatingStats>({
     averageRating: 0,
@@ -38,7 +38,7 @@ export function useProductRating({
 
     try {
       const response = await reviewApi.getReviews(Number(productId), sessionKey);
-      
+
       // Handle different response structures
       let reviews = [];
       if (response?.data) {
@@ -55,9 +55,11 @@ export function useProductRating({
       const stats = calculateRatingStats(reviews);
       setRatingStats(stats);
     } catch (err) {
-      console.error('Error fetching rating data:', err);
+      if (process.env.NODE_ENV === "development") {
+        console.error('Error fetching rating data:', err);
+      }
       setError(err instanceof Error ? err.message : 'Failed to fetch rating data');
-      
+
       // Set default stats on error
       setRatingStats({
         averageRating: 0,

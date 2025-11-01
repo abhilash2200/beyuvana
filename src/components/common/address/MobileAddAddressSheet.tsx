@@ -13,6 +13,7 @@ import { addressApi, SaveAddressRequest, SavedAddress } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
 import { MapPin, Star, Check, Edit, X } from "lucide-react";
 import { toast } from "react-toastify";
+import { validateRequired, validateEmail, validatePhone, validatePincode } from "@/lib/validation";
 
 interface MobileAddAddressSheetProps {
     open: boolean;
@@ -181,9 +182,42 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
     }, [open]);
 
     const handleSave = async () => {
-        // Validate required fields (address2 is now landmark)
-        if (!form.fullName || !form.email || !form.phone || !form.address1 || !form.address2 || !form.city || !form.pincode) {
-            setError("Please fill in all required fields including landmark");
+        // Validate all fields using centralized validation
+        if (!validateRequired(form.fullName, "Name").isValid) {
+            setError("Please enter your full name");
+            return;
+        }
+
+        const emailValidation = validateEmail(form.email);
+        if (!emailValidation.isValid) {
+            setError(emailValidation.error || "Please enter a valid email address");
+            return;
+        }
+
+        const phoneValidation = validatePhone(form.phone);
+        if (!phoneValidation.isValid) {
+            setError(phoneValidation.error || "Please enter a valid phone number");
+            return;
+        }
+
+        if (!validateRequired(form.address1, "Address").isValid) {
+            setError("Please enter your address");
+            return;
+        }
+
+        if (!validateRequired(form.address2, "Landmark").isValid) {
+            setError("Please enter a landmark");
+            return;
+        }
+
+        if (!validateRequired(form.city, "City").isValid) {
+            setError("Please enter your city");
+            return;
+        }
+
+        const pincodeValidation = validatePincode(form.pincode);
+        if (!pincodeValidation.isValid) {
+            setError(pincodeValidation.error || "Please enter a valid 6-digit pincode");
             return;
         }
 
@@ -260,7 +294,9 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                 }
             }
         } catch (err) {
-            console.error("Save address error:", err);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Save address error:", err);
+            }
             if (err instanceof Error && err.message.includes("401")) {
                 setError("Authentication failed. Please login again.");
             } else {

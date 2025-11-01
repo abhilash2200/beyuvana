@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import ConditionalLayout from "@/components/common/ConditionalLayout";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { AuthProvider } from "@/context/AuthProvider";
 import { CartProvider } from "@/context/CartProvider";
 import { ToastContainer } from "react-toastify";
@@ -22,7 +23,22 @@ export const metadata: Metadata = {
   },
   description:
     "BEYUVANA™ crafts plant-powered, science-backed nutrition for skin, gut, and whole-body wellness. 100% vegetarian, sugar-free, and consciously formulated for visible glow.",
-  keywords: [""],
+  keywords: [
+    "plant collagen",
+    "vegetarian collagen",
+    "plant-based nutrition",
+    "skin wellness",
+    "collagen builder",
+    "natural supplements",
+    "vegan collagen",
+    "skin health",
+    "glow nutrition",
+    "plant-powered wellness",
+    "BEYUVANA",
+    "ayurvedic supplements",
+    "beauty supplements",
+    "gut health",
+  ],
   openGraph: {
     title: "BEYUVANA™ | Plant-Powered Collagen Builder & Glow Nutrition",
     description:
@@ -60,25 +76,27 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${beVietnamPro.variable} antialiased`} suppressHydrationWarning={true}>
         <TooltipProvider>
-          <AuthProvider>
-            <CartProvider>
-              <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-              />
-              <ConditionalLayout>
-                {children}
-              </ConditionalLayout>
-            </CartProvider>
-          </AuthProvider>
+          <ErrorBoundary>
+            <AuthProvider>
+              <CartProvider>
+                <ToastContainer
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
+                />
+                <ConditionalLayout>
+                  {children}
+                </ConditionalLayout>
+              </CartProvider>
+            </AuthProvider>
+          </ErrorBoundary>
         </TooltipProvider>
       </body>
     </html>

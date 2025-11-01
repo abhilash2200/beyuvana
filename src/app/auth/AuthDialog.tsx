@@ -29,16 +29,12 @@ export default function AuthDialog() {
     } | null>(null);
 
     const handleOtpSent = (phone: string, userData?: { name: string; email: string; phone: string }) => {
-        console.log("🔄 AuthDialog - handleOtpSent called with:", { phone, userData });
-        console.log("🔄 AuthDialog - Current step before change:", step);
         setOtpData({
             phone,
             userData,
             isRegistration: !!userData
         });
-        console.log("🔄 AuthDialog - Setting step to 'otp'");
         setStep("otp");
-        console.log("🔄 AuthDialog - Step should now be 'otp'");
     };
 
     const handleOtpVerified = () => {
@@ -88,11 +84,6 @@ export default function AuthDialog() {
                         </DialogTitle>
                     </DialogHeader>
 
-                    {/* Debug info */}
-                    <div className="text-xs text-gray-500 p-2 bg-gray-100 rounded">
-                        Debug: step={step}, hasOtpData={!!otpData}, otpPhone={otpData?.phone}
-                    </div>
-
                     {step === "otp" && otpData ? (
                         <div className="space-y-4">
                             <div className="text-center">
@@ -122,18 +113,12 @@ export default function AuthDialog() {
                             </TabsList>
 
                             <TabsContent value="login">
-                                <LoginForm onOtpSent={(phone) => {
-                                    console.log("🔍 AuthDialog - LoginForm callback called with:", { phone });
-                                    handleOtpSent(phone);
-                                }} />
+                                <LoginForm onOtpSent={handleOtpSent} />
                             </TabsContent>
                             <TabsContent value="register">
                                 <RegisterForm
                                     key="register-form"
-                                    onOtpSent={(phone, userData) => {
-                                        console.log("🔍 AuthDialog - RegisterForm callback called with:", { phone, userData });
-                                        handleOtpSent(phone, userData);
-                                    }}
+                                    onOtpSent={handleOtpSent}
                                 />
                             </TabsContent>
                         </Tabs>

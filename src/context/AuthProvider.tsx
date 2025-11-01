@@ -29,7 +29,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       } catch (err) {
-        console.warn("Failed to parse user from localStorage:", err);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Failed to parse user from localStorage:", err);
+        }
         localStorage.removeItem("user"); // Optional: remove invalid data
       }
     } else {
@@ -37,9 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedSession) {
       setSessionKey(storedSession);
-      // Log complete session key when loaded from localStorage
-      console.log("🔐 Complete Session Key (Loaded from localStorage):", storedSession);
-    } else {
     }
   }, []);
 
@@ -50,7 +49,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem("session_key", sessionKey);
       }
     } catch (err) {
-      console.warn("Failed to persist session key:", err);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Failed to persist session key:", err);
+      }
     }
   }, [user, sessionKey]);
 
@@ -64,13 +65,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
       }
     } catch (err) {
-      console.error("Logout API error:", err);
-      console.error("Logout API error details:", {
-        message: err instanceof Error ? err.message : 'Unknown error',
-        stack: err instanceof Error ? err.stack : null,
-        hasSessionKey: !!sessionKey,
-        hasUserId: !!user?.id
-      });
+      if (process.env.NODE_ENV === "development") {
+        console.error("Logout API error:", err);
+        console.error("Logout API error details:", {
+          message: err instanceof Error ? err.message : 'Unknown error',
+          stack: err instanceof Error ? err.stack : null,
+          hasSessionKey: !!sessionKey,
+          hasUserId: !!user?.id
+        });
+      }
       // Continue with local logout even if API fails
     } finally {
       // Always clean up local state

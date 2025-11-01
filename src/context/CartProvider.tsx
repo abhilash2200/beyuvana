@@ -113,7 +113,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
       return null;
     } catch (error) {
-      console.warn(`Failed to fetch product details for product ${productId}:`, error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`Failed to fetch product details for product ${productId}:`, error);
+      }
       return null;
     }
   }, []);
@@ -180,7 +182,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     } catch (error) {
-      console.error("Failed to sync cart with server:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to sync cart with server:", error);
+      }
     } finally {
       setLoading(false);
       syncLockRef.current = false; // Release the sync lock
@@ -196,7 +200,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Track when auth is initialized to prevent premature cart clearing
   useEffect(() => {
     // Check if auth data exists in localStorage to determine if auth is initialized
-    const hasStoredAuth = localStorage.getItem("user") || localStorage.getItem("session_key");
+    const hasStoredAuth = typeof window !== "undefined"
+      ? (localStorage.getItem("user") || localStorage.getItem("session_key"))
+      : null;
     if (hasStoredAuth) {
       // If there's stored auth data, wait for it to be loaded
       if (user !== null || sessionKey !== null) {
@@ -284,7 +290,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                     return item;
                   }
                 } catch (error) {
-                  console.error("Error enhancing cart item:", error);
+                  if (process.env.NODE_ENV === "development") {
+                    console.error("Error enhancing cart item:", error);
+                  }
                   return item;
                 }
               })
@@ -294,7 +302,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             const validEnhancedItems = enhancedItems.filter((item): item is LocalCartItem => item !== null);
             setCartItems(validEnhancedItems);
           } catch (error) {
-            console.error("Failed to enhance cart items:", error);
+            if (process.env.NODE_ENV === "development") {
+              console.error("Failed to enhance cart items:", error);
+            }
           } finally {
             enhancementInProgressRef.current = false;
           }
@@ -356,12 +366,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // Show success message
         toast.success(`${item.name} added to cart!`);
       } catch (apiError) {
-        console.error("Failed to add to cart:", apiError);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to add to cart:", apiError);
+        }
         toast.error("Failed to add item to cart. Please try again.");
         throw apiError; // Re-throw to let the calling component handle it
       }
     } catch (error) {
-      console.error("Failed to add to cart:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to add to cart:", error);
+      }
       toast.error("Failed to add item to cart. Please try again.");
       throw error; // Re-throw to let the calling component handle it
     } finally {
@@ -407,7 +421,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // Refresh cart from server - backend will consolidate and update quantity
         await syncWithServer();
       } catch (error) {
-        console.error("Failed to increase quantity:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to increase quantity:", error);
+        }
         toast.error("Failed to update quantity. Please try again.");
         // Revert optimistic update on error
         await syncWithServer();
@@ -458,7 +474,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // Refresh cart from server
         await syncWithServer();
       } catch (error) {
-        console.error("Failed to decrease quantity:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to decrease quantity:", error);
+        }
         toast.error("Failed to update quantity. Please try again.");
         // Revert optimistic update on error
         await syncWithServer();
@@ -472,7 +490,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const updateItemQuantity = useCallback(async (id: string, qty: number) => {
     // Validate quantity input
     if (typeof qty !== 'number' || isNaN(qty)) {
-      console.error("Invalid quantity provided:", qty);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Invalid quantity provided:", qty);
+      }
       return;
     }
 
@@ -518,7 +538,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // Refresh cart from server
         await syncWithServer();
       } catch (error) {
-        console.error("Failed to update quantity:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to update quantity:", error);
+        }
         toast.error("Failed to update quantity. Please try again.");
         // Revert optimistic update on error
         await syncWithServer();
@@ -541,7 +563,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       // Refresh cart from server
       await syncWithServer();
     } catch (error) {
-      console.error("Failed to remove from cart:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to remove from cart:", error);
+      }
       toast.error("Failed to remove item. Please try again.");
     } finally {
       setLoading(false);
@@ -558,7 +582,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         toast.success("Your cart has been cleared successfully!");
       }
     } catch (error) {
-      console.error("Failed to clear cart:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to clear cart:", error);
+      }
       toast.error("Failed to clear cart. Please try again.");
     } finally {
       setLoading(false);

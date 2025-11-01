@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api";
-const isDevelopment = process.env.NODE_ENV === "development";
+import { ENV_CONFIG } from "@/lib/constants";
+
+const API_BASE_URL = ENV_CONFIG.API_BASE_URL;
+const isDevelopment = ENV_CONFIG.NODE_ENV === "development";
 
 async function handler(request: NextRequest) {
   try {
@@ -16,9 +17,24 @@ async function handler(request: NextRequest) {
       );
     }
 
+    // Whitelist only safe headers to forward (security: prevent header injection)
+    const allowedHeaders = [
+      "content-type",
+      "Content-Type",
+      "authorization",
+      "Authorization",
+      "session_key",
+      "sessionkey",
+    ];
+
     const headers: Record<string, string> = {};
+
+    // Only forward allowed headers
     request.headers.forEach((value, key) => {
-      headers[key] = value;
+      const lowerKey = key.toLowerCase();
+      if (allowedHeaders.some(allowed => allowed.toLowerCase() === lowerKey)) {
+        headers[key] = value;
+      }
     });
 
     if (!headers["content-type"] && !headers["Content-Type"]) {

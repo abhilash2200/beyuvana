@@ -5,7 +5,9 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { toast } from "react-toastify"
+import { validateRequired, validateEmail, validatePhone } from "@/lib/validation"
+import { contactApi } from "@/lib/api"
+import { notifications } from "@/lib/notifications"
 
 interface FormData {
     name: string
@@ -35,32 +37,51 @@ const ContactForm: React.FC = () => {
     const validate = () => {
         const newErrors: Partial<FormData> = {}
 
-        if (!formData.name.trim()) newErrors.name = "Name is required"
-        if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
-            newErrors.email = "Valid email is required"
-        if (!formData.phone.match(/^\d{10}$/))
-            newErrors.phone = "Enter 10-digit phone number"
-        if (!formData.subject.trim()) newErrors.subject = "Subject is required"
-        if (!formData.message.trim()) newErrors.message = "Message cannot be empty"
+        const nameValidation = validateRequired(formData.name, "Name")
+        if (!nameValidation.isValid) newErrors.name = nameValidation.error || "Name is required"
+
+        const emailValidation = validateEmail(formData.email)
+        if (!emailValidation.isValid) newErrors.email = emailValidation.error || "Valid email is required"
+
+        const phoneValidation = validatePhone(formData.phone)
+        if (!phoneValidation.isValid) newErrors.phone = phoneValidation.error || "Enter 10-digit phone number"
+
+        const subjectValidation = validateRequired(formData.subject, "Subject")
+        if (!subjectValidation.isValid) newErrors.subject = subjectValidation.error || "Subject is required"
+
+        const messageValidation = validateRequired(formData.message, "Message")
+        if (!messageValidation.isValid) newErrors.message = messageValidation.error || "Message cannot be empty"
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
     }
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!validate()) {
-            toast.error("Please fill all required fields correctly!");
+            notifications.contact.validationError();
             return;
         }
 
         setLoading(true)
-        setTimeout(() => {
+        try {
+            const response = await contactApi.submit(formData);
+
+            if (response.success !== false && response.status !== false) {
+                notifications.contact.formSuccess();
+                setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
+                setErrors({})
+            } else {
+                notifications.contact.formError();
+            }
+        } catch (error) {
+            if (process.env.NODE_ENV === "development") {
+                console.error("Contact form submission error:", error);
+            }
+            notifications.contact.formError();
+        } finally {
             setLoading(false)
-            toast.success("Form submitted successfully! We'll get back to you soon.");
-            setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
-            setErrors({})
-        }, 1500)
+        }
     }
 
     return (

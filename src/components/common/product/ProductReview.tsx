@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { FaStar, FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthProvider";
 import { reviewApi, ProductReviewRequest, ProductReviewItem } from "@/lib/api";
@@ -23,7 +23,7 @@ interface ProductReviewProps {
     skipOrderCheck?: boolean; // Optional: Skip order check (for admin/testing purposes)
 }
 
-const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = false }: ProductReviewProps) => {
+const ProductReview = memo(({ productId, productName, orderStatus, skipOrderCheck = false }: ProductReviewProps) => {
     const { user, sessionKey } = useAuth();
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState("");
@@ -93,7 +93,6 @@ const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = f
                 setCanReview(eligibility.canReview);
                 setReviewRestrictionReason(eligibility.reason || null);
             } catch (err) {
-                console.error("Error checking review eligibility:", err);
                 // On error, allow review but backend should validate
                 setCanReview(true);
                 setReviewRestrictionReason(null);
@@ -129,7 +128,6 @@ const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = f
                     setAllReviews([]);
                 }
             } catch (err) {
-                console.error("Error fetching reviews:", err);
                 setAllReviews([]);
             } finally {
                 setReviewsLoading(false);
@@ -156,7 +154,7 @@ const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = f
                         setAllReviews(reviews);
                     }
                 } catch (err) {
-                    console.error("Error refetching reviews after user change:", err);
+                    // Silently handle error, reviews will remain as previous state
                 }
             };
             refetchReviews();
@@ -188,7 +186,12 @@ const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = f
     }, [showForm, hasReviewed, existingReview]);
 
     const validateInput = (text: string): string => {
-        return text.trim().replace(/[<>]/g, ''); // Basic XSS prevention
+        // Enhanced XSS prevention - remove potentially dangerous characters
+        return text.trim()
+            .replace(/[<>]/g, '') // Remove angle brackets
+            .replace(/javascript:/gi, '') // Remove javascript: protocol
+            .replace(/on\w+=/gi, '') // Remove event handlers
+            .replace(/script/gi, ''); // Remove script tags (basic)
     };
 
     const handleSubmit = async () => {
@@ -249,7 +252,6 @@ const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = f
                 }
                 setCanReview(true);
             } catch (err) {
-                console.error("Error checking review eligibility:", err);
                 // Continue with submission, backend should validate
             } finally {
                 setCheckingReviewEligibility(false);
@@ -318,7 +320,7 @@ const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = f
                             setAllReviews(reviews);
                         }
                     } catch (err) {
-                        console.error("Error refetching reviews after submission:", err);
+                        // Silently handle error
                     }
                 }, 1000);
             } else {
@@ -327,7 +329,6 @@ const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = f
                 toast.error(errorMsg);
             }
         } catch (err) {
-            console.error("Error saving review:", err);
             const errorMsg = err instanceof Error ? err.message : "Failed to submit review. Please try again.";
             setSubmitError(errorMsg);
             toast.error(errorMsg);
@@ -517,6 +518,8 @@ const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = f
             )}
         </div>
     );
-};
+});
+
+ProductReview.displayName = "ProductReview";
 
 export default ProductReview;

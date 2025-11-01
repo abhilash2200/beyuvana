@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { MapPin, Star, Check, Edit } from "lucide-react";
 import { toast } from "react-toastify";
 import MobileAddAddressSheet from "./MobileAddAddressSheet";
+import { validateRequired, validateEmail, validatePhone, validatePincode } from "@/lib/validation";
 
 interface AddAddressSheetProps {
     open: boolean;
@@ -98,14 +99,10 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
 
         try {
             setSettingPrimary(addressId);
-            // Debug: Setting primary address
 
             const response = await addressApi.setPrimaryAddress(parseInt(user.id), addressId, sessionKey);
 
-            // Debug: Set primary address response
-
             if (response.success !== false) {
-                // Debug: Primary address set successfully, updating local state and refreshing parent
 
                 // Update local state to reflect the change
                 setSavedAddresses(prev =>
@@ -199,9 +196,42 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
     }, [open]);
 
     const handleSave = async () => {
-        // Validate required fields (address2 is now landmark)
-        if (!form.fullName || !form.email || !form.phone || !form.address1 || !form.address2 || !form.city || !form.pincode) {
-            setError("Please fill in all required fields including landmark");
+        // Validate all fields using centralized validation
+        if (!validateRequired(form.fullName, "Name").isValid) {
+            setError("Please enter your full name");
+            return;
+        }
+
+        const emailValidation = validateEmail(form.email);
+        if (!emailValidation.isValid) {
+            setError(emailValidation.error || "Please enter a valid email address");
+            return;
+        }
+
+        const phoneValidation = validatePhone(form.phone);
+        if (!phoneValidation.isValid) {
+            setError(phoneValidation.error || "Please enter a valid phone number");
+            return;
+        }
+
+        if (!validateRequired(form.address1, "Address").isValid) {
+            setError("Please enter your address");
+            return;
+        }
+
+        if (!validateRequired(form.address2, "Landmark").isValid) {
+            setError("Please enter a landmark");
+            return;
+        }
+
+        if (!validateRequired(form.city, "City").isValid) {
+            setError("Please enter your city");
+            return;
+        }
+
+        const pincodeValidation = validatePincode(form.pincode);
+        if (!pincodeValidation.isValid) {
+            setError(pincodeValidation.error || "Please enter a valid 6-digit pincode");
             return;
         }
 
@@ -237,8 +267,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 is_primary: isEditMode ? editingAddress?.is_primary || 0 : 1, // Keep existing primary status when editing
             };
 
-            // Debug: Saving/Updating address with data
-
             let response;
             if (isEditMode && editingAddress) {
                 // Update existing address
@@ -249,10 +277,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 response = await addressApi.saveAddress(addressData, sessionKey);
             }
 
-            // Debug: Address save response
-
             if (response.success !== false) {
-                // Debug: Address saved/updated successfully
                 const successMsg = isEditMode ? "Address updated successfully!" : "Address saved successfully!";
                 toast.success(successMsg);
                 // Reset form and edit mode
@@ -282,7 +307,9 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 }
             }
         } catch (err) {
-            console.error("Save address error:", err);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Save address error:", err);
+            }
             if (err instanceof Error && err.message.includes("401")) {
                 setError("Authentication failed. Please login again.");
             } else {

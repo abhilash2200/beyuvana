@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -38,7 +39,7 @@ interface ProductsListsProps {
   products: Product[];
 }
 
-export default function ProductsLists({ products }: ProductsListsProps) {
+const ProductsLists = React.memo(function ProductsLists({ products }: ProductsListsProps) {
   const formatINR = (value: number): string => {
     const rounded = Math.round(value || 0);
     return new Intl.NumberFormat("en-IN").format(rounded);
@@ -68,8 +69,10 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                       src={product.image || "/assets/img/green-product.png"}
                       width={332}
                       height={382}
-                      alt={product.name}
+                      alt={`${product.name} product image`}
                       className="object-contain"
+                      loading={index > 1 ? "lazy" : "eager"}
+                      priority={index <= 1}
                     />
                   </div>
                 </Link>
@@ -77,7 +80,14 @@ export default function ProductsLists({ products }: ProductsListsProps) {
                   <div className="mt-3 flex gap-2 flex-wrap items-center justify-center">
                     {product.image_all.slice(0, 5).map((img, idx) => (
                       <div key={idx} className="w-14 h-14 border rounded-md overflow-hidden bg-white flex items-center justify-center">
-                        <Image src={img} alt={`${product.name} ${idx + 1}`} width={56} height={56} className="object-contain" />
+                        <Image
+                          src={img}
+                          alt={`${product.name} additional view ${idx + 1}`}
+                          width={56}
+                          height={56}
+                          className="object-contain"
+                          loading="lazy"
+                        />
                       </div>
                     ))}
                   </div>
@@ -152,8 +162,10 @@ export default function ProductsLists({ products }: ProductsListsProps) {
 
                   <div className="flex gap-4">
                     <Link href={getProductDetailUrl(product)}>
-                      <Button className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal capitalize transition-colors bg-[#057A37] text-white border-[#057A37] hover:bg-[#04662a]">
-                        {/* <Eye size={16} />  */}
+                      <Button
+                        className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal capitalize transition-colors bg-[#057A37] text-white border-[#057A37] hover:bg-[#04662a]"
+                        aria-label={`View more details about ${product.name}`}
+                      >
                         view more
                       </Button>
                     </Link>
@@ -167,4 +179,8 @@ export default function ProductsLists({ products }: ProductsListsProps) {
       ))}
     </>
   );
-}
+});
+
+ProductsLists.displayName = "ProductsLists";
+
+export default ProductsLists;

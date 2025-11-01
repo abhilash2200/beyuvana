@@ -12,6 +12,7 @@ import QuantityDropdown from "./QuantityDropdown";
 import { toast } from "react-toastify";
 import React from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatINR } from "@/lib/utils";
 
 export default function MobileCart() {
     const {
@@ -37,12 +38,18 @@ export default function MobileCart() {
     const handleRemoveItem = async (itemId: string) => {
         try {
             setCartError(null);
-            console.log("🗑️ MobileCart - Removing item:", itemId);
+            if (process.env.NODE_ENV === "development") {
+                console.log("🗑️ MobileCart - Removing item:", itemId);
+            }
             await removeFromCart(itemId);
-            console.log("🗑️ MobileCart - Item removed successfully");
+            if (process.env.NODE_ENV === "development") {
+                console.log("🗑️ MobileCart - Item removed successfully");
+            }
             // Toast is already handled in CartProvider.removeFromCart
         } catch (error) {
-            console.error("Failed to remove item:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Failed to remove item:", error);
+            }
             setCartError("Failed to remove item. Please try again.");
         }
     };
@@ -213,13 +220,13 @@ export default function MobileCart() {
                                                     {/* Price and Discount */}
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <p className="font-semibold text-[13px] text-[#057A37]">
-                                                            ₹{Math.round((item.price || 0) * item.quantity).toLocaleString("en-IN")}
+                                                            {formatINR((item.price || 0) * item.quantity)}
                                                         </p>
                                                         {item.mrp_price && item.discount_percent && (
                                                             <>
                                                                 <span className="text-[10px] text-gray-400">|</span>
                                                                 <p className="text-[10px] text-[#747474]">
-                                                                    MRP ₹{Math.round(item.mrp_price * item.quantity).toLocaleString("en-IN")}
+                                                                    MRP {formatINR(item.mrp_price * item.quantity)}
                                                                     <span className="text-[#057A37] ml-1">{item.discount_percent}% Off</span>
                                                                 </p>
                                                             </>
@@ -233,7 +240,7 @@ export default function MobileCart() {
 
                                                     <div className="flex items-center justify-end">
                                                         <p className="text-[14px] font-semibold text-[#057A37]">
-                                                            ₹{Math.round((item.price || 0) * item.quantity).toLocaleString("en-IN")}
+                                                            {formatINR((item.price || 0) * item.quantity)}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -291,7 +298,7 @@ export default function MobileCart() {
                             {/* Mobile Footer */}
                             <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
                                 <div className="flex-1">
-                                    <p className="text-lg font-bold">₹{total.toLocaleString("en-IN")}</p>
+                                    <p className="text-lg font-bold">{formatINR(total)}</p>
                                     {selectedPayment === "cod" && (
                                         <p className="text-[10px] text-gray-300">
                                             Delivery charges may apply on COD

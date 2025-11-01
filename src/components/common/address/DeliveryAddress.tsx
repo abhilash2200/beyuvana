@@ -45,32 +45,21 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
       setLoading(true);
       setError(null);
 
-      // Debug: Fetching addresses
-
       const response = await addressApi.getAddresses(parseInt(user.id), sessionKey);
 
-      // Debug: Address fetch response
-
       if (response.data && Array.isArray(response.data)) {
-        // Log all addresses to see their structure
-        // Debug: DeliveryAddress: All addresses from API
-
         // Only show the primary address - check for different possible values
         const primaryAddress = response.data.find(addr => isPrimaryAddress(addr));
-        // Debug: DeliveryAddress: Found addresses and primary address
 
         if (primaryAddress) {
           setAddresses([primaryAddress]); // Only set the primary address
-          // Debug: DeliveryAddress: Set primary address as selected
         } else {
           // If no primary address is found, show the first address as a fallback
           // This handles cases where the API doesn't have any address marked as primary
           if (response.data.length > 0) {
-            // Debug: DeliveryAddress: No primary address found, using first address as fallback
             setAddresses([response.data[0]]);
           } else {
             setAddresses([]);
-            // Debug: DeliveryAddress: No addresses found at all
           }
         }
       } else if (response.code === 401) {
@@ -80,7 +69,9 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
         setAddresses([]);
       }
     } catch (err) {
-      console.error("Failed to fetch addresses:", err);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to fetch addresses:", err);
+      }
       if (err instanceof Error && err.message.includes("401")) {
         setError("Authentication failed. Please login again.");
       } else {

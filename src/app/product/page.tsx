@@ -42,7 +42,10 @@ async function fetchProducts() {
       return b.id - a.id;
     });
   } catch (err) {
-    console.error("Fetch products error:", err);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Fetch products error:", err);
+    }
+    // Return empty array on error - fallback products should be handled by client
     return [];
   }
 }

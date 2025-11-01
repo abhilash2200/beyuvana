@@ -335,7 +335,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
             <div className="flex gap-4 items-center my-2 justify-center">
                 <Button
                     onClick={handleShopNow}
-                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal bg-[#057A37] text-white"
+                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal w-40 bg-[#057A37] text-white"
                 >
                     <ShoppingBag size={16} />
                     Buy Now
@@ -343,7 +343,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
 
                 <Button
                     onClick={handleAddToCart}
-                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal bg-white text-black border border-black"
+                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 font-normal w-40 bg-white text-black border border-black"
                 >
                     <ShoppingCart size={16} />
                     Add to Cart
