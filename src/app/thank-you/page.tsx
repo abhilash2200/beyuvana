@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Package, Mail, Home, ShoppingBag } from "lucide-react";
 import Confetti from "react-confetti";
 
-export default function ThankYouPage() {
+function ThankYouContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showConfetti, setShowConfetti] = useState(true);
@@ -173,5 +173,17 @@ export default function ThankYouPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ThankYouPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-gradient-to-b from-[#F2F9F3] to-white flex items-center justify-center py-12 px-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#057A37]"></div>
+            </div>
+        }>
+            <ThankYouContent />
+        </Suspense>
     );
 }
