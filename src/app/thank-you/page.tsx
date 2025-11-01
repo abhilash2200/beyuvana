@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Package, Mail, Home, ShoppingBag } from "lucide-react";
+import { Package, Mail, Home, ShoppingBag } from "lucide-react";
 import Confetti from "react-confetti";
 
 export default function ThankYouPage() {

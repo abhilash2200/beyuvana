@@ -60,11 +60,6 @@ const MobileNav = () => {
         setIsRegisterOpen(false);
     };
 
-    const handleBackToRegister = () => {
-        setRegisterStep("form");
-        setOtpData(null);
-    };
-
     const handleLoginOtpSent = (phone: string) => {
         console.log("🔍 MobileNav - handleLoginOtpSent called with:", { phone });
         setOtpData({ phone });
@@ -75,11 +70,6 @@ const MobileNav = () => {
         setLoginStep("form");
         setOtpData(null);
         setIsLoginOpen(false);
-    };
-
-    const handleBackToLogin = () => {
-        setLoginStep("form");
-        setOtpData(null);
     };
 
     return (

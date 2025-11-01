@@ -23,7 +23,7 @@ interface ProductReviewProps {
     skipOrderCheck?: boolean; // Optional: Skip order check (for admin/testing purposes)
 }
 
-const ProductReview = memo(({ productId, productName, orderStatus, skipOrderCheck = false }: ProductReviewProps) => {
+const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: ProductReviewProps) => {
     const { user, sessionKey } = useAuth();
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState("");
@@ -92,7 +92,7 @@ const ProductReview = memo(({ productId, productName, orderStatus, skipOrderChec
 
                 setCanReview(eligibility.canReview);
                 setReviewRestrictionReason(eligibility.reason || null);
-            } catch (err) {
+            } catch {
                 // On error, allow review but backend should validate
                 setCanReview(true);
                 setReviewRestrictionReason(null);
@@ -127,7 +127,7 @@ const ProductReview = memo(({ productId, productName, orderStatus, skipOrderChec
                 } else {
                     setAllReviews([]);
                 }
-            } catch (err) {
+            } catch {
                 setAllReviews([]);
             } finally {
                 setReviewsLoading(false);
@@ -153,7 +153,7 @@ const ProductReview = memo(({ productId, productName, orderStatus, skipOrderChec
                     if (reviews.length > 0) {
                         setAllReviews(reviews);
                     }
-                } catch (err) {
+                } catch {
                     // Silently handle error, reviews will remain as previous state
                 }
             };
@@ -251,7 +251,7 @@ const ProductReview = memo(({ productId, productName, orderStatus, skipOrderChec
                     return;
                 }
                 setCanReview(true);
-            } catch (err) {
+            } catch {
                 // Continue with submission, backend should validate
             } finally {
                 setCheckingReviewEligibility(false);
@@ -319,7 +319,7 @@ const ProductReview = memo(({ productId, productName, orderStatus, skipOrderChec
                         if (reviews.length > 0) {
                             setAllReviews(reviews);
                         }
-                    } catch (err) {
+                    } catch {
                         // Silently handle error
                     }
                 }, 1000);
