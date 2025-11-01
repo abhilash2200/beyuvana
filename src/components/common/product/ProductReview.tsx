@@ -16,34 +16,31 @@ interface ApiReviewItem extends ProductReviewItem {
 }
 import { toast } from "react-toastify";
 
-interface Review {
-    name: string;
-    rating: number;
-    message: string;
-}
-
 interface ProductReviewProps {
     productId: string;
     productName?: string;
+    orderStatus?: "arriving" | "cancelled" | "delivered"; // Optional: If provided from order detail page, use this instead of fetching
+    skipOrderCheck?: boolean; // Optional: Skip order check (for admin/testing purposes)
 }
 
-const ProductReview = ({ productId, productName }: ProductReviewProps) => {
+const ProductReview = ({ productId, productName, orderStatus, skipOrderCheck = false }: ProductReviewProps) => {
     const { user, sessionKey } = useAuth();
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState("");
     const [isValidating, setIsValidating] = useState(false);
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
-    const [review, setReview] = useState<Review | null>(null);
     const [hasReviewed, setHasReviewed] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [userReviews, setUserReviews] = useState<ApiReviewItem[]>([]);
     const [allReviews, setAllReviews] = useState<ApiReviewItem[]>([]);
     const [reviewsLoading, setReviewsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [existingReview, setExistingReview] = useState<ApiReviewItem | null>(null);
+    const [canReview, setCanReview] = useState<boolean | null>(null); // null = checking, true = can review, false = cannot
+    const [reviewRestrictionReason, setReviewRestrictionReason] = useState<string | null>(null);
+    const [checkingReviewEligibility, setCheckingReviewEligibility] = useState(false);
 
     const currentUserReviews = useMemo(() => {
         if (!user?.id) return [];
@@ -58,6 +55,55 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
             return matchesName || matchesId;
         });
     }, [allReviews, user?.id, user?.name]);
+
+    // Check if user can review this product
+    useEffect(() => {
+        const checkReviewEligibility = async () => {
+            // Skip check if explicitly disabled or if orderStatus is provided and is "delivered"
+            if (skipOrderCheck) {
+                setCanReview(true);
+                return;
+            }
+
+            // If orderStatus is provided from order detail page, use it directly
+            if (orderStatus !== undefined) {
+                if (orderStatus === "delivered") {
+                    setCanReview(true);
+                    setReviewRestrictionReason(null);
+                } else if (orderStatus === "cancelled") {
+                    setCanReview(false);
+                    setReviewRestrictionReason("Reviews are not allowed for cancelled or failed orders. Please place a new order.");
+                } else {
+                    setCanReview(false);
+                    setReviewRestrictionReason("You can only review products after your order has been delivered. Please wait for delivery.");
+                }
+                return;
+            }
+
+            // Otherwise, check via API if user is logged in
+            if (!user?.id || !sessionKey) {
+                setCanReview(null); // Will show login message
+                return;
+            }
+
+            try {
+                setCheckingReviewEligibility(true);
+                const eligibility = await reviewApi.canUserReview(productId, user.id, sessionKey);
+
+                setCanReview(eligibility.canReview);
+                setReviewRestrictionReason(eligibility.reason || null);
+            } catch (err) {
+                console.error("Error checking review eligibility:", err);
+                // On error, allow review but backend should validate
+                setCanReview(true);
+                setReviewRestrictionReason(null);
+            } finally {
+                setCheckingReviewEligibility(false);
+            }
+        };
+
+        checkReviewEligibility();
+    }, [productId, user?.id, sessionKey, orderStatus, skipOrderCheck]);
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -180,8 +226,37 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
             return;
         }
 
+        // Check review eligibility before submitting
+        if (!skipOrderCheck && canReview === false) {
+            setSubmitError(reviewRestrictionReason || "You are not eligible to review this product.");
+            setIsValidating(false);
+            return;
+        }
+
+        // If canReview is null and we don't have orderStatus, check eligibility
+        if (!skipOrderCheck && canReview === null && orderStatus === undefined && user?.id && sessionKey) {
+            try {
+                setCheckingReviewEligibility(true);
+                const eligibility = await reviewApi.canUserReview(productId, user.id, sessionKey);
+
+                if (!eligibility.canReview) {
+                    setCanReview(false);
+                    setReviewRestrictionReason(eligibility.reason || null);
+                    setSubmitError(eligibility.reason || "You are not eligible to review this product.");
+                    setIsValidating(false);
+                    setCheckingReviewEligibility(false);
+                    return;
+                }
+                setCanReview(true);
+            } catch (err) {
+                console.error("Error checking review eligibility:", err);
+                // Continue with submission, backend should validate
+            } finally {
+                setCheckingReviewEligibility(false);
+            }
+        }
+
         setLoading(true);
-        setError(null);
         setSubmitError(null);
         setIsValidating(false);
 
@@ -318,13 +393,37 @@ const ProductReview = ({ productId, productName }: ProductReviewProps) => {
 
                 {/* Rate this Product Button */}
                 {!showForm && (
-                    <div className="flex items-center justify-center">
-                        <Button
-                            className="bg-green-700 hover:bg-green-800 text-white px-8 py-3 transition-all duration-200 hover:scale-105 active:scale-95"
-                            onClick={toggleForm}
-                        >
-                            {hasReviewed ? "Edit Review" : "Rate this Product"}
-                        </Button>
+                    <div className="space-y-3">
+                        {/* Review eligibility messages */}
+                        {checkingReviewEligibility && (
+                            <div className="text-center text-gray-600 text-sm">
+                                Verifying review eligibility...
+                            </div>
+                        )}
+
+                        {!checkingReviewEligibility && canReview === false && reviewRestrictionReason && (
+                            <div className="text-red-500 text-sm">
+                                {reviewRestrictionReason}
+                            </div>
+                        )}
+
+                        {!checkingReviewEligibility && canReview === null && !user?.id && (
+                            <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg text-sm">
+                                Please log in to leave a review for this product.
+                            </div>
+                        )}
+
+                        {!checkingReviewEligibility && canReview !== false && (
+                            <div className="flex items-center justify-center">
+                                <Button
+                                    className="bg-green-700 hover:bg-green-800 text-white px-8 py-3 transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    onClick={toggleForm}
+                                    disabled={false}
+                                >
+                                    {hasReviewed ? "Edit Review" : "Rate this Product"}
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

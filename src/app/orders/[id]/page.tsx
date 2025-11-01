@@ -49,6 +49,7 @@ const OrderDetailPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [userName, setUserName] = useState("");
     const [retryCount, setRetryCount] = useState(0);
+    const [reviewStatus, setReviewStatus] = useState<"arriving" | "cancelled" | "delivered" | null>(null);
 
     // Retry function for failed requests
     const retryFetch = () => {
@@ -115,21 +116,38 @@ const OrderDetailPage = () => {
                     // Convert API order to local format for compatibility
                     const firstItem = data.item_list[0];
                     if (firstItem) {
-                        const localOrder: Order = {
+                        // Map backend status to frontend status format
+                    const backendStatus = String(data.order_details.status ?? "").toUpperCase();
+                    const payStatus = String(data.order_details.pay_status ?? "").toUpperCase();
+                    let mappedStatus: "arriving" | "cancelled" | "delivered" = "arriving";
+                    let displayStatus = "Processing";
+                    
+                    if (backendStatus === "DELIVERED" || backendStatus === "COMPLETED") {
+                        mappedStatus = "delivered";
+                        displayStatus = "Delivered";
+                    } else if (backendStatus === "CANCELLED" || payStatus === "FAILED") {
+                        mappedStatus = "cancelled";
+                        displayStatus = "Cancelled";
+                    } else if (backendStatus === "PENDING") {
+                        mappedStatus = "arriving";
+                        displayStatus = "Processing";
+                    }
+
+                    const localOrder: Order = {
                             id: data.order_details.id,
                             productName: firstItem.product_name,
                             productImage: data.order_details.thumbnail || firstItem.image || "", // Use thumbnail from API
                             shortdecs: `${firstItem.product_name} - ${firstItem.product_code}`,
                             quantity: parseInt(firstItem.qty),
-                            status: data.order_details.status === "PENDING" ? "Processing" :
-                                data.order_details.status === "DELIVERED" ? "Delivered" :
-                                    data.order_details.status === "CANCELLED" ? "Cancelled" : "Processing",
+                            status: displayStatus,
                             address: `${data.address.address1}, ${data.address.address2}, ${data.address.city}, ${data.address.pincode}`,
                             bagPrice: parseFloat(data.order_details.paid_amount),
                             discount: parseFloat(data.order_details.discount_amount),
                             deliveryPrice: 0, // Not provided in API
                         };
                         setOrder(localOrder);
+                        // Store mapped status for review component
+                        setReviewStatus(mappedStatus);
                     } else {
                         setError("No items found in this order");
                     }
@@ -310,6 +328,7 @@ const OrderDetailPage = () => {
                 <ProductReview
                     productId={orderDetails?.item_list[0]?.product_id || order.id}
                     productName={order.productName}
+                    orderStatus={reviewStatus || undefined}
                 />
             </div>
 

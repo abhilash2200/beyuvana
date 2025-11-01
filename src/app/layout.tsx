@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/common/header/Header";
-import Footer from "@/components/common/footer/Footer";
-import Offers from "@/components/common/Offers";
+import ConditionalLayout from "@/components/common/ConditionalLayout";
 import { AuthProvider } from "@/context/AuthProvider";
 import { CartProvider } from "@/context/CartProvider";
 import { ToastContainer } from "react-toastify";
@@ -64,8 +62,6 @@ export default function RootLayout({
         <TooltipProvider>
           <AuthProvider>
             <CartProvider>
-              <Header />
-              <Offers />
               <ToastContainer
                 position="top-right"
                 autoClose={3000}
@@ -78,8 +74,9 @@ export default function RootLayout({
                 pauseOnHover
                 theme="light"
               />
-              {children}
-              <Footer />
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
             </CartProvider>
           </AuthProvider>
         </TooltipProvider>
