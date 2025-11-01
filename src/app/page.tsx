@@ -50,7 +50,7 @@ const page = () => {
       </section>
 
       <section className="md:py-10 py-6">
-        <div className="container mx-auto px-4">
+        <div className="mx-auto">
           <ProductsList />
         </div>
       </section>

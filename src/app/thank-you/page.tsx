@@ -53,34 +53,12 @@ function ThankYouContent() {
                 />
             )}
 
-            {/* Decorative elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-10 left-10 w-32 h-32 bg-[#A9B528] opacity-5 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-10 right-10 w-40 h-40 bg-[#057A37] opacity-5 rounded-full blur-3xl"></div>
             </div>
 
             <div className="max-w-2xl w-full text-center relative z-10">
-                {/* <div className="mb-8 flex justify-center">
-                    <Link href="/">
-                        <Image
-                            src="/assets/img/logo.png"
-                            alt="BEYUVANA Logo"
-                            width={120}
-                            height={120}
-                            className="object-contain"
-                            priority
-                        />
-                    </Link>
-                </div> */}
-
-                {/* <div className="mb-6 flex justify-center">
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-[#057A37] rounded-full blur-xl opacity-30 animate-pulse"></div>
-                        <div className="relative bg-[#057A37] rounded-full p-6">
-                            <CheckCircle2 className="w-16 h-16 text-white" strokeWidth={2.5} />
-                        </div>
-                    </div>
-                </div> */}
 
                 <h1 className="font-[Grafiels] text-[#1A2819] md:text-[42px] text-[32px] mb-4 leading-tight">
                     Thank You for Your Order!

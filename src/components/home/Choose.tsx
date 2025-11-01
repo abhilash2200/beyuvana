@@ -6,7 +6,7 @@ import Image from "next/image";
 interface ContentItem {
     title: string;
     text: string;
-    icon: string; // 👈 icon add kiya
+    icon: string;
 }
 
 const leftContent: ContentItem[] = [
@@ -66,12 +66,10 @@ const floatingImages: FloatingImage[] = [
 const Choose: React.FC = () => {
     return (
         <div className="flex flex-wrap justify-between items-center gap-6 md:gap-0 pt-6 md:pt-0">
-            {/* LEFT SIDE */}
             <div className="w-full md:w-[32%] md:pr-10 flex flex-col items-end text-left md:text-right space-y-6 gap-y-6">
                 {leftContent.map((item, idx) => (
                     <div key={idx} className="w-full md:max-w-[20vw]">
                         <div className="flex gap-x-3 items-start">
-                            {/* 👇 Show icon only on mobile */}
                             <div className="block md:hidden shrink-0">
                                 <Image src={item.icon} width={80} height={80} alt={item.title} />
                             </div>
@@ -86,7 +84,6 @@ const Choose: React.FC = () => {
                 ))}
             </div>
 
-            {/* CENTER VIDEO */}
             <div className="w-full md:w-[32%] flex justify-center relative">
                 {floatingImages.map((img, idx) => (
                     <div
@@ -116,12 +113,10 @@ const Choose: React.FC = () => {
                 </div>
             </div>
 
-            {/* RIGHT SIDE */}
             <div className="w-full md:w-[32%] pl-0 md:pl-10 flex flex-col items-start text-left space-y-6 gap-y-6">
                 {rightContent.map((item, idx) => (
                     <div key={idx} className="w-full md:max-w-[20vw]">
                         <div className="flex gap-x-3 items-start">
-                            {/* 👇 Show icon only on mobile */}
                             <div className="block md:hidden shrink-0">
                                 <Image src={item.icon} width={80} height={80} alt={item.title} />
                             </div>

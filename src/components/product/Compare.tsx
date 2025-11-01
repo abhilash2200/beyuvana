@@ -16,7 +16,6 @@ const Compare = ({ product }: CompareProps) => {
     const resolvedProduct: Product | undefined = product ? product : fallbackProducts.find(p => p.id.toString() === routeId)
     const slides: CompareItem[] = resolvedProduct?.compare || []
 
-    // Use first slide colors as container defaults; each slide sets its own as well
     const containerBg = slides[0]?.bgColor || "#122014"
     const containerHeading = slides[0]?.headingColor || "#FFFFFF"
     const containerPara = slides[0]?.paraColor || "#FFFFFF"

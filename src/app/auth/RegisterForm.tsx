@@ -23,24 +23,20 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
 
         setError("");
 
-        // Validate phone number using centralized validation
         const phoneValidation = validatePhone(form.phone);
         if (!phoneValidation.isValid) {
             setError(phoneValidation.error || "Please enter a valid phone number.");
             return;
         }
 
-        // Clean phone number for API (remove all non-digits)
         const cleanPhone = form.phone.replace(/\D/g, "");
 
-        // Validate name
         const nameValidation = validateRequired(form.name, "Name");
         if (!nameValidation.isValid) {
             setError(nameValidation.error || "Please enter your name.");
             return;
         }
 
-        // Validate email
         const emailValidation = validateEmail(form.email);
         if (!emailValidation.isValid) {
             setError(emailValidation.error || "Please enter a valid email.");
@@ -50,20 +46,13 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
         setLoading(true);
 
         try {
-            // Note: We removed the dummy registration check because it was creating users with dummy data
-            // The actual registration will handle the "user already exists" error if needed
-
-            // Use consistent 10-digit phone number format (no prefixes)
             const response = await authApi.sendOtp({ phonenumber: cleanPhone });
 
-            // Check if response indicates success
             if (response.status === false) {
-                // API explicitly returned failure
                 const errorMsg = response.message || "OTP send failed";
                 throw new Error(errorMsg);
             }
 
-            // Store user data for after OTP verification
             const userDataToPass = {
                 name: form.name,
                 email: form.email,
@@ -78,7 +67,6 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
             if (process.env.NODE_ENV === "development") {
                 console.error("RegisterForm - OTP send failed:", err);
             }
-            // Try to extract error message from API response
             const errorMessage = (err as Error)?.message || "Failed to send OTP. Please try again later.";
             setError(errorMessage);
             toast.error(errorMessage);
@@ -89,7 +77,6 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
 
     return (
         <div className="flex flex-col md:flex-row overflow-hidden">
-            {/* Left Image */}
             <div className="w-full md:w-1/2 hidden md:block">
                 <Image
                     src="/assets/img/login-img.png"
@@ -100,7 +87,6 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
                 />
             </div>
 
-            {/* Right Form */}
             <div className="w-full md:w-1/2 md:p-6 p-0 flex flex-col justify-center">
                 <h2 className="text-[30px] text-[#057A37] mb-1 font-[Grafiels]">Register Now!</h2>
                 <hr className="w-32 h-0.5 mb-4 bg-[#057A37]" />

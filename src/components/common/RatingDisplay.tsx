@@ -28,7 +28,6 @@ function RatingDisplay({
 
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
-            {/* Main Rating Display */}
             <div className="flex items-center gap-2">
                 <Rating
                     name="read-only-rating"
@@ -38,10 +37,10 @@ function RatingDisplay({
                     size={size}
                     sx={{
                         '& .MuiRating-iconFilled': {
-                            color: '#fbbf24', // amber-400
+                            color: '#fbbf24',
                         },
                         '& .MuiRating-iconEmpty': {
-                            color: '#d1d5db', // gray-300
+                            color: '#d1d5db',
                         },
                     }}
                 />
@@ -55,7 +54,6 @@ function RatingDisplay({
                 )}
             </div>
 
-            {/* Rating Distribution (Optional) */}
             {showDistribution && totalReviews > 0 && (
                 <div className="space-y-1">
                     {[5, 4, 3, 2, 1].map((star) => {
@@ -81,7 +79,6 @@ function RatingDisplay({
     );
 }
 
-// Compact version for product cards
 export function CompactRatingDisplay({
     ratingStats,
     className = ""
@@ -118,6 +115,5 @@ export function CompactRatingDisplay({
     );
 }
 
-// Export both as named and default exports
 export { RatingDisplay };
 export default RatingDisplay;

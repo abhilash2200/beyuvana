@@ -45,7 +45,6 @@ interface BillingPriceProps {
 const BillingPrice = ({ userName, order, orderDetails }: BillingPriceProps) => {
     return (
         <div>
-            {/* Order Details Section */}
             {orderDetails && (
                 <div className="bg-[#F2F9F3] border border-gray-200 rounded-[20px] p-6 mb-4 space-y-4">
                     <h3 className="text-lg font-[Grafiels] text-[#1A2819]">Order Information</h3>
@@ -75,7 +74,6 @@ const BillingPrice = ({ userName, order, orderDetails }: BillingPriceProps) => {
                         </div>
                     </div>
 
-                    {/* Payment Details */}
                     {/* <div className="mt-4">
                         <h4 className="text-md font-[Grafiels] text-[#1A2819] mb-2">Payment Details</h4>
                         <div className="p-4 rounded border border-gray-200">

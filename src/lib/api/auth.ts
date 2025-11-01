@@ -48,13 +48,15 @@ export const authApi = {
         otp_code: userData.otp
       };
 
-      // Log what's being sent to the backend
-      console.log("🚀 Sending to backend /signup/v1/:", {
-        fullname: apiData.fullname,
-        email: apiData.email,
-        phonenumber: apiData.phonenumber,
-        otp_code: apiData.otp_code.substring(0, 2) + "****"
-      });
+      // Log what's being sent to the backend (development only)
+      if (process.env.NODE_ENV === "development") {
+        console.log("🚀 Sending to backend /signup/v1/:", {
+          fullname: apiData.fullname,
+          email: apiData.email,
+          phonenumber: apiData.phonenumber,
+          otp_code: apiData.otp_code.substring(0, 2) + "****"
+        });
+      }
 
       const response = await apiFetch("/signup/v1/", {
         method: "POST",

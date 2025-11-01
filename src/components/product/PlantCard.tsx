@@ -27,7 +27,6 @@ const PlantCard = ({ title, description, img, bgColor, headingColor, paragraphCo
             style={{ backgroundColor: expanded ? "white" : bgColor }}
         >
             {expanded ? (
-                // Expanded View
                 <div className="flex flex-col items-center gap-y-4 text-center border border-gray-900 rounded-[20px] p-4 w-full h-full">
                     <div className="w-48 h-48 rounded-full overflow-hidden border">
                         <Image
@@ -65,7 +64,6 @@ const PlantCard = ({ title, description, img, bgColor, headingColor, paragraphCo
                     </button>
                 </div>
             ) : (
-                // Default View
                 <div className="relative w-full h-full">
                     <div className="h-full w-full bg-[#000]/50 absolute top-0 left-0 overflow-hidden z-20"></div>
                     <Image

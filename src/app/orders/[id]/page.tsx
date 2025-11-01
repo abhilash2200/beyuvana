@@ -24,14 +24,11 @@ interface Order {
     deliveryPrice: number;
 }
 
-// Helper function to validate and sanitize order ID
 const sanitizeOrderId = (id: string): string => {
     if (!id) return '';
 
-    // Decode URL component and trim whitespace
     const decoded = decodeURIComponent(id).trim();
 
-    // Remove any potentially dangerous characters but keep alphanumeric, hyphens, underscores
     const sanitized = decoded.replace(/[^a-zA-Z0-9\-_]/g, '');
 
     return sanitized;
@@ -52,7 +49,6 @@ const OrderDetailPage = () => {
     const [retryCount, setRetryCount] = useState(0);
     const [reviewStatus, setReviewStatus] = useState<"arriving" | "cancelled" | "delivered" | null>(null);
 
-    // Retry function for failed requests
     const retryFetch = () => {
         if (retryCount < 3) {
             setRetryCount(prev => prev + 1);
@@ -61,7 +57,6 @@ const OrderDetailPage = () => {
         }
     };
 
-    // Get logged-in user name
     useEffect(() => {
         if (typeof window === "undefined") return;
         const storedUser = localStorage.getItem("user");
@@ -80,24 +75,20 @@ const OrderDetailPage = () => {
     }, []);
 
 
-    // Fetch order details from API
     useEffect(() => {
         const fetchOrderDetails = async () => {
-            // Validate order ID parameter
             if (!orderId || orderId === '') {
                 setError("Invalid order ID provided");
                 setLoading(false);
                 return;
             }
 
-            // Additional validation for order ID
             if (orderId.length < 1) {
                 setError("Order ID is too short");
                 setLoading(false);
                 return;
             }
 
-            // Check if the order ID was sanitized (indicating potentially dangerous characters)
             if (rawOrderId && sanitizeOrderId(rawOrderId) !== rawOrderId && process.env.NODE_ENV === "development") {
                 console.warn("Order ID was sanitized:", { original: rawOrderId, sanitized: orderId });
             }
@@ -118,10 +109,8 @@ const OrderDetailPage = () => {
                     const data = response.data;
                     setOrderDetails(data);
 
-                    // Convert API order to local format for compatibility
                     const firstItem = data.item_list[0];
                     if (firstItem) {
-                        // Map backend status to frontend status format
                         const backendStatus = String(data.order_details.status ?? "").toUpperCase();
                         const payStatus = String(data.order_details.pay_status ?? "").toUpperCase();
                         let mappedStatus: "arriving" | "cancelled" | "delivered" = "arriving";
@@ -141,17 +130,16 @@ const OrderDetailPage = () => {
                         const localOrder: Order = {
                             id: data.order_details.id,
                             productName: firstItem.product_name,
-                            productImage: data.order_details.thumbnail || firstItem.image || "", // Use thumbnail from API
+                            productImage: data.order_details.thumbnail || firstItem.image || "",
                             shortdecs: `${firstItem.product_name} - ${firstItem.product_code}`,
                             quantity: parseInt(firstItem.qty),
                             status: displayStatus,
                             address: `${data.address.address1}, ${data.address.address2}, ${data.address.city}, ${data.address.pincode}`,
                             bagPrice: parseFloat(data.order_details.paid_amount),
                             discount: parseFloat(data.order_details.discount_amount),
-                            deliveryPrice: 0, // Not provided in API
+                            deliveryPrice: 0,
                         };
                         setOrder(localOrder);
-                        // Store mapped status for review component
                         setReviewStatus(mappedStatus);
                     } else {
                         setError("No items found in this order");
@@ -160,9 +148,6 @@ const OrderDetailPage = () => {
                     setError(response?.message || "Order not found");
                 }
             } catch (err) {
-                // Error is handled by error state and user-facing message below
-
-                // Try to provide a more helpful error message
                 if (err instanceof Error) {
                     if (err.message.includes("Order not found") || err.message.includes("404")) {
                         setError(`Order not found. The order "${orderId}" may not exist or you may not have permission to view it.`);
@@ -285,14 +270,12 @@ const OrderDetailPage = () => {
     return (
         <ErrorBoundary>
             <div className="container mx-auto px-4 py-8 space-y-10">
-                {/* Top Section: Back */}
                 <div className="flex items-center justify-between mb-4">
                     <Button variant="default" onClick={() => router.back()} className="text-black font-normal hover:underline hover:cursor-pointer">
                         ← Back To Orders
                     </Button>
                 </div>
 
-                {/* Product Section */}
                 <div className="flex flex-col md:flex-row items-center gap-6 border-b md:pb-6 pb-4">
                     <div className="flex gap-4 flex-1">
                         <div className="relative md:w-28 md:h-28 w-20 h-20">
@@ -329,7 +312,6 @@ const OrderDetailPage = () => {
                     </div>
                 </div>
 
-                {/* Product Review */}
                 <div className="py-4">
                     <ProductReview
                         productId={orderDetails?.item_list[0]?.product_id || order.id}
@@ -340,7 +322,6 @@ const OrderDetailPage = () => {
 
 
 
-                {/* Billing / Price Section */}
                 <BillingPrice userName={userName} order={order} orderDetails={orderDetails || undefined} />
 
                 <div className="mt-4 bg-[#F2F9F3] md:p-6 p-4 rounded-[20px] shadow-sm flex items-center justify-center">

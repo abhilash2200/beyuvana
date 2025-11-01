@@ -13,11 +13,6 @@ interface State {
     error: Error | null;
 }
 
-/**
- * Error Boundary Component
- * Catches JavaScript errors anywhere in the child component tree,
- * logs those errors, and displays a fallback UI
- */
 export class ErrorBoundary extends Component<Props, State> {
     public state: State = {
         hasError: false,

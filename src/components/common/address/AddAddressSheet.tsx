@@ -34,7 +34,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState(false);
 
-    // Check if device is mobile
     useEffect(() => {
         const checkIsMobile = () => {
             setIsMobile(window.innerWidth < 768);
@@ -46,7 +45,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
         return () => window.removeEventListener('resize', checkIsMobile);
     }, []);
 
-    // Helper function to check if an address is primary (same as DeliveryAddress)
     const isPrimaryAddress = (address: SavedAddress): boolean => {
         const isPrimary = address.is_primary;
         const primaryStr = String(isPrimary).toLowerCase();
@@ -68,11 +66,9 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-        // Clear error when user starts typing
         if (error) setError(null);
     };
 
-    // Fetch saved addresses when sheet opens
     const fetchSavedAddresses = useCallback(async () => {
         if (!user?.id || !sessionKey) return;
 
@@ -81,10 +77,8 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
             const response = await addressApi.getAddresses(parseInt(user.id), sessionKey);
 
             if (response.data && Array.isArray(response.data)) {
-                // Filter addresses to only include those belonging to the current user
                 const currentUserId = parseInt(user.id);
                 const userAddresses = response.data.filter(addr => {
-                    // Ensure the address belongs to the current user
                     const addrUserId = typeof addr.user_id === 'string' ? parseInt(addr.user_id) : addr.user_id;
                     return addrUserId === currentUserId;
                 });
@@ -100,7 +94,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
         }
     }, [user?.id, sessionKey]);
 
-    // Set primary address
     const handleSetPrimary = async (addressId: number) => {
         if (!user?.id || !sessionKey) return;
 
@@ -111,7 +104,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
 
             if (response.success !== false) {
 
-                // Update local state to reflect the change
                 setSavedAddresses(prev =>
                     prev.map(addr => ({
                         ...addr,
@@ -119,15 +111,12 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     }))
                 );
 
-                // Clear any existing errors and show success message
                 setError(null);
                 setSuccessMessage("Primary address updated successfully!");
                 toast.success("Primary address updated successfully!");
 
-                // Clear success message after 3 seconds
                 setTimeout(() => setSuccessMessage(null), 3000);
 
-                // Call callback to refresh parent component (DeliveryAddress)
                 onAddressSaved?.();
             } else {
                 console.error("Failed to set primary address:", response);
@@ -144,7 +133,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
     };
 
 
-    // Edit address - populate form with address data
     const handleEditAddress = (address: SavedAddress) => {
         setEditingAddress(address);
         setIsEditMode(true);
@@ -153,7 +141,7 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
             email: address.email,
             phone: address.mobile,
             address1: address.address1,
-            address2: address.address2, // address2 contains landmark data
+            address2: address.address2,
             city: address.city,
             pincode: address.pincode,
         });
@@ -203,7 +191,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
     }, [open]);
 
     const handleSave = async () => {
-        // Validate all fields using centralized validation
         if (!validateRequired(form.fullName, "Name").isValid) {
             setError("Please enter your full name");
             return;
@@ -266,28 +253,25 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 user_id: parseInt(user.id),
                 fullname: form.fullName.trim(),
                 address1: form.address1.trim(),
-                address2: form.address2.trim(), // Using address2 field as landmark
+                address2: form.address2.trim(),
                 mobile: form.phone.trim(),
                 email: form.email.trim(),
                 city: form.city.trim(),
                 pincode: form.pincode.trim(),
-                is_primary: isEditMode ? editingAddress?.is_primary || 0 : 1, // Keep existing primary status when editing
+                is_primary: isEditMode ? editingAddress?.is_primary || 0 : 1,
             };
 
             let response;
             if (isEditMode && editingAddress) {
-                // Update existing address
                 const updateData = { ...addressData, id: editingAddress.id };
                 response = await addressApi.updateAddress(updateData, sessionKey);
             } else {
-                // Create new address
                 response = await addressApi.saveAddress(addressData, sessionKey);
             }
 
             if (response.success !== false) {
                 const successMsg = isEditMode ? "Address updated successfully!" : "Address saved successfully!";
                 toast.success(successMsg);
-                // Reset form and edit mode
                 setForm({
                     fullName: "",
                     email: "",
@@ -299,12 +283,9 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                 });
                 setEditingAddress(null);
                 setIsEditMode(false);
-                // Refresh the saved addresses list
                 await fetchSavedAddresses();
-                // Call the callback to refresh addresses list in parent
                 onAddressSaved?.();
             } else {
-                // Handle specific error cases
                 if (response.code === 401) {
                     setError("Authentication failed. Please login again.");
                     toast.error("Authentication failed. Please login again.");
@@ -327,7 +308,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
         }
     };
 
-    // Render mobile address sheet on mobile devices
     if (isMobile) {
         return <MobileAddAddressSheet open={open} onOpenChange={onOpenChange} onAddressSaved={onAddressSaved} />;
     }
@@ -349,7 +329,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     <hr className="bg-[#057A37] w-28 h-0.5" />
                 </SheetHeader>
 
-                {/* Form fields */}
                 <div className="p-4 space-y-3 overflow-y-auto">
                     {!user?.id && (
                         <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded">
@@ -440,7 +419,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     </div>
                 </div>
 
-                {/* Saved Addresses Section */}
                 {user?.id && sessionKey && (
                     <div className="p-4 border-t">
                         <h3 className="text-[13px] font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -524,7 +502,6 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                     </div>
                 )}
 
-                {/* Footer */}
                 <div className="p-4 border-t mt-auto">
                     <div className="flex gap-2">
                         {isEditMode && (

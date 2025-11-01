@@ -39,7 +39,6 @@ export function useProductRating({
     try {
       const response = await reviewApi.getReviews(Number(productId), sessionKey);
 
-      // Handle different response structures
       let reviews = [];
       if (response?.data) {
         const data = response.data as Record<string, unknown>;
@@ -60,7 +59,6 @@ export function useProductRating({
       }
       setError(err instanceof Error ? err.message : 'Failed to fetch rating data');
 
-      // Set default stats on error
       setRatingStats({
         averageRating: 0,
         totalReviews: 0,

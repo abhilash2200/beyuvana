@@ -6,7 +6,6 @@ import "@splidejs/react-splide/css";
 import { testimonialsData, type TestimonialData } from "@/app/data/testimonials";
 import { StarRating } from "@/components/ui/StarRating";
 
-// Configuration constants
 const SLIDER_CONFIG = {
   type: "loop" as const,
   perPage: 3,
@@ -38,13 +37,9 @@ const SLIDER_CONFIG = {
   },
 } as const;
 
-// Component constants
 const CUSTOMER_IMAGE_SIZE = { width: 103, height: 103 };
 const PRODUCT_IMAGE_SIZE = { width: 48, height: 65 };
 
-/**
- * Customer header component displaying name, image, and rating
- */
 const CustomerHeader: React.FC<{ testimonial: TestimonialData }> = ({ testimonial }) => (
   <div className="flex flex-wrap items-center gap-x-4 mb-6">
     <Image
@@ -63,9 +58,6 @@ const CustomerHeader: React.FC<{ testimonial: TestimonialData }> = ({ testimonia
   </div>
 );
 
-/**
- * Testimonial text component with proper formatting
- */
 const TestimonialText: React.FC<{ text: string }> = ({ text }) => (
   <div className="text-[#3B3B3B] font-light text-[16px] italic mb-6">
     {text.split("\n").map((line, index) => (
@@ -76,9 +68,6 @@ const TestimonialText: React.FC<{ text: string }> = ({ text }) => (
   </div>
 );
 
-/**
- * Product information component
- */
 const ProductInfo: React.FC<{ testimonial: TestimonialData }> = ({ testimonial }) => (
   <div className="flex flex-wrap gap-x-2 items-center md:px-4 px-0">
     <Image
@@ -94,9 +83,6 @@ const ProductInfo: React.FC<{ testimonial: TestimonialData }> = ({ testimonial }
   </div>
 );
 
-/**
- * Individual testimonial card component
- */
 const TestimonialCard: React.FC<{ testimonial: TestimonialData }> = ({ testimonial }) => (
   <div className="px-6 h-auto md:py-14 rounded-2xl text-left border border-transparent transition-all duration-300 ease-out hover:border-black hover:bg-white hover:shadow-lg">
     <CustomerHeader testimonial={testimonial} />
@@ -105,9 +91,6 @@ const TestimonialCard: React.FC<{ testimonial: TestimonialData }> = ({ testimoni
   </div>
 );
 
-/**
- * Main Testimonial component with carousel functionality
- */
 const Testimonial: React.FC = () => {
   return (
     <div className="w-full mx-auto relative">

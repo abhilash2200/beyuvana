@@ -19,8 +19,8 @@ type Pack = {
     discount: string;
     tagline: string;
     product_price_id?: string;
-    unit_name?: string; // Unit name from API (e.g., "Pc" for trial pack)
-    isTrialPack?: boolean; // Flag to identify trial pack
+    unit_name?: string;
+    isTrialPack?: boolean;
 };
 
 type Product = {
@@ -28,7 +28,7 @@ type Product = {
     name: string;
     packs: Pack[];
     image: string;
-    product_details?: ApiProduct; // Store the full product details from API
+    product_details?: ApiProduct;
 };
 
 function formatINR(value: number): string {
@@ -38,16 +38,13 @@ function formatINR(value: number): string {
 
 function getDefaultSachets(designType: "green" | "pink" | undefined, qty: number): number {
     if (designType === "green") {
-        // Historically: 1->15, 2->30, 4->60
         const base = 15;
         return qty * base;
     }
     if (designType === "pink") {
-        // Historically: 1->20, 3->60, 4->80 (fallback multiply by 20)
         const base = 20;
         return qty * base;
     }
-    // Fallback if unknown
     return qty;
 }
 
@@ -74,11 +71,9 @@ function buildPacksFromPrices(
 ): Pack[] {
     if (!Array.isArray(prices) || prices.length === 0) return [];
 
-    // Separate trial pack (unit_name === "Pc") from regular packs
     const trialPackTier = prices.find((tier) => tier.unit_name === "Pc");
     const regularPacksTiers = prices.filter((tier) => tier.unit_name !== "Pc");
 
-    // Build trial pack if it exists
     const trialPack: Pack | null = trialPackTier
         ? (() => {
             const qty = Number(trialPackTier.qty);
@@ -88,11 +83,11 @@ function buildPacksFromPrices(
 
             return {
                 qty,
-                sachets: 5, // Trial pack always has 5 sachets
+                sachets: 5,
                 price: Math.round(final),
                 originalPrice: Math.round(mrp),
                 discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
-                tagline: "Free Trial", // Special tagline for trial pack
+                tagline: "Free Trial",
                 product_price_id: trialPackTier.product_price_id,
                 unit_name: trialPackTier.unit_name,
                 isTrialPack: true,
@@ -100,7 +95,6 @@ function buildPacksFromPrices(
         })()
         : null;
 
-    // Build regular packs
     const regularPacks = regularPacksTiers
         .map((tier) => {
             const qty = Number(tier.qty);
@@ -122,7 +116,6 @@ function buildPacksFromPrices(
         })
         .sort((a, b) => a.qty - b.qty);
 
-    // Return trial pack first, then regular packs sorted by quantity
     return trialPack ? [trialPack, ...regularPacks] : regularPacks;
 }
 
@@ -150,7 +143,6 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                 if (numericId) {
                     apiProduct = data.find((p) => String(p.id) === String(numericId));
                 }
-                // Prefer matching by design_type when provided, since backend IDs likely differ
                 if (!apiProduct && designType) {
                     const desired = designType.toLowerCase();
                     apiProduct = data.find((p) => {
@@ -158,13 +150,11 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                         return dt === desired;
                     });
                 }
-                // Fallback: try to roughly match by name containing slug words
                 if (!apiProduct) {
                     apiProduct = data.find((p) =>
                         String(p.product_name || "").toLowerCase().includes(productId.replace(/-/g, " "))
                     );
                 }
-                // Last resort: keyword-based guess by design type
                 if (!apiProduct && designType) {
                     const kw = designType === "pink" ? "glow" : "collagen";
                     apiProduct = data.find((p) => String(p.product_name || "").toLowerCase().includes(kw));
@@ -179,7 +169,7 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                     name: apiProduct.product_name,
                     packs,
                     image,
-                    product_details: apiProduct, // Store the full API product details
+                    product_details: apiProduct,
                 };
 
                 if (!ignore) {
@@ -225,7 +215,6 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             product_price_id: selectedPack.product_price_id,
         });
 
-        // Success toast is now handled by CartProvider
     };
 
     const handleShopNow = async () => {
@@ -261,7 +250,6 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                     }}
                 >
                     {product.packs.map((pack: Pack, index) => {
-                        // Check if this pack is selected (using product_price_id for accurate comparison, fallback to qty + isTrialPack)
                         const isSelected = selectedPack
                             ? (selectedPack.product_price_id && pack.product_price_id
                                 ? selectedPack.product_price_id === pack.product_price_id

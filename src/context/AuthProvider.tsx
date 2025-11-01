@@ -18,7 +18,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(null);
   const [sessionKey, setSessionKey] = useState<string | null>(null);
 
-  // 🔹 On mount, load user + session from localStorage safely
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedSession = localStorage.getItem("session_key");
@@ -32,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (process.env.NODE_ENV === "development") {
           console.warn("Failed to parse user from localStorage:", err);
         }
-        localStorage.removeItem("user"); // Optional: remove invalid data
+        localStorage.removeItem("user");
       }
     } else {
     }
@@ -42,7 +41,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Persist sessionKey whenever it changes and user is logged in
   useEffect(() => {
     try {
       if (user && sessionKey) {
@@ -59,7 +57,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       if (sessionKey && user?.id) {
-        // Import authApi dynamically to avoid circular dependency
         const { authApi } = await import("@/lib/api");
         await authApi.logout(sessionKey, user.id);
       } else {
@@ -74,15 +71,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           hasUserId: !!user?.id
         });
       }
-      // Continue with local logout even if API fails
     } finally {
-      // Always clean up local state
       localStorage.removeItem("user");
       localStorage.removeItem("session_key");
-
-      // DON'T clear user-specific cart data on logout
-      // This allows cart to persist across login sessions
-      // The cart will be synced with server when user logs back in
 
       setUser(null);
       setSessionKey(null);

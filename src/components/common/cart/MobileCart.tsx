@@ -38,14 +38,7 @@ export default function MobileCart() {
     const handleRemoveItem = async (itemId: string) => {
         try {
             setCartError(null);
-            if (process.env.NODE_ENV === "development") {
-                console.log("🗑️ MobileCart - Removing item:", itemId);
-            }
             await removeFromCart(itemId);
-            if (process.env.NODE_ENV === "development") {
-                console.log("🗑️ MobileCart - Item removed successfully");
-            }
-            // Toast is already handled in CartProvider.removeFromCart
         } catch (error) {
             if (process.env.NODE_ENV === "development") {
                 console.error("Failed to remove item:", error);
@@ -91,7 +84,6 @@ export default function MobileCart() {
                 }}
             >
 
-                {/* Mobile Header */}
                 <div className="shrink-0 border-b border-gray-200 bg-white rounded-t-2xl">
                     <SheetHeader className="p-4 pb-2">
                         <div className="flex justify-between items-center">
@@ -199,10 +191,7 @@ export default function MobileCart() {
                                                         />
                                                     </div>
                                                 </div>
-                                                {/* Quantity Controls */}
 
-
-                                                {/* Product Details */}
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex justify-between items-start mb-1">
                                                         <h3 className="font-[Grafiels] font-normal leading-tight text-[13px] line-clamp-2 flex-1 pr-2">
@@ -217,7 +206,6 @@ export default function MobileCart() {
                                                         </button>
                                                     </div>
 
-                                                    {/* Price and Discount */}
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <p className="font-semibold text-[13px] text-[#057A37]">
                                                             {formatINR((item.price || 0) * item.quantity)}
@@ -233,7 +221,6 @@ export default function MobileCart() {
                                                         )}
                                                     </div>
 
-                                                    {/* Description */}
                                                     <p className="text-[10px] text-[#747474] line-clamp-1 mb-2">
                                                         {item.short_description || item.product_description || "Loading product details..."}
                                                     </p>
@@ -250,7 +237,6 @@ export default function MobileCart() {
                                     ))}
                                 </div>
 
-                                {/* Payment Method Selection */}
                                 <div className="mt-2">
                                     <h4 className="text-[14px] font-medium text-gray-800 mb-3">Payment Method</h4>
                                     <div className="flex gap-3 mb-3 w-[80%] mx-auto">
@@ -286,7 +272,6 @@ export default function MobileCart() {
                                     )}
                                 </div>
 
-                                {/* Delivery Address */}
                                 <div className="mt-2">
                                     <DeliveryAddress
                                         key={addressRefreshKey}
@@ -295,7 +280,6 @@ export default function MobileCart() {
                                 </div>
                             </div>
 
-                            {/* Mobile Footer */}
                             <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
                                 <div className="flex-1">
                                     <p className="text-lg font-bold">{formatINR(total)}</p>

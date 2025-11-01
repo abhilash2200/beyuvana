@@ -49,7 +49,9 @@ const MobileNav = () => {
     } | null>(null);
 
     const handleRegisterOtpSent = (phone: string, userData?: { name: string; email: string; phone: string }) => {
-        console.log("🔍 MobileNav - handleRegisterOtpSent called with:", { phone, userData });
+        if (process.env.NODE_ENV === "development") {
+            console.log("🔍 MobileNav - handleRegisterOtpSent called with:", { phone, userData });
+        }
         setOtpData({ phone, userData });
         setRegisterStep("otp");
     };
@@ -61,7 +63,9 @@ const MobileNav = () => {
     };
 
     const handleLoginOtpSent = (phone: string) => {
-        console.log("🔍 MobileNav - handleLoginOtpSent called with:", { phone });
+        if (process.env.NODE_ENV === "development") {
+            console.log("🔍 MobileNav - handleLoginOtpSent called with:", { phone });
+        }
         setOtpData({ phone });
         setLoginStep("otp");
     };
@@ -83,11 +87,9 @@ const MobileNav = () => {
                     <div>
                         <SheetTitle className="sr-only">Main Menu</SheetTitle>
 
-                        {/* 🔹 User section */}
                         <div className="mb-6 border-b border-gray-200 pb-4">
                             {!user ? (
                                 <div className="flex gap-3">
-                                    {/* Login Dialog */}
                                     <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                                         <DialogTrigger asChild>
                                             <Button
@@ -133,7 +135,6 @@ const MobileNav = () => {
                                         </DialogContent>
                                     </Dialog>
 
-                                    {/* Register Dialog */}
                                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                                         <DialogTrigger asChild>
                                             <Button
@@ -187,7 +188,6 @@ const MobileNav = () => {
                             )}
                         </div>
 
-                        {/* 🔹 Navigation links */}
                         <nav className="flex flex-col gap-5 text-lg font-medium">
                             {links.map((link) => (
                                 <Link
@@ -219,7 +219,6 @@ const MobileNav = () => {
                         </nav>
                     </div>
 
-                    {/* 🔹 Bottom Logout */}
                     {user && (
                         <div className="mt-6 border-t border-gray-200 pt-4">
                             <LogoutButton>

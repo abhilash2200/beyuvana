@@ -1,4 +1,3 @@
-// /components/auth/AuthDialog.tsx
 "use client";
 
 import { useState } from "react";

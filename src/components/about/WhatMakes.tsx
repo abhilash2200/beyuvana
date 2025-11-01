@@ -25,7 +25,6 @@ const WhatMakes = () => {
         if (splideRef.current) {
             const splide = splideRef.current.splide;
             if (splide) {
-                // Add classes after Splide initializes
                 const pagination = splide.root.querySelector('.splide__pagination');
                 const pages = splide.root.querySelectorAll('.splide__pagination__page');
 

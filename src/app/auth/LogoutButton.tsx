@@ -24,13 +24,10 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
     }
 
     if (!sessionKey) {
-      // User exists but no session key - do local logout only
       try {
-        // Clear localStorage
         localStorage.removeItem("user");
         localStorage.removeItem("session_key");
 
-        // Clear user-specific cart data
         if (user.id) {
           localStorage.removeItem(`cart_${user.id}`);
         }
@@ -47,18 +44,14 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
 
     setLoading(true);
     try {
-      // 🔹 Use the logout function from AuthProvider (it handles both API call and local cleanup)
       await logout();
       toast.success("You have been logged out successfully.");
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
-      // Even if logout API fails, the AuthProvider should have cleared local state
-      // Check if user is still logged in
       if (user || sessionKey) {
         toast.error("Logout failed. Please try again.");
       } else {
-        // Local logout was successful even if API failed
         toast.success("You have been logged out successfully.");
         router.push("/");
       }

@@ -46,7 +46,6 @@ const CompareProduct = ({ layoutType = "pink" }: CompareProductProps) => {
   return (
     <div className="md:p-8 p-4 rounded-[20px] shadow-sm" style={{ backgroundColor: bgColor }}>
       <div className="flex flex-wrap justify-between gap-y-10 md:gap-y-8">
-        {/* Left content */}
         <div className="w-full md:w-[33%] md:pr-4">
           <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-6 md:mb-5">{leftContent.title}</h2>
           <div className="space-y-3 md:space-y-2.5">
@@ -59,7 +58,6 @@ const CompareProduct = ({ layoutType = "pink" }: CompareProductProps) => {
           </div>
         </div>
 
-        {/* Middle Compare Image */}
         <div className="w-full md:w-[33%] relative flex items-center justify-center md:my-4">
           <div className="flex items-center justify-center w-full md:w-auto">
             <div className="bg-white w-[280px] h-[280px] md:w-[350px] md:h-[350px] rounded-full flex items-center justify-center relative z-10">
@@ -75,7 +73,6 @@ const CompareProduct = ({ layoutType = "pink" }: CompareProductProps) => {
           </div>
         </div>
 
-        {/* Right content */}
         <div className="w-full md:w-[33%] md:pl-4">
           <h2 className="text-[#1A2819] font-[Grafiels] md:text-[25px] text-[18px] leading-tight mb-6 md:mb-5">{rightContent.title}</h2>
           <div className="space-y-3 md:space-y-2.5">

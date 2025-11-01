@@ -71,7 +71,6 @@ const Header = () => {
 
     return (
         <header className="sticky top-0 z-50 w-full">
-            {/* Logo */}
             <div className="flex items-center justify-center bg-[#122014]">
                 <Link href="/" className="transition hover:opacity-80">
                     <Image
@@ -93,7 +92,6 @@ const Header = () => {
 
                             {!user ? (
                                 <>
-                                    {/* Login */}
                                     <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                                         <DialogTrigger asChild>
                                             <Button
@@ -140,7 +138,6 @@ const Header = () => {
                                         </DialogContent>
                                     </Dialog>
 
-                                    {/* Register */}
                                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                                         <DialogTrigger asChild>
                                             <Button
@@ -191,7 +188,6 @@ const Header = () => {
                                     </Dialog>
                                 </>
                             ) : (
-                                // User dropdown
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button className="inline-flex gap-x-2 rounded-full shadow px-4 font-normal py-2 capitalize bg-[#1A2819] text-white text-[12px]">

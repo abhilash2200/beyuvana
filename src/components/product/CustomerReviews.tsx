@@ -38,10 +38,8 @@ const CustomerReviews = memo(({ productId, productName, designSlug }: { productI
             setLoading(true);
             setError(null);
 
-            // Prefer resolving by backend products list so each page gets its own id
             let resolvedId: number | undefined = undefined;
             try {
-                // 1) Try strict filter by product_name and categorykey
                 const filterParams: ProductsListRequest = { filter: {}, page: 1, limit: 10 };
                 if (productName) (filterParams.filter as Record<string, unknown>).product_name = [productName];
                 if (designSlug) (filterParams.filter as Record<string, unknown>).categorykey = [designSlug];
@@ -50,7 +48,6 @@ const CustomerReviews = memo(({ productId, productName, designSlug }: { productI
                 });
                 let list: Product[] = (filteredResp?.data as Product[]) ?? [];
 
-                // 2) If nothing found, fallback to searchTerms
                 if (!Array.isArray(list) || list.length === 0) {
                     const searchResp = await productsApi.getList({ searchTerms: productName || designSlug || "", page: 1, limit: 50 });
                     list = (searchResp?.data as Product[]) ?? [];
@@ -76,7 +73,6 @@ const CustomerReviews = memo(({ productId, productName, designSlug }: { productI
                     }
                 }
             } catch {
-                // ignore list fetch errors; we'll fallback to provided id
             }
 
             if (!resolvedId && productId && !Number.isNaN(Number(productId))) {

@@ -186,7 +186,6 @@ const ProductsList = React.memo(() => {
 
 
     await addToCart(cartItem);
-    // Success toast is now handled by CartProvider
   };
 
   const handleShopNow = async (product: DisplayProduct) => {

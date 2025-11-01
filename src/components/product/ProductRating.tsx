@@ -20,7 +20,6 @@ export default function ProductRating({
         enabled: !!productId
     });
 
-    // Show loading state
     if (loading) {
         return (
             <div className={`flex items-center gap-2 ${className}`}>
@@ -35,7 +34,6 @@ export default function ProductRating({
         );
     }
 
-    // Show error state (fallback to no rating)
     if (error) {
         return (
             <div className={`flex items-center gap-2 ${className}`}>
@@ -44,7 +42,6 @@ export default function ProductRating({
         );
     }
 
-    // Show actual rating
     return (
         <CompactRatingDisplay
             ratingStats={ratingStats}

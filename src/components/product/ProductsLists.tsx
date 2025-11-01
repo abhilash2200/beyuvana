@@ -9,7 +9,6 @@ import type { PriceTier } from "@/lib/api";
 import { productDesignSlugs } from "@/app/data/productConfigs";
 import ProductRating from "./ProductRating";
 
-// Product interface
 export interface Product {
   id: number;
   name: string;
@@ -46,7 +45,6 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
   };
 
   const getProductDetailUrl = (product: Product): string => {
-    // Use design slug if available, otherwise fallback to slugified name
     const designSlug = productDesignSlugs[product.id];
     return designSlug ? `/product/${designSlug}` : `/product/${slugify(product.name)}`;
   };

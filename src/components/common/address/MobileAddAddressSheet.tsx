@@ -33,7 +33,6 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [showSavedAddresses, setShowSavedAddresses] = useState(false);
 
-    // Helper function to check if an address is primary (same as DeliveryAddress)
     const isPrimaryAddress = (address: SavedAddress): boolean => {
         const isPrimary = address.is_primary;
         const primaryStr = String(isPrimary).toLowerCase();
@@ -55,11 +54,9 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-        // Clear error when user starts typing
         if (error) setError(null);
     };
 
-    // Fetch saved addresses when sheet opens
     const fetchSavedAddresses = useCallback(async () => {
         if (!user?.id || !sessionKey) return;
 
@@ -68,10 +65,8 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
             const response = await addressApi.getAddresses(parseInt(user.id), sessionKey);
 
             if (response.data && Array.isArray(response.data)) {
-                // Filter addresses to only include those belonging to the current user
                 const currentUserId = parseInt(user.id);
                 const userAddresses = response.data.filter(addr => {
-                    // Ensure the address belongs to the current user
                     const addrUserId = typeof addr.user_id === 'string' ? parseInt(addr.user_id) : addr.user_id;
                     return addrUserId === currentUserId;
                 });
@@ -87,7 +82,6 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
         }
     }, [user?.id, sessionKey]);
 
-    // Set primary address
     const handleSetPrimary = async (addressId: number) => {
         if (!user?.id || !sessionKey) return;
 
@@ -96,7 +90,6 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
             const response = await addressApi.setPrimaryAddress(parseInt(user.id), addressId, sessionKey);
 
             if (response.success !== false) {
-                // Update local state to reflect the change
                 setSavedAddresses(prev =>
                     prev.map(addr => ({
                         ...addr,
@@ -104,15 +97,12 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                     }))
                 );
 
-                // Clear any existing errors and show success message
                 setError(null);
                 setSuccessMessage("Primary address updated successfully!");
                 toast.success("Primary address updated successfully!");
 
-                // Clear success message after 3 seconds
                 setTimeout(() => setSuccessMessage(null), 3000);
 
-                // Call callback to refresh parent component (DeliveryAddress)
                 onAddressSaved?.();
             } else {
                 console.error("Failed to set primary address:", response);
@@ -128,7 +118,6 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
         }
     };
 
-    // Edit address - populate form with address data
     const handleEditAddress = (address: SavedAddress) => {
         setEditingAddress(address);
         setIsEditMode(true);
@@ -137,7 +126,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
             email: address.email,
             phone: address.mobile,
             address1: address.address1,
-            address2: address.address2, // address2 contains landmark data
+            address2: address.address2,
             city: address.city,
             pincode: address.pincode,
         });
@@ -161,14 +150,12 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
         setError(null);
     };
 
-    // Load addresses when sheet opens
     useEffect(() => {
         if (open && user?.id && sessionKey) {
             fetchSavedAddresses();
         }
     }, [open, user?.id, sessionKey, fetchSavedAddresses]);
 
-    // Reset edit mode when sheet closes
     useEffect(() => {
         if (!open) {
             setIsEditMode(false);
@@ -189,7 +176,6 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
     }, [open]);
 
     const handleSave = async () => {
-        // Validate all fields using centralized validation
         if (!validateRequired(form.fullName, "Name").isValid) {
             setError("Please enter your full name");
             return;
@@ -252,28 +238,25 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                 user_id: parseInt(user.id),
                 fullname: form.fullName.trim(),
                 address1: form.address1.trim(),
-                address2: form.address2.trim(), // Using address2 field as landmark
+                address2: form.address2.trim(),
                 mobile: form.phone.trim(),
                 email: form.email.trim(),
                 city: form.city.trim(),
                 pincode: form.pincode.trim(),
-                is_primary: isEditMode ? editingAddress?.is_primary || 0 : 1, // Keep existing primary status when editing
+                is_primary: isEditMode ? editingAddress?.is_primary || 0 : 1,
             };
 
             let response;
             if (isEditMode && editingAddress) {
-                // Update existing address
                 const updateData = { ...addressData, id: editingAddress.id };
                 response = await addressApi.updateAddress(updateData, sessionKey);
             } else {
-                // Create new address
                 response = await addressApi.saveAddress(addressData, sessionKey);
             }
 
             if (response.success !== false) {
                 const successMsg = isEditMode ? "Address updated successfully!" : "Address saved successfully!";
                 toast.success(successMsg);
-                // Reset form and edit mode
                 setForm({
                     fullName: "",
                     email: "",
@@ -286,12 +269,9 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                 setEditingAddress(null);
                 setIsEditMode(false);
                 setShowSavedAddresses(false);
-                // Refresh the saved addresses list
                 await fetchSavedAddresses();
-                // Call the callback to refresh addresses list in parent
                 onAddressSaved?.();
             } else {
-                // Handle specific error cases
                 if (response.code === 401) {
                     setError("Authentication failed. Please login again.");
                     toast.error("Authentication failed. Please login again.");
@@ -334,7 +314,6 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                     e.preventDefault();
                 }}
             >
-                {/* Mobile Header */}
                 <div className="shrink-0 border-b border-gray-200 bg-white rounded-t-2xl relative z-10">
                     <SheetHeader className="p-4 pb-2">
                         <div className="flex justify-between items-center">
@@ -358,9 +337,7 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                     </SheetHeader>
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-                    {/* Status Messages */}
                     {!user?.id && (
                         <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-3 py-2 rounded-lg text-sm">
                             <p className="font-medium">Login Required</p>
@@ -453,7 +430,6 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                         </div>
                     </div>
 
-                    {/* Saved Addresses Toggle */}
                     {user?.id && sessionKey && savedAddresses.length > 0 && (
                         <div className="bg-white rounded-[5px] border border-green-300">
                             <button
@@ -544,7 +520,6 @@ export default function MobileAddAddressSheet({ open, onOpenChange, onAddressSav
                     )}
                 </div>
 
-                {/* Mobile Footer */}
                 <div className="bg-white border-t px-4 py-4 w-full flex gap-3 shrink-0">
                     {isEditMode && (
                         <Button

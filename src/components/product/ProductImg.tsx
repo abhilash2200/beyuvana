@@ -18,7 +18,6 @@ const ProductImg = React.memo(function ProductImg({ images }: ProductImgProps) {
 
   return (
     <div className="w-full mx-auto flex flex-col items-center space-y-6">
-      {/* Main Product Image with Lens */}
       <div className="w-full flex items-center justify-center">
         <Lens>
           <Image
@@ -33,9 +32,7 @@ const ProductImg = React.memo(function ProductImg({ images }: ProductImgProps) {
         </Lens>
       </div>
 
-      {/* Thumbnail Slider with custom arrows */}
       <div className="relative w-full">
-        {/* Left Arrow */}
         <button
           onClick={() => {
             const splide = splideRef.current?.splide;
@@ -49,7 +46,6 @@ const ProductImg = React.memo(function ProductImg({ images }: ProductImgProps) {
           <ChevronLeft className="w-5 h-5" />
         </button>
 
-        {/* Slider */}
         <Splide
           options={{
             perPage: 3,
@@ -92,7 +88,6 @@ const ProductImg = React.memo(function ProductImg({ images }: ProductImgProps) {
           ))}
         </Splide>
 
-        {/* Right Arrow */}
         <button
           onClick={() => {
             const splide = splideRef.current?.splide;

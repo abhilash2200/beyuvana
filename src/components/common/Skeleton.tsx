@@ -1,7 +1,3 @@
-/**
- * Reusable Skeleton Components
- * Provides loading states for various UI elements
- */
 
 import { cn } from "@/lib/utils";
 
@@ -19,9 +15,6 @@ export function Skeleton({ className }: SkeletonProps) {
     );
 }
 
-/**
- * Product Card Skeleton
- */
 export function ProductCardSkeleton() {
     return (
         <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -33,9 +26,6 @@ export function ProductCardSkeleton() {
     );
 }
 
-/**
- * Cart Item Skeleton
- */
 export function CartItemSkeleton() {
     return (
         <div className="flex gap-4 p-4 border-b border-gray-200">
@@ -49,9 +39,6 @@ export function CartItemSkeleton() {
     );
 }
 
-/**
- * Review Skeleton
- */
 export function ReviewSkeleton() {
     return (
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
@@ -72,9 +59,6 @@ export function ReviewSkeleton() {
     );
 }
 
-/**
- * Order Item Skeleton
- */
 export function OrderItemSkeleton() {
     return (
         <div className="flex gap-4 p-4 border border-gray-200 rounded-lg">

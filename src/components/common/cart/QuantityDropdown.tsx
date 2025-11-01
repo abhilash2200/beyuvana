@@ -32,13 +32,12 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
     const [isCustomDialogOpen, setIsCustomDialogOpen] = React.useState(false);
     const [customQuantity, setCustomQuantity] = React.useState("");
 
-    // Sync local quantity with prop changes
     React.useEffect(() => {
         setLocalQuantity(currentQuantity);
     }, [currentQuantity]);
 
     const handleQuantityChange = async (newQuantity: number) => {
-        const validQuantity = Math.max(1, Math.min(99, newQuantity)); // Allow up to 99
+        const validQuantity = Math.max(1, Math.min(99, newQuantity));
         setLocalQuantity(validQuantity);
 
         if (validQuantity !== currentQuantity) {
@@ -46,7 +45,6 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
                 await updateItemQuantity(itemId, validQuantity);
             } catch (error) {
                 console.error("Failed to update quantity:", error);
-                // Revert on error
                 setLocalQuantity(currentQuantity);
             }
         }

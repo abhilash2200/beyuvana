@@ -18,7 +18,6 @@ const OrdersPage = () => {
   const { user, sessionKey } = useAuth();
 
 
-  // Test function for navigation (development only)
   useEffect(() => {
     if (typeof window !== 'undefined' && process.env.NODE_ENV === "development") {
       (window as unknown as Record<string, unknown>).testOrderNavigation = (orderId?: string) => {
@@ -26,7 +25,6 @@ const OrdersPage = () => {
         const encodedId = encodeURIComponent(testId);
         const url = `/orders/${encodedId}`;
 
-        // Navigate to the order detail page
         window.location.href = url;
         return { orderId: testId, url };
       };
@@ -51,7 +49,6 @@ const OrdersPage = () => {
           setOrders(response.data);
         } else {
           setError(response.message || "Failed to fetch orders");
-          // Only show toast for actual errors, not for "under development" messages
           if (response.message && !response.message.includes("under development")) {
             toast.error(response.message);
           }
@@ -158,7 +155,6 @@ const OrdersPage = () => {
             )}
 
             {!loading && !error && orders.map((order) => {
-              // Validate order ID before creating link
               const orderId = order.id?.trim();
               if (!orderId) {
                 console.warn("Order missing ID:", order);
@@ -172,10 +168,8 @@ const OrdersPage = () => {
                   className="block py-5 border-b border-gray-300 border-dashed hover:bg-gray-50 transition"
                 >
                   <div className="flex flex-wrap justify-between items-center">
-                    {/* Left product info */}
                     <div className="w-full md:w-[40%]">
                       <div className="flex gap-3">
-                        {/* Product Image */}
                         <div className="md:w-28 md:h-28 w-20 h-20 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
                           {order.thumbnail ? (
                             <Image
@@ -204,12 +198,10 @@ const OrdersPage = () => {
 
                     </div>
 
-                    {/* Price */}
                     <div className="w-full md:w-[20%] hidden md:block">
                       <p className="font-semibold">₹{Math.round(order.price)}</p>
                     </div>
 
-                    {/* Status */}
                     <div className="w-full md:w-[20%] hidden md:block">
                       {getStatusUI(order.status, order.date)}
                     </div>

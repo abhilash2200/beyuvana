@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Product } from "@/app/data/fallbackProducts"
 
 const Builder = ({ product }: { product: Product }) => {
-  // Use builder array for slides
   const slides = product?.builder || []
 
   return (

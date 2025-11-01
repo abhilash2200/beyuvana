@@ -27,7 +27,6 @@ export default function Cart() {
     const [isMobile, setIsMobile] = React.useState(false);
     const [cartError, setCartError] = React.useState<string | null>(null);
 
-    // Check if device is mobile
     React.useEffect(() => {
         const checkIsMobile = () => {
             setIsMobile(window.innerWidth < 768);
@@ -108,7 +107,6 @@ export default function Cart() {
         }
     };
 
-    // Render mobile cart on mobile devices
     if (isMobile) {
         return <MobileCart />;
     }

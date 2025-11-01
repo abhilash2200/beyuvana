@@ -17,10 +17,8 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Helper function to check if an address is primary
   const isPrimaryAddress = (address: SavedAddress): boolean => {
     const isPrimary = address.is_primary;
-    // Convert to string and check for various representations of "true" or "1"
     const primaryStr = String(isPrimary).toLowerCase();
     return isPrimary === 1 ||
       primaryStr === "1" ||
@@ -48,22 +46,17 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
       const response = await addressApi.getAddresses(parseInt(user.id), sessionKey);
 
       if (response.data && Array.isArray(response.data)) {
-        // Filter addresses to only include those belonging to the current user
         const currentUserId = parseInt(user.id);
         const userAddresses = response.data.filter(addr => {
-          // Ensure the address belongs to the current user
           const addrUserId = typeof addr.user_id === 'string' ? parseInt(addr.user_id) : addr.user_id;
           return addrUserId === currentUserId;
         });
 
-        // Only show the primary address - check for different possible values
         const primaryAddress = userAddresses.find(addr => isPrimaryAddress(addr));
 
         if (primaryAddress) {
-          setAddresses([primaryAddress]); // Only set the primary address
+          setAddresses([primaryAddress]);
         } else {
-          // If no primary address is found, show the first address as a fallback
-          // This handles cases where the API doesn't have any address marked as primary
           if (userAddresses.length > 0) {
             setAddresses([userAddresses[0]]);
           } else {
@@ -95,10 +88,8 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
     fetchAddresses();
   }, [fetchAddresses]);
 
-  // Notify parent when primary address is loaded
   useEffect(() => {
     if (addresses.length > 0) {
-      // Since we only show the primary address, notify parent with the first (and only) address
       onAddressSelect?.(addresses[0] || null);
     } else {
       onAddressSelect?.(null);
@@ -162,7 +153,6 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
 
   return (
     <div className="mt-6 mb-[100px] overflow-hidden bg-[#FAFAFA] rounded-[20px] px-4">
-      {/* Header */}
       <div className="py-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -177,7 +167,6 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
         </div>
       </div>
 
-      {/* Content */}
       <div className="py-2">
         {addresses.length === 0 ? (
           <div className="text-center py-2">

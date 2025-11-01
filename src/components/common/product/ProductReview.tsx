@@ -7,7 +7,6 @@ import { FaStar, FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthProvider";
 import { reviewApi, ProductReviewRequest, ProductReviewItem } from "@/lib/api";
 
-// Extended interface to match actual API response
 interface ApiReviewItem extends ProductReviewItem {
     customer_name?: string;
     customer_id?: string;
@@ -19,8 +18,8 @@ import { toast } from "react-toastify";
 interface ProductReviewProps {
     productId: string;
     productName?: string;
-    orderStatus?: "arriving" | "cancelled" | "delivered"; // Optional: If provided from order detail page, use this instead of fetching
-    skipOrderCheck?: boolean; // Optional: Skip order check (for admin/testing purposes)
+    orderStatus?: "arriving" | "cancelled" | "delivered";
+    skipOrderCheck?: boolean;
 }
 
 const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: ProductReviewProps) => {
@@ -38,7 +37,7 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
     const [reviewsLoading, setReviewsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [existingReview, setExistingReview] = useState<ApiReviewItem | null>(null);
-    const [canReview, setCanReview] = useState<boolean | null>(null); // null = checking, true = can review, false = cannot
+    const [canReview, setCanReview] = useState<boolean | null>(null);
     const [reviewRestrictionReason, setReviewRestrictionReason] = useState<string | null>(null);
     const [checkingReviewEligibility, setCheckingReviewEligibility] = useState(false);
 
@@ -56,16 +55,13 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
         });
     }, [allReviews, user?.id, user?.name]);
 
-    // Check if user can review this product
     useEffect(() => {
         const checkReviewEligibility = async () => {
-            // Skip check if explicitly disabled or if orderStatus is provided and is "delivered"
             if (skipOrderCheck) {
                 setCanReview(true);
                 return;
             }
 
-            // If orderStatus is provided from order detail page, use it directly
             if (orderStatus !== undefined) {
                 if (orderStatus === "delivered") {
                     setCanReview(true);
@@ -80,9 +76,8 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                 return;
             }
 
-            // Otherwise, check via API if user is logged in
             if (!user?.id || !sessionKey) {
-                setCanReview(null); // Will show login message
+                setCanReview(null);
                 return;
             }
 
@@ -93,7 +88,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                 setCanReview(eligibility.canReview);
                 setReviewRestrictionReason(eligibility.reason || null);
             } catch {
-                // On error, allow review but backend should validate
                 setCanReview(true);
                 setReviewRestrictionReason(null);
             } finally {
@@ -137,7 +131,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
         fetchReviews();
     }, [productId, sessionKey]);
 
-    // Refetch reviews when user changes (login/logout)
     useEffect(() => {
         if (user?.id && productId) {
             const refetchReviews = async () => {
@@ -154,7 +147,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                         setAllReviews(reviews);
                     }
                 } catch {
-                    // Silently handle error, reviews will remain as previous state
                 }
             };
             refetchReviews();
@@ -186,12 +178,11 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
     }, [showForm, hasReviewed, existingReview]);
 
     const validateInput = (text: string): string => {
-        // Enhanced XSS prevention - remove potentially dangerous characters
         return text.trim()
-            .replace(/[<>]/g, '') // Remove angle brackets
-            .replace(/javascript:/gi, '') // Remove javascript: protocol
-            .replace(/on\w+=/gi, '') // Remove event handlers
-            .replace(/script/gi, ''); // Remove script tags (basic)
+            .replace(/[<>]/g, '')
+            .replace(/javascript:/gi, '')
+            .replace(/on\w+=/gi, '')
+            .replace(/script/gi, '');
     };
 
     const handleSubmit = async () => {
@@ -229,14 +220,12 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
             return;
         }
 
-        // Check review eligibility before submitting
         if (!skipOrderCheck && canReview === false) {
             setSubmitError(reviewRestrictionReason || "You are not eligible to review this product.");
             setIsValidating(false);
             return;
         }
 
-        // If canReview is null and we don't have orderStatus, check eligibility
         if (!skipOrderCheck && canReview === null && orderStatus === undefined && user?.id && sessionKey) {
             try {
                 setCheckingReviewEligibility(true);
@@ -252,7 +241,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                 }
                 setCanReview(true);
             } catch {
-                // Continue with submission, backend should validate
             } finally {
                 setCheckingReviewEligibility(false);
             }
@@ -320,7 +308,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                             setAllReviews(reviews);
                         }
                     } catch {
-                        // Silently handle error
                     }
                 }, 1000);
             } else {
@@ -365,10 +352,8 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
 
     return (
         <div className="space-y-4 w-full">
-            {/* Review Summary */}
             <div className="bg-[#F2F9F3] border border-gray-200 p-4 rounded-[20px] transition-all duration-300 ease-in-out">
 
-                {/* Display User's Existing Reviews */}
                 {userReviews.length > 0 && (
                     <div className="space-y-3 mb-4">
                         <h2 className="font-[Grafiels] text-[18px] text-[#1A2819]">Your Review:</h2>
@@ -392,10 +377,8 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                     </div>
                 )}
 
-                {/* Rate this Product Button */}
                 {!showForm && (
                     <div className="space-y-3">
-                        {/* Review eligibility messages */}
                         {checkingReviewEligibility && (
                             <div className="text-center text-gray-600 text-sm">
                                 Verifying review eligibility...
@@ -429,7 +412,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                 )}
             </div>
 
-            {/* Review Form */}
             {showForm && (
                 <div className="p-4 bg-green-50 rounded-lg space-y-3 animate-in slide-in-from-top-2 duration-300">
                     {submitError && (
@@ -441,7 +423,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                         {isEditing ? "Edit Your Review" : "Your Rating"}
                     </p>
 
-                    {/* Star Rating */}
                     <div className="flex gap-1">
                         {[...Array(5)].map((_, i) => {
                             const starValue = i + 1;
@@ -461,7 +442,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                         })}
                     </div>
 
-                    {/* Review Message */}
                     <div className="space-y-1">
                         <Textarea
                             className="w-full p-2 border rounded text-sm bg-white text-gray-700"
@@ -479,7 +459,6 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                         </div>
                     </div>
 
-                    {/* Submit Button */}
                     <div className="flex gap-2">
                         <Button
                             className="bg-green-700 hover:bg-green-800 text-white px-6 py-3 font-normal transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"

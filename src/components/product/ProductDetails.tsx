@@ -57,7 +57,7 @@ const ProductDetails = ({ name, tagline, description, certificateImg, certificat
 
             {faq && faq.length > 0 && (
                 <div className="w-full mx-auto">
-                    <Accordion type="single" collapsible className="space-y-3">{/*  defaultValue={faq[0].id} */}
+                    <Accordion type="single" collapsible className="space-y-3">
                         {faq.map((item) => (
                             <AccordionItem key={item.id} value={item.id}>
                                 <AccordionTrigger

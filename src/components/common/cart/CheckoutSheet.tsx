@@ -24,11 +24,9 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
     const [selectedAddress, setSelectedAddress] = React.useState<SavedAddress | null>(null);
     const [isProcessingOrder, setIsProcessingOrder] = React.useState(false);
 
-    // Calculate pricing details
     const calculatePricing = () => {
         const grossAmount = cartItems.reduce((acc, item) => {
-            // Use actual MRP price from the matching price tier
-            const originalPrice = item.mrp_price || item.price || 0; // Use sale price as fallback only
+            const originalPrice = item.mrp_price || item.price || 0;
             return acc + (Math.round(originalPrice * item.quantity));
         }, 0);
 
@@ -44,7 +42,6 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
         };
     };
 
-    // Process checkout
     const handlePlaceOrder = async () => {
         if (cartItems.length === 0) {
             toast.warning("Your cart is empty!");
@@ -67,14 +64,12 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
         try {
             const pricing = calculatePricing();
 
-            // Convert cart items to checkout format
             const checkoutCartItems: CheckoutCartItem[] = cartItems.map(item => {
-                const originalPrice = item.mrp_price || item.price || 0; // Use actual MRP from API only
+                const originalPrice = item.mrp_price || item.price || 0;
                 const totalMrpPrice = Math.round(originalPrice * item.quantity);
                 const totalSalePrice = Math.round((item.price || 0) * item.quantity);
                 const discountAmount = Math.round(totalMrpPrice - totalSalePrice);
 
-                // Safely parse product_id, ensuring it's a valid number
                 const productId = item.product_id || item.id;
                 const parsedProductId = typeof productId === 'string' ? parseInt(productId, 10) : Number(productId);
 
@@ -118,10 +113,8 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
 
             if (response.status || response.success) {
                 toast.success("🎉 Order placed successfully! You will receive a confirmation email shortly.");
-                // Clear cart after successful order
                 await clearCart();
-                // Close the checkout sheet
-                window.location.reload(); // Simple way to close the sheet
+                window.location.reload();
             } else {
                 toast.error(response.message || "Failed to place order. Please try again.");
             }
@@ -185,7 +178,6 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                     ) : (
                         <>
                             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-                                {/* Order items summary */}
                                 <div className="flex flex-col gap-4 bg-[#F2F9F3] rounded-[10px] px-2 py-3">
                                     {cartItems.map((item) => (
                                         <div key={item.id} className="flex items-center gap-4 border-b pb-4">
@@ -208,7 +200,6 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                                     ))}
                                 </div>
 
-                                {/* Payment method */}
                                 <div className="rounded-md text-center">
                                     <div className="flex justify-center gap-4 mb-4">
                                         <button
@@ -237,7 +228,6 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                                     )}
                                 </div>
 
-                                {/* Delivery address */}
                                 <DeliveryAddress
                                     key={addressRefreshKey}
                                     onAddAddress={() => setIsAddAddressOpen(true)}
@@ -245,7 +235,6 @@ export default function CheckoutSheet({ trigger }: { trigger?: React.ReactNode }
                                 />
                             </div>
 
-                            {/* Footer */}
                             <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
                                 <div>
                                     <p className="text-lg font-bold">{formatINR(total)}</p>

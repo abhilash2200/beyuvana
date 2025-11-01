@@ -34,7 +34,6 @@ type ServerCartItem = {
   product_description?: string;
   in_stock?: string;
   cart_id?: string;
-  // New fields from API response
   unit_qty?: string | number;
   unit_name?: string;
   product_code?: string;
@@ -126,7 +125,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // Prevent multiple simultaneous sync operations
     if (syncLockRef.current) {
       return;
     }
@@ -140,10 +138,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (Array.isArray(response.data)) {
 
         if (response.data.length > 0) {
-          // Convert API cart items to local format with validation
           const serverCartItems: LocalCartItem[] = response.data
             .map((item: ServerCartItem) => {
-              // Map cart items with proper structure using server data
               const mappedItem = {
                 id: item.cart_id || item.id || `${item.product_id}-${item.qty || 1}`,
                 name: item.price_unit_name || item.name || item.product_name || 'Unknown Product',
@@ -153,13 +149,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 image: item.image || item.product_image || '/placeholder.png',
                 product_id: item.product_id || item.id,
                 cart_id: item.cart_id,
-                // Additional fields from server response
                 mrp_price: Math.round(parseFloat(String(item.mrp || 0)) || 0),
                 discount_percent: item.discount_off_inpercent || item.discount_percent,
                 short_description: item.product_description,
                 product_description: item.product_description,
                 in_stock: item.in_stock,
-                // Pack information
                 pack_qty: parseFloat(String(item.unit_qty || 1)) || 1,
                 unit_name: item.unit_name || 'Pack of',
               };
@@ -187,34 +181,28 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
     } finally {
       setLoading(false);
-      syncLockRef.current = false; // Release the sync lock
+      syncLockRef.current = false;
     }
   }, [user, sessionKey]);
 
 
-  // Load cart from server only (no local storage)
   useEffect(() => {
     setCartLoadedFromStorage(true);
   }, []);
 
-  // Track when auth is initialized to prevent premature cart clearing
   useEffect(() => {
-    // Check if auth data exists in localStorage to determine if auth is initialized
     const hasStoredAuth = typeof window !== "undefined"
       ? (localStorage.getItem("user") || localStorage.getItem("session_key"))
       : null;
     if (hasStoredAuth) {
-      // If there's stored auth data, wait for it to be loaded
       if (user !== null || sessionKey !== null) {
         setAuthInitialized(true);
       }
     } else {
-      // If no stored auth data, auth is immediately initialized as "not logged in"
       setAuthInitialized(true);
     }
   }, [user, sessionKey]);
 
-  // Mark that this is no longer a page refresh once auth is initialized
   useEffect(() => {
     if (authInitialized) {
       setIsPageRefresh(false);
@@ -222,38 +210,31 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [authInitialized]);
 
 
-  // Load cart from server when user logs in
   useEffect(() => {
     if (authInitialized && user && sessionKey && cartLoadedFromStorage) {
       syncWithServer();
     }
   }, [user, sessionKey, authInitialized, cartLoadedFromStorage, syncWithServer]);
 
-  // Enhance cart items with product details when cart items change
   useEffect(() => {
     if (authInitialized && user && sessionKey && cartItems.length > 0) {
-      // Only enhance if items don't already have product details and enhancement is not in progress
       const needsEnhancement = cartItems.some(item => !item.product_details);
 
       if (needsEnhancement && !enhancementInProgressRef.current) {
         enhancementInProgressRef.current = true;
 
-        // Inline the enhancement logic to avoid dependency issues
         const enhanceItems = async () => {
           try {
             const enhancedItems = await Promise.all(
               cartItems.map(async (item) => {
-                // Validate item data first
                 if (!item || !item.id || !item.name) {
                   return null;
                 }
 
-                // Skip if already has product details
                 if (item.product_details) {
                   return item;
                 }
 
-                // Only fetch product details if we have a product_id
                 if (!item.product_id) {
                   return item;
                 }
@@ -298,7 +279,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
               })
             );
 
-            // Filter out null items (invalid items)
             const validEnhancedItems = enhancedItems.filter((item): item is LocalCartItem => item !== null);
             setCartItems(validEnhancedItems);
           } catch (error) {
@@ -316,11 +296,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cartItems, user, sessionKey, authInitialized, fetchProductDetails]);
 
 
-  // When user logs out, clear the cart
   useEffect(() => {
 
     if (authInitialized && (!user || !sessionKey) && !isPageRefresh) {
-      // This is a real logout, clear the cart
       setCartItems([]);
     }
   }, [user, sessionKey, authInitialized, isPageRefresh]);
@@ -328,13 +306,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const addToCart = async (item: LocalCartItem) => {
     setLoading(true);
     try {
-      // Require login before adding items
       if (!user || !sessionKey) {
         toast.info("Please login to add items to your cart.");
         return;
       }
 
-      // Validate required fields
       if (!item.product_id) {
         toast.error("Unable to add to cart: Missing product information.");
         return;
@@ -345,7 +321,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      // Add to server cart - always make the API call
       try {
         const cartData = {
           product_id: item.product_id,
@@ -360,24 +335,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
         await cartApi.addToCart(cartData, sessionKey, user.id);
 
-        // Refresh cart from server after adding
         await syncWithServer();
 
-        // Show success message
         toast.success(`${item.name} added to cart!`);
       } catch (apiError) {
         if (process.env.NODE_ENV === "development") {
           console.error("Failed to add to cart:", apiError);
         }
         toast.error("Failed to add item to cart. Please try again.");
-        throw apiError; // Re-throw to let the calling component handle it
+        throw apiError;
       }
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error("Failed to add to cart:", error);
       }
       toast.error("Failed to add item to cart. Please try again.");
-      throw error; // Re-throw to let the calling component handle it
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -387,7 +360,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const item = cartItems.find((i) => i.id === id);
     if (!item || !user || !sessionKey || !item.product_id) return;
 
-    // Optimistic update - immediately update the UI
     setCartItems(prevItems =>
       prevItems.map(cartItem =>
         cartItem.id === id
@@ -396,19 +368,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       )
     );
 
-    // Clear existing timeout for this item
     const existingTimeout = timeoutRefs.current.get(id);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
     }
 
-    // Debounced server update after 500ms (reduced from 1 second)
     const timeout = setTimeout(async () => {
       try {
-        // Add one more of the same item to the backend
         const cartData = {
           product_id: item.product_id!,
-          quantity: 1, // Add just 1 more
+          quantity: 1,
           price_qty: item.pack_qty || 0,
           price_unit_name: item.name,
           product_price: item.mrp_price || 0,
@@ -418,18 +387,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
         await cartApi.addToCart(cartData, sessionKey, user.id);
 
-        // Refresh cart from server - backend will consolidate and update quantity
         await syncWithServer();
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.error("Failed to increase quantity:", error);
         }
         toast.error("Failed to update quantity. Please try again.");
-        // Revert optimistic update on error
         await syncWithServer();
       }
       timeoutRefs.current.delete(id);
-    }, 500); // Reduced delay for better UX
+    }, 500);
 
     timeoutRefs.current.set(id, timeout);
   }, [cartItems, user, sessionKey, syncWithServer]);
@@ -438,13 +405,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const item = cartItems.find((i) => i.id === id);
     if (!item || !user || !sessionKey || !item.product_id) return;
 
-    // Optimistic update - immediately update the UI
     setCartItems(prevItems => {
       if (item.quantity <= 1) {
-        // Remove item from UI immediately
         return prevItems.filter(cartItem => cartItem.id !== id);
       } else {
-        // Decrease quantity
         return prevItems.map(cartItem =>
           cartItem.id === id
             ? { ...cartItem, quantity: cartItem.quantity - 1 }
@@ -453,42 +417,35 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    // Clear existing timeout for this item
     const existingTimeout = timeoutRefs.current.get(id);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
     }
 
-    // Debounced server update after 500ms (reduced from 1 second)
     const timeout = setTimeout(async () => {
       try {
         if (item.quantity <= 1) {
-          // Remove item completely
           await cartApi.removeFromCart(item.product_id!, sessionKey, user.id, item.cart_id);
           toast.success(`${item.name} removed from cart!`);
         } else {
-          // Decrease quantity by 1 using the decrease API
           await cartApi.decreaseQuantity(item.product_id!, sessionKey);
         }
 
-        // Refresh cart from server
         await syncWithServer();
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.error("Failed to decrease quantity:", error);
         }
         toast.error("Failed to update quantity. Please try again.");
-        // Revert optimistic update on error
         await syncWithServer();
       }
       timeoutRefs.current.delete(id);
-    }, 500); // Reduced delay for better UX
+    }, 500);
 
     timeoutRefs.current.set(id, timeout);
   }, [cartItems, user, sessionKey, syncWithServer]);
 
   const updateItemQuantity = useCallback(async (id: string, qty: number) => {
-    // Validate quantity input
     if (typeof qty !== 'number' || isNaN(qty)) {
       if (process.env.NODE_ENV === "development") {
         console.error("Invalid quantity provided:", qty);
@@ -496,12 +453,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const newQuantity = Math.max(1, Math.min(10, Math.round(qty))); // Clamp between 1-10 and round
+    const newQuantity = Math.max(1, Math.min(10, Math.round(qty)));
     const item = cartItems.find((i) => i.id === id);
 
     if (!item || !user || !sessionKey || !item.product_id) return;
 
-    // Optimistic update - immediately update the UI
     setCartItems(prevItems =>
       prevItems.map(cartItem =>
         cartItem.id === id
@@ -510,19 +466,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       )
     );
 
-    // Clear existing timeout for this item
     const existingTimeout = timeoutRefs.current.get(id);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
     }
 
-    // Debounced server update after 800ms (slightly longer for input changes)
     const timeout = setTimeout(async () => {
       try {
-        // Remove the item first, then add with new quantity
         await cartApi.removeFromCart(item.product_id!, sessionKey, user.id, item.cart_id);
 
-        // Add with new quantity
         const cartData = {
           product_id: item.product_id!,
           quantity: newQuantity,
@@ -535,18 +487,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
         await cartApi.addToCart(cartData, sessionKey, user.id);
 
-        // Refresh cart from server
         await syncWithServer();
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.error("Failed to update quantity:", error);
         }
         toast.error("Failed to update quantity. Please try again.");
-        // Revert optimistic update on error
         await syncWithServer();
       }
       timeoutRefs.current.delete(id);
-    }, 800); // Slightly longer delay for input changes
+    }, 800);
 
     timeoutRefs.current.set(id, timeout);
   }, [cartItems, user, sessionKey, syncWithServer]);
@@ -560,7 +510,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       await cartApi.removeFromCart(item.product_id, sessionKey, user.id, item.cart_id);
       toast.success(`${item.name} removed from cart!`);
 
-      // Refresh cart from server
       await syncWithServer();
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
@@ -599,9 +548,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshProductDetails = async () => {
     if (user && sessionKey && cartItems.length > 0) {
-      // Reset the enhancement progress flag to allow re-enhancement
       enhancementInProgressRef.current = false;
-      // Trigger re-enhancement by updating cart items
       setCartItems([...cartItems]);
     }
   };
@@ -621,7 +568,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         refreshCart,
         refreshProductDetails,
         loading,
-        // Cart UI controls
         isCartOpen,
         openCart: () => setIsCartOpen(true),
         closeCart: () => setIsCartOpen(false),
@@ -633,7 +579,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook to use cart
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) throw new Error("useCart must be used within a CartProvider");

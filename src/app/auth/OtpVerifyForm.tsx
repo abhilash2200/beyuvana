@@ -23,7 +23,6 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
     const [resending, setResending] = useState(false);
     const { setUser, setSessionKey } = useAuth();
 
-    // Countdown timer effect
     useEffect(() => {
         if (countdown > 0) {
             const timer = setTimeout(() => {
@@ -62,15 +61,6 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
 
         try {
             if (isRegistration && userData) {
-                // For registration: call register API with actual user data and OTP
-                // Log the data being sent to ensure it's correct
-                console.log("📝 Registering user with:", {
-                    fullname: userData.name,
-                    email: userData.email,
-                    phonenumber: phone,
-                    otp: otp.substring(0, 2) + "****" // Only show first 2 chars of OTP for security
-                });
-
                 const data = await authApi.register({
                     fullname: userData.name,
                     email: userData.email,
@@ -78,14 +68,11 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                     otp: otp
                 });
 
-                // Check API response status first
                 const apiData = data as Record<string, unknown>;
 
-                // Check if the API call was successful
                 if (apiData.status === false) {
                     const errorMessage = String(apiData.message || "Registration failed. Please try again.");
 
-                    // Check if user already exists
                     if (errorMessage.toLowerCase().includes("already exists") ||
                         errorMessage.toLowerCase().includes("already registered")) {
                         toast.error("This phone number is already registered. Please try logging in instead.");
@@ -95,35 +82,28 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                     return;
                 }
 
-                // Only proceed if status is true or undefined (for backward compatibility)
                 const rawUser = apiData.user || apiData.data || apiData;
 
-                // For registration, always use user-provided data to avoid dummy/test data from API
-                // The API might return dummy data, but we should always use what the user entered
                 const normalizedUser = {
                     id: String((rawUser as Record<string, unknown>)?.userid || (rawUser as Record<string, unknown>)?.id || ""),
-                    // Always use user-provided name, never use API response for name
                     name: userData.name,
-                    // Always use user-provided email, never use API response for email
                     email: userData.email,
                     phone: String((rawUser as Record<string, unknown>)?.phone || (rawUser as Record<string, unknown>)?.phonenumber || phone),
                 };
 
-                // Extract session key from data field
                 const sessionKey = apiData.session_key || apiData.sessionKey || apiData.token || apiData.access_token || apiData.auth_token || apiData.jwt ||
                     (apiData.data && typeof apiData.data === 'object' ?
                         (apiData.data as Record<string, unknown>).session_key || (apiData.data as Record<string, unknown>).sessionKey || (apiData.data as Record<string, unknown>).token || (apiData.data as Record<string, unknown>).access_token || (apiData.data as Record<string, unknown>).auth_token || (apiData.data as Record<string, unknown>).jwt
                         : null) || null;
 
-                // Always set user data for registration completion
                 setUser(normalizedUser);
                 if (sessionKey) {
                     setSessionKey(String(sessionKey));
-                    // Log complete session key once during registration
-                    console.log("🔐 Complete Session Key (Registration):", String(sessionKey));
+                    if (process.env.NODE_ENV === "development") {
+                        console.log("🔐 Complete Session Key (Registration):", String(sessionKey));
+                    }
                 }
 
-                // Save to localStorage
                 try {
                     localStorage.setItem("user", JSON.stringify(normalizedUser));
                     if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
@@ -133,21 +113,16 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
 
                 toast.success(`Welcome to BEYUVANA, ${normalizedUser.name}! Your account has been created successfully.`);
             } else {
-                // For login: use the exact phone number from OTP sending
-
                 const data = await authApi.login({
                     phonenumber: phone,
                     otp: otp
                 });
 
-                // Check API response status first
                 const apiData = data as Record<string, unknown>;
 
-                // Check if the API call was successful
                 if (apiData.status === false) {
                     const errorMessage = String(apiData.message || "Login failed. Please try again.");
 
-                    // Provide more helpful error messages
                     if (errorMessage.includes("Phone No. or OTP Not Found") || errorMessage.includes("OTP Not Found")) {
                         toast.error("Invalid OTP or phone number. Please check your OTP and try again, or the OTP may have expired.");
                     } else if (errorMessage.includes("expired") || errorMessage.includes("timeout")) {
@@ -162,7 +137,6 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                     return;
                 }
 
-                // Only proceed if status is true or undefined (for backward compatibility)
                 const rawUser = apiData.user || apiData.data || apiData;
 
 
@@ -174,7 +148,6 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                 } : null;
 
 
-                // Extract session key from data field
                 const sessionKey = apiData.session_key || apiData.sessionKey || apiData.token || apiData.access_token || apiData.auth_token || apiData.jwt ||
                     (apiData.data && typeof apiData.data === 'object' ?
                         (apiData.data as Record<string, unknown>).session_key || (apiData.data as Record<string, unknown>).sessionKey || (apiData.data as Record<string, unknown>).token || (apiData.data as Record<string, unknown>).access_token || (apiData.data as Record<string, unknown>).auth_token || (apiData.data as Record<string, unknown>).jwt
@@ -186,11 +159,11 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                         setSessionKey(String(sessionKey));
                     }
 
-                    // Print session key and user ID once during login
-                    console.log("🔐 Login Successful - Session Key:", String(sessionKey || "N/A"));
-                    console.log("👤 Login Successful - User ID:", normalizedUser.id);
+                    if (process.env.NODE_ENV === "development") {
+                        console.log("🔐 Login Successful - Session Key:", String(sessionKey || "N/A"));
+                        console.log("👤 Login Successful - User ID:", normalizedUser.id);
+                    }
 
-                    // Save to localStorage
                     try {
                         localStorage.setItem("user", JSON.stringify(normalizedUser));
                         if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
