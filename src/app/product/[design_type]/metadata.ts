@@ -21,8 +21,8 @@ export function generateProductMetadata(designType: string): Metadata {
   }
 
   const productName = product.name;
-  const description = product.short_description || product.tagline || `${productName} - Premium plant-based wellness supplement from BEYUVANA™`;
-  const image = product.image || product.image_single || "/assets/img/logo.png";
+  const description = product.tagline || (product.description && product.description[0]) || `${productName} - Premium plant-based wellness supplement from BEYUVANA™`;
+  const image = product.images && product.images[0] ? product.images[0] : "/assets/img/logo.png";
 
   return {
     title: `${productName} | BEYUVANA™`,
@@ -36,7 +36,6 @@ export function generateProductMetadata(designType: string): Metadata {
       "collagen builder",
       "natural supplements",
       product.design_type?.toLowerCase() || "",
-      product.category?.toLowerCase() || "",
     ].filter(Boolean),
     openGraph: {
       title: `${productName} | BEYUVANA™`,

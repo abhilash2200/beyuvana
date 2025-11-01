@@ -80,17 +80,16 @@ export const reviewApi = {
     } catch (error) {
       // Only log in development
       if (process.env.NODE_ENV === "development") {
-        // eslint-disable-next-line no-console
         console.error("Error checking review eligibility:", error);
       }
-      
+
       return {
         canReview: false,
         reason: "Unable to verify order status. Please try again later.",
       };
     }
   },
-  
+
   addReview: async (reviewData: ProductReviewRequest, sessionKey?: string): Promise<ApiResponse> => {
     try {
       return await apiFetch("/product-reviews/add/v1/", {
@@ -102,7 +101,7 @@ export const reviewApi = {
       throw new Error("Failed to submit review. Please try again later.");
     }
   },
-  
+
   getReviews: async (
     productId: number,
     sessionKey?: string
