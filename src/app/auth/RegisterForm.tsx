@@ -50,63 +50,28 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
         setLoading(true);
 
         try {
+            // Note: We removed the dummy registration check because it was creating users with dummy data
+            // The actual registration will handle the "user already exists" error if needed
 
-            // First, check if user already exists using register API with dummy data
-            try {
-                const userCheckResponse = await authApi.register({
-                    fullname: "dummy",
-                    email: "dummy@example.com",
-                    phonenumber: cleanPhone,
-                    otp: "000000" // Dummy OTP
-                });
+            // Use consistent 10-digit phone number format (no prefixes)
+            const response = await authApi.sendOtp({ phonenumber: cleanPhone });
 
-
-                // If user already exists, show error and return
-                if (userCheckResponse.status === false &&
-                    userCheckResponse.message?.includes("Already Exists")) {
-                    setError("This phone number is already registered. Please try logging in instead.");
-                    return;
-                }
-            } catch {
-                // Continue with OTP sending even if check fails
-            }
-
-            // Try different phone number formats that the API might accept
-            const phoneFormats = [
-                cleanPhone,                    // 7003810162
-                `+91${cleanPhone}`,           // +917003810162
-                `91${cleanPhone}`,            // 917003810162
-                `0${cleanPhone}`,             // 07003810162
-                `+91-${cleanPhone}`,          // +91-7003810162
-                `91-${cleanPhone}`,           // 91-7003810162
-            ];
-
-            let response;
-            let successfulFormat = null;
-
-            for (const phoneFormat of phoneFormats) {
-                try {
-                    response = await authApi.sendOtp({ phonenumber: phoneFormat });
-
-                    if (response.status !== false) {
-                        successfulFormat = phoneFormat;
-                        break;
-                    }
-                } catch {
-                    // Continue trying other formats
-                }
-            }
-
-            if (!successfulFormat || !response) {
-                throw new Error("Failed to send OTP with any phone number format. Please check your phone number.");
+            // Check if response indicates success
+            if (response.status === false) {
+                // API explicitly returned failure
+                const errorMsg = response.message || "OTP send failed";
+                throw new Error(errorMsg);
             }
 
             // Store user data for after OTP verification
-            onOtpSent?.(successfulFormat, {
+            const userDataToPass = {
                 name: form.name,
                 email: form.email,
-                phone: successfulFormat
-            });
+                phone: cleanPhone
+            };
+
+
+            onOtpSent?.(cleanPhone, userDataToPass);
 
             toast.success("OTP sent to your phone number. Please verify to complete registration.");
         } catch (err: unknown) {

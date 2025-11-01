@@ -48,16 +48,24 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
       const response = await addressApi.getAddresses(parseInt(user.id), sessionKey);
 
       if (response.data && Array.isArray(response.data)) {
+        // Filter addresses to only include those belonging to the current user
+        const currentUserId = parseInt(user.id);
+        const userAddresses = response.data.filter(addr => {
+          // Ensure the address belongs to the current user
+          const addrUserId = typeof addr.user_id === 'string' ? parseInt(addr.user_id) : addr.user_id;
+          return addrUserId === currentUserId;
+        });
+
         // Only show the primary address - check for different possible values
-        const primaryAddress = response.data.find(addr => isPrimaryAddress(addr));
+        const primaryAddress = userAddresses.find(addr => isPrimaryAddress(addr));
 
         if (primaryAddress) {
           setAddresses([primaryAddress]); // Only set the primary address
         } else {
           // If no primary address is found, show the first address as a fallback
           // This handles cases where the API doesn't have any address marked as primary
-          if (response.data.length > 0) {
-            setAddresses([response.data[0]]);
+          if (userAddresses.length > 0) {
+            setAddresses([userAddresses[0]]);
           } else {
             setAddresses([]);
           }

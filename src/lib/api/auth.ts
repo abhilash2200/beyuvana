@@ -13,11 +13,14 @@ import type {
 export const authApi = {
   sendOtp: async (otpData: SendOtpRequest): Promise<ApiResponse> => {
     try {
-      return await apiFetch("/otp/send/v1/", {
+      const response = await apiFetch("/otp/send/v1/", {
         method: "POST",
         body: JSON.stringify(otpData),
       });
+
+      return response;
     } catch (error: unknown) {
+
       if ((error as Error)?.message && (error as Error).message.includes("API error:")) {
         try {
           const errorText = (error as Error).message.split(" - ")[1];
@@ -44,6 +47,14 @@ export const authApi = {
         phonenumber: userData.phonenumber,
         otp_code: userData.otp
       };
+
+      // Log what's being sent to the backend
+      console.log("🚀 Sending to backend /signup/v1/:", {
+        fullname: apiData.fullname,
+        email: apiData.email,
+        phonenumber: apiData.phonenumber,
+        otp_code: apiData.otp_code.substring(0, 2) + "****"
+      });
 
       const response = await apiFetch("/signup/v1/", {
         method: "POST",

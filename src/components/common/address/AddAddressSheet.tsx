@@ -81,7 +81,14 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
             const response = await addressApi.getAddresses(parseInt(user.id), sessionKey);
 
             if (response.data && Array.isArray(response.data)) {
-                setSavedAddresses(response.data);
+                // Filter addresses to only include those belonging to the current user
+                const currentUserId = parseInt(user.id);
+                const userAddresses = response.data.filter(addr => {
+                    // Ensure the address belongs to the current user
+                    const addrUserId = typeof addr.user_id === 'string' ? parseInt(addr.user_id) : addr.user_id;
+                    return addrUserId === currentUserId;
+                });
+                setSavedAddresses(userAddresses);
             } else {
                 setSavedAddresses([]);
             }

@@ -36,46 +36,18 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
         const cleanPhone = form.phone.replace(/\D/g, "");
 
         try {
-            // Try different phone number formats that the API might accept
-            const phoneFormats = [
-                cleanPhone,                    // 7003810162
-                `+91${cleanPhone}`,           // +917003810162
-                `91${cleanPhone}`,            // 917003810162
-                `0${cleanPhone}`,             // 07003810162
-                `+91-${cleanPhone}`,          // +91-7003810162
-                `91-${cleanPhone}`,           // 91-7003810162
-            ];
+            // Use consistent 10-digit phone number format (no prefixes)
+            const response = await authApi.sendOtp({ phonenumber: cleanPhone });
 
-            let response;
-            let successfulFormat = null;
-            let lastError = null;
-
-            for (const phoneFormat of phoneFormats) {
-                try {
-                    response = await authApi.sendOtp({ phonenumber: phoneFormat });
-
-                    if (response.status !== false && response.success !== false) {
-                        successfulFormat = phoneFormat;
-                        break;
-                    } else {
-                        lastError = response.message || "OTP send failed";
-                    }
-                } catch (err) {
-                    if (process.env.NODE_ENV === "development") {
-                        console.error(`Error with format ${phoneFormat}:`, err);
-                    }
-                    lastError = (err as Error)?.message || "Network error";
-                    // Continue trying other formats
-                }
-            }
-
-            if (!successfulFormat || !response) {
-                const errorMsg = lastError || "Failed to send OTP with any phone number format. Please check your phone number.";
+            // Check if response indicates success
+            if (response.status === false) {
+                // API explicitly returned failure
+                const errorMsg = response.message || "OTP send failed";
                 throw new Error(errorMsg);
             }
 
             // Store phone for OTP verification
-            onOtpSent?.(successfulFormat);
+            onOtpSent?.(cleanPhone);
 
             toast.success("OTP sent to your phone number. Please verify to login.");
         } catch (err: unknown) {
