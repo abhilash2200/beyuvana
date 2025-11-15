@@ -11,9 +11,15 @@ interface ConditionalLayoutProps {
 
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname();
-  const excludeHeaderFooter = pathname?.startsWith("/thank-you");
+  const excludeThankYou = pathname?.startsWith("/thank-you");
+  const excludePaymentSuccess = pathname?.startsWith("/payment-success");
+  const excludePaymentFailed = pathname?.startsWith("/payment-failed");
+  const excludePaymentInitiate = pathname?.startsWith("/payment-initiate");
 
-  if (excludeHeaderFooter) {
+  // Pages that should not have header/footer
+  const shouldExcludeLayout = excludeThankYou || excludePaymentSuccess || excludePaymentFailed || excludePaymentInitiate;
+
+  if (shouldExcludeLayout) {
     return <>{children}</>;
   }
 

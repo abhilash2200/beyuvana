@@ -383,5 +383,61 @@ export interface CheckoutRequest {
   address_id: number;
   gst_amount: string;
   payment_info: PaymentInfo;
+  redirecturl?: string;
+  type?: string;
+  redirect_url?: string;
+}
+
+export interface CheckoutOrderDetails {
+  id: string;
+  user_id: string;
+  txn_id: string;
+  status: string;
+  pay_status: string;
+  created_date: string;
+  order_no: string;
+  paid_amount: string;
+  discount_amount: string;
+  gross_amount: string;
+  promo_amount: string;
+  promo_code: string;
+  qty: string;
+  pay_mode: string;
+  pay_gateway_name: string;
+  session_key: string;
+  awb_no: string | null;
+  courier_name: string | null;
+  created_at: string;
+  updated_at: string;
+  total_discount: string;
+  gst_amount: string;
+  gst_no: string | null;
+  address_id: string;
+  completed_date: string | null;
+  remarks: string | null;
+  thumbnail: string;
+  address1: string;
+  city: string;
+  pincode: string;
+  address2: string;
+  mobile: string;
+  fullname: string;
+  email: string;
+  shipment_shipment_id: string;
+  shipment_order_id: string;
+  payment_app_type: string;
+  payment_redirect_url: string;
+}
+
+export interface PaymentResponse {
+  orderId: string;
+  state: string;
+  expireAt: number;
+  redirectUrl: string;
+}
+
+export interface CheckoutResponseData {
+  order_details: CheckoutOrderDetails;
+  payment_response?: PaymentResponse[];
 }
 

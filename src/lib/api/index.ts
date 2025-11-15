@@ -15,6 +15,7 @@ export { addressApi } from "./address";
 export { checkoutApi } from "./checkout";
 export { reviewApi } from "./reviews";
 export { contactApi } from "./contact";
+export { promoApi } from "./promo";
 
 // Type exports
 export type * from "./types";

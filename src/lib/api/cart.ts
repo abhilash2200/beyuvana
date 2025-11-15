@@ -83,7 +83,7 @@ export const cartApi = {
         cart_id: cartId ? Number(cartId) : undefined
       };
 
-      return await apiFetch<CartItem[]>("/cart/removeone/v1/", {
+      return await apiFetch<CartItem[]>("/cart/remove/v1/", {
         method: "POST",
         headers: buildAuthHeaders(sessionKey),
         body: JSON.stringify(payload),

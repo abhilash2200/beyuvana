@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 import { ChevronDown } from "lucide-react";
 import React from "react";
+import { CART_CONFIG } from "@/lib/constants";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -37,7 +38,7 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
     }, [currentQuantity]);
 
     const handleQuantityChange = async (newQuantity: number) => {
-        const validQuantity = Math.max(1, Math.min(99, newQuantity));
+        const validQuantity = Math.max(CART_CONFIG.MIN_QUANTITY, Math.min(CART_CONFIG.MAX_QUANTITY, newQuantity));
         setLocalQuantity(validQuantity);
 
         if (validQuantity !== currentQuantity) {
@@ -56,7 +57,7 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
 
     const handleCustomQuantitySubmit = () => {
         const quantity = parseInt(customQuantity);
-        if (quantity >= 1 && quantity <= 99) {
+        if (quantity >= CART_CONFIG.MIN_QUANTITY && quantity <= CART_CONFIG.MAX_QUANTITY) {
             handleQuantityChange(quantity);
             setIsCustomDialogOpen(false);
             setCustomQuantity("");
@@ -120,14 +121,14 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
                     <DialogHeader>
                         <DialogTitle className="text-[#057A37] text-center">Enter Quantity</DialogTitle>
                         <DialogDescription>
-                            Enter a custom quantity (1-99)
+                            Enter a custom quantity ({CART_CONFIG.MIN_QUANTITY}-{CART_CONFIG.MAX_QUANTITY})
                         </DialogDescription>
                     </DialogHeader>
                     <div className="py-4">
                         <Input
                             type="number"
-                            min="1"
-                            max="99"
+                            min={CART_CONFIG.MIN_QUANTITY}
+                            max={CART_CONFIG.MAX_QUANTITY}
                             value={customQuantity}
                             onChange={(e) => setCustomQuantity(e.target.value)}
                             placeholder="Enter quantity"
@@ -148,7 +149,7 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
                         </Button>
                         <Button
                             onClick={handleCustomQuantitySubmit}
-                            disabled={!customQuantity || parseInt(customQuantity) < 1 || parseInt(customQuantity) > 99}
+                            disabled={!customQuantity || parseInt(customQuantity) < CART_CONFIG.MIN_QUANTITY || parseInt(customQuantity) > CART_CONFIG.MAX_QUANTITY}
                             className="bg-[#057A37] hover:bg-[#0C4B33] px-2 text-[12px] text-white font-normal"
                         >
                             Set Quantity

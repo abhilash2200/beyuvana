@@ -76,7 +76,13 @@ export function useCartSync({
 
                     if (serverCartItems.length > 0) {
                         setCartItems(serverCartItems);
+                    } else {
+                        // Server returned items but they were filtered out - set empty cart
+                        setCartItems([]);
                     }
+                } else {
+                    // Server returned empty array - clear the cart
+                    setCartItems([]);
                 }
             }
         } catch (error) {

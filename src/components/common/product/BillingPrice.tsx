@@ -141,7 +141,7 @@ const BillingPrice = ({ userName, order, orderDetails }: BillingPriceProps) => {
                             <span className="font-medium">₹0.00</span>
                         </div>
                         <hr className="my-3 border-gray-200 border-dashed" />
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md">
+                        <div className="flex justify-between items-center py-2 md:px-3 rounded-md">
                             <span className="font-semibold text-green-700">Total Payable</span>
                             <span className="font-bold text-lg text-green-700">₹{orderDetails?.order_details?.paid_amount || "0.00"}</span>
                         </div>

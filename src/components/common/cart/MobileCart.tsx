@@ -5,14 +5,16 @@ import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescri
 import { ShoppingCart, Trash2, X } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
 import Image from "next/image";
-import CheckoutSheet from "./CheckoutSheet";
 import DeliveryAddress from "../address/DeliveryAddress";
 import AddAddressSheet from "../address/AddAddressSheet";
 import QuantityDropdown from "./QuantityDropdown";
-import { toast } from "react-toastify";
 import React from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatINR } from "@/lib/utils";
+import { useAuth } from "@/context/AuthProvider";
+import { SavedAddress } from "@/lib/api";
+import { useCheckout } from "@/hooks/useCheckout";
+import { calculateCartTotals } from "@/lib/cart-utils";
 
 export default function MobileCart() {
     const {
@@ -20,13 +22,24 @@ export default function MobileCart() {
         loading,
         isCartOpen,
         setCartOpen,
-        removeFromCart
+        removeFromCart,
+        clearCart
     } = useCart();
-    const total = Math.round(cartItems.reduce((acc, item) => acc + (Math.round((item.price || 0) * item.quantity)), 0));
+    const { user, sessionKey } = useAuth();
+    const { total } = calculateCartTotals(cartItems);
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
+    const [selectedAddress, setSelectedAddress] = React.useState<SavedAddress | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
     const [cartError, setCartError] = React.useState<string | null>(null);
+
+    const { processCheckout, isProcessingCheckout } = useCheckout({
+        cartItems,
+        user,
+        sessionKey,
+        clearCart,
+        setCartError,
+    });
 
     const handleSheetOpenChange = (open: boolean) => {
         setCartOpen(open);
@@ -45,6 +58,13 @@ export default function MobileCart() {
             }
             setCartError("Failed to remove item. Please try again.");
         }
+    };
+
+    const handleCheckout = async () => {
+        if (!selectedPayment || !selectedAddress) {
+            return;
+        }
+        await processCheckout(selectedPayment, selectedAddress);
     };
 
     return (
@@ -200,7 +220,7 @@ export default function MobileCart() {
                                                         <button
                                                             onClick={() => handleRemoveItem(item.id)}
                                                             disabled={loading}
-                                                            className="text-red-500 hover:text-red-700 p-1"
+                                                            className="p-1 bg-white hover:bg-red-100 text-red-600 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed z-10 rounded-full transition-colors duration-200 cursor-pointer border border-red-600 h-6 w-6"
                                                         >
                                                             <Trash2 size={14} />
                                                         </button>
@@ -276,6 +296,7 @@ export default function MobileCart() {
                                     <DeliveryAddress
                                         key={addressRefreshKey}
                                         onAddAddress={() => setIsAddAddressOpen(true)}
+                                        onAddressSelect={setSelectedAddress}
                                     />
                                 </div>
                             </div>
@@ -300,27 +321,13 @@ export default function MobileCart() {
                                     )}
                                 </div>
                                 <div className="bg-[#FFF] px-4 py-2 rounded-full ml-3">
-                                    <CheckoutSheet
-                                        trigger={
-                                            <Button
-                                                className="text-[#122014] font-medium text-[13px]"
-                                                onClick={(e) => {
-                                                    if (cartItems.length === 0) {
-                                                        e.preventDefault();
-                                                        toast.warning("Your cart is empty!");
-                                                        return;
-                                                    }
-                                                    if (!selectedPayment) {
-                                                        e.preventDefault();
-                                                        toast.warning("Please select a payment method!");
-                                                        return;
-                                                    }
-                                                }}
-                                            >
-                                                Proceed to pay
-                                            </Button>
-                                        }
-                                    />
+                                    <Button
+                                        className="text-[#122014] font-medium text-[13px]"
+                                        onClick={handleCheckout}
+                                        disabled={isProcessingCheckout || loading}
+                                    >
+                                        {isProcessingCheckout ? "Processing..." : "Proceed to pay"}
+                                    </Button>
                                 </div>
                             </div>
                             <AddAddressSheet

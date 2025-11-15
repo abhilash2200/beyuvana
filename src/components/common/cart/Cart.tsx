@@ -5,7 +5,6 @@ import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescri
 import { ShoppingCart, RefreshCw, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
 import Image from "next/image";
-import CheckoutSheet from "./CheckoutSheet";
 import DeliveryAddress from "../address/DeliveryAddress";
 import AddAddressSheet from "../address/AddAddressSheet";
 import { toast } from "react-toastify";
@@ -15,17 +14,40 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import MobileCart from "./MobileCart";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { formatINR } from "@/lib/utils";
+import { useAuth } from "@/context/AuthProvider";
+import { SavedAddress, promoApi } from "@/lib/api";
+import { useCheckout } from "@/hooks/useCheckout";
+import { calculateCartTotals } from "@/lib/cart-utils";
 
 export default function Cart() {
-    const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, loading, isCartOpen, setCartOpen } = useCart();
-    const total = Math.round(cartItems.reduce((acc, item) => acc + (Math.round((item.price || 0) * item.quantity)), 0));
+    const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, removeFromCart, loading, isCartOpen, setCartOpen } = useCart();
+    const { user, sessionKey } = useAuth();
+    const cartTotals = calculateCartTotals(cartItems);
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
+    const [selectedAddress, setSelectedAddress] = React.useState<SavedAddress | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [lastIncreaseTime, setLastIncreaseTime] = React.useState<number>(0);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
     const [isMobile, setIsMobile] = React.useState(false);
     const [cartError, setCartError] = React.useState<string | null>(null);
+    const [promoValue, setPromoValue] = React.useState<number>(0);
+
+    const total = React.useMemo(() => {
+        const baseTotal = cartTotals.total;
+        if (selectedPayment === "prepaid" && promoValue > 0) {
+            return Math.max(0, baseTotal - promoValue);
+        }
+        return baseTotal;
+    }, [cartTotals.total, selectedPayment, promoValue]);
+
+    const { processCheckout, isProcessingCheckout } = useCheckout({
+        cartItems,
+        user,
+        sessionKey,
+        clearCart,
+        setCartError,
+    });
 
     React.useEffect(() => {
         const checkIsMobile = () => {
@@ -93,6 +115,22 @@ export default function Cart() {
         }
     };
 
+    const handleRemoveItem = async (itemId: string) => {
+        try {
+            setCartError(null);
+            await removeFromCart(itemId);
+            toast.success("Item removed from cart", {
+                position: "bottom-center",
+                autoClose: 2000,
+            });
+        } catch (error) {
+            if (process.env.NODE_ENV === "development") {
+                console.error("Failed to remove item:", error);
+            }
+            setCartError("Failed to remove item. Please try again.");
+        }
+    };
+
     const handleRefreshCart = async () => {
         try {
             setCartError(null);
@@ -105,16 +143,62 @@ export default function Cart() {
         }
     };
 
-    const handleClearCart = async () => {
-        try {
-            setCartError(null);
-            await clearCart();
-        } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to clear cart:", error);
+
+    const handlePrepaidClick = async () => {
+        setSelectedPayment("prepaid");
+
+        if (user?.id && sessionKey) {
+            try {
+                const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
+                const response = await promoApi.getPromoDetails(
+                    {
+                        user_id: userId,
+                        promo_code: "TEST150",
+                    },
+                    sessionKey
+                );
+
+
+                const responseData = response.data as Record<string, unknown>;
+                const promoValueFromResponse =
+                    typeof responseData?.promo_value === "number" ? responseData.promo_value :
+                        typeof responseData?.promo_amount === "number" ? responseData.promo_amount :
+                            typeof responseData?.discount_amount === "number" ? responseData.discount_amount :
+                                typeof responseData?.promo_value === "string" ? parseFloat(responseData.promo_value) || 0 :
+                                    typeof responseData?.promo_amount === "string" ? parseFloat(responseData.promo_amount) || 0 :
+                                        typeof responseData?.discount_amount === "string" ? parseFloat(responseData.discount_amount) || 0 :
+                                            0;
+
+                setPromoValue(promoValueFromResponse);
+
+                // Store promo code in localStorage for payment response API
+                if (typeof window !== "undefined") {
+                    localStorage.setItem("promo_code", "TEST150");
+                }
+            } catch {
+                // Reset promo value on error
+                setPromoValue(0);
+                // Clear promo code from localStorage on error
+                if (typeof window !== "undefined") {
+                    localStorage.removeItem("promo_code");
+                }
+                // Silently fail - don't block user from selecting prepaid
             }
-            setCartError("Failed to clear cart. Please try again.");
+        } else {
+            // Reset promo value if user is not logged in
+            setPromoValue(0);
+            // Clear promo code from localStorage
+            if (typeof window !== "undefined") {
+                localStorage.removeItem("promo_code");
+            }
         }
+    };
+
+    const handleCheckout = async () => {
+        if (!selectedPayment || !selectedAddress) {
+            return;
+        }
+        await processCheckout(selectedPayment, selectedAddress);
     };
 
     if (isMobile) {
@@ -212,14 +296,14 @@ export default function Cart() {
                                             Refresh Cart
                                         </TooltipContent>
                                     </Tooltip>
-                                    {cartItems.length > 0 && (
+                                    {/* {cartItems.length > 0 && (
                                         <Tooltip delayDuration={300}>
                                             <TooltipTrigger asChild>
                                                 <Button
                                                     onClick={handleClearCart}
                                                     disabled={loading}
                                                     variant="default"
-                                                    className="flex items-center gap-2 px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                    className="flex items-center gap-2 px-3 py-1 text-sm text-red-600  hover:text-red-700 hover:bg-red-50"
                                                 >
                                                     <Trash2 size={16} />
                                                 </Button>
@@ -234,7 +318,7 @@ export default function Cart() {
                                                 Clear Cart
                                             </TooltipContent>
                                         </Tooltip>
-                                    )}
+                                    )} */}
                                 </div>
                             </div>
                         </SheetHeader>
@@ -284,7 +368,16 @@ export default function Cart() {
                                 <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
                                     <div className="flex flex-col gap-4 bg-[#F2F9F3] rounded-[10px] px-2 py-3">
                                         {cartItems.map((item, index) => (
-                                            <div key={`${item.id}-${item.product_id || 'no-product'}-${index}`} className="flex items-center gap-4 border-b pb-4">
+                                            <div key={`${item.id}-${item.product_id || 'no-product'}-${index}`} className="flex items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0 relative">
+                                                <Button
+                                                    variant="ghost"
+                                                    onClick={() => handleRemoveItem(item.id)}
+                                                    disabled={loading}
+                                                    className="absolute -top-5 -right-5 border border-red-600 h-6 w-6 p-0 bg-white hover:bg-red-100 text-red-600 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed z-10 rounded-full transition-colors duration-200 cursor-pointer"
+                                                    aria-label="Remove item from cart"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </Button>
                                                 <div className="w-24 h-28 relative rounded-md overflow-hidden bg-gray-200">
                                                     <Image
                                                         src={item.image || "/placeholder.png"}
@@ -380,7 +473,7 @@ export default function Cart() {
                                                     ? "border-green-600 bg-green-100"
                                                     : "border-gray-300"
                                                     }`}
-                                                onClick={() => setSelectedPayment("prepaid")}
+                                                onClick={handlePrepaidClick}
                                             >
                                                 Prepaid
                                             </button>
@@ -389,7 +482,13 @@ export default function Cart() {
                                                     ? "border-green-600 bg-green-100"
                                                     : "border-gray-300"
                                                     }`}
-                                                onClick={() => setSelectedPayment("cod")}
+                                                onClick={() => {
+                                                    setSelectedPayment("cod");
+                                                    setPromoValue(0);
+                                                    if (typeof window !== "undefined") {
+                                                        localStorage.removeItem("promo_code");
+                                                    }
+                                                }}
                                             >
                                                 COD
                                             </button>
@@ -410,6 +509,7 @@ export default function Cart() {
                                     <DeliveryAddress
                                         key={addressRefreshKey}
                                         onAddAddress={() => setIsAddAddressOpen(true)}
+                                        onAddressSelect={setSelectedAddress}
                                     />
                                 </div>
 
@@ -433,27 +533,13 @@ export default function Cart() {
                                         )}
                                     </div>
                                     <div className="bg-[#FFF] px-3 py-1 rounded-full">
-                                        <CheckoutSheet
-                                            trigger={
-                                                <Button
-                                                    className="text-[#122014] font-normal text-[15px]"
-                                                    onClick={(e) => {
-                                                        if (cartItems.length === 0) {
-                                                            e.preventDefault();
-                                                            toast.warning("Your cart is empty!");
-                                                            return;
-                                                        }
-                                                        if (!selectedPayment) {
-                                                            e.preventDefault();
-                                                            toast.warning("Please select a payment method!");
-                                                            return;
-                                                        }
-                                                    }}
-                                                >
-                                                    Proceed to pay
-                                                </Button>
-                                            }
-                                        />
+                                        <Button
+                                            className="text-[#122014] font-normal text-[15px]"
+                                            onClick={handleCheckout}
+                                            disabled={isProcessingCheckout || loading}
+                                        >
+                                            {isProcessingCheckout ? "Processing..." : "Proceed to pay"}
+                                        </Button>
                                     </div>
                                 </div>
                                 <AddAddressSheet

@@ -39,6 +39,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedSession) {
       setSessionKey(storedSession);
+      // Print session key on page load/refresh for development
+      console.log("🔐 Session Key (Loaded from storage):", storedSession);
     }
   }, []);
 

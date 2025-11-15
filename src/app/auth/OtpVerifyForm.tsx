@@ -163,6 +163,8 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                     setUser(normalizedUser);
                     if (sessionKey) {
                         setSessionKey(String(sessionKey));
+                        // Print session key when user logs in
+                        console.log("🔐 Session Key:", String(sessionKey));
                     }
 
                     if (process.env.NODE_ENV === "development") {

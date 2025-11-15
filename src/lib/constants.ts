@@ -20,12 +20,18 @@ export const PHONE_CONFIG = {
     VALID_PREFIXES: ['6', '7', '8', '9'],
 } as const;
 
-// Environment Configuration
 export const ENV_CONFIG = {
     API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api",
     PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL || "/api/proxy",
-    SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    SITE_URL:
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        (process.env.NODE_ENV === "production"
+            ? "https://beyuvana.com"
+            : "http://localhost:3000"),
+
     NODE_ENV: process.env.NODE_ENV || "development",
+    IS_PRODUCTION: process.env.NODE_ENV === "production",
+    IS_DEVELOPMENT: process.env.NODE_ENV === "development" || !process.env.NODE_ENV,
 } as const;
 
 // Cache Configuration
@@ -33,6 +39,19 @@ export const CACHE_CONFIG = {
     IMAGES_MAX_AGE: 604800, // 7 days
     ASSETS_MAX_AGE: 86400, // 1 day
     FONTS_MAX_AGE: 31536000, // 1 year
+} as const;
+
+// Payment Method Constants
+export const PAYMENT_METHODS = {
+    PREPAID: "prepaid",
+    COD: "cod",
+} as const;
+
+// Route Constants
+export const ROUTES = {
+    PAYMENT_INITIAL: "/payment-initial/",
+    PAYMENT_SUCCESS: "/payment-success",
+    PAYMENT_FAILED: "/payment-failed",
 } as const;
 
 // Color Constants (for consistency across the app)

@@ -28,15 +28,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
   const syncLockRef = useRef<boolean>(false);
+  const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
+  const previousStateRef = useRef<LocalCartItem[]>([]);
 
-  // Cleanup timeouts on unmount
+  // Cleanup timeouts and abort controllers on unmount
   useEffect(() => {
     const currentTimeoutRefs = timeoutRefs.current;
+    const currentAbortControllers = abortControllersRef.current;
     return () => {
       currentTimeoutRefs.forEach((timeout) => {
         clearTimeout(timeout);
       });
       currentTimeoutRefs.clear();
+      
+      currentAbortControllers.forEach((controller) => {
+        controller.abort();
+      });
+      currentAbortControllers.clear();
     };
   }, []);
 
@@ -99,6 +107,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setLoading,
     syncWithServer,
     timeoutRefs,
+    abortControllersRef,
+    previousStateRef,
   });
 
   // Sync cart when auth and storage are ready
