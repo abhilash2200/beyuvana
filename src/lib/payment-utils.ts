@@ -117,7 +117,10 @@ export async function callPaymentResponseAPI(orderId: string, promoCode?: string
         }
     }
 
-    const directUrl = `${ENV_CONFIG.API_BASE_URL}/api/payment_response/?${queryParams.toString()}`;
+    const directQueryParams = new URLSearchParams({
+        payment_request_id: orderId,
+    });
+    const directUrl = `${ENV_CONFIG.API_BASE_URL}/api/payment_response/?${directQueryParams.toString()}`;
     const fetchResponse = await fetch(directUrl, {
         method: "GET",
         headers: { Accept: "application/json" },
