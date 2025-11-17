@@ -34,6 +34,22 @@ export const ENV_CONFIG = {
     IS_DEVELOPMENT: process.env.NODE_ENV === "development" || !process.env.NODE_ENV,
 } as const;
 
+// Promo Code Configuration
+export const PROMO_CONFIG = {
+    /**
+     * Default promo code for prepaid orders
+     * Can be overridden via NEXT_PUBLIC_PREPAID_PROMO_CODE environment variable
+     * Set to empty string to disable automatic promo code application
+     */
+    PREPAID_PROMO_CODE: process.env.NEXT_PUBLIC_PREPAID_PROMO_CODE || "TEST150",
+
+    /**
+     * Whether to automatically apply promo code for prepaid orders
+     * Set NEXT_PUBLIC_AUTO_APPLY_PROMO=false to disable
+     */
+    AUTO_APPLY_PROMO: process.env.NEXT_PUBLIC_AUTO_APPLY_PROMO !== "false",
+} as const;
+
 // Cache Configuration
 export const CACHE_CONFIG = {
     IMAGES_MAX_AGE: 604800, // 7 days

@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { SavedAddress, promoApi } from "@/lib/api";
 import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
+import { getPrepaidPromoCode, isPromoCodeEnabled } from "@/lib/promo-utils";
 
 export default function MobileCart() {
     const {
@@ -90,9 +91,21 @@ export default function MobileCart() {
         setSelectedPayment("prepaid");
 
         if (user?.id && sessionKey) {
+            // Get promo code from configuration
+            const promoCodeValue = getPrepaidPromoCode();
+            
+            // If promo code is disabled or not configured, skip API call
+            if (!isPromoCodeEnabled() || !promoCodeValue) {
+                setPromoValue(0);
+                setPromoCode("");
+                if (typeof window !== "undefined") {
+                    localStorage.removeItem("promo_code");
+                }
+                return;
+            }
+
             try {
                 const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
-                const promoCodeValue = "TEST150";
                 const response = await promoApi.getPromoDetails(
                     {
                         user_id: userId,
@@ -409,7 +422,7 @@ export default function MobileCart() {
                                     )}
                                     {selectedPayment === "prepaid" && (
                                         <p className="text-[10px] text-gray-300">
-                                            Free gifts added + upto ₹150 off
+                                            Free gifts added + ₹150 off
                                         </p>
                                     )}
                                     {!selectedPayment && (
