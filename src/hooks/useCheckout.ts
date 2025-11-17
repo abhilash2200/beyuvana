@@ -17,6 +17,9 @@ interface UseCheckoutParams {
     sessionKey: string | null;
     clearCart: () => Promise<void>;
     setCartError?: (error: string | null) => void;
+    promoCode?: string;
+    promoAmount?: number;
+    discountedTotal?: number;
 }
 
 export function useCheckout({
@@ -25,6 +28,9 @@ export function useCheckout({
     sessionKey,
     clearCart,
     setCartError,
+    promoCode = "",
+    promoAmount = 0,
+    discountedTotal,
 }: UseCheckoutParams) {
     const router = useRouter();
     const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
@@ -63,6 +69,12 @@ export function useCheckout({
             // Calculate totals using utility function
             const { total, grossAmount, discountAmount, totalQty } = calculateCartTotals(cartItems);
 
+            // Use discounted total if provided (for prepaid with promo), otherwise use calculated total
+            const finalPaidAmount = discountedTotal !== undefined ? discountedTotal : total;
+            
+            // Calculate total discount including promo discount
+            const totalDiscountWithPromo = discountAmount + promoAmount;
+
             // Transform cart items using utility function
             const checkoutCartItems = transformCartItemsForCheckout(cartItems);
 
@@ -77,12 +89,12 @@ export function useCheckout({
                 cart: checkoutCartItems,
                 user_id: typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id),
                 qty: totalQty,
-                paid_amount: total,
+                paid_amount: Math.round(finalPaidAmount),
                 discount_amount: discountAmount,
                 gross_amount: Math.round(grossAmount),
-                promo_amount: 0,
-                total_discount: discountAmount,
-                promo_code: "",
+                promo_amount: Math.round(promoAmount),
+                total_discount: Math.round(totalDiscountWithPromo),
+                promo_code: promoCode || "",
                 pay_mode: selectedPayment === PAYMENT_METHODS.PREPAID ? "Online" : "COD",
                 address_id: selectedAddress.id,
                 gst_amount: "",
@@ -158,7 +170,7 @@ export function useCheckout({
             toast.error(errorMessage);
             setIsProcessingCheckout(false);
         }
-    }, [cartItems, user, sessionKey, clearCart, isProcessingCheckout, setCartError, router]);
+    }, [cartItems, user, sessionKey, clearCart, isProcessingCheckout, setCartError, router, promoCode, promoAmount, discountedTotal]);
 
     return {
         processCheckout,

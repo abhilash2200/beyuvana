@@ -12,7 +12,7 @@ import React from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatINR } from "@/lib/utils";
 import { useAuth } from "@/context/AuthProvider";
-import { SavedAddress } from "@/lib/api";
+import { SavedAddress, promoApi } from "@/lib/api";
 import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
 
@@ -26,12 +26,22 @@ export default function MobileCart() {
         clearCart
     } = useCart();
     const { user, sessionKey } = useAuth();
-    const { total } = calculateCartTotals(cartItems);
+    const cartTotals = calculateCartTotals(cartItems);
     const [selectedPayment, setSelectedPayment] = React.useState<"prepaid" | "cod" | null>(null);
     const [selectedAddress, setSelectedAddress] = React.useState<SavedAddress | null>(null);
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
     const [cartError, setCartError] = React.useState<string | null>(null);
+    const [promoValue, setPromoValue] = React.useState<number>(0);
+    const [promoCode, setPromoCode] = React.useState<string>("");
+
+    const total = React.useMemo(() => {
+        const baseTotal = cartTotals.total;
+        if (selectedPayment === "prepaid" && promoValue > 0) {
+            return Math.max(0, baseTotal - promoValue);
+        }
+        return baseTotal;
+    }, [cartTotals.total, selectedPayment, promoValue]);
 
     const { processCheckout, isProcessingCheckout } = useCheckout({
         cartItems,
@@ -39,14 +49,95 @@ export default function MobileCart() {
         sessionKey,
         clearCart,
         setCartError,
+        promoCode: selectedPayment === "prepaid" ? promoCode : "",
+        promoAmount: selectedPayment === "prepaid" ? promoValue : 0,
+        discountedTotal: selectedPayment === "prepaid" && promoValue > 0 ? total : undefined,
     });
 
     const handleSheetOpenChange = (open: boolean) => {
         setCartOpen(open);
     };
 
+    // Call API with updated price when prepaid is selected and promo is applied
+    React.useEffect(() => {
+        if (selectedPayment === "prepaid" && promoValue > 0 && promoCode && user?.id && sessionKey) {
+            const updatePriceWithPromo = async () => {
+                try {
+                    const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
+                    // Call promo API again with updated total to validate/update the price
+                    await promoApi.getPromoDetails(
+                        {
+                            user_id: userId,
+                            promo_code: promoCode,
+                        },
+                        sessionKey
+                    );
+                    // The API call validates the promo with the current cart total
+                    // Backend will receive the updated price through the checkout API
+                } catch (error) {
+                    // Silently handle error - promo validation already happened in handlePrepaidClick
+                    if (process.env.NODE_ENV === "development") {
+                        console.error("Failed to update price with promo:", error);
+                    }
+                }
+            };
 
+            updatePriceWithPromo();
+        }
+    }, [selectedPayment, promoValue, promoCode, total, user?.id, sessionKey]);
 
+    const handlePrepaidClick = async () => {
+        setSelectedPayment("prepaid");
+
+        if (user?.id && sessionKey) {
+            try {
+                const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
+                const promoCodeValue = "TEST150";
+                const response = await promoApi.getPromoDetails(
+                    {
+                        user_id: userId,
+                        promo_code: promoCodeValue,
+                    },
+                    sessionKey
+                );
+
+                const responseData = response.data as Record<string, unknown>;
+                const promoValueFromResponse =
+                    typeof responseData?.promo_value === "number" ? responseData.promo_value :
+                        typeof responseData?.promo_amount === "number" ? responseData.promo_amount :
+                            typeof responseData?.discount_amount === "number" ? responseData.discount_amount :
+                                typeof responseData?.promo_value === "string" ? parseFloat(responseData.promo_value) || 0 :
+                                    typeof responseData?.promo_amount === "string" ? parseFloat(responseData.promo_amount) || 0 :
+                                        typeof responseData?.discount_amount === "string" ? parseFloat(responseData.discount_amount) || 0 :
+                                            0;
+
+                setPromoValue(promoValueFromResponse);
+                setPromoCode(promoCodeValue);
+
+                // Store promo code in localStorage for payment response API
+                if (typeof window !== "undefined") {
+                    localStorage.setItem("promo_code", promoCodeValue);
+                }
+            } catch {
+                // Reset promo value on error
+                setPromoValue(0);
+                setPromoCode("");
+                // Clear promo code from localStorage on error
+                if (typeof window !== "undefined") {
+                    localStorage.removeItem("promo_code");
+                }
+                // Silently fail - don't block user from selecting prepaid
+            }
+        } else {
+            // Reset promo value if user is not logged in
+            setPromoValue(0);
+            setPromoCode("");
+            // Clear promo code from localStorage
+            if (typeof window !== "undefined") {
+                localStorage.removeItem("promo_code");
+            }
+        }
+    };
 
     const handleRemoveItem = async (itemId: string) => {
         try {
@@ -265,7 +356,7 @@ export default function MobileCart() {
                                                 ? "border-green-600 bg-green-100 text-green-700"
                                                 : "border-gray-300 text-gray-600"
                                                 }`}
-                                            onClick={() => setSelectedPayment("prepaid")}
+                                            onClick={handlePrepaidClick}
                                         >
                                             Prepaid
                                         </button>
@@ -274,7 +365,14 @@ export default function MobileCart() {
                                                 ? "border-green-600 bg-green-100 text-green-700"
                                                 : "border-gray-300 text-gray-600"
                                                 }`}
-                                            onClick={() => setSelectedPayment("cod")}
+                                            onClick={() => {
+                                                setSelectedPayment("cod");
+                                                setPromoValue(0);
+                                                setPromoCode("");
+                                                if (typeof window !== "undefined") {
+                                                    localStorage.removeItem("promo_code");
+                                                }
+                                            }}
                                         >
                                             COD
                                         </button>

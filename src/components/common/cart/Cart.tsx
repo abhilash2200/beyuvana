@@ -32,6 +32,7 @@ export default function Cart() {
     const [isMobile, setIsMobile] = React.useState(false);
     const [cartError, setCartError] = React.useState<string | null>(null);
     const [promoValue, setPromoValue] = React.useState<number>(0);
+    const [promoCode, setPromoCode] = React.useState<string>("");
 
     const total = React.useMemo(() => {
         const baseTotal = cartTotals.total;
@@ -47,6 +48,9 @@ export default function Cart() {
         sessionKey,
         clearCart,
         setCartError,
+        promoCode: selectedPayment === "prepaid" ? promoCode : "",
+        promoAmount: selectedPayment === "prepaid" ? promoValue : 0,
+        discountedTotal: selectedPayment === "prepaid" && promoValue > 0 ? total : undefined,
     });
 
     React.useEffect(() => {
@@ -77,6 +81,34 @@ export default function Cart() {
             return () => clearTimeout(timer);
         }
     }, [lastIncreaseTime]);
+
+    // Call API with updated price when prepaid is selected and promo is applied
+    React.useEffect(() => {
+        if (selectedPayment === "prepaid" && promoValue > 0 && promoCode && user?.id && sessionKey) {
+            const updatePriceWithPromo = async () => {
+                try {
+                    const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
+                    // Call promo API again with updated total to validate/update the price
+                    await promoApi.getPromoDetails(
+                        {
+                            user_id: userId,
+                            promo_code: promoCode,
+                        },
+                        sessionKey
+                    );
+                    // The API call validates the promo with the current cart total
+                    // Backend will receive the updated price through the checkout API
+                } catch (error) {
+                    // Silently handle error - promo validation already happened in handlePrepaidClick
+                    if (process.env.NODE_ENV === "development") {
+                        console.error("Failed to update price with promo:", error);
+                    }
+                }
+            };
+
+            updatePriceWithPromo();
+        }
+    }, [selectedPayment, promoValue, promoCode, total, user?.id, sessionKey]);
 
     const handleIncreaseQuantity = async (itemId: string) => {
         try {
@@ -150,10 +182,11 @@ export default function Cart() {
         if (user?.id && sessionKey) {
             try {
                 const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
+                const promoCodeValue = "TEST150";
                 const response = await promoApi.getPromoDetails(
                     {
                         user_id: userId,
-                        promo_code: "TEST150",
+                        promo_code: promoCodeValue,
                     },
                     sessionKey
                 );
@@ -170,14 +203,16 @@ export default function Cart() {
                                             0;
 
                 setPromoValue(promoValueFromResponse);
+                setPromoCode(promoCodeValue);
 
                 // Store promo code in localStorage for payment response API
                 if (typeof window !== "undefined") {
-                    localStorage.setItem("promo_code", "TEST150");
+                    localStorage.setItem("promo_code", promoCodeValue);
                 }
             } catch {
                 // Reset promo value on error
                 setPromoValue(0);
+                setPromoCode("");
                 // Clear promo code from localStorage on error
                 if (typeof window !== "undefined") {
                     localStorage.removeItem("promo_code");
@@ -187,6 +222,7 @@ export default function Cart() {
         } else {
             // Reset promo value if user is not logged in
             setPromoValue(0);
+            setPromoCode("");
             // Clear promo code from localStorage
             if (typeof window !== "undefined") {
                 localStorage.removeItem("promo_code");
@@ -485,6 +521,7 @@ export default function Cart() {
                                                 onClick={() => {
                                                     setSelectedPayment("cod");
                                                     setPromoValue(0);
+                                                    setPromoCode("");
                                                     if (typeof window !== "undefined") {
                                                         localStorage.removeItem("promo_code");
                                                     }

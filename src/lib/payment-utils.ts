@@ -82,16 +82,11 @@ export function parseNonJsonResponse(responseText: string): PaymentApiResponse {
     throw new Error("Backend did not provide redirect URL. Please check your orders page.");
 }
 
-export async function callPaymentResponseAPI(orderId: string, promoCode?: string): Promise<PaymentApiResponse> {
+export async function callPaymentResponseAPI(orderId: string): Promise<PaymentApiResponse> {
     // Build query parameters
     const queryParams = new URLSearchParams({
         payment_request_id: orderId,
     });
-
-    // Add promo_code if provided
-    if (promoCode) {
-        queryParams.append("promo_code", promoCode);
-    }
 
     const endpoints = [
         `/api/payment_response/?${queryParams.toString()}`,
