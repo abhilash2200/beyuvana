@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { CART_CONFIG } from "@/lib/constants";
 import type { LocalCartItem } from "./types";
 import { logger } from "@/lib/logger";
+import { handleError } from "@/lib/error-handling";
 
 interface UseCartOperationsParams {
     cartItems: LocalCartItem[];
@@ -101,13 +102,17 @@ export function useCartOperations({
                 await syncWithServer();
                 toast.success(`${item.name} added to cart!`);
             } catch (apiError) {
-                logger.error("Failed to add to cart", apiError, "useCartOperations");
-                toast.error("Failed to add item to cart. Please try again.");
+                handleError(apiError, {
+                    context: "useCartOperations",
+                    userMessage: "Failed to add item to cart. Please try again.",
+                });
                 throw apiError;
             }
         } catch (error) {
-            logger.error("Failed to add to cart", error, "useCartOperations");
-            toast.error("Failed to add item to cart. Please try again.");
+            handleError(error, {
+                context: "useCartOperations",
+                userMessage: "Failed to add item to cart. Please try again.",
+            });
             throw error;
         } finally {
             setLoading(false);

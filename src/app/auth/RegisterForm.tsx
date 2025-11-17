@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import { authApi } from "@/lib/api";
 import { validatePhone, validateRequired, validateEmail } from "@/lib/validation";
+import { handleError } from "@/lib/error-handling";
 
 interface RegisterFormProps {
     onClose?: () => void;
@@ -64,10 +65,11 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
 
             toast.success("OTP sent to your phone number. Please verify to complete registration.");
         } catch (err: unknown) {
-            logger.error("RegisterForm - OTP send failed", err, "RegisterForm");
-            const errorMessage = (err as Error)?.message || "Failed to send OTP. Please try again later.";
-            setError(errorMessage);
-            toast.error(errorMessage);
+            const appError = handleError(err, {
+                context: "RegisterForm",
+                userMessage: "Failed to send OTP. Please try again later.",
+            });
+            setError(appError.userMessage || "Failed to send OTP. Please try again later.");
         } finally {
             setLoading(false);
         }

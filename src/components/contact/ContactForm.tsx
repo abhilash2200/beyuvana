@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { validateRequired, validateEmail, validatePhone } from "@/lib/validation"
 import { contactApi } from "@/lib/api"
 import { notifications } from "@/lib/notifications"
+import { handleError } from "@/lib/error-handling"
 
 interface FormData {
     name: string
@@ -75,10 +76,10 @@ const ContactForm: React.FC = () => {
                 notifications.contact.formError();
             }
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Contact form submission error:", error);
-            }
-            notifications.contact.formError();
+            handleError(error, {
+                context: "ContactForm",
+                userMessage: "Failed to submit form. Please try again.",
+            });
         } finally {
             setLoading(false)
         }

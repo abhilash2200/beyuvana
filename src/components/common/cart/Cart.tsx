@@ -19,7 +19,7 @@ import { SavedAddress, promoApi } from "@/lib/api";
 import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
 import { getPrepaidPromoCode, isPromoCodeEnabled } from "@/lib/promo-utils";
-import { logger } from "@/lib/logger";
+import { handleError } from "@/lib/error-handling";
 
 export default function Cart() {
     const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, removeFromCart, loading, isCartOpen, setCartOpen } = useCart();
@@ -102,7 +102,11 @@ export default function Cart() {
                     // Backend will receive the updated price through the checkout API
                 } catch (error) {
                     // Silently handle error - promo validation already happened in handlePrepaidClick
-                    logger.debug("Failed to update price with promo", error, "Cart");
+                    handleError(error, {
+                        context: "Cart",
+                        silent: true, // Don't show toast or log (already validated)
+                        logLevel: "debug",
+                    });
                 }
             };
 
@@ -116,8 +120,12 @@ export default function Cart() {
             await increaseItemQuantity(itemId);
             setLastIncreaseTime(Date.now());
         } catch (error) {
-            logger.error("Failed to increase quantity", error, "Cart");
-            setCartError("Failed to update quantity. Please try again.");
+            const appError = handleError(error, {
+                context: "Cart",
+                userMessage: "Failed to update quantity. Please try again.",
+                showToast: false, // We show cartError instead
+            });
+            setCartError(appError.userMessage || "Failed to update quantity. Please try again.");
         }
     };
 
@@ -126,8 +134,12 @@ export default function Cart() {
             setCartError(null);
             await decreaseItemQuantity(itemId);
         } catch (error) {
-            logger.error("Failed to decrease quantity", error, "Cart");
-            setCartError("Failed to update quantity. Please try again.");
+            const appError = handleError(error, {
+                context: "Cart",
+                userMessage: "Failed to update quantity. Please try again.",
+                showToast: false,
+            });
+            setCartError(appError.userMessage || "Failed to update quantity. Please try again.");
         }
     };
 
@@ -136,8 +148,12 @@ export default function Cart() {
             setCartError(null);
             await updateItemQuantity(itemId, quantity);
         } catch (error) {
-            logger.error("Failed to update quantity", error, "Cart");
-            setCartError("Failed to update quantity. Please try again.");
+            const appError = handleError(error, {
+                context: "Cart",
+                userMessage: "Failed to update quantity. Please try again.",
+                showToast: false,
+            });
+            setCartError(appError.userMessage || "Failed to update quantity. Please try again.");
         }
     };
 
@@ -150,8 +166,12 @@ export default function Cart() {
                 autoClose: 2000,
             });
         } catch (error) {
-            logger.error("Failed to remove item", error, "Cart");
-            setCartError("Failed to remove item. Please try again.");
+            const appError = handleError(error, {
+                context: "Cart",
+                userMessage: "Failed to remove item. Please try again.",
+                showToast: false,
+            });
+            setCartError(appError.userMessage || "Failed to remove item. Please try again.");
         }
     };
 
@@ -160,8 +180,12 @@ export default function Cart() {
             setCartError(null);
             await refreshCart();
         } catch (error) {
-            logger.error("Failed to refresh cart", error, "Cart");
-            setCartError("Failed to refresh cart. Please try again.");
+            const appError = handleError(error, {
+                context: "Cart",
+                userMessage: "Failed to refresh cart. Please try again.",
+                showToast: false,
+            });
+            setCartError(appError.userMessage || "Failed to refresh cart. Please try again.");
         }
     };
 

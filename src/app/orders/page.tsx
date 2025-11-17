@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { toast } from "react-toastify";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { logger } from "@/lib/logger";
+import { handleError } from "@/lib/error-handling";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -55,10 +56,11 @@ const OrdersPage = () => {
           }
         }
       } catch (err) {
-        logger.error("Error fetching orders", err, "orders/page");
-        const errorMessage = err instanceof Error ? err.message : "Failed to fetch orders";
-        setError(errorMessage);
-        toast.error(errorMessage);
+        const appError = handleError(err, {
+          context: "orders/page",
+          userMessage: "Failed to fetch orders. Please try again.",
+        });
+        setError(appError.userMessage || "Failed to fetch orders");
       } finally {
         setLoading(false);
       }

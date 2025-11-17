@@ -86,11 +86,16 @@ export function useCartSync({
                 }
             }
         } catch (error) {
-            // Import logger dynamically to avoid circular dependencies
-            import("@/lib/logger").then(({ logger }) => {
-                logger.error("Failed to sync cart with server", error, "useCartSync");
+            // Import error handler dynamically to avoid circular dependencies
+            import("@/lib/error-handling").then(({ handleError }) => {
+                handleError(error, {
+                    context: "useCartSync",
+                    userMessage: "Failed to sync cart with server. Please try again.",
+                    showToast: false, // Don't show toast for background sync errors
+                    silent: false, // But still log it
+                });
             }).catch(() => {
-                // Fallback if logger import fails
+                // Fallback if import fails
             });
         } finally {
             setLoading(false);

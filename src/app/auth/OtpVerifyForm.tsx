@@ -8,6 +8,7 @@ import { authApi } from "@/lib/api";
 import Image from "next/image";
 import { RiRefreshLine } from "react-icons/ri";
 import { logger } from "@/lib/logger";
+import { handleError } from "@/lib/error-handling";
 
 interface OtpVerifyFormProps {
     onVerified: () => void;
@@ -43,8 +44,10 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
             setCanResend(false);
             toast.success("OTP resent successfully!");
         } catch (error) {
-            logger.error("Resend OTP failed", error, "OtpVerifyForm");
-            toast.error("Failed to resend OTP. Please try again.");
+            handleError(error, {
+                context: "OtpVerifyForm",
+                userMessage: "Failed to resend OTP. Please try again.",
+            });
         } finally {
             setResending(false);
         }
@@ -181,9 +184,11 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
 
             onVerified();
         } catch (error) {
-            logger.error("OTP verification failed", error, "OtpVerifyForm");
-            const errorMessage = (error as Error)?.message || "Invalid OTP. Please try again.";
-            toast.error(errorMessage);
+            handleError(error, {
+                context: "OtpVerifyForm",
+                userMessage: "Invalid OTP. Please try again.",
+                showToast: true,
+            });
         } finally {
             setLoading(false);
         }

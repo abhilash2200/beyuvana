@@ -97,23 +97,22 @@ export const showValidationError = (errors: Record<string, string>) => {
 };
 
 // Helper function for API error handling
+// DEPRECATED: Use handleApiError from @/lib/error-handling instead
 export const handleApiError = (error: unknown) => {
-  // Import logger dynamically to avoid circular dependencies
-  import("@/lib/logger").then(({ logger }) => {
-    logger.error("API Error", error, "handleApiError");
+  // Re-export from error-handling for backward compatibility
+  import("@/lib/error-handling").then(({ handleApiError: handleApiErrorNew }) => {
+    handleApiErrorNew(error, { showToast: true });
   }).catch(() => {
-    // Fallback if logger import fails
+    // Fallback if import fails
+    const apiError = error as { response?: { status: number }; code?: string; message?: string };
+    if (apiError?.response?.status === 401) {
+      notifications.network.unauthorized();
+    } else if ((apiError?.response?.status ?? 0) >= 500) {
+      notifications.network.serverError();
+    } else if (apiError?.code === 'NETWORK_ERROR') {
+      notifications.network.connectionError();
+    } else {
+      notifications.general.error(apiError?.message || "Something went wrong. Please try again.");
+    }
   });
-
-  const apiError = error as { response?: { status: number }; code?: string; message?: string };
-
-  if (apiError?.response?.status === 401) {
-    notifications.network.unauthorized();
-  } else if ((apiError?.response?.status ?? 0) >= 500) {
-    notifications.network.serverError();
-  } else if (apiError?.code === 'NETWORK_ERROR') {
-    notifications.network.connectionError();
-  } else {
-    notifications.general.error(apiError?.message || "Something went wrong. Please try again.");
-  }
 };

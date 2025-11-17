@@ -2,6 +2,7 @@ import ProductsLists from '@/components/product/ProductsLists'
 import { productsApi, convertToLegacyProduct } from "@/lib/api";
 import React from 'react'
 import { logger } from "@/lib/logger";
+import { handleError } from "@/lib/error-handling";
 
 async function fetchProducts() {
   try {
@@ -34,7 +35,12 @@ async function fetchProducts() {
       return b.id - a.id;
     });
   } catch (err) {
-    logger.error("Fetch products error", err, "product/page");
+    handleError(err, {
+        context: "product/page",
+        userMessage: "Failed to fetch products. Please try again.",
+        showToast: false, // Server component - can't show toast
+        silent: false, // But still log it
+    });
     return [];
   }
 }
