@@ -40,8 +40,6 @@ export default function MobileCart() {
     const { promoValue, promoCode, handlePrepaidClick, handleCODClick } = useCartPromo({
         user,
         sessionKey,
-        selectedPayment,
-        cartTotal: cartTotals.total,
     });
 
     const total = React.useMemo(() => {

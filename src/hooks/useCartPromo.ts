@@ -2,16 +2,13 @@
  * Hook for managing promo code logic in cart
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { promoApi } from "@/lib/api";
 import { getPrepaidPromoCode, isPromoCodeEnabled } from "@/lib/promo-utils";
-import { handleError } from "@/lib/error-handling";
 
 interface UseCartPromoProps {
     user: { id: string } | null;
     sessionKey: string | null;
-    selectedPayment: "prepaid" | "cod" | null;
-    cartTotal: number;
 }
 
 interface UseCartPromoReturn {
@@ -24,15 +21,12 @@ interface UseCartPromoReturn {
 export function useCartPromo({
     user,
     sessionKey,
-    selectedPayment,
-    cartTotal,
 }: UseCartPromoProps): UseCartPromoReturn {
     const [promoValue, setPromoValue] = useState<number>(0);
     const [promoCode, setPromoCode] = useState<string>("");
 
     const handlePrepaidClick = useCallback(async () => {
         if (!user?.id || !sessionKey) {
-            // Reset promo value if user is not logged in
             setPromoValue(0);
             setPromoCode("");
             if (typeof window !== "undefined") {
@@ -41,10 +35,8 @@ export function useCartPromo({
             return;
         }
 
-        // Get promo code from configuration
         const promoCodeValue = getPrepaidPromoCode();
 
-        // If promo code is disabled or not configured, skip API call
         if (!isPromoCodeEnabled() || !promoCodeValue) {
             setPromoValue(0);
             setPromoCode("");
@@ -64,7 +56,6 @@ export function useCartPromo({
                 sessionKey
             );
 
-            // Type-safe promo value extraction
             const responseData = response.data;
             const promoValueFromResponse = (() => {
                 if (!responseData || typeof responseData !== "object") {
@@ -72,7 +63,6 @@ export function useCartPromo({
                 }
                 const data = responseData as Record<string, unknown>;
 
-                // Try numeric values first
                 if (typeof data.promo_value === "number") {
                     return data.promo_value;
                 }
@@ -83,7 +73,6 @@ export function useCartPromo({
                     return data.discount_amount;
                 }
 
-                // Try string values
                 if (typeof data.promo_value === "string") {
                     const parsed = parseFloat(data.promo_value);
                     return isNaN(parsed) ? 0 : parsed;
@@ -103,53 +92,18 @@ export function useCartPromo({
             setPromoValue(promoValueFromResponse);
             setPromoCode(promoCodeValue);
 
-            // Store promo code in localStorage for payment response API
             if (typeof window !== "undefined") {
                 localStorage.setItem("promo_code", promoCodeValue);
             }
         } catch {
-            // Reset promo value on error
             setPromoValue(0);
             setPromoCode("");
-            // Clear promo code from localStorage on error
             if (typeof window !== "undefined") {
                 localStorage.removeItem("promo_code");
             }
-            // Silently fail - don't block user from selecting prepaid
         }
     }, [user?.id, sessionKey]);
 
-    // Call API with updated price when prepaid is selected and promo is applied
-    useEffect(() => {
-        if (selectedPayment === "prepaid" && promoValue > 0 && promoCode && user?.id && sessionKey) {
-            const updatePriceWithPromo = async () => {
-                try {
-                    const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
-                    // Call promo API again with updated total to validate/update the price
-                    await promoApi.getPromoDetails(
-                        {
-                            user_id: userId,
-                            promo_code: promoCode,
-                        },
-                        sessionKey
-                    );
-                    // The API call validates the promo with the current cart total
-                    // Backend will receive the updated price through the checkout API
-                } catch (error) {
-                    // Silently handle error - promo validation already happened in handlePrepaidClick
-                    handleError(error, {
-                        context: "useCartPromo",
-                        silent: true, // Don't show toast or log (already validated)
-                        logLevel: "debug",
-                    });
-                }
-            };
-
-            updatePriceWithPromo();
-        }
-    }, [selectedPayment, promoValue, promoCode, cartTotal, user?.id, sessionKey]);
-
-    // Reset promo when COD is selected
     const handleCODClick = useCallback(() => {
         setPromoValue(0);
         setPromoCode("");

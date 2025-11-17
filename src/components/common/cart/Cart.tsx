@@ -50,8 +50,6 @@ export default function Cart() {
     const { promoValue, promoCode, handlePrepaidClick, handleCODClick } = useCartPromo({
         user,
         sessionKey,
-        selectedPayment,
-        cartTotal: cartTotals.total,
     });
 
     // Use confetti hook

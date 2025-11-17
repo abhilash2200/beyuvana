@@ -98,6 +98,7 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
         checkReviewEligibility();
     }, [productId, user?.id, sessionKey, orderStatus, skipOrderCheck]);
 
+    // Single useEffect to fetch reviews - avoids duplicate API calls
     useEffect(() => {
         const fetchReviews = async () => {
             if (!productId) {
@@ -121,6 +122,13 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                 } else {
                     setAllReviews([]);
                 }
+
+                // Update user reviews when user changes
+                if (!user?.id) {
+                    setUserReviews([]);
+                    setHasReviewed(false);
+                    setExistingReview(null);
+                }
             } catch {
                 setAllReviews([]);
             } finally {
@@ -129,33 +137,7 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
         };
 
         fetchReviews();
-    }, [productId, sessionKey]);
-
-    useEffect(() => {
-        if (user?.id && productId) {
-            const refetchReviews = async () => {
-                try {
-                    const response = await reviewApi.getReviews(parseInt(productId), sessionKey || undefined);
-                    let reviews: ProductReviewItem[] = [];
-                    if (response.data && Array.isArray(response.data)) {
-                        reviews = response.data;
-                    } else if (response.data?.reviews && Array.isArray(response.data.reviews)) {
-                        reviews = response.data.reviews;
-                    }
-
-                    if (reviews.length > 0) {
-                        setAllReviews(reviews);
-                    }
-                } catch {
-                }
-            };
-            refetchReviews();
-        } else if (!user?.id) {
-            setUserReviews([]);
-            setHasReviewed(false);
-            setExistingReview(null);
-        }
-    }, [user?.id, productId, sessionKey]);
+    }, [productId, sessionKey, user?.id]);
 
     useEffect(() => {
         setUserReviews(currentUserReviews);

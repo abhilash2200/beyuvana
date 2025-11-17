@@ -12,17 +12,12 @@ import type {
 } from "./types";
 
 export const reviewApi = {
-  /**
-   * Check if a user can review a product (has a delivered order for it)
-   * Returns: { canReview: boolean, reason?: string, orderStatus?: string }
-   */
   canUserReview: async (
     productId: string | number,
     userId: string | number,
     sessionKey?: string
   ): Promise<{ canReview: boolean; reason?: string; orderStatus?: string }> => {
     try {
-      // Fetch all user orders to check if they have a delivered order for this product
       const response = await ordersApi.getOrderList(sessionKey, String(userId));
 
       if (!response.data || !Array.isArray(response.data)) {
@@ -34,7 +29,6 @@ export const reviewApi = {
 
       const productIdStr = String(productId);
 
-      // Check if user has any order for this product
       const productOrders = response.data.filter(
         (order) => order.product_id === productIdStr
       );
@@ -46,7 +40,6 @@ export const reviewApi = {
         };
       }
 
-      // Check if user has a delivered order for this product
       const deliveredOrders = productOrders.filter(
         (order) => order.status === "delivered"
       );
@@ -58,7 +51,6 @@ export const reviewApi = {
         };
       }
 
-      // Check if all orders are cancelled
       const cancelledOrders = productOrders.filter(
         (order) => order.status === "cancelled"
       );
@@ -71,18 +63,15 @@ export const reviewApi = {
         };
       }
 
-      // Orders exist but are not yet delivered
       return {
         canReview: false,
         reason: "You can only review products after your order has been delivered. Please wait for delivery.",
         orderStatus: "arriving",
       };
     } catch (error) {
-      // Import logger dynamically to avoid circular dependencies
       import("@/lib/logger").then(({ logger }) => {
         logger.error("Error checking review eligibility", error, "reviewsApi");
       }).catch(() => {
-        // Fallback if logger import fails
       });
 
       return {
@@ -109,11 +98,24 @@ export const reviewApi = {
     sessionKey?: string
   ): Promise<ApiResponse<ReviewsListResponse>> => {
     try {
-      return await apiFetch<ReviewsListResponse>("/product-reviews/lists/v1/", {
-        method: "POST",
+      const { cachedApiCall } = await import("../api-cache");
+      const endpoint = "/product-reviews/lists/v1/";
+      const requestOptions = {
+        method: "POST" as const,
         headers: buildAuthHeaders(sessionKey),
         body: JSON.stringify({ product_id: productId }),
-      });
+      };
+
+      return await cachedApiCall(
+        endpoint,
+        () => apiFetch<ReviewsListResponse>(endpoint, requestOptions),
+        {
+          cacheConfig: {
+            ttl: 2 * 60 * 1000,
+          },
+          requestOptions,
+        }
+      );
     } catch {
       return {
         data: { reviews: [] },

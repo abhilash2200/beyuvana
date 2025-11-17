@@ -14,15 +14,28 @@ import type {
 export const productsApi = {
   getList: async (params: ProductsListRequest = {}): Promise<ApiResponse<Product[]>> => {
     try {
-      return await apiFetch<Product[]>("/products/lists/v1/", {
-        method: "POST",
+      const { cachedApiCall } = await import("../api-cache");
+      const endpoint = "/products/lists/v1/";
+      const requestOptions = {
+        method: "POST" as const,
         body: JSON.stringify({
           page: 1,
           limit: 10,
           filter: {},
           ...params,
         }),
-      });
+      };
+
+      return await cachedApiCall(
+        endpoint,
+        () => apiFetch<Product[]>(endpoint, requestOptions),
+        {
+          cacheConfig: {
+            ttl: 5 * 60 * 1000,
+          },
+          requestOptions,
+        }
+      );
     } catch {
       throw new Error("Failed to fetch products. Please try again later.");
     }
@@ -30,20 +43,32 @@ export const productsApi = {
   
   getDetails: async (productId: string | number, userId?: string | number): Promise<ApiResponse<ProductDetailsResponse>> => {
     try {
-      return await apiFetch<ProductDetailsResponse>("/products/details/v1/", {
-        method: "POST",
+      const { cachedApiCall } = await import("../api-cache");
+      const endpoint = "/products/details/v1/";
+      const requestOptions = {
+        method: "POST" as const,
         body: JSON.stringify({
           product_id: productId,
           user_id: userId,
         }),
-      });
+      };
+
+      return await cachedApiCall(
+        endpoint,
+        () => apiFetch<ProductDetailsResponse>(endpoint, requestOptions),
+        {
+          cacheConfig: {
+            ttl: 5 * 60 * 1000,
+          },
+          requestOptions,
+        }
+      );
     } catch {
       throw new Error("Failed to fetch product details. Please try again later.");
     }
   },
 };
 
-// Utility function to convert API product to legacy format
 export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
   const image =
     apiProduct.image_single ||

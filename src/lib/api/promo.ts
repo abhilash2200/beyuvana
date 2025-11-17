@@ -12,17 +12,11 @@ export interface PromoDetailsRequest {
 }
 
 export interface PromoDetailsResponse {
-  /** Promo value/amount (can be number or string) */
   promo_value?: number | string;
-  /** Promo amount (alternative field name) */
   promo_amount?: number | string;
-  /** Discount amount (alternative field name) */
   discount_amount?: number | string;
-  /** Promo code */
   promo_code?: string;
-  /** Promo status */
   status?: boolean;
-  /** Additional fields */
   [key: string]: unknown;
 }
 
@@ -32,20 +26,30 @@ export const promoApi = {
     sessionKey?: string
   ): Promise<ApiResponse<PromoDetailsResponse>> => {
     try {
+      const { cachedApiCall } = await import("../api-cache");
       const headers = buildAuthHeaders(sessionKey);
-      // Add accept header as required by the API
       headers["accept"] = "application/json";
 
-      const response = await apiFetch<PromoDetailsResponse>("/api/promo_details", {
-        method: "POST",
+      const endpoint = "/api/promo_details";
+      const requestOptions = {
+        method: "POST" as const,
         headers,
         body: JSON.stringify({
           user_id: promoData.user_id,
           promo_code: promoData.promo_code,
         }),
-      });
+      };
 
-      return response;
+      return await cachedApiCall(
+        endpoint,
+        () => apiFetch<PromoDetailsResponse>(endpoint, requestOptions),
+        {
+          cacheConfig: {
+            ttl: 60 * 1000,
+          },
+          requestOptions,
+        }
+      );
     } catch (error) {
       throw new Error(
         error instanceof Error
