@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { formatINR } from "@/lib/utils";
+import { LoadingSpinner } from "../LoadingSpinner";
 
 interface CartSummaryProps {
     total: number;
@@ -34,10 +35,11 @@ export function CartSummary({
             </div>
             <div className="bg-[#FFF] px-3 py-1 rounded-full">
                 <Button
-                    className="text-[#122014] font-normal text-[15px]"
+                    className="text-[#122014] font-normal text-[15px] flex items-center gap-2"
                     onClick={onCheckout}
                     disabled={isProcessingCheckout || loading}
                 >
+                    {isProcessingCheckout && <LoadingSpinner size="sm" className="!flex-row" />}
                     {isProcessingCheckout ? "Processing..." : "Proceed to pay"}
                 </Button>
             </div>

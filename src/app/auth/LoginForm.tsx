@@ -8,6 +8,7 @@ import Image from "next/image";
 import { authApi } from "@/lib/api";
 import { validatePhone } from "@/lib/validation";
 import { handleError } from "@/lib/error-handling";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 interface LoginFormProps {
     onClose?: () => void;
@@ -108,9 +109,10 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
                     <Button
                         type="submit"
                         disabled={loading}
-                        className={`w-full text-white bg-green-700 hover:bg-green-800 rounded-[5px] py-2 font-light ${loading ? "opacity-50 cursor-not-allowed" : ""
+                        className={`w-full text-white bg-green-700 hover:bg-green-800 rounded-[5px] py-2 font-light flex items-center justify-center gap-2 ${loading ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                     >
+                        {loading && <LoadingSpinner size="sm" className="!flex-row" />}
                         {loading ? "Sending OTP..." : "Send OTP"}
                     </Button>
                 </form>

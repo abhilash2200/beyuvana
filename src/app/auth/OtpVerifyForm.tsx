@@ -9,6 +9,7 @@ import Image from "next/image";
 import { RiRefreshLine } from "react-icons/ri";
 import { logger } from "@/lib/logger";
 import { handleError } from "@/lib/error-handling";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 interface OtpVerifyFormProps {
     onVerified: () => void;
@@ -220,8 +221,9 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                     <Button
                         type="submit"
                         disabled={loading}
-                        className={`w-full text-white bg-green-700 hover:bg-green-800 rounded-[5px] py-2 font-light ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                        className={`w-full text-white bg-green-700 hover:bg-green-800 rounded-[5px] py-2 font-light flex items-center justify-center gap-2 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
+                        {loading && <LoadingSpinner size="sm" className="!flex-row" />}
                         {loading ? "Verifying..." : "Verify OTP"}
                     </Button>
                 </form>
@@ -238,8 +240,17 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                             disabled={resending}
                             className="text-[12px] px-4 py-1 h-auto border-[#057A37] text-[#057A37] hover:underline flex items-center gap-1"
                         >
-                            {resending ? "Resending..." : "Resend OTP"}
-                            {!resending && <RiRefreshLine className="w-3 h-3" />}
+                            {resending ? (
+                                <>
+                                    <LoadingSpinner size="sm" className="!flex-row" />
+                                    Resending...
+                                </>
+                            ) : (
+                                <>
+                                    Resend OTP
+                                    <RiRefreshLine className="w-3 h-3" />
+                                </>
+                            )}
                         </Button>
                     )}
                 </div>

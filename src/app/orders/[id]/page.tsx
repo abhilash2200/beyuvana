@@ -11,6 +11,7 @@ import { orderDetailsApi, OrderDetailsData } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { logger } from "@/lib/logger";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 interface Order {
     id: string;
@@ -179,7 +180,7 @@ const OrderDetailPage = () => {
         return (
             <div className="container mx-auto px-4 py-8 min-h-[400px]">
                 <div className="flex justify-center items-center py-10">
-                    <div className="text-gray-600">Loading order details...</div>
+                    <LoadingSpinner size="lg" text="Loading order details..." />
                 </div>
             </div>
         );

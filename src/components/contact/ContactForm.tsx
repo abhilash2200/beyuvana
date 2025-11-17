@@ -9,6 +9,7 @@ import { validateRequired, validateEmail, validatePhone } from "@/lib/validation
 import { contactApi } from "@/lib/api"
 import { notifications } from "@/lib/notifications"
 import { handleError } from "@/lib/error-handling"
+import { LoadingSpinner } from "@/components/common/LoadingSpinner"
 
 interface FormData {
     name: string
@@ -171,9 +172,10 @@ const ContactForm: React.FC = () => {
 
                     <Button
                         type="submit"
-                        className="w-full bg-[#057A37] hover:bg-green-700 text-white py-4 md:rounded-[5px] rounded-[3px]"
+                        className="w-full bg-[#057A37] hover:bg-green-700 text-white py-4 md:rounded-[5px] rounded-[3px] flex items-center justify-center gap-2"
                         disabled={loading}
                     >
+                        {loading && <LoadingSpinner size="sm" className="!flex-row" />}
                         {loading ? "Sending..." : "Send Message"}
                     </Button>
                 </form>

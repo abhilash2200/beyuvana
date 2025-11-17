@@ -19,6 +19,7 @@ import { useAddressManagement } from "./hooks/useAddressManagement";
 import { AddressForm } from "./components/AddressForm";
 import { SavedAddressesList } from "./components/SavedAddressesList";
 import { isPrimaryAddress } from "./utils";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 interface AddAddressSheetProps {
     open: boolean;
@@ -205,10 +206,11 @@ export default function AddAddressSheet({ open, onOpenChange, onAddressSaved }: 
                             </Button>
                         )}
                         <Button
-                            className={isEditMode ? "flex-1" : "w-full"}
+                            className={`${isEditMode ? "flex-1" : "w-full"} flex items-center justify-center gap-2`}
                             onClick={handleSave}
                             disabled={loading || !user?.id || !sessionKey || (!isEditMode && savedAddresses.length >= 3)}
                         >
+                            {loading && <LoadingSpinner size="sm" className="!flex-row" />}
                             {loading ? (isEditMode ? "Updating..." : "Saving...") :
                                 !user?.id ? "Login Required" :
                                     !sessionKey ? "Session Expired" :

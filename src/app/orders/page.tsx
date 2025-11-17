@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { logger } from "@/lib/logger";
 import { handleError } from "@/lib/error-handling";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -107,7 +108,7 @@ const OrdersPage = () => {
 
             {loading && (
               <div className="flex justify-center items-center py-10 min-h-[400px]">
-                <div className="text-gray-600">Loading your orders...</div>
+                <LoadingSpinner size="lg" text="Loading your orders..." />
               </div>
             )}
 
