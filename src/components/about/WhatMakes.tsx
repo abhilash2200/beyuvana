@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import { Splide, SplideSlide } from "@splidejs/react-splide";
-import "@splidejs/react-splide/css";
+import { Splide, SplideSlide } from "@/components/common/DynamicSplide";
 
 interface FeatureItem {
     img: string;

@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Splide, SplideSlide } from "@splidejs/react-splide";
-import "@splidejs/react-splide/css";
+import { Splide, SplideSlide } from "@/components/common/DynamicSplide";
 import { testimonialsData, type TestimonialData } from "@/app/data/testimonials";
 import { StarRating } from "@/components/ui/StarRating";
 

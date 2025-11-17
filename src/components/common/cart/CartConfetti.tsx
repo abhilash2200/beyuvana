@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Confetti from "react-confetti";
+import dynamic from "next/dynamic";
+
+// Dynamically import confetti to reduce initial bundle size
+const Confetti = dynamic(() => import("react-confetti"), {
+    ssr: false,
+    loading: () => null,
+});
 
 interface CartConfettiProps {
     show: boolean;

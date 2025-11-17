@@ -1,8 +1,28 @@
 import type { NextConfig } from "next";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
+
+  // Optimize bundle size
+  swcMinify: true,
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "react-icons",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-tooltip",
+      "@radix-ui/react-accordion",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-alert-dialog",
+    ],
+  },
 
   images: {
     unoptimized: false,
@@ -78,4 +98,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

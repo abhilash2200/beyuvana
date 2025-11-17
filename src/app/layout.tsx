@@ -5,10 +5,9 @@ import ConditionalLayout from "@/components/common/ConditionalLayout";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { AuthProvider } from "@/context/AuthProvider";
 import { CartProvider } from "@/context/CartProvider";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { EnvValidator } from "@/components/common/EnvValidator";
+import ToastContainerWrapper from "@/components/common/ToastContainerWrapper";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin"],
@@ -81,18 +80,7 @@ export default function RootLayout({
           <ErrorBoundary>
             <AuthProvider>
               <CartProvider>
-                <ToastContainer
-                  position="top-right"
-                  autoClose={3000}
-                  hideProgressBar={false}
-                  newestOnTop={false}
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  theme="light"
-                />
+                <ToastContainerWrapper />
                 <ConditionalLayout>
                   {children}
                 </ConditionalLayout>
