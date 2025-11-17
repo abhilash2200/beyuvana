@@ -12,11 +12,12 @@ import React from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatINR } from "@/lib/utils";
 import { useAuth } from "@/context/AuthProvider";
-import { SavedAddress, promoApi } from "@/lib/api";
+import { SavedAddress } from "@/lib/api";
 import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
-import { getPrepaidPromoCode, isPromoCodeEnabled } from "@/lib/promo-utils";
 import { handleError } from "@/lib/error-handling";
+import { useCartPromo } from "@/hooks/useCartPromo";
+import { CartErrorDisplay } from "./CartErrorDisplay";
 
 export default function MobileCart() {
     const {
@@ -34,8 +35,14 @@ export default function MobileCart() {
     const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
     const [addressRefreshKey, setAddressRefreshKey] = React.useState(0);
     const [cartError, setCartError] = React.useState<string | null>(null);
-    const [promoValue, setPromoValue] = React.useState<number>(0);
-    const [promoCode, setPromoCode] = React.useState<string>("");
+
+    // Use promo hook
+    const { promoValue, promoCode, handlePrepaidClick, handleCODClick } = useCartPromo({
+        user,
+        sessionKey,
+        selectedPayment,
+        cartTotal: cartTotals.total,
+    });
 
     const total = React.useMemo(() => {
         const baseTotal = cartTotals.total;
@@ -60,125 +67,14 @@ export default function MobileCart() {
         setCartOpen(open);
     };
 
-    // Call API with updated price when prepaid is selected and promo is applied
-    React.useEffect(() => {
-        if (selectedPayment === "prepaid" && promoValue > 0 && promoCode && user?.id && sessionKey) {
-            const updatePriceWithPromo = async () => {
-                try {
-                    const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
-                    // Call promo API again with updated total to validate/update the price
-                    await promoApi.getPromoDetails(
-                        {
-                            user_id: userId,
-                            promo_code: promoCode,
-                        },
-                        sessionKey
-                    );
-                    // The API call validates the promo with the current cart total
-                    // Backend will receive the updated price through the checkout API
-                } catch (error) {
-                    // Silently handle error - promo validation already happened in handlePrepaidClick
-                    handleError(error, {
-                        context: "MobileCart",
-                        silent: true,
-                        logLevel: "debug",
-                    });
-                }
-            };
-
-            updatePriceWithPromo();
-        }
-    }, [selectedPayment, promoValue, promoCode, total, user?.id, sessionKey]);
-
-    const handlePrepaidClick = async () => {
+    const handlePrepaidSelection = async () => {
+        await handlePrepaidClick();
         setSelectedPayment("prepaid");
+    };
 
-        if (user?.id && sessionKey) {
-            // Get promo code from configuration
-            const promoCodeValue = getPrepaidPromoCode();
-
-            // If promo code is disabled or not configured, skip API call
-            if (!isPromoCodeEnabled() || !promoCodeValue) {
-                setPromoValue(0);
-                setPromoCode("");
-                if (typeof window !== "undefined") {
-                    localStorage.removeItem("promo_code");
-                }
-                return;
-            }
-
-            try {
-                const userId = typeof user.id === "string" ? parseInt(user.id, 10) : Number(user.id);
-                const response = await promoApi.getPromoDetails(
-                    {
-                        user_id: userId,
-                        promo_code: promoCodeValue,
-                    },
-                    sessionKey
-                );
-
-                // Type-safe promo value extraction
-                const responseData = response.data;
-                const promoValueFromResponse = (() => {
-                    if (!responseData || typeof responseData !== "object") {
-                        return 0;
-                    }
-                    const data = responseData as Record<string, unknown>;
-
-                    // Try numeric values first
-                    if (typeof data.promo_value === "number") {
-                        return data.promo_value;
-                    }
-                    if (typeof data.promo_amount === "number") {
-                        return data.promo_amount;
-                    }
-                    if (typeof data.discount_amount === "number") {
-                        return data.discount_amount;
-                    }
-
-                    // Try string values
-                    if (typeof data.promo_value === "string") {
-                        const parsed = parseFloat(data.promo_value);
-                        return isNaN(parsed) ? 0 : parsed;
-                    }
-                    if (typeof data.promo_amount === "string") {
-                        const parsed = parseFloat(data.promo_amount);
-                        return isNaN(parsed) ? 0 : parsed;
-                    }
-                    if (typeof data.discount_amount === "string") {
-                        const parsed = parseFloat(data.discount_amount);
-                        return isNaN(parsed) ? 0 : parsed;
-                    }
-
-                    return 0;
-                })();
-
-                setPromoValue(promoValueFromResponse);
-                setPromoCode(promoCodeValue);
-
-                // Store promo code in localStorage for payment response API
-                if (typeof window !== "undefined") {
-                    localStorage.setItem("promo_code", promoCodeValue);
-                }
-            } catch {
-                // Reset promo value on error
-                setPromoValue(0);
-                setPromoCode("");
-                // Clear promo code from localStorage on error
-                if (typeof window !== "undefined") {
-                    localStorage.removeItem("promo_code");
-                }
-                // Silently fail - don't block user from selecting prepaid
-            }
-        } else {
-            // Reset promo value if user is not logged in
-            setPromoValue(0);
-            setPromoCode("");
-            // Clear promo code from localStorage
-            if (typeof window !== "undefined") {
-                localStorage.removeItem("promo_code");
-            }
-        }
+    const handleCODSelection = () => {
+        handleCODClick();
+        setSelectedPayment("cod");
     };
 
     const handleRemoveItem = async (itemId: string) => {
@@ -293,19 +189,7 @@ export default function MobileCart() {
                         </div>
                     )}
 
-                    {cartError && (
-                        <div className="bg-red-50 border border-red-200 p-3 text-sm text-center mx-4 mb-2 rounded-lg">
-                            <p className="text-red-600">
-                                {cartError}
-                            </p>
-                            <button
-                                onClick={() => setCartError(null)}
-                                className="text-red-500 underline mt-1 text-xs"
-                            >
-                                Dismiss
-                            </button>
-                        </div>
-                    )}
+                    <CartErrorDisplay error={cartError} onDismiss={() => setCartError(null)} mobile />
                 </div>
 
                 {
@@ -400,7 +284,7 @@ export default function MobileCart() {
                                                 ? "border-green-600 bg-green-100 text-green-700"
                                                 : "border-gray-300 text-gray-600"
                                                 }`}
-                                            onClick={handlePrepaidClick}
+                                            onClick={handlePrepaidSelection}
                                         >
                                             Prepaid
                                         </button>
@@ -409,14 +293,7 @@ export default function MobileCart() {
                                                 ? "border-green-600 bg-green-100 text-green-700"
                                                 : "border-gray-300 text-gray-600"
                                                 }`}
-                                            onClick={() => {
-                                                setSelectedPayment("cod");
-                                                setPromoValue(0);
-                                                setPromoCode("");
-                                                if (typeof window !== "undefined") {
-                                                    localStorage.removeItem("promo_code");
-                                                }
-                                            }}
+                                            onClick={handleCODSelection}
                                         >
                                             COD
                                         </button>
