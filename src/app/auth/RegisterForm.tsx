@@ -64,9 +64,7 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
 
             toast.success("OTP sent to your phone number. Please verify to complete registration.");
         } catch (err: unknown) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("RegisterForm - OTP send failed:", err);
-            }
+            logger.error("RegisterForm - OTP send failed", err, "RegisterForm");
             const errorMessage = (err as Error)?.message || "Failed to send OTP. Please try again later.";
             setError(errorMessage);
             toast.error(errorMessage);

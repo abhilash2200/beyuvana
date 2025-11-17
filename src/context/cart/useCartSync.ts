@@ -86,9 +86,12 @@ export function useCartSync({
                 }
             }
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to sync cart with server:", error);
-            }
+            // Import logger dynamically to avoid circular dependencies
+            import("@/lib/logger").then(({ logger }) => {
+                logger.error("Failed to sync cart with server", error, "useCartSync");
+            }).catch(() => {
+                // Fallback if logger import fails
+            });
         } finally {
             setLoading(false);
             syncLockRef.current = false;

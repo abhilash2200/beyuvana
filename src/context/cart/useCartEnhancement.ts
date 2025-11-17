@@ -6,6 +6,7 @@
 import { useCallback, useRef } from "react";
 import { productsApi, ProductDetailsResponse } from "@/lib/api";
 import type { LocalCartItem } from "./types";
+import { logger } from "@/lib/logger";
 
 interface UseCartEnhancementParams {
     cartItems: LocalCartItem[];
@@ -35,9 +36,7 @@ export function useCartEnhancement({
             }
             return null;
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.warn(`Failed to fetch product details for product ${productId}:`, error);
-            }
+            logger.warn(`Failed to fetch product details for product ${productId}`, error, "useCartEnhancement");
             return null;
         }
     }, []);
@@ -100,9 +99,7 @@ export function useCartEnhancement({
                         }
                         return item;
                     } catch (error) {
-                        if (process.env.NODE_ENV === "development") {
-                            console.error("Error enhancing cart item:", error);
-                        }
+                        logger.error("Error enhancing cart item", error, "useCartEnhancement");
                         return item;
                     }
                 })
@@ -111,9 +108,7 @@ export function useCartEnhancement({
             const validEnhancedItems = enhancedItems.filter((item): item is LocalCartItem => item !== null);
             setCartItems(validEnhancedItems);
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to enhance cart items:", error);
-            }
+            logger.error("Failed to enhance cart items", error, "useCartEnhancement");
         } finally {
             enhancementInProgressRef.current = false;
         }

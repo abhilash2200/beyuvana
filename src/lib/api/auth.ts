@@ -48,15 +48,16 @@ export const authApi = {
         otp_code: userData.otp
       };
 
-      // Log what's being sent to the backend (development only)
-      if (process.env.NODE_ENV === "development") {
-        console.log("🚀 Sending to backend /signup/v1/:", {
+      // Log registration attempt (without sensitive data)
+      import("@/lib/logger").then(({ logger, sanitizeForLogging }) => {
+        logger.debug("Sending registration request to backend", sanitizeForLogging({
           fullname: apiData.fullname,
           email: apiData.email,
           phonenumber: apiData.phonenumber,
-          otp_code: apiData.otp_code.substring(0, 2) + "****"
-        });
-      }
+        }), "authApi");
+      }).catch(() => {
+        // Fallback if logger import fails
+      });
 
       const response = await apiFetch("/signup/v1/", {
         method: "POST",

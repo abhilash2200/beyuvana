@@ -10,6 +10,7 @@ import BillingPrice from "@/components/common/product/BillingPrice";
 import { orderDetailsApi, OrderDetailsData } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { logger } from "@/lib/logger";
 
 interface Order {
     id: string;
@@ -65,9 +66,7 @@ const OrderDetailPage = () => {
                 const userObj = JSON.parse(storedUser);
                 setUserName(userObj.name || "User");
             } catch (err) {
-                if (process.env.NODE_ENV === "development") {
-                    console.warn("Failed to parse user from localStorage:", err);
-                }
+                logger.warn("Failed to parse user from localStorage", err, "orders/[id]/page");
             }
         } else {
             setUserName("User");
@@ -89,8 +88,8 @@ const OrderDetailPage = () => {
                 return;
             }
 
-            if (rawOrderId && sanitizeOrderId(rawOrderId) !== rawOrderId && process.env.NODE_ENV === "development") {
-                console.warn("Order ID was sanitized:", { original: rawOrderId, sanitized: orderId });
+            if (rawOrderId && sanitizeOrderId(rawOrderId) !== rawOrderId) {
+                logger.warn("Order ID was sanitized", { original: rawOrderId, sanitized: orderId }, "orders/[id]/page");
             }
 
             if (!user || !sessionKey) {

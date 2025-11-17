@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { ENV_CONFIG } from "@/lib/constants";
+import { logger } from "@/lib/logger";
 
 const API_BASE_URL = ENV_CONFIG.API_BASE_URL;
 const isDevelopment = ENV_CONFIG.NODE_ENV === "development";
@@ -105,12 +106,10 @@ async function handler(request: NextRequest) {
       
       // Ensure the hostname matches the configured API base URL
       if (urlObj.hostname !== baseUrlObj.hostname && urlObj.hostname !== "") {
-        if (isDevelopment) {
-          console.error("SSRF attempt detected - hostname mismatch:", {
-            requested: urlObj.hostname,
-            expected: baseUrlObj.hostname,
-          });
-        }
+        logger.error("SSRF attempt detected - hostname mismatch", {
+          requested: urlObj.hostname,
+          expected: baseUrlObj.hostname,
+        }, "proxy/route");
         return NextResponse.json(
           { error: "Invalid request" },
           { status: 400 }
@@ -118,9 +117,7 @@ async function handler(request: NextRequest) {
       }
     } catch (urlError) {
       // If URL parsing fails, reject the request
-      if (isDevelopment) {
-        console.error("Invalid URL constructed:", urlError);
-      }
+      logger.error("Invalid URL constructed", urlError, "proxy/route");
       return NextResponse.json(
         { error: "Invalid request URL" },
         { status: 400 }
@@ -144,9 +141,7 @@ async function handler(request: NextRequest) {
       try {
         JSON.parse(body);
       } catch (parseError) {
-        if (isDevelopment) {
-          console.error("Invalid JSON in request body:", parseError);
-        }
+        logger.error("Invalid JSON in request body", parseError, "proxy/route");
         return NextResponse.json(
           { error: "Invalid JSON in request body" },
           { status: 400 }
@@ -191,9 +186,7 @@ async function handler(request: NextRequest) {
       headers: forwardHeaders,
     });
   } catch (error) {
-    if (isDevelopment) {
-      console.error("Proxy error:", error);
-    }
+    logger.error("Proxy error", error, "proxy/route");
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

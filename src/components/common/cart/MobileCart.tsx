@@ -16,6 +16,7 @@ import { SavedAddress, promoApi } from "@/lib/api";
 import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
 import { getPrepaidPromoCode, isPromoCodeEnabled } from "@/lib/promo-utils";
+import { logger } from "@/lib/logger";
 
 export default function MobileCart() {
     const {
@@ -77,9 +78,7 @@ export default function MobileCart() {
                     // Backend will receive the updated price through the checkout API
                 } catch (error) {
                     // Silently handle error - promo validation already happened in handlePrepaidClick
-                    if (process.env.NODE_ENV === "development") {
-                        console.error("Failed to update price with promo:", error);
-                    }
+                    logger.debug("Failed to update price with promo", error, "MobileCart");
                 }
             };
 
@@ -183,9 +182,7 @@ export default function MobileCart() {
             setCartError(null);
             await removeFromCart(itemId);
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to remove item:", error);
-            }
+            logger.error("Failed to remove item", error, "MobileCart");
             setCartError("Failed to remove item. Please try again.");
         }
     };

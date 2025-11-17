@@ -78,10 +78,12 @@ export const reviewApi = {
         orderStatus: "arriving",
       };
     } catch (error) {
-      // Only log in development
-      if (process.env.NODE_ENV === "development") {
-        console.error("Error checking review eligibility:", error);
-      }
+      // Import logger dynamically to avoid circular dependencies
+      import("@/lib/logger").then(({ logger }) => {
+        logger.error("Error checking review eligibility", error, "reviewsApi");
+      }).catch(() => {
+        // Fallback if logger import fails
+      });
 
       return {
         canReview: false,

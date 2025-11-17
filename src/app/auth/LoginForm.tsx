@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import { authApi } from "@/lib/api";
 import { validatePhone } from "@/lib/validation";
+import { logger } from "@/lib/logger";
 
 interface LoginFormProps {
     onClose?: () => void;
@@ -45,9 +46,7 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
 
             toast.success("OTP sent to your phone number. Please verify to login.");
         } catch (err: unknown) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Login form error:", err);
-            }
+            logger.error("Login form error", err, "LoginForm");
             let errorMessage = "Failed to send OTP. Please try again later.";
 
             if (err instanceof Error) {

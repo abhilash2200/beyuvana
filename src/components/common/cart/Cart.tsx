@@ -19,6 +19,7 @@ import { SavedAddress, promoApi } from "@/lib/api";
 import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
 import { getPrepaidPromoCode, isPromoCodeEnabled } from "@/lib/promo-utils";
+import { logger } from "@/lib/logger";
 
 export default function Cart() {
     const { cartItems, increaseItemQuantity, decreaseItemQuantity, updateItemQuantity, refreshCart, clearCart, removeFromCart, loading, isCartOpen, setCartOpen } = useCart();
@@ -101,9 +102,7 @@ export default function Cart() {
                     // Backend will receive the updated price through the checkout API
                 } catch (error) {
                     // Silently handle error - promo validation already happened in handlePrepaidClick
-                    if (process.env.NODE_ENV === "development") {
-                        console.error("Failed to update price with promo:", error);
-                    }
+                    logger.debug("Failed to update price with promo", error, "Cart");
                 }
             };
 
@@ -117,9 +116,7 @@ export default function Cart() {
             await increaseItemQuantity(itemId);
             setLastIncreaseTime(Date.now());
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to increase quantity:", error);
-            }
+            logger.error("Failed to increase quantity", error, "Cart");
             setCartError("Failed to update quantity. Please try again.");
         }
     };
@@ -129,9 +126,7 @@ export default function Cart() {
             setCartError(null);
             await decreaseItemQuantity(itemId);
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to decrease quantity:", error);
-            }
+            logger.error("Failed to decrease quantity", error, "Cart");
             setCartError("Failed to update quantity. Please try again.");
         }
     };
@@ -141,9 +136,7 @@ export default function Cart() {
             setCartError(null);
             await updateItemQuantity(itemId, quantity);
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to update quantity:", error);
-            }
+            logger.error("Failed to update quantity", error, "Cart");
             setCartError("Failed to update quantity. Please try again.");
         }
     };
@@ -157,9 +150,7 @@ export default function Cart() {
                 autoClose: 2000,
             });
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to remove item:", error);
-            }
+            logger.error("Failed to remove item", error, "Cart");
             setCartError("Failed to remove item. Please try again.");
         }
     };
@@ -169,9 +160,7 @@ export default function Cart() {
             setCartError(null);
             await refreshCart();
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to refresh cart:", error);
-            }
+            logger.error("Failed to refresh cart", error, "Cart");
             setCartError("Failed to refresh cart. Please try again.");
         }
     };

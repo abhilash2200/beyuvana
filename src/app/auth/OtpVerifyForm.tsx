@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { authApi } from "@/lib/api";
 import Image from "next/image";
 import { RiRefreshLine } from "react-icons/ri";
+import { logger } from "@/lib/logger";
 
 interface OtpVerifyFormProps {
     onVerified: () => void;
@@ -42,9 +43,7 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
             setCanResend(false);
             toast.success("OTP resent successfully!");
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Resend OTP failed:", error);
-            }
+            logger.error("Resend OTP failed", error, "OtpVerifyForm");
             toast.error("Failed to resend OTP. Please try again.");
         } finally {
             setResending(false);
@@ -101,9 +100,8 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                 setUser(normalizedUser);
                 if (sessionKey) {
                     setSessionKey(String(sessionKey));
-                    if (process.env.NODE_ENV === "development") {
-                        console.log("🔐 Complete Session Key (Registration):", String(sessionKey));
-                    }
+                    // Session key is set but not logged for security
+                    logger.debug("Registration successful - session key set", undefined, "OtpVerifyForm");
                 }
 
                 try {
@@ -112,9 +110,7 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                         if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
                     }
                 } catch (err) {
-                    if (process.env.NODE_ENV === "development") {
-                        console.warn("Failed to save user in localStorage:", err);
-                    }
+                    logger.warn("Failed to save user in localStorage", err, "OtpVerifyForm");
                 }
 
                 toast.success(`Welcome to BEYUVANA, ${normalizedUser.name}! Your account has been created successfully.`);
@@ -163,13 +159,8 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                     setUser(normalizedUser);
                     if (sessionKey) {
                         setSessionKey(String(sessionKey));
-                        // Print session key when user logs in
-                        console.log("🔐 Session Key:", String(sessionKey));
-                    }
-
-                    if (process.env.NODE_ENV === "development") {
-                        console.log("🔐 Login Successful - Session Key:", String(sessionKey || "N/A"));
-                        console.log("👤 Login Successful - User ID:", normalizedUser.id);
+                        // Log login success without exposing session key
+                        logger.info("Login successful", { userId: normalizedUser.id }, "OtpVerifyForm");
                     }
 
                     try {
@@ -178,9 +169,7 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                             if (sessionKey) localStorage.setItem("session_key", String(sessionKey));
                         }
                     } catch (err) {
-                        if (process.env.NODE_ENV === "development") {
-                            console.warn("Failed to save user in localStorage:", err);
-                        }
+                        logger.warn("Failed to save user in localStorage", err, "OtpVerifyForm");
                     }
 
                     toast.success(`Welcome back, ${normalizedUser.name}!`);
@@ -192,9 +181,7 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
 
             onVerified();
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("OTP verification failed:", error);
-            }
+            logger.error("OTP verification failed", error, "OtpVerifyForm");
             const errorMessage = (error as Error)?.message || "Invalid OTP. Please try again.";
             toast.error(errorMessage);
         } finally {

@@ -3,6 +3,8 @@
  * Validates all environment variables at startup and provides clear error messages
  */
 
+import { logger } from "./logger";
+
 interface EnvVarConfig {
     /** Variable name */
     name: string;
@@ -242,19 +244,17 @@ export function validateAndLogEnvironment(): ValidationResult {
     });
 
     if (result.errors.length > 0) {
-        console.error("❌ Environment Variable Validation Errors:");
-        result.errors.forEach((error) => console.error(`  ${error}`));
+        logger.validationError("Environment Variable Validation Errors:");
+        result.errors.forEach((error) => logger.validationError(`  ${error}`));
     }
 
     if (result.warnings.length > 0) {
-        console.warn("⚠️  Environment Variable Warnings:");
-        result.warnings.forEach((warning) => console.warn(`  ${warning}`));
+        logger.validationWarn("Environment Variable Warnings:");
+        result.warnings.forEach((warning) => logger.validationWarn(`  ${warning}`));
     }
 
     if (result.valid && result.warnings.length === 0) {
-        if (isDevelopment) {
-            console.log("✅ Environment variables validated successfully");
-        }
+        logger.validationSuccess("Environment variables validated successfully");
     }
 
     return result;

@@ -10,6 +10,7 @@ import { ordersApi, Order } from "@/lib/api";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "react-toastify";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { logger } from "@/lib/logger";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -54,9 +55,7 @@ const OrdersPage = () => {
           }
         }
       } catch (err) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Error fetching orders:", err);
-        }
+        logger.error("Error fetching orders", err, "orders/page");
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch orders";
         setError(errorMessage);
         toast.error(errorMessage);
@@ -157,7 +156,7 @@ const OrdersPage = () => {
             {!loading && !error && orders.map((order) => {
               const orderId = order.id?.trim();
               if (!orderId) {
-                console.warn("Order missing ID:", order);
+                logger.warn("Order missing ID", { order }, "orders/page");
                 return null;
               }
 

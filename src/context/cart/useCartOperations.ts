@@ -8,6 +8,7 @@ import { cartApi } from "@/lib/api";
 import { toast } from "react-toastify";
 import { CART_CONFIG } from "@/lib/constants";
 import type { LocalCartItem } from "./types";
+import { logger } from "@/lib/logger";
 
 interface UseCartOperationsParams {
     cartItems: LocalCartItem[];
@@ -100,16 +101,12 @@ export function useCartOperations({
                 await syncWithServer();
                 toast.success(`${item.name} added to cart!`);
             } catch (apiError) {
-                if (process.env.NODE_ENV === "development") {
-                    console.error("Failed to add to cart:", apiError);
-                }
+                logger.error("Failed to add to cart", apiError, "useCartOperations");
                 toast.error("Failed to add item to cart. Please try again.");
                 throw apiError;
             }
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to add to cart:", error);
-            }
+            logger.error("Failed to add to cart", error, "useCartOperations");
             toast.error("Failed to add item to cart. Please try again.");
             throw error;
         } finally {
@@ -171,9 +168,7 @@ export function useCartOperations({
                     return;
                 }
 
-                if (process.env.NODE_ENV === "development") {
-                    console.error("Failed to increase quantity:", error);
-                }
+                logger.error("Failed to increase quantity", error, "useCartOperations");
 
                 // Rollback optimistic update
                 rollbackState();
@@ -238,9 +233,7 @@ export function useCartOperations({
                     return;
                 }
 
-                if (process.env.NODE_ENV === "development") {
-                    console.error("Failed to decrease quantity:", error);
-                }
+                logger.error("Failed to decrease quantity", error, "useCartOperations");
 
                 rollbackState();
                 toast.error("Failed to update quantity. Please try again.");
@@ -259,9 +252,7 @@ export function useCartOperations({
 
     const updateItemQuantity = useCallback(async (id: string, qty: number) => {
         if (typeof qty !== 'number' || isNaN(qty)) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Invalid quantity provided:", qty);
-            }
+            logger.warn("Invalid quantity provided", { qty }, "useCartOperations");
             return;
         }
 
@@ -315,9 +306,7 @@ export function useCartOperations({
                     return;
                 }
 
-                if (process.env.NODE_ENV === "development") {
-                    console.error("Failed to update quantity:", error);
-                }
+                logger.error("Failed to update quantity", error, "useCartOperations");
 
                 rollbackState();
                 toast.error("Failed to update quantity. Please try again.");
@@ -344,9 +333,7 @@ export function useCartOperations({
             toast.success(`${item.name} removed from cart!`);
             await syncWithServer();
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to remove from cart:", error);
-            }
+            logger.error("Failed to remove from cart", error, "useCartOperations");
             toast.error("Failed to remove item. Please try again.");
         } finally {
             setLoading(false);
@@ -363,9 +350,7 @@ export function useCartOperations({
                 toast.success("Your cart has been cleared successfully!");
             }
         } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to clear cart:", error);
-            }
+            logger.error("Failed to clear cart", error, "useCartOperations");
             toast.error("Failed to clear cart. Please try again.");
             await syncWithServer();
         } finally {

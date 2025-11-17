@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { logger } from "@/lib/logger";
 
 type User = { id: string; name: string; email: string; phone: string } | null;
 
@@ -30,17 +31,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       } catch (err) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("Failed to parse user from localStorage:", err);
-        }
+        logger.warn("Failed to parse user from localStorage", err, "AuthProvider");
         localStorage.removeItem("user");
       }
     }
 
     if (storedSession) {
       setSessionKey(storedSession);
-      // Print session key on page load/refresh for development
-      console.log("🔐 Session Key (Loaded from storage):", storedSession);
+      // Log that session was loaded (without exposing the key)
+      logger.debug("Session key loaded from storage", undefined, "AuthProvider");
     }
   }, []);
 
@@ -53,9 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem("session_key", sessionKey);
       }
     } catch (err) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Failed to persist session key:", err);
-      }
+      logger.warn("Failed to persist session key", err, "AuthProvider");
     }
   }, [user, sessionKey]);
 
@@ -66,15 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await authApi.logout(sessionKey, user.id);
       }
     } catch (err) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Logout API error:", err);
-        console.error("Logout API error details:", {
-          message: err instanceof Error ? err.message : 'Unknown error',
-          stack: err instanceof Error ? err.stack : null,
-          hasSessionKey: !!sessionKey,
-          hasUserId: !!user?.id
-        });
-      }
+      logger.error("Logout API error", err, "AuthProvider");
     } finally {
       // Check if we're in the browser before accessing localStorage
       if (typeof window !== "undefined") {

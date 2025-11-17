@@ -98,9 +98,12 @@ export const showValidationError = (errors: Record<string, string>) => {
 
 // Helper function for API error handling
 export const handleApiError = (error: unknown) => {
-  if (process.env.NODE_ENV === "development") {
-    console.error("API Error:", error);
-  }
+  // Import logger dynamically to avoid circular dependencies
+  import("@/lib/logger").then(({ logger }) => {
+    logger.error("API Error", error, "handleApiError");
+  }).catch(() => {
+    // Fallback if logger import fails
+  });
 
   const apiError = error as { response?: { status: number }; code?: string; message?: string };
 

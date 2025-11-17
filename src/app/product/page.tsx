@@ -1,6 +1,7 @@
 import ProductsLists from '@/components/product/ProductsLists'
 import { productsApi, convertToLegacyProduct } from "@/lib/api";
 import React from 'react'
+import { logger } from "@/lib/logger";
 
 async function fetchProducts() {
   try {
@@ -33,9 +34,7 @@ async function fetchProducts() {
       return b.id - a.id;
     });
   } catch (err) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("Fetch products error:", err);
-    }
+    logger.error("Fetch products error", err, "product/page");
     return [];
   }
 }

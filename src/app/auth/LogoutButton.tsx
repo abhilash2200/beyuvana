@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "react-toastify";
+import { logger } from "@/lib/logger";
 
 interface LogoutButtonProps {
   children?: React.ReactNode;
@@ -36,7 +37,7 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
         router.push("/");
         return;
       } catch (error) {
-        console.error("Local logout failed:", error);
+        logger.error("Local logout failed", error, "LogoutButton");
         toast.error("Logout failed. Please try again.");
         return;
       }
@@ -48,7 +49,7 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
       toast.success("You have been logged out successfully.");
       router.push("/");
     } catch (error) {
-      console.error("Logout failed:", error);
+      logger.error("Logout failed", error, "LogoutButton");
       if (user || sessionKey) {
         toast.error("Logout failed. Please try again.");
       } else {
