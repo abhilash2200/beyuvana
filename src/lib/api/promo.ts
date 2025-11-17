@@ -12,7 +12,17 @@ export interface PromoDetailsRequest {
 }
 
 export interface PromoDetailsResponse {
-  // Add response type based on API response structure
+  /** Promo value/amount (can be number or string) */
+  promo_value?: number | string;
+  /** Promo amount (alternative field name) */
+  promo_amount?: number | string;
+  /** Discount amount (alternative field name) */
+  discount_amount?: number | string;
+  /** Promo code */
+  promo_code?: string;
+  /** Promo status */
+  status?: boolean;
+  /** Additional fields */
   [key: string]: unknown;
 }
 

@@ -11,7 +11,43 @@ First, set up your environment variables:
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with your configuration (see [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) for details).
+Edit `.env.local` with your configuration. 
+
+**📖 Quick Setup Guide:**
+
+**Easiest Method:**
+1. **For Local Development:**
+   ```bash
+   # Copy the template file
+   cp env.local.template .env.local
+   # Usually no changes needed - defaults work fine!
+   ```
+
+2. **For Production:**
+   ```bash
+   # Copy the template file
+   cp env.production.template .env.production
+   # Then edit .env.production and update values marked with "CHANGE THIS"
+   ```
+
+**What to Change in Production:**
+- ✅ `NEXT_PUBLIC_SITE_URL` → Your production domain (e.g., `https://www.beyuvana.com`)
+- ✅ `NEXT_PUBLIC_PREPAID_PROMO_CODE` → Your production promo code
+- ✅ `NODE_ENV` → Set to `production`
+
+See **[ENV_SETUP_GUIDE.md](./ENV_SETUP_GUIDE.md)** for detailed instructions.
+
+**Available Environment Variables:**
+
+- `NEXT_PUBLIC_API_BASE_URL` - Base URL for the API backend (default: `https://beyuvana.com/api`)
+- `NEXT_PUBLIC_PROXY_URL` - Proxy URL for API requests (default: `/api/proxy`)
+- `NEXT_PUBLIC_SITE_URL` - Base URL of the website (default: `http://localhost:3000`)
+- `NEXT_PUBLIC_PREPAID_PROMO_CODE` - Promo code for prepaid orders (default: `TEST150`)
+- `NEXT_PUBLIC_AUTO_APPLY_PROMO` - Auto-apply promo code (default: `true`)
+- `NEXT_PUBLIC_BUILD_ID` - Build ID for cache busting (optional)
+- `NODE_ENV` - Node environment (usually set automatically)
+
+**Note:** Environment variables are automatically validated at startup. See `src/lib/env-validation.ts` for validation rules.
 
 ### 2. Install Dependencies
 
@@ -57,6 +93,14 @@ Before deploying, make sure to set up your environment variables. See [ENVIRONME
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 **Important:** Set the following environment variables in your Vercel project:
+
+- `NEXT_PUBLIC_API_BASE_URL` - Your API base URL
+- `NEXT_PUBLIC_SITE_URL` - Your production site URL
+- `NEXT_PUBLIC_PREPAID_PROMO_CODE` - Promo code for prepaid orders (if different from default)
+- `NEXT_PUBLIC_AUTO_APPLY_PROMO` - Set to `true` or `false`
+- `NODE_ENV` - Set to `production`
+
+You can also use `.env.production` file for production-specific values. See `.env.example` for all available variables.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 

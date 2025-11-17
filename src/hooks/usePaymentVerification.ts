@@ -11,6 +11,7 @@ import {
     extractRedirectPath,
     normalizeRedirectPath,
 } from "@/lib/payment-utils";
+import { isPaymentResponseData } from "@/lib/types/payment";
 
 interface UsePaymentVerificationOptions {
     /** Custom error message when no payment information is found */
@@ -33,7 +34,8 @@ export function usePaymentVerification(options: UsePaymentVerificationOptions = 
             try {
                 setStatus("processing");
                 const response = await callPaymentResponseAPI(storedOrderId);
-                const result: unknown = response.data || response;
+                // Use type-safe extraction - response.data is already typed as PaymentResponseData | null
+                const result = response.data || (isPaymentResponseData(response) ? response : null);
 
                 // Safely remove orderId from localStorage
                 try {

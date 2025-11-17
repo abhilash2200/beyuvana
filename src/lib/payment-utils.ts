@@ -1,38 +1,45 @@
 import { apiFetch } from "./api/core";
 import { ENV_CONFIG } from "./constants";
+import type {
+    PaymentApiResponse,
+    PaymentResponseData,
+} from "./types/payment";
+import {
+    extractRedirectUrl,
+    isPaymentResponseData,
+} from "./types/payment";
+import { getNestedProperty, isString } from "./types/guards";
 
-interface PaymentApiResponse {
-    data?: unknown;
-    status?: boolean;
-    message?: string;
-    code?: number;
-}
-
-const getNestedValue = (obj: unknown, paths: string[]): unknown => {
-    if (!obj || typeof obj !== "object") return null;
-    let current: unknown = obj;
-    for (const path of paths) {
-        if (current && typeof current === "object" && path in current) {
-            current = (current as Record<string, unknown>)[path];
-        } else {
-            return null;
-        }
-    }
-    return current;
-};
-
+/**
+ * Safely extracts redirect URL from an object
+ */
 const getRedirectFromObject = (obj: Record<string, unknown>): string | null => {
-    const redirectUrl =
-        obj.redirect_url ||
-        obj.redirectUrl ||
-        obj.redirect_path ||
-        obj.redirectPath ||
-        getNestedValue(obj, ["data", "redirect_url"]) ||
-        getNestedValue(obj, ["data", "redirectUrl"]) ||
-        getNestedValue(obj, ["data", "redirect_path"]) ||
-        getNestedValue(obj, ["data", "redirectPath"]);
+    // Try direct properties first
+    const directRedirect = extractRedirectUrl(obj);
+    if (directRedirect) {
+        return directRedirect;
+    }
 
-    return typeof redirectUrl === "string" && redirectUrl ? redirectUrl : null;
+    // Try nested data property
+    const nestedRedirect = getNestedProperty<string>(
+        obj,
+        ["data", "redirect_url"],
+        isString
+    ) || getNestedProperty<string>(
+        obj,
+        ["data", "redirectUrl"],
+        isString
+    ) || getNestedProperty<string>(
+        obj,
+        ["data", "redirect_path"],
+        isString
+    ) || getNestedProperty<string>(
+        obj,
+        ["data", "redirectPath"],
+        isString
+    );
+
+    return nestedRedirect || null;
 };
 
 export function getRedirectPathFromStatus(response: PaymentApiResponse): string | null {
@@ -50,15 +57,29 @@ export function getRedirectPathFromStatus(response: PaymentApiResponse): string 
     return null;
 }
 
-export function extractRedirectPath(result: unknown, response: PaymentApiResponse): string | null {
+export function extractRedirectPath(
+    result: unknown,
+    response: PaymentApiResponse
+): string | null {
     const statusRedirect = getRedirectPathFromStatus(response);
     if (statusRedirect) {
         return statusRedirect;
     }
 
+    // Try to extract from result using type-safe methods
+    if (isPaymentResponseData(result)) {
+        const redirect = extractRedirectUrl(result);
+        if (redirect) {
+            return redirect;
+        }
+    }
+
+    // Fallback to object-based extraction
     if (result && typeof result === "object") {
         const redirect = getRedirectFromObject(result as Record<string, unknown>);
-        if (redirect) return redirect;
+        if (redirect) {
+            return redirect;
+        }
     }
 
     return null;
@@ -82,7 +103,9 @@ export function parseNonJsonResponse(responseText: string): PaymentApiResponse {
     throw new Error("Backend did not provide redirect URL. Please check your orders page.");
 }
 
-export async function callPaymentResponseAPI(orderId: string): Promise<PaymentApiResponse> {
+export async function callPaymentResponseAPI(
+    orderId: string
+): Promise<PaymentApiResponse> {
     // Build query parameters
     const queryParams = new URLSearchParams({
         payment_request_id: orderId,
@@ -94,16 +117,24 @@ export async function callPaymentResponseAPI(orderId: string): Promise<PaymentAp
 
     for (const endpoint of endpoints) {
         try {
-            const response = await apiFetch<unknown>(endpoint, { method: "GET" });
+            const response = await apiFetch<PaymentResponseData>(
+                endpoint,
+                { method: "GET" }
+            );
             return {
                 status: response.status,
                 message: response.message,
                 code: response.code,
-                data: response.data,
+                data: isPaymentResponseData(response.data)
+                    ? response.data
+                    : response.data ?? null,
             };
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            const isJsonParseError = errorMessage.includes("parse JSON") || errorMessage.includes("HTML error page");
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
+            const isJsonParseError =
+                errorMessage.includes("parse JSON") ||
+                errorMessage.includes("HTML error page");
 
             // Silently continue to next endpoint if this one fails
             if (isJsonParseError) {
@@ -135,12 +166,14 @@ export async function callPaymentResponseAPI(orderId: string): Promise<PaymentAp
 
     if (contentType.includes("application/json")) {
         try {
-            const parsedResponse = JSON.parse(responseText);
+            const parsedResponse = JSON.parse(responseText) as PaymentApiResponse;
             return {
                 status: parsedResponse.status ?? false,
                 message: parsedResponse.message,
                 code: parsedResponse.code,
-                data: parsedResponse.data,
+                data: isPaymentResponseData(parsedResponse.data)
+                    ? parsedResponse.data
+                    : (parsedResponse.data as PaymentResponseData | null),
             };
         } catch {
             return parseNonJsonResponse(responseText);

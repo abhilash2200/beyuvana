@@ -8,6 +8,7 @@ import { CartProvider } from "@/context/CartProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { EnvValidator } from "@/components/common/EnvValidator";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin"],
@@ -75,6 +76,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${beVietnamPro.variable} antialiased`} suppressHydrationWarning={true}>
+        <EnvValidator />
         <TooltipProvider>
           <ErrorBoundary>
             <AuthProvider>

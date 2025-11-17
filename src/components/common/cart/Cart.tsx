@@ -205,15 +205,41 @@ export default function Cart() {
                 );
 
 
-                const responseData = response.data as Record<string, unknown>;
-                const promoValueFromResponse =
-                    typeof responseData?.promo_value === "number" ? responseData.promo_value :
-                        typeof responseData?.promo_amount === "number" ? responseData.promo_amount :
-                            typeof responseData?.discount_amount === "number" ? responseData.discount_amount :
-                                typeof responseData?.promo_value === "string" ? parseFloat(responseData.promo_value) || 0 :
-                                    typeof responseData?.promo_amount === "string" ? parseFloat(responseData.promo_amount) || 0 :
-                                        typeof responseData?.discount_amount === "string" ? parseFloat(responseData.discount_amount) || 0 :
-                                            0;
+                // Type-safe promo value extraction
+                const responseData = response.data;
+                const promoValueFromResponse = (() => {
+                    if (!responseData || typeof responseData !== "object") {
+                        return 0;
+                    }
+                    const data = responseData as Record<string, unknown>;
+
+                    // Try numeric values first
+                    if (typeof data.promo_value === "number") {
+                        return data.promo_value;
+                    }
+                    if (typeof data.promo_amount === "number") {
+                        return data.promo_amount;
+                    }
+                    if (typeof data.discount_amount === "number") {
+                        return data.discount_amount;
+                    }
+
+                    // Try string values
+                    if (typeof data.promo_value === "string") {
+                        const parsed = parseFloat(data.promo_value);
+                        return isNaN(parsed) ? 0 : parsed;
+                    }
+                    if (typeof data.promo_amount === "string") {
+                        const parsed = parseFloat(data.promo_amount);
+                        return isNaN(parsed) ? 0 : parsed;
+                    }
+                    if (typeof data.discount_amount === "string") {
+                        const parsed = parseFloat(data.discount_amount);
+                        return isNaN(parsed) ? 0 : parsed;
+                    }
+
+                    return 0;
+                })();
 
                 setPromoValue(promoValueFromResponse);
                 setPromoCode(promoCodeValue);
