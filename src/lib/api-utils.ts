@@ -35,8 +35,6 @@ export function buildAuthHeaders(sessionKey?: string): Record<string, string> {
  * @throws Error if required environment variables are missing
  */
 export function validateEnvironment(): void {
-    // Use the new validation system
-    // Note: This is a synchronous wrapper for backward compatibility
     const errors: string[] = [];
 
     if (!process.env.NEXT_PUBLIC_API_BASE_URL && !process.env.NEXT_PUBLIC_PROXY_URL) {
@@ -46,8 +44,6 @@ export function validateEnvironment(): void {
     if (errors.length > 0) {
         throw new Error(`Environment validation failed:\n${errors.join("\n")}`);
     }
-    
-    // For more comprehensive validation, use validateEnvironmentVariables from @/lib/env-validation
 }
 
 /**

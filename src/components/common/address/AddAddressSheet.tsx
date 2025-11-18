@@ -12,7 +12,7 @@ import {
 import { useAuth } from "@/context/AuthProvider";
 import { MapPin } from "lucide-react";
 import { toast } from "react-toastify";
-import type { SavedAddress } from "@/lib/api";
+import type { SavedAddress } from "@/lib/api/types";
 import MobileAddAddressSheet from "./MobileAddAddressSheet";
 import { useAddressForm } from "./hooks/useAddressForm";
 import { useAddressManagement } from "./hooks/useAddressManagement";

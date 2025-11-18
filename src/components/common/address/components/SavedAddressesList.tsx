@@ -5,7 +5,7 @@
 
 import { Button } from "@/components/ui/button";
 import { MapPin, Star, Check, Edit } from "lucide-react";
-import type { SavedAddress } from "@/lib/api";
+import type { SavedAddress } from "@/lib/api/types";
 
 interface SavedAddressesListProps {
     addresses: SavedAddress[];

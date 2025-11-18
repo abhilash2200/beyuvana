@@ -6,7 +6,8 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { checkoutApi, CheckoutRequest, SavedAddress } from "@/lib/api";
+import { checkoutApi } from "@/lib/api/checkout";
+import type { CheckoutRequest, SavedAddress } from "@/lib/api/types";
 import { LocalCartItem } from "@/context/cart/types";
 import { calculateCartTotals, transformCartItemsForCheckout, getPaymentRedirectUrl } from "@/lib/cart-utils";
 import { PAYMENT_METHODS, ROUTES } from "@/lib/constants";
@@ -71,7 +72,7 @@ export function useCheckout({
 
             // Use discounted total if provided (for prepaid with promo), otherwise use calculated total
             const finalPaidAmount = discountedTotal !== undefined ? discountedTotal : total;
-            
+
             // Calculate total discount including promo discount
             const totalDiscountWithPromo = discountAmount + promoAmount;
 

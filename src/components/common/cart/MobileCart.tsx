@@ -12,7 +12,7 @@ import React from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatINR } from "@/lib/utils";
 import { useAuth } from "@/context/AuthProvider";
-import { SavedAddress } from "@/lib/api";
+import type { SavedAddress } from "@/lib/api/types";
 import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
 import { handleError } from "@/lib/error-handling";

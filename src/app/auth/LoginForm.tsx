@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { authApi } from "@/lib/api";
+import { authApi } from "@/lib/api/auth";
 import { validatePhone } from "@/lib/validation";
 import { handleError } from "@/lib/error-handling";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";

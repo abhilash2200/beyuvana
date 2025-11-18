@@ -93,23 +93,11 @@ const Header = () => {
 
                                             {loginStep === "otp" && otpData ? (
                                                 <div className="space-y-4">
-                                                    {/* <div className="text-center">
-                                                        <p className="text-sm text-gray-600">
-                                                            We&apos;ve sent a 6-digit OTP to {otpData.phone}
-                                                        </p>
-                                                    </div> */}
                                                     <OtpVerifyForm
                                                         onVerified={handleLoginOtpVerified}
                                                         phone={otpData.phone}
                                                         isRegistration={false}
                                                     />
-                                                    {/* <Button
-                                                        variant="outline"
-                                                        onClick={handleBackToLogin}
-                                                        className="w-full"
-                                                    >
-                                                        Back to Login
-                                                    </Button> */}
                                                 </div>
                                             ) : (
                                                 <LoginForm
@@ -142,24 +130,12 @@ const Header = () => {
 
                                             {registerStep === "otp" && otpData ? (
                                                 <div className="space-y-4">
-                                                    {/* <div className="text-center">
-                                                        <p className="text-sm text-gray-600">
-                                                            We&apos;ve sent a 6-digit OTP to {otpData.phone}
-                                                        </p>
-                                                    </div> */}
                                                     <OtpVerifyForm
                                                         onVerified={handleRegisterOtpVerified}
                                                         phone={otpData.phone}
                                                         userData={otpData.userData}
                                                         isRegistration={true}
                                                     />
-                                                    {/* <Button
-                                                        variant="outline"
-                                                        onClick={handleBackToRegister}
-                                                        className="w-full"
-                                                    >
-                                                        Back to Registration
-                                                    </Button> */}
                                                 </div>
                                             ) : (
                                                 <RegisterForm
@@ -173,7 +149,7 @@ const Header = () => {
                             ) : (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button 
+                                        <Button
                                             className="inline-flex gap-x-2 rounded-full shadow px-4 font-normal py-2 capitalize bg-[#1A2819] text-white text-[12px]"
                                             aria-label={`User menu for ${user.name || "User"}`}
                                         >
@@ -184,15 +160,6 @@ const Header = () => {
                                     <DropdownMenuContent className="w-38">
                                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        {/* <DropdownMenuItem>
-                                            <Link
-                                                href="/profile"
-                                                className="w-full block"
-                                                onClick={() => {}}
-                                            >
-                                                Profile
-                                            </Link>
-                                        </DropdownMenuItem> */}
                                         <DropdownMenuItem>
                                             <Link
                                                 href="/orders"
@@ -212,7 +179,6 @@ const Header = () => {
                         </div>
                     </div>
 
-                    {/* Mobile nav */}
                     <div className="lg:hidden">
                         <MobileNav />
                     </div>

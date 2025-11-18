@@ -3,7 +3,7 @@
  * Helper functions for address management
  */
 
-import type { SavedAddress } from "@/lib/api";
+import type { SavedAddress } from "@/lib/api/types";
 
 /**
  * Check if an address is the primary address

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
-import type { PriceTier } from "@/lib/api";
+import type { PriceTier } from "@/lib/api/types";
 import { productDesignSlugs } from "@/app/data/productConfigs";
 import ProductRating from "./ProductRating";
 

@@ -4,7 +4,7 @@
  */
 
 import { LocalCartItem } from "@/context/cart/types";
-import { CheckoutCartItem } from "@/lib/api";
+import type { CheckoutCartItem } from "@/lib/api/types";
 import { ENV_CONFIG } from "./constants";
 
 /**

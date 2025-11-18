@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from "react";
-import { cartApi } from "@/lib/api";
+import { cartApi } from "@/lib/api/cart";
 import { toast } from "react-toastify";
 import { CART_CONFIG } from "@/lib/constants";
 import type { LocalCartItem } from "./types";

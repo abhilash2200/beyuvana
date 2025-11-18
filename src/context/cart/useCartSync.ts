@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from "react";
-import { cartApi } from "@/lib/api";
+import { cartApi } from "@/lib/api/cart";
 import type { ServerCartItem, LocalCartItem } from "./types";
 
 interface UseCartSyncParams {

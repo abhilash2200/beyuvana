@@ -5,7 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { FaStar, FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthProvider";
-import { reviewApi, ProductReviewRequest, ProductReviewItem } from "@/lib/api";
+import { reviewApi } from "@/lib/api/reviews";
+import type { ProductReviewRequest, ProductReviewItem } from "@/lib/api/types";
 
 interface ApiReviewItem extends ProductReviewItem {
     customer_name?: string;

@@ -1,5 +1,5 @@
 import ProductsLists from '@/components/product/ProductsLists'
-import { productsApi, convertToLegacyProduct } from "@/lib/api";
+import { productsApi, convertToLegacyProduct } from "@/lib/api/products";
 import React from 'react'
 import { logger } from "@/lib/logger";
 import { handleError } from "@/lib/error-handling";
@@ -36,10 +36,10 @@ async function fetchProducts() {
     });
   } catch (err) {
     handleError(err, {
-        context: "product/page",
-        userMessage: "Failed to fetch products. Please try again.",
-        showToast: false, // Server component - can't show toast
-        silent: false, // But still log it
+      context: "product/page",
+      userMessage: "Failed to fetch products. Please try again.",
+      showToast: false, // Server component - can't show toast
+      silent: false, // But still log it
     });
     return [];
   }

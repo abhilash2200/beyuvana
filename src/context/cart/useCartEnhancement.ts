@@ -4,7 +4,8 @@
  */
 
 import { useCallback, useRef } from "react";
-import { productsApi, ProductDetailsResponse } from "@/lib/api";
+import { productsApi } from "@/lib/api/products";
+import type { ProductDetailsResponse } from "@/lib/api/types";
 import type { LocalCartItem } from "./types";
 import { logger } from "@/lib/logger";
 

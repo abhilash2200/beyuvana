@@ -7,7 +7,8 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
-import { productsApi, type Product as ApiProduct, type PriceTier } from "@/lib/api";
+import { productsApi } from "@/lib/api/products";
+import type { Product as ApiProduct, PriceTier } from "@/lib/api/types";
 import { designSlugToProductId } from "@/app/data/productConfigs";
 import ProductRating from "../ProductRating";
 

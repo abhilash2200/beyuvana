@@ -5,7 +5,7 @@
 
 import { useState } from "react";
 import { validateRequired, validateEmail, validatePhone, validatePincode } from "@/lib/validation";
-import type { SavedAddress } from "@/lib/api";
+import type { SavedAddress } from "@/lib/api/types";
 
 export interface AddressFormData {
     fullName: string;

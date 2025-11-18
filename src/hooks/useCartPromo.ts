@@ -3,7 +3,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { promoApi } from "@/lib/api";
+import { promoApi } from "@/lib/api/promo";
 import { getPrepaidPromoCode, isPromoCodeEnabled } from "@/lib/promo-utils";
 
 interface UseCartPromoProps {

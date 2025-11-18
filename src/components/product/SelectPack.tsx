@@ -5,7 +5,8 @@ import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 import { toast } from "react-toastify";
-import { productsApi, type Product as ApiProduct, type PriceTier } from "@/lib/api";
+import { productsApi } from "@/lib/api/products";
+import type { Product as ApiProduct, PriceTier } from "@/lib/api/types";
 import { designSlugToProductId } from "@/app/data/productConfigs";
 import ProductRating from "./ProductRating";
 

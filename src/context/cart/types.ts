@@ -3,7 +3,7 @@
  * Centralized type definitions for cart functionality
  */
 
-import { ProductDetailsResponse } from "@/lib/api";
+import type { ProductDetailsResponse } from "@/lib/api/types";
 
 export type ServerCartItem = {
     id?: string;

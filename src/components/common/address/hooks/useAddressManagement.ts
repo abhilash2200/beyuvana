@@ -4,7 +4,8 @@
  */
 
 import { useState, useCallback } from "react";
-import { addressApi, SaveAddressRequest, SavedAddress } from "@/lib/api";
+import { addressApi } from "@/lib/api/address";
+import type { SaveAddressRequest, SavedAddress } from "@/lib/api/types";
 import { toast } from "react-toastify";
 
 interface UseAddressManagementParams {

@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import MobileCart from "./MobileCart";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { useAuth } from "@/context/AuthProvider";
-import { SavedAddress } from "@/lib/api";
+import type { SavedAddress } from "@/lib/api/types";
 import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
 import { handleError } from "@/lib/error-handling";

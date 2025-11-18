@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { cartApi } from "@/lib/api";
+import { cartApi } from "@/lib/api/cart";
 import { useAuth } from "./AuthProvider";
 import type { CartContextType, LocalCartItem } from "./cart/types";
 import { useCartSync } from "./cart/useCartSync";
@@ -40,7 +40,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         clearTimeout(timeout);
       });
       currentTimeoutRefs.clear();
-      
+
       currentAbortControllers.forEach((controller) => {
         controller.abort();
       });

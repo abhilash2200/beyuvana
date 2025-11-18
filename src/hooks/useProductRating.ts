@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { reviewApi } from '@/lib/api';
+import { reviewApi } from '@/lib/api/reviews';
 import { calculateRatingStats, RatingStats } from '@/lib/ratingUtils';
 
 interface UseProductRatingProps {

@@ -1,7 +1,9 @@
 "use client"
 import { Rating } from '@mui/material'
 import React, { useEffect, useMemo, useState, memo } from 'react'
-import { reviewApi, productsApi, type Product, type ProductsListRequest } from '@/lib/api'
+import { reviewApi } from '@/lib/api/reviews';
+import { productsApi } from '@/lib/api/products';
+import type { Product, ProductsListRequest } from '@/lib/api/types';
 import { useAuth } from '@/context/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { ChevronDown, ChevronUp } from 'lucide-react'

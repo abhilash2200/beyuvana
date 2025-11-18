@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "react-toastify";
-import { authApi } from "@/lib/api";
+import { authApi } from "@/lib/api/auth";
 import Image from "next/image";
 import { RiRefreshLine } from "react-icons/ri";
 import { logger } from "@/lib/logger";

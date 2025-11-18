@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { addressApi, SavedAddress } from "@/lib/api";
+import { addressApi } from "@/lib/api/address";
+import type { SavedAddress } from "@/lib/api/types";
 import { useAuth } from "@/context/AuthProvider";
 import { MapPin, Plus, RefreshCw } from "lucide-react";
 
