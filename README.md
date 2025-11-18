@@ -104,6 +104,11 @@ You can also use `.env.production` file for production-specific values. See `.en
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## 📚 Documentation
+
+- **[PROJECT_FLOW.md](./PROJECT_FLOW.md)** - Complete application flow and architecture documentation
+- **[PROJECT_FEEDBACK.md](./PROJECT_FEEDBACK.md)** - Code review and improvement recommendations
+
 ### Production Features
 
 This project includes production-ready optimizations:
@@ -114,3 +119,6 @@ This project includes production-ready optimizations:
 - ✅ CORS handling via proxy
 - ✅ Comprehensive error handling
 - ✅ TypeScript support
+- ✅ Security headers and input sanitization
+- ✅ API caching and request deduplication
+- ✅ Bundle optimization and code splitting

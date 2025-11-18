@@ -45,3 +45,6 @@ next-env.d.ts
 #assets
 /public/assets/videos/
 /public/assets/gifs/
+
+#project feedback
+PROJECT_FLOW.md
