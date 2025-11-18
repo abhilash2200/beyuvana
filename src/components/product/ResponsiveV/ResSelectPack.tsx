@@ -30,6 +30,7 @@ type Product = {
     packs: Pack[];
     image: string;
     product_details?: ApiProduct;
+    short_description?: string;
 };
 
 function formatINR(value: number): string {
@@ -171,6 +172,7 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                     packs,
                     image,
                     product_details: apiProduct,
+                    short_description: apiProduct.short_description,
                 };
 
                 if (!ignore) {
@@ -203,6 +205,11 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             ? `${product.name} - Trial Pack`
             : `${product.name} - Pack of ${selectedPack.qty}`;
 
+        // Extract discount percentage from discount string (e.g., "10% Off" -> "10")
+        const discountPercent = selectedPack.discount
+            ? selectedPack.discount.replace(/%\s*Off/gi, '').trim()
+            : undefined;
+
         await addToCart({
             id: `${product.id}-${selectedPack.qty}`,
             name: packName,
@@ -211,9 +218,10 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
             image: product.image,
             product_id: product.id,
             mrp_price: selectedPack.originalPrice,
-            discount_percent: selectedPack.discount.replace('% Off', ''),
+            discount_percent: discountPercent,
             pack_qty: selectedPack.qty,
             product_price_id: selectedPack.product_price_id,
+            short_description: product.short_description,
         });
 
     };

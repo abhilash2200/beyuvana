@@ -27,6 +27,7 @@ interface Product {
     name: string;
     packs: Pack[];
     image: string;
+    short_description?: string;
 }
 
 function formatINR(value: number): string {
@@ -183,6 +184,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                     name: apiProduct.product_name,
                     packs,
                     image,
+                    short_description: apiProduct.short_description,
                 };
 
                 if (!ignore) {
@@ -216,6 +218,11 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 ? `${product.name} - Trial Pack`
                 : `${product.name} - Pack of ${selectedPack.qty}`;
 
+            // Extract discount percentage from discount string (e.g., "10% Off" -> "10")
+            const discountPercent = selectedPack.discount
+                ? selectedPack.discount.replace(/%\s*Off/gi, '').trim()
+                : undefined;
+
             await addToCart({
                 id: `${product.id}-${selectedPack.qty}`,
                 name: packName,
@@ -226,6 +233,8 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 pack_qty: selectedPack.qty,
                 product_price_id: selectedPack.product_price_id,
                 mrp_price: selectedPack.originalPrice,
+                discount_percent: discountPercent,
+                short_description: product.short_description,
             });
         } catch (error) {
             console.error("Add to cart error:", error);

@@ -55,11 +55,12 @@ export function useCartSync({
                                 cart_id: item.cart_id,
                                 mrp_price: Math.round(parseFloat(String(item.mrp || 0)) || 0),
                                 discount_percent: item.discount_off_inpercent || item.discount_percent,
-                                short_description: item.product_description,
+                                short_description: item.short_description || item.product_description,
                                 product_description: item.product_description,
                                 in_stock: item.in_stock,
-                                pack_qty: parseFloat(String(item.unit_qty || 1)) || 1,
+                                pack_qty: item.pack_qty || parseFloat(String(item.unit_qty || 1)) || 1,
                                 unit_name: item.unit_name || 'Pack of',
+                                product_price_id: item.product_price_id,
                             };
 
                             return mappedItem;

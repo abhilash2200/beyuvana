@@ -32,6 +32,8 @@ export type ServerCartItem = {
     sku_number?: string;
     posted_on?: string;
     discount_amount?: number;
+    product_price_id?: string;
+    pack_qty?: number;
 };
 
 export type LocalCartItem = {
