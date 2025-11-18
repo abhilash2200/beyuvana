@@ -209,9 +209,9 @@ export default function Product1Layout({ product }: { product: Product }) {
                             <div className="flex flex-wrap justify-between gap-4">
                                 {stats.map((item, index) => (
                                     <div key={index} className="w-[45%] md:w-[47%]">
-                                        <div className="flex flex-col items-center gap-y-2 px-4 py-6 bg-[#EDFFF0] rounded-[20px]">
-                                            <h2 className="text-[#0C4B33] font-[Grafiels] md:text-[30px] text-[20px] leading-tight">{item.percent}</h2>
-                                            <p className="text-center text-[15px] line-clamp-2">
+                                        <div className="flex flex-col items-center gap-y-2 px-4 py-6 bg-[#EDFFF0] hover:bg-[#0C4B33] transition-colors group rounded-[20px]">
+                                            <h2 className="text-[#0C4B33] font-[Grafiels] md:text-[30px] text-[20px] leading-tight group-hover:text-[#EDFFF0] transition-colors">{item.percent}</h2>
+                                            <p className="text-center text-[15px] line-clamp-2 group-hover:text-[#EDFFF0] transition-colors">
                                                 {item.title}
                                                 <br /> {item.subtitle}
                                             </p>

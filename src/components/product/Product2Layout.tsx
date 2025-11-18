@@ -171,9 +171,9 @@ export default function Product2Layout({ product }: { product: Product }) {
               <div className="flex flex-wrap justify-between gap-4">
                 {stats.map((item, index) => (
                   <div key={index} className="w-[45%] md:w-[47%]">
-                    <div className="flex flex-col items-center gap-y-2 px-4 py-6 bg-[#FFE7E7] rounded-[20px]">
-                      <h2 className="text-[#B00404] font-[Grafiels] text-[30px] leading-tight">{item.percent}</h2>
-                      <p className="text-center">
+                    <div className="flex flex-col items-center gap-y-2 px-4 py-6 lg:py-8 hover:bg-[#B00404] transition-colors bg-[#FFE7E7] group rounded-[20px]">
+                      <h2 className="text-[#B00404] font-[Grafiels] text-[30px] leading-tight group-hover:text-[#FFE7E7] transition-colors">{item.percent}</h2>
+                      <p className="text-center group-hover:text-[#FFE7E7] transition-colors">
                         {item.title}
                         <br /> {item.subtitle}
                       </p>
