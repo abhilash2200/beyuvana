@@ -4,7 +4,6 @@ import { ENV_CONFIG } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 
 const API_BASE_URL = ENV_CONFIG.API_BASE_URL;
-const isDevelopment = ENV_CONFIG.NODE_ENV === "development";
 
 /**
  * Validates and sanitizes the endpoint to prevent SSRF attacks
@@ -57,6 +56,8 @@ function validateEndpoint(endpoint: string | null): string | null {
 
 async function handler(request: NextRequest) {
   try {
+    // This proxy just forwards requests to the backend
+
     const { searchParams } = new URL(request.url);
     const rawEndpoint = searchParams.get("endpoint");
 
@@ -103,7 +104,7 @@ async function handler(request: NextRequest) {
     try {
       const urlObj = new URL(url);
       const baseUrlObj = new URL(API_BASE_URL);
-      
+
       // Ensure the hostname matches the configured API base URL
       if (urlObj.hostname !== baseUrlObj.hostname && urlObj.hostname !== "") {
         logger.error("SSRF attempt detected - hostname mismatch", {
@@ -168,6 +169,27 @@ async function handler(request: NextRequest) {
       forwardHeaders.set("content-type", "application/json");
     }
 
+    // Add security headers
+    forwardHeaders.set("X-Content-Type-Options", "nosniff");
+    forwardHeaders.set("X-Frame-Options", "DENY");
+    forwardHeaders.set("X-XSS-Protection", "1; mode=block");
+    forwardHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
+
+    // Add CORS headers (restrictive by default)
+    const origin = request.headers.get("origin");
+    const allowedOrigins = [
+      ENV_CONFIG.SITE_URL,
+      "http://localhost:3000",
+      "https://beyuvana.com",
+    ];
+
+    if (origin && allowedOrigins.some(allowed => origin === allowed || origin.startsWith(allowed))) {
+      forwardHeaders.set("Access-Control-Allow-Origin", origin);
+      forwardHeaders.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+      forwardHeaders.set("Access-Control-Allow-Headers", "Content-Type, Authorization, session_key");
+      forwardHeaders.set("Access-Control-Max-Age", "86400");
+    }
+
     const setCookie = response.headers.getSetCookie?.() as string[] | undefined;
     if (Array.isArray(setCookie) && setCookie.length > 0) {
       for (const cookie of setCookie) {
@@ -194,10 +216,35 @@ async function handler(request: NextRequest) {
   }
 }
 
+// Handle OPTIONS requests for CORS preflight
+async function optionsHandler(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  const allowedOrigins = [
+    ENV_CONFIG.SITE_URL,
+    "http://localhost:3000",
+    "https://beyuvana.com",
+  ];
+
+  const headers = new Headers();
+
+  if (origin && allowedOrigins.some(allowed => origin === allowed || origin.startsWith(allowed))) {
+    headers.set("Access-Control-Allow-Origin", origin);
+    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, session_key");
+    headers.set("Access-Control-Max-Age", "86400");
+  }
+
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("X-Frame-Options", "DENY");
+
+  return new NextResponse(null, { status: 204, headers });
+}
+
 export {
   handler as GET,
   handler as POST,
   handler as PUT,
   handler as PATCH,
   handler as DELETE,
+  optionsHandler as OPTIONS,
 };

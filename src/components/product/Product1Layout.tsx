@@ -22,6 +22,7 @@ import ResDropdown from "./ResponsiveV/ResDropdown";
 import { backendProductIdMap } from "@/app/data/productConfigs";
 import InfluencerVideos from "./InfluencerVideos";
 import CompareProduct from "./CompareProduct";
+import { sanitizeHTML } from "@/lib/security";
 
 const data = [
     {
@@ -126,7 +127,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                                     <Image src={item.img} alt="certificate" width={136} height={136} className="md:w-auto md:h-auto w-[90px] h-[90px]" />
                                     <p
                                         className="text-[13px] whitespace-pre-line md:text-sm text-gray-500 max-w-[80%]"
-                                        dangerouslySetInnerHTML={{ __html: item.text }}
+                                        dangerouslySetInnerHTML={{ __html: sanitizeHTML(item.text) }}
                                     />
                                 </div>
                                 {(i + 1) % 4 !== 0 && i !== data.length - 1 && (

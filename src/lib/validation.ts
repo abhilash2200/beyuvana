@@ -93,6 +93,7 @@ export function validateLength(
  * Sanitizes text input to prevent XSS attacks
  * @param text - Text to sanitize
  * @returns Sanitized text
+ * @deprecated Use sanitizeTextInput from @/lib/security for better protection
  */
 export function sanitizeInput(text: string): string {
     return text.trim().replace(/[<>]/g, "");

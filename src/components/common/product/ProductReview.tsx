@@ -7,6 +7,7 @@ import { FaStar, FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthProvider";
 import { reviewApi } from "@/lib/api/reviews";
 import type { ProductReviewRequest, ProductReviewItem } from "@/lib/api/types";
+import { sanitizeTextInput } from "@/lib/security";
 
 interface ApiReviewItem extends ProductReviewItem {
     customer_name?: string;
@@ -161,11 +162,7 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
     }, [showForm, hasReviewed, existingReview]);
 
     const validateInput = (text: string): string => {
-        return text.trim()
-            .replace(/[<>]/g, '')
-            .replace(/javascript:/gi, '')
-            .replace(/on\w+=/gi, '')
-            .replace(/script/gi, '');
+        return sanitizeTextInput(text);
     };
 
     const handleSubmit = async () => {
@@ -349,7 +346,7 @@ const ProductReview = memo(({ productId, orderStatus, skipOrderCheck = false }: 
                                     </div>
                                     {renderStars(review.star_ratting)}
                                 </div>
-                                <p className="text-gray-700 capitalize text-sm">{review.review}</p>
+                                <p className="text-gray-700 capitalize text-sm">{sanitizeTextInput(review.review)}</p>
                                 {review.created_at && (
                                     <p className="text-xs text-gray-500 mt-1">
                                         {new Date(review.created_at).toLocaleDateString()}

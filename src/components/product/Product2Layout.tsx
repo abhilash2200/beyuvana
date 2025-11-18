@@ -22,6 +22,7 @@ import { productDesignSlugs } from "@/app/data/productConfigs";
 import { slugify } from "@/lib/utils";
 import { backendProductIdMap } from "@/app/data/productConfigs";
 import InfluencerVideos from "./InfluencerVideos";
+import { sanitizeHTML } from "@/lib/security";
 
 const data = [
   {
@@ -103,7 +104,7 @@ export default function Product2Layout({ product }: { product: Product }) {
                   <Image src={item.img} alt="certificate" width={136} height={136} />
                   <p
                     className="text-sm text-gray-900 text-left max-w-[80%]"
-                    dangerouslySetInnerHTML={{ __html: item.text }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(item.text) }}
                   />
                 </div>
                 {(i + 1) % 3 !== 0 && i !== data.length - 1 && (
