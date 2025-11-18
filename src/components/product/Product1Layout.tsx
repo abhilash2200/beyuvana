@@ -153,7 +153,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                                 </div>
                                 <div className="w-full md:w-[50%] hidden md:block">
                                     <div className="absolute bottom-0.5 right-0">
-                                        <Image src="/assets/img/product-details/action-green.png" alt="action" width={448} height={368} className="w-full h-auto" />
+                                        <Image src="/assets/img/product-details/action-green.png" alt="action" width={448} height={368} className="h-auto" />
                                     </div>
                                 </div>
                             </div>
