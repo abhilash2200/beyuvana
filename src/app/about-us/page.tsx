@@ -54,7 +54,7 @@ const page = () => {
         </div>
       </section>
 
-      <section className='md:py-10 py-6 pb-10'>
+      <section className='md:py-10 py-10 md:!pb-20'>
         <div className='container mx-auto px-4'>
           <HeaderText textalign="text-center" heading="What Makes Us Different?" textcolor="text-[#1A2819]" />
           <WhatMakes />
@@ -86,17 +86,17 @@ const page = () => {
 
       <section className='md:py-10 py-6'>
         <div className='container mx-auto px-4'>
-          <div className='flex flex-wrap justify-between items-center gap-y-4'>
-            <div className='w-full md:w-[48%]'>
-              <div className='flex flex-col'>
+          <div className='flex flex-wrap justify-evenly items-center gap-y-4'>
+            <div className='w-full md:w-[35%]'>
+              <div className='flex flex-col gap-y-3'>
                 <Image src="/assets/img/misison.png" width={463} height={406} alt="misison" className='mb-3' />
                 <h2 className='text-[#122014] font-[Grafiels] text-[25px]'>Mission</h2>
                 <p className='w-full md:max-w-[80%]'>To empower every household with clean, affordable, plant-based nutrition—Helping people glow naturally, live energetically, and age gracefully, without ever compromising on quality or values.</p>
               </div>
             </div>
             <div className='w-1 h-96 border-r-1 border-dashed md:block hidden'></div>
-            <div className='w-full md:w-[48%]'>
-              <div className='flex flex-col'>
+            <div className='w-full md:w-[35%]'>
+              <div className='flex flex-col gap-y-3'>
                 <Image src="/assets/img/vision.png" width={463} height={406} alt="vision" className='mb-3' />
                 <h2 className='text-[#122014] font-[Grafiels] text-[25px]'>Vision</h2>
                 <p className='w-full md:max-w-[80%]'>To empower every household with clean, affordable, plant-based nutrition—Helping people glow naturally, live energetically, and age gracefully, without ever compromising on quality or values.</p>
