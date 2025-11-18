@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
 import { useState, useEffect } from "react";
@@ -11,6 +12,8 @@ import type { Product, PriceTier } from "@/lib/api/types";
 import { products as staticProducts } from "@/app/data/products";
 import { toast } from "react-toastify";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { productDesignSlugs } from "@/app/data/productConfigs";
+import { slugify } from "@/lib/utils";
 
 const packs = [1, 2, 4] as const;
 
@@ -194,6 +197,12 @@ const ProductsList = React.memo(() => {
     openCart();
   };
 
+  const getProductDetailUrl = (product: DisplayProduct): string => {
+    const productIdNum = parseInt(product.product_id, 10);
+    const designSlug = productDesignSlugs[productIdNum];
+    return designSlug ? `/product/${designSlug}` : `/product/${slugify(product.name)}`;
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -219,21 +228,23 @@ const ProductsList = React.memo(() => {
                 }`}
             >
               <div className="w-full md:w-[28%]">
-                <div className="flex items-center justify-center">
+                <Link href={getProductDetailUrl(product)} className="flex items-center justify-center">
                   <Image
                     src={product.mainImage}
                     width={418}
                     height={481}
                     alt={product.name}
-                    className="w-[80%] md:w-full md:h-full object-cover"
+                    className="w-[80%] md:w-full md:h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
                   />
-                </div>
+                </Link>
               </div>
 
               <div className="w-full md:w-[68%] flex flex-col gap-4">
-                <h2 className="text-[#1A2819] font-[Grafiels] md:text-[30px] text-[20px] leading-tight mb-2">
-                  {product.name}
-                </h2>
+                <Link href={getProductDetailUrl(product)}>
+                  <h2 className="text-[#1A2819] font-[Grafiels] md:text-[30px] text-[20px] leading-tight mb-2 cursor-pointer hover:text-[#057A37] transition-colors">
+                    {product.name}
+                  </h2>
+                </Link>
 
                 {index === 0 && (
                   <div>
