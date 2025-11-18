@@ -59,8 +59,9 @@ const PlantCard = ({ title, description, img, bgColor, headingColor, paragraphCo
                         onClick={() => setExpanded(false)}
                         className="mt-4 w-12 h-12 flex items-center justify-center rounded-full transition cursor-pointer"
                         style={{ backgroundColor: headingColor }}
+                        aria-label={`Close ${title} details`}
                     >
-                        <X size={24} style={{ color: xColor }} />
+                        <X size={24} style={{ color: xColor }} aria-hidden="true" />
                     </button>
                 </div>
             ) : (
@@ -79,8 +80,9 @@ const PlantCard = ({ title, description, img, bgColor, headingColor, paragraphCo
                     <button
                         onClick={() => setExpanded(true)}
                         className="absolute z-30 bottom-[20px] left-[50%] translate-x-[-50%] w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-md hover:scale-110 transition cursor-pointer"
+                        aria-label={`Learn more about ${title}`}
                     >
-                        <Plus size={24} style={{ color: plusColor }} />
+                        <Plus size={24} style={{ color: plusColor }} aria-hidden="true" />
                     </button>
                 </div>
             )}

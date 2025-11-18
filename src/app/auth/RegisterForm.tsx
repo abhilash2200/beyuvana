@@ -92,32 +92,62 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
                 <h2 className="text-[30px] text-[#057A37] mb-1 font-[Grafiels]">Register Now!</h2>
                 <hr className="w-32 h-0.5 mb-4 bg-[#057A37]" />
 
-                <form onSubmit={handleSubmit} className="space-y-3">
-                    <Input
-                        placeholder="Name"
-                        value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        required
-                    />
-                    <Input
-                        type="email"
-                        placeholder="Email"
-                        value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        required
-                    />
-                    <Input
-                        placeholder="Phone"
-                        value={form.phone}
-                        onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, "");
-                            setForm({ ...form, phone: val });
-                        }}
-                        maxLength={10}
-                        required
-                    />
+                <form onSubmit={handleSubmit} className="space-y-3" noValidate>
+                    <div>
+                        <label htmlFor="register-name" className="sr-only">
+                            Full Name
+                        </label>
+                        <Input
+                            id="register-name"
+                            type="text"
+                            placeholder="Name"
+                            value={form.name}
+                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                            required
+                            aria-describedby={error ? "register-error" : undefined}
+                            aria-invalid={error ? "true" : "false"}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="register-email" className="sr-only">
+                            Email Address
+                        </label>
+                        <Input
+                            id="register-email"
+                            type="email"
+                            placeholder="Email"
+                            value={form.email}
+                            onChange={(e) => setForm({ ...form, email: e.target.value })}
+                            required
+                            aria-describedby={error ? "register-error" : undefined}
+                            aria-invalid={error ? "true" : "false"}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="register-phone" className="sr-only">
+                            Phone Number
+                        </label>
+                        <Input
+                            id="register-phone"
+                            type="tel"
+                            placeholder="Phone"
+                            value={form.phone}
+                            onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, "");
+                                setForm({ ...form, phone: val });
+                            }}
+                            maxLength={10}
+                            required
+                            aria-describedby={error ? "register-error" : undefined}
+                            aria-invalid={error ? "true" : "false"}
+                        />
+                    </div>
 
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    {error && (
+                        <p id="register-error" className="text-red-500 text-sm" role="alert">
+                            {error}
+                        </p>
+                    )}
 
                     <p className="text-[10px] text-gray-500">
                         By continuing, you agree to Beyuvana’s Terms of Use and Privacy Policy.

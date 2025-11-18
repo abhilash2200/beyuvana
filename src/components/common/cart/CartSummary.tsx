@@ -37,7 +37,8 @@ export function CartSummary({
                 <Button
                     className="text-[#122014] font-normal text-[15px] flex items-center gap-2"
                     onClick={onCheckout}
-                    disabled={isProcessingCheckout || loading}
+                    disabled={isProcessingCheckout || loading || !selectedPayment}
+                    aria-label={selectedPayment ? "Proceed to checkout" : "Please select a payment method first"}
                 >
                     {isProcessingCheckout && <LoadingSpinner size="sm" className="!flex-row" />}
                     {isProcessingCheckout ? "Processing..." : "Proceed to pay"}

@@ -8,6 +8,7 @@ import { CartProvider } from "@/context/CartProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { EnvValidator } from "@/components/common/EnvValidator";
 import ToastContainerWrapper from "@/components/common/ToastContainerWrapper";
+import { SkipLink } from "@/components/common/SkipLink";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin"],
@@ -75,6 +76,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${beVietnamPro.variable} antialiased`} suppressHydrationWarning={true}>
+        <SkipLink />
         <EnvValidator />
         <TooltipProvider>
           <ErrorBoundary>

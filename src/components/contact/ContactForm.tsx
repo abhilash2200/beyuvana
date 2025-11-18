@@ -95,8 +95,11 @@ const ContactForm: React.FC = () => {
             </div>
 
             <div className="md:px-8 px-4 md:py-6 py-4">
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                     <div className="flex flex-col gap-1">
+                        <label htmlFor="name" className="sr-only">
+                            Full Name
+                        </label>
                         <Input
                             id="name"
                             type="text"
@@ -105,13 +108,20 @@ const ContactForm: React.FC = () => {
                             value={formData.name}
                             onChange={handleChange}
                             required
+                            aria-describedby={errors.name ? "name-error" : undefined}
+                            aria-invalid={errors.name ? "true" : "false"}
                         />
                         {errors.name && (
-                            <span className="text-red-500 text-sm">{errors.name}</span>
+                            <span id="name-error" className="text-red-500 text-sm" role="alert">
+                                {errors.name}
+                            </span>
                         )}
                     </div>
 
                     <div className="flex flex-col gap-1">
+                        <label htmlFor="email" className="sr-only">
+                            Email Address
+                        </label>
                         <Input
                             id="email"
                             type="email"
@@ -120,13 +130,20 @@ const ContactForm: React.FC = () => {
                             value={formData.email}
                             onChange={handleChange}
                             required
+                            aria-describedby={errors.email ? "email-error" : undefined}
+                            aria-invalid={errors.email ? "true" : "false"}
                         />
                         {errors.email && (
-                            <span className="text-red-500 text-sm">{errors.email}</span>
+                            <span id="email-error" className="text-red-500 text-sm" role="alert">
+                                {errors.email}
+                            </span>
                         )}
                     </div>
 
                     <div className="flex flex-col gap-1">
+                        <label htmlFor="phone" className="sr-only">
+                            Phone Number
+                        </label>
                         <Input
                             id="phone"
                             type="tel"
@@ -135,13 +152,20 @@ const ContactForm: React.FC = () => {
                             value={formData.phone}
                             onChange={handleChange}
                             required
+                            aria-describedby={errors.phone ? "phone-error" : undefined}
+                            aria-invalid={errors.phone ? "true" : "false"}
                         />
                         {errors.phone && (
-                            <span className="text-red-500 text-sm">{errors.phone}</span>
+                            <span id="phone-error" className="text-red-500 text-sm" role="alert">
+                                {errors.phone}
+                            </span>
                         )}
                     </div>
 
                     <div className="flex flex-col gap-1">
+                        <label htmlFor="subject" className="sr-only">
+                            Subject
+                        </label>
                         <Input
                             id="subject"
                             type="text"
@@ -150,13 +174,20 @@ const ContactForm: React.FC = () => {
                             value={formData.subject}
                             onChange={handleChange}
                             required
+                            aria-describedby={errors.subject ? "subject-error" : undefined}
+                            aria-invalid={errors.subject ? "true" : "false"}
                         />
                         {errors.subject && (
-                            <span className="text-red-500 text-sm">{errors.subject}</span>
+                            <span id="subject-error" className="text-red-500 text-sm" role="alert">
+                                {errors.subject}
+                            </span>
                         )}
                     </div>
 
                     <div className="flex flex-col gap-1">
+                        <label htmlFor="message" className="sr-only">
+                            Your Message
+                        </label>
                         <Textarea
                             id="message"
                             className="border border-[#606060] bg-white placeholder:text-black placeholder:text-[13px] md:rounded-[5px] rounded-[3px]"
@@ -164,9 +195,13 @@ const ContactForm: React.FC = () => {
                             value={formData.message}
                             onChange={handleChange}
                             required
+                            aria-describedby={errors.message ? "message-error" : undefined}
+                            aria-invalid={errors.message ? "true" : "false"}
                         />
                         {errors.message && (
-                            <span className="text-red-500 text-sm">{errors.message}</span>
+                            <span id="message-error" className="text-red-500 text-sm" role="alert">
+                                {errors.message}
+                            </span>
                         )}
                     </div>
 

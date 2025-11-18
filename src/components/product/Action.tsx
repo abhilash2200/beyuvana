@@ -38,6 +38,8 @@ const Action = ({ product }: { product: Product }) => {
                 style={{
                   backgroundColor: isHovered ? item.hoverBgColor : item.bgColor,
                 }}
+                role="article"
+                aria-label={item.title}
               >
                 <h2
                   className="font-[Grafiels] text-[22px] leading-tight mb-3 transition-colors duration-300"

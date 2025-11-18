@@ -210,14 +210,31 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                 <h2 className="text-[30px] text-[#057A37] mb-1 font-[Grafiels]">Verify OTP</h2>
                 <hr className="w-32 h-0.5 mb-4 bg-[#057A37]" />
                 <p className="text-sm text-[#118200]">We&apos;ve sent a 6-digit OTP to {phone}</p>
-                <form onSubmit={handleSubmit} className="space-y-3 my-4">
-                    <Input
-                        placeholder="Enter 6-digit OTP"
-                        value={otp}
-                        onChange={e => setOtp(e.target.value)}
-                        maxLength={6}
-                        required
-                    />
+                <form onSubmit={handleSubmit} className="space-y-3 my-4" noValidate>
+                    <div>
+                        <label htmlFor="otp-input" className="sr-only">
+                            Enter 6-digit OTP
+                        </label>
+                        <Input
+                            id="otp-input"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]{6}"
+                            placeholder="Enter 6-digit OTP"
+                            value={otp}
+                            onChange={e => {
+                                const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+                                setOtp(value);
+                            }}
+                            maxLength={6}
+                            required
+                            aria-label="Enter 6-digit OTP"
+                            aria-describedby="otp-description"
+                        />
+                        <p id="otp-description" className="sr-only">
+                            Enter the 6-digit code sent to your phone number
+                        </p>
+                    </div>
                     <Button
                         type="submit"
                         disabled={loading}
@@ -239,6 +256,7 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                             onClick={handleResendOtp}
                             disabled={resending}
                             className="text-[12px] px-4 py-1 h-auto border-[#057A37] text-[#057A37] hover:underline flex items-center gap-1"
+                            aria-label="Resend OTP code"
                         >
                             {resending ? (
                                 <>
@@ -248,7 +266,7 @@ export default function OtpVerifyForm({ onVerified, phone, userData, isRegistrat
                             ) : (
                                 <>
                                     Resend OTP
-                                    <RiRefreshLine className="w-3 h-3" />
+                                    <RiRefreshLine className="w-3 h-3" aria-hidden="true" />
                                 </>
                             )}
                         </Button>

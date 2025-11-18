@@ -78,8 +78,9 @@ const Header = () => {
                                             <Button
                                                 className="text-white text-[14px] font-normal inline-flex gap-x-2 bg-[#1A2819] shadow-md shadow-gray-500/30 px-6 py-2 rounded-full hover:brightness-110 transition-all duration-200"
                                                 onClick={() => setIsLoginOpen(true)}
+                                                aria-label="Open login dialog"
                                             >
-                                                <RiLogoutCircleLine />
+                                                <RiLogoutCircleLine aria-hidden="true" />
                                                 Login
                                             </Button>
                                         </DialogTrigger>
@@ -124,8 +125,9 @@ const Header = () => {
                                             <Button
                                                 className="text-black inline-flex gap-x-2 text-[14px] font-normal shadow-md shadow-gray-500/30 px-6 py-2 rounded-full hover:brightness-110 transition-all duration-200"
                                                 onClick={() => setIsRegisterOpen(true)}
+                                                aria-label="Open registration dialog"
                                             >
-                                                <TbSettings2 />
+                                                <TbSettings2 aria-hidden="true" />
                                                 Register
                                             </Button>
                                         </DialogTrigger>
@@ -171,8 +173,11 @@ const Header = () => {
                             ) : (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button className="inline-flex gap-x-2 rounded-full shadow px-4 font-normal py-2 capitalize bg-[#1A2819] text-white text-[12px]">
-                                            <TbUserSquareRounded className="w-5 h-5" />
+                                        <Button 
+                                            className="inline-flex gap-x-2 rounded-full shadow px-4 font-normal py-2 capitalize bg-[#1A2819] text-white text-[12px]"
+                                            aria-label={`User menu for ${user.name || "User"}`}
+                                        >
+                                            <TbUserSquareRounded className="w-5 h-5" aria-hidden="true" />
                                             {user.name || "User"}
                                         </Button>
                                     </DropdownMenuTrigger>

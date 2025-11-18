@@ -31,8 +31,9 @@ export function CartHeader({ loading, onRefresh, cartItemsCount }: CartHeaderPro
                                     disabled={loading}
                                     variant="default"
                                     className="flex items-center gap-2 px-3 py-1 text-sm"
+                                    aria-label="Refresh cart"
                                 >
-                                    <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+                                    <RefreshCw size={16} className={loading ? "animate-spin" : ""} aria-hidden="true" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent

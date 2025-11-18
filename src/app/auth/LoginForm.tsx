@@ -88,19 +88,31 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
                 <h2 className="text-[30px] text-[#057A37] mb-1 font-[Grafiels]">Login Now!</h2>
                 <hr className="w-32 h-0.5 mb-4 bg-[#057A37]" />
 
-                <form onSubmit={handleSubmit} className="space-y-3">
-                    <Input
-                        placeholder="Enter your phone number"
-                        value={form.phone}
-                        onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, "");
-                            setForm({ ...form, phone: val });
-                        }}
-                        maxLength={10}
-                        required
-                    />
-
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                <form onSubmit={handleSubmit} className="space-y-3" noValidate>
+                    <div>
+                        <label htmlFor="login-phone" className="sr-only">
+                            Phone Number
+                        </label>
+                        <Input
+                            id="login-phone"
+                            type="tel"
+                            placeholder="Enter your phone number"
+                            value={form.phone}
+                            onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, "");
+                                setForm({ ...form, phone: val });
+                            }}
+                            maxLength={10}
+                            required
+                            aria-describedby={error ? "login-phone-error" : undefined}
+                            aria-invalid={error ? "true" : "false"}
+                        />
+                        {error && (
+                            <p id="login-phone-error" className="text-red-500 text-sm" role="alert">
+                                {error}
+                            </p>
+                        )}
+                    </div>
 
                     <p className="text-[10px] text-gray-500">
                         By continuing, you agree to Beyuvana’s Terms of Use and Privacy Policy.

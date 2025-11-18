@@ -65,34 +65,39 @@ const Footer: React.FC = () => {
                         </p>
                     </div>
 
-                    <div className="md:pt-10 pt-0 md:pl-10 flex flex-col items-start justify-start text-left">
+                    <nav className="md:pt-10 pt-0 md:pl-10 flex flex-col items-start justify-start text-left" aria-label="Quick links">
                         <h2 className="text-[#DFC362] mb-6 font-[Grafiels] text-[25px]">Quick Links</h2>
                         <ul className="space-y-2 text-white/70 text-sm">
                             {quickLinks.map((link) => (
                                 <li key={link.name} className="flex items-center gap-2">
-                                    <span className="w-2 h-2 bg-[#DFC362] rounded-full inline-block"></span>
-                                    <a href={link.href} className="hover:text-[#DFC362] transition-colors">
+                                    <span className="w-2 h-2 bg-[#DFC362] rounded-full inline-block" aria-hidden="true"></span>
+                                    <a 
+                                        href={link.href} 
+                                        className="hover:text-[#DFC362] transition-colors focus:outline-none focus:text-[#DFC362] focus:underline"
+                                    >
                                         {link.name}
                                     </a>
                                 </li>
                             ))}
                         </ul>
+                    </nav>
 
-                    </div>
-
-                    <div className="md:pt-10 pt-0 flex flex-col items-start justify-start text-left">
+                    <nav className="md:pt-10 pt-0 flex flex-col items-start justify-start text-left" aria-label="Legal links">
                         <h2 className="text-[#DFC362] mb-6 font-[Grafiels] text-[25px]">Legal Links</h2>
                         <ul className="space-y-2 text-white/70 text-sm">
                             {legalLinks.map((link) => (
                                 <li key={link.name} className="flex items-center gap-2">
-                                    <span className="w-2 h-2 bg-[#DFC362] rounded-full inline-block"></span>
-                                    <a href={link.href} className="hover:text-[#DFC362] transition-colors">
+                                    <span className="w-2 h-2 bg-[#DFC362] rounded-full inline-block" aria-hidden="true"></span>
+                                    <a 
+                                        href={link.href} 
+                                        className="hover:text-[#DFC362] transition-colors focus:outline-none focus:text-[#DFC362] focus:underline"
+                                    >
                                         {link.name}
                                     </a>
                                 </li>
                             ))}
                         </ul>
-                    </div>
+                    </nav>
 
                     <div className="md:pt-10 pt-0 flex flex-col items-start justify-start text-left">
                         <h2 className="text-[#DFC362] mb-6 font-[Grafiels] text-[25px]">Contact</h2>
@@ -105,18 +110,23 @@ const Footer: React.FC = () => {
                             ))}
                         </ul>
                         <h2 className="text-[#DFC362] mb-2 font-[Grafiels] text-[1.2rem]">Social Links</h2>
-                        <div className="flex gap-4 text-white">
-                            {socialLinks.map((social) => (
-                                <a
-                                    key={social.label}
-                                    href={social.href}
-                                    aria-label={social.label}
-                                    className="hover:text-[#DFC362] transition-colors text-xl"
-                                >
-                                    {social.icon}
-                                </a>
-                            ))}
-                        </div>
+                        <nav aria-label="Social media links">
+                            <div className="flex gap-4 text-white">
+                                {socialLinks.map((social) => (
+                                    <a
+                                        key={social.label}
+                                        href={social.href}
+                                        aria-label={`Visit our ${social.label} page`}
+                                        className="hover:text-[#DFC362] transition-colors text-xl focus:outline-none focus:ring-2 focus:ring-[#DFC362] focus:ring-offset-2 rounded"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <span className="sr-only">{social.label}</span>
+                                        <span aria-hidden="true">{social.icon}</span>
+                                    </a>
+                                ))}
+                            </div>
+                        </nav>
                     </div>
 
                 </div>

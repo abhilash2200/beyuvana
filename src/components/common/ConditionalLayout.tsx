@@ -27,7 +27,9 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
     <>
       <Header />
       <Offers />
-      {children}
+      <main id="main-content" role="main">
+        {children}
+      </main>
       <Footer />
     </>
   );
