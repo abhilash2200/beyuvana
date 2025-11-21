@@ -24,45 +24,6 @@ export const metadata: Metadata = {
   },
   description:
     "BEYUVANA™ crafts plant-powered, science-backed nutrition for skin, gut, and whole-body wellness. 100% vegetarian, sugar-free, and consciously formulated for visible glow.",
-  keywords: [
-    "plant collagen",
-    "vegetarian collagen",
-    "plant-based nutrition",
-    "skin wellness",
-    "collagen builder",
-    "natural supplements",
-    "vegan collagen",
-    "skin health",
-    "glow nutrition",
-    "plant-powered wellness",
-    "BEYUVANA",
-    "ayurvedic supplements",
-    "beauty supplements",
-    "gut health",
-  ],
-  openGraph: {
-    title: "BEYUVANA™ | Plant-Powered Collagen Builder & Glow Nutrition",
-    description:
-      "Plant-powered, science-backed wellness for youthful, radiant skin. 100% vegetarian, sugar-free formulations.",
-    url: "/",
-    siteName: "BEYUVANA™",
-    images: [
-      {
-        url: "/assets/img/logo.png",
-        width: 512,
-        height: 512,
-        alt: "BEYUVANA logo",
-      },
-    ],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "BEYUVANA™ | Plant-Powered Collagen Builder & Glow Nutrition",
-    description:
-      "Plant-powered, science-backed wellness for youthful, radiant skin. 100% vegetarian, sugar-free formulations.",
-    images: ["/assets/img/logo.png"],
-  },
   robots: { index: true, follow: true },
   alternates: { canonical: "/" },
   icons: { icon: "/favicon.ico" },
