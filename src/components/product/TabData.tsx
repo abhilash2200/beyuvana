@@ -3,19 +3,22 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Image from "next/image";
 import { CiCircleCheck } from "react-icons/ci";
-import { fallbackProducts, TabItem } from "@/app/data/fallbackProducts";
+import { fallbackProducts, TabItem, Product } from "@/app/data/fallbackProducts";
 import { useState } from "react";
 
 interface TabDataProps {
-    productId: number;
+    productId?: number;
+    product?: Product; // Accept product object directly
 }
 
-const TabData = ({ productId }: TabDataProps) => {
+const TabData = ({ productId, product: productProp }: TabDataProps) => {
     const [active, setActive] = useState<string>("");
-    const product = fallbackProducts.find((p) => p.id === productId);
+
+    // Use product from props if provided, otherwise find by ID
+    const product = productProp || (productId ? fallbackProducts.find((p) => p.id === productId) : null);
 
     if (!product || !product.tabItems || product.tabItems.length === 0) {
-        return <p className="text-red-500">Product not found</p>;
+        return null; // Return null instead of error message for cleaner UI
     }
 
     const derivedBg = product.actionItems?.[0]?.bgColor || "#F8FFF9";

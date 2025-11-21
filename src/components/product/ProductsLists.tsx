@@ -131,7 +131,7 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
                     <span className="text-[#057A37] font-semibold">{product.discount}</span>
                   </p>
 
-                  {(() => {
+                  {/* {(() => {
                     const packPrices = Array.isArray(product.prices)
                       ? product.prices.filter(tier => tier.unit_name === "Pack of")
                       : [];
@@ -156,7 +156,7 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
                         </div>
                       </div>
                     ) : null;
-                  })()}
+                  })()} */}
 
                   <div className="flex gap-4">
                     <Link href={getProductDetailUrl(product)}>

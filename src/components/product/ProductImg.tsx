@@ -7,14 +7,20 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import { Lens } from "@/components/ui/lens";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { fallbackProducts } from "@/app/data/fallbackProducts";
 
 interface ProductImgProps {
-  images: string[];
+  images?: string[]; // Optional, will be ignored - using fallback data instead
+  designType?: "GREEN" | "PINK"; // Design type to find correct product
 }
 
-const ProductImg = React.memo(function ProductImg({ images }: ProductImgProps) {
+const ProductImg = React.memo(function ProductImg({ designType }: ProductImgProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const splideRef = useRef<{ splide: { go: (direction: string | number) => void; index: number } } | null>(null);
+
+  // Get images ONLY from fallbackProducts.ts based on design type
+  const localProduct = fallbackProducts.find((p) => p.design_type === designType);
+  const images = localProduct?.images || [];
 
   return (
     <div className="w-full mx-auto flex flex-col items-center space-y-6">
@@ -72,9 +78,8 @@ const ProductImg = React.memo(function ProductImg({ images }: ProductImgProps) {
                   setSelectedIndex(idx);
                   splideRef.current?.splide?.go(idx);
                 }}
-                className={`p-2 rounded-xl border transition ${
-                  selectedIndex === idx ? "border-green-500 shadow-md" : "border-transparent"
-                }`}
+                className={`p-2 rounded-xl border transition ${selectedIndex === idx ? "border-green-500 shadow-md" : "border-transparent"
+                  }`}
               >
                 <Image
                   src={img}

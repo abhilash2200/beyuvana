@@ -94,10 +94,10 @@ export default function Product1Layout({ product }: { product: Product }) {
                 <div className="flex flex-wrap justify-between gap-y-4">
                     <div className="w-full md:w-[30%]">
                         <div className="hidden md:block">
-                            <ProductImg images={product.images} />
+                            <ProductImg designType={product.design_type} />
                         </div>
                         <div className="block md:hidden">
-                            <ResProductImg images={product.images} />
+                            <ResProductImg designType={product.design_type} />
                         </div>
                     </div>
                     <div className="w-full md:w-[30%]">
@@ -255,10 +255,10 @@ export default function Product1Layout({ product }: { product: Product }) {
                     <HeaderText textalign="md:text-center text-left" heading="The Hidden Reasons Your Skin Loses Its Radiance So quickly" textcolor="text-[#1A2819]" />
                     <p className="md:text-center text-left mb-4 max-w-[90%] leading-tight">Stress, pollution, UV exposure, poor sleep, and nutrient deficiencies silently disrupt your skin’s balance — breaking down collagen, dulling glow, and accelerating aging faster than you realize.</p>
                     <div className="hidden md:block">
-                        <TabData productId={product.id} />
+                        <TabData product={product} />
                     </div>
                     <div className="block md:hidden">
-                        <ResDropdown productId={product.id} />
+                        <ResDropdown product={product} />
                     </div>
                 </div>
             </div>
