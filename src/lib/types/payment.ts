@@ -7,13 +7,9 @@
  * Base payment API response structure
  */
 export interface PaymentApiResponse {
-    /** Payment status (true = success, false = failed) */
     status?: boolean;
-    /** Response message */
     message?: string;
-    /** HTTP status code */
     code?: number;
-    /** Response data */
     data?: PaymentResponseData | null;
 }
 
@@ -21,16 +17,12 @@ export interface PaymentApiResponse {
  * Payment response data structure
  */
 export interface PaymentResponseData {
-    /** Redirect URL for payment gateway */
     redirect_url?: string;
     redirectUrl?: string;
     redirect_path?: string;
     redirectPath?: string;
-    /** Order details */
     order_details?: OrderDetails;
-    /** Payment response array */
     payment_response?: PaymentResponseItem | PaymentResponseItem[];
-    /** Nested data structure */
     data?: {
         redirect_url?: string;
         redirectUrl?: string;
@@ -43,11 +35,8 @@ export interface PaymentResponseData {
  * Order details from payment response
  */
 export interface OrderDetails {
-    /** Order ID */
     id?: string | number;
-    /** Payment redirect URL */
     payment_redirect_url?: string;
-    /** Order status */
     status?: string;
 }
 
@@ -55,11 +44,8 @@ export interface OrderDetails {
  * Payment response item
  */
 export interface PaymentResponseItem {
-    /** Order ID */
     orderId?: string;
-    /** Redirect URL */
     redirectUrl?: string;
-    /** Payment status */
     status?: string;
 }
 

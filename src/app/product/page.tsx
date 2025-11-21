@@ -1,7 +1,6 @@
 import ProductsLists from '@/components/product/ProductsLists'
 import { productsApi, convertToLegacyProduct } from "@/lib/api/products";
 import React from 'react'
-import { logger } from "@/lib/logger";
 import { handleError } from "@/lib/error-handling";
 
 async function fetchProducts() {
