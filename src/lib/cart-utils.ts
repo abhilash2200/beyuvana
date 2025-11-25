@@ -80,8 +80,15 @@ export function transformCartItemsForCheckout(cartItems: LocalCartItem[]): Check
 
 /**
  * Get payment redirect URL
+ * Uses current domain when available (client-side), otherwise falls back to environment variable or localhost
  */
 export function getPaymentRedirectUrl(): string {
+    // In browser/client-side: use current origin
+    if (typeof window !== "undefined" && window.location) {
+        return `${window.location.origin}/payment-initiate`;
+    }
+
+    // Server-side: use environment variable or fallback
     return `${ENV_CONFIG.SITE_URL}/payment-initiate`;
 }
 
