@@ -179,8 +179,6 @@ async function handler(request: NextRequest) {
     const origin = request.headers.get("origin");
     const allowedOrigins = [
       ENV_CONFIG.SITE_URL,
-      "http://localhost:3000",
-      "https://beyuvana.com",
     ];
 
     if (origin && allowedOrigins.some(allowed => origin === allowed || origin.startsWith(allowed))) {
@@ -221,8 +219,6 @@ async function optionsHandler(request: NextRequest) {
   const origin = request.headers.get("origin");
   const allowedOrigins = [
     ENV_CONFIG.SITE_URL,
-    "http://localhost:3000",
-    "https://beyuvana.com",
   ];
 
   const headers = new Headers();

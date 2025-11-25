@@ -6,6 +6,9 @@ import { ShoppingBag, ShoppingCart } from "lucide-react"
 import { useCart } from "@/context/CartProvider"
 import { toast } from "react-toastify"
 import ProductRating from "./ProductRating"
+import { useState, useEffect } from "react"
+import { productsApi } from "@/lib/api/products"
+import type { Product, PriceTier } from "@/lib/api/types"
 
 interface ComboProductData {
   id: string;
@@ -16,24 +19,85 @@ interface ComboProductData {
   product_id: string;
   product_price_id: string;
   short_description: string;
+  product_description: string;
 }
 
 const ComboProduct = () => {
   const { addToCart, loading, openCart } = useCart();
+  const [comboProducts, setComboProducts] = useState<ComboProductData[]>([]);
 
-  // Define the combo product data
-  const product: ComboProductData = {
-    id: "combo-product",
-    name: "BEYUVANA™ Glow Essence + 18 Synergistic Ingredients",
-    price: 2000,
-    mrp_price: 2000,
-    image: "/assets/img/collagen-green-product.png",
-    product_id: "combo-product",
-    product_price_id: "combo-product-price",
-    short_description: "BEYUVANA™ Glow Essence is a daily skin supplement that helps improve skin glow, hydration, and overall skin health. It contains 18 synergistic ingredients that work together to improve skin health and appearance.",
-  };
+  useEffect(() => {
+    const fetchComboProducts = async () => {
+      try {
+        const response = await productsApi.getList({
+          filter: { product_type: ["combo"] },
+          sort: { id: "DESC" },
+          page: 1,
+          limit: 100,
+        });
 
-  const handleAddToCart = async () => {
+        const productsList = response.data && Array.isArray(response.data) ? response.data : [];
+
+        if (productsList.length > 0) {
+          // Fetch details for each combo product to get pricing information
+          const detailedProducts = await Promise.all(
+            productsList.map(async (apiProduct: Product) => {
+              try {
+                const detailsResponse = await productsApi.getDetails(apiProduct.id);
+                if (!detailsResponse.data) return null;
+
+                const productDetails = detailsResponse.data;
+                const tiers: PriceTier[] = Array.isArray(productDetails.prices) ? productDetails.prices : [];
+
+                // Get the first available tier (usually pack of 1)
+                const firstTier = tiers.length > 0 ? tiers[0] : null;
+
+                const mainImage = Array.isArray(productDetails.image) && productDetails.image.length > 0
+                  ? productDetails.image[0]
+                  : apiProduct.image_single || apiProduct.image || "/assets/img/collagen-green-product.png";
+
+                const productData: ComboProductData = {
+                  id: productDetails.id,
+                  name: productDetails.product_name,
+                  price: firstTier ? Math.round(parseFloat(firstTier.final_price) || 0) : Math.round(parseFloat(productDetails.discount_price || "0") || 0),
+                  mrp_price: firstTier ? Math.round(parseFloat(firstTier.mrp) || 0) : Math.round(parseFloat(productDetails.product_price || "0") || 0),
+                  image: mainImage,
+                  product_id: productDetails.id,
+                  product_price_id: firstTier ? firstTier.product_price_id : "",
+                  short_description: productDetails.short_description || "",
+                  product_description: productDetails.product_description || "",
+                };
+
+                return productData;
+              } catch (error) {
+                if (process.env.NODE_ENV === "development") {
+                  console.error(`Failed to fetch details for combo product ${apiProduct.id}:`, error);
+                }
+                return null;
+              }
+            })
+          );
+
+          const validProducts = detailedProducts.filter((product): product is ComboProductData =>
+            product !== null && product.product_price_id !== undefined && product.product_price_id !== ""
+          );
+          setComboProducts(validProducts);
+        } else {
+          setComboProducts([]);
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to fetch combo products:", error);
+        }
+        toast.error("Failed to load combo products. Please try again later.");
+        setComboProducts([]);
+      }
+    };
+
+    fetchComboProducts();
+  }, []);
+
+  const handleAddToCart = async (product: ComboProductData) => {
     if (!product.product_price_id) {
       toast.error("Unable to add to cart: Missing price information. Please try again.");
       return;
@@ -55,58 +119,92 @@ const ComboProduct = () => {
     await addToCart(cartItem);
   };
 
-  const handleShopNow = async () => {
-    await handleAddToCart();
+  const handleShopNow = async (product: ComboProductData) => {
+    await handleAddToCart(product);
     openCart();
   };
 
+  const formatINR = (value: number): string => {
+    const rounded = Math.round(value || 0);
+    return new Intl.NumberFormat("en-IN").format(rounded);
+  };
+
+  if (comboProducts.length === 0) {
+    return null; // Don't render anything if there are no combo products
+  }
+
   return (
     <>
-      <div className="max-w-[1400px] mx-auto px-4 py-10">
-        <div className="flex flex-wrap justify-between gap-y-4">
-          <div className="w-full md:w-[30%]">
-            <Image src={product.image} width={418} height={382} alt={product.name} className="object-contain" />
+      {comboProducts.map((product, index) => (
+        <section key={product.id} className={`py-10 ${index % 2 === 1 ? "bg-[#F8F8F8]" : ""}`}>
+          <div className="max-w-[1400px] mx-auto px-4">
+            <div className="flex flex-wrap justify-between items-center">
+              {/* Image Section */}
+              <div className="w-full md:w-[35%]">
+                <div className="p-6 flex items-center justify-center rounded-[10px] bg-[#FAFAFA]">
+                  <Image
+                    src={product.image || "/assets/img/collagen-green-product.png"}
+                    width={332}
+                    height={382}
+                    alt={`${product.name} product image`}
+                    className="object-contain"
+                    loading={index > 1 ? "lazy" : "eager"}
+                    priority={index <= 1}
+                  />
+                </div>
+              </div>
+
+              {/* Text Section */}
+              <div className="w-full md:w-[65%]">
+                <div className="flex flex-col">
+                  <h2 className="text-[#1A2819] font-[Grafiels] text-[25px] leading-tight mb-4">{product.name}</h2>
+                  <div>
+                    <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">{product.short_description}</p>
+                  </div>
+                  <div className="flex gap-x-4 items-center mb-3">
+                    <ProductRating
+                      productId={product.id}
+                      className="text-[12px]"
+                    />
+                  </div>
+                  {product.product_description && (
+                    <p className="text-[15px] mb-3 font-light">{product.product_description}</p>
+                  )}
+                  <h3 className="text-[#1A2819] text-[25px] mb-3 font-semibold leading-tight">₹{formatINR(product.price)}</h3>
+                  <p className="text-[15px] mb-4">
+                    <span className="line-through text-gray-500 text-[12px]">₹{formatINR(product.mrp_price)}</span>
+                    {product.mrp_price > product.price && (
+                      <span className="text-[#057A37] font-semibold ml-2">
+                        {Math.round(((product.mrp_price - product.price) / product.mrp_price) * 100)}% Off
+                      </span>
+                    )}
+                  </p>
+
+                  <div className="flex gap-2 mt-2 justify-center md:justify-start">
+                    <Button
+                      onClick={() => handleShopNow(product)}
+                      disabled={loading}
+                      className={`flex items-center gap-2 rounded-[10px] w-40 py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      <ShoppingBag size={16} />
+                      {loading ? "Processing..." : "Buy Now"}
+                    </Button>
+
+                    <Button
+                      onClick={() => handleAddToCart(product)}
+                      disabled={loading}
+                      className={`flex items-center gap-2 rounded-[10px] w-40 py-2 px-4 font-semibold transition-colors bg-white text-black border border-black hover:!border-black disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      <ShoppingCart size={16} />
+                      {loading ? "Adding..." : "Add to Cart"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="w-full md:w-[68%]">
-            <h2 className="text-[#1A2819] hover:text-[#057A37] hover:cursor-pointer font-[Grafiels] text-[25px] leading-tight mb-4">{product.name}</h2>
-            <div className="flex gap-x-4 items-center mb-3">
-              <ProductRating
-                productId={product.id}
-                className="text-[12px]"
-              />
-            </div>
-            <div className="border border-black inline-flex rounded-[5px] py-2 px-2 mb-4">
-              <p className="text-[15px] text-[#1A2819] leading-relaxed">Aging is Natural — Radiance is a Choice</p>
-            </div>
-
-            <p className="text-[15px] text-[#1A2819] leading-relaxed mb-4">{product.short_description}</p>
-
-            <div className="my-4">
-              <p className="text-[#1A2819] text-[25px] mb-3 font-semibold leading-tight">₹{product.price.toLocaleString()}</p>
-            </div>
-
-            <div className="flex gap-2 mt-2 justify-center md:justify-start">
-              <Button
-                onClick={handleShopNow}
-                disabled={loading}
-                className={`flex items-center gap-2 rounded-[10px] w-40 py-2 px-4 font-semibold transition-colors bg-[#057A37] text-white border-[#057A37] ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                <ShoppingBag size={16} />
-                {loading ? "Processing..." : "Buy Now"}
-              </Button>
-
-              <Button
-                onClick={handleAddToCart}
-                disabled={loading}
-                className={`flex items-center gap-2 rounded-[10px] w-40 py-2 px-4 font-semibold transition-colors bg-white text-black border border-black hover:!border-black disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                <ShoppingCart size={16} />
-                {loading ? "Adding..." : "Add to Cart"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+        </section>
+      ))}
     </>
   )
 }

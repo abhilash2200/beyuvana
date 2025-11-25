@@ -145,38 +145,77 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
         const load = async () => {
             try {
                 const numericId = designSlugToProductId[productId];
+                
+                // Fetch products filtered by design_type and exclude combo products
+                const designTypeFilter = designType 
+                    ? designType === "green" ? ["green", "GREEN"] : ["pink", "PINK"]
+                    : undefined;
+                
                 const { data } = await productsApi.getList({
-                    filter: { categorykey: ["hair-care"] },
-                    sort: { product_name: "ASC" },
+                    filter: designTypeFilter ? { 
+                        design_type: designTypeFilter,
+                    } : {},
+                    sort: { id: "DESC" },
                     page: 1,
                     limit: 100,
                 });
                 if (!Array.isArray(data)) return;
 
+                // Filter out combo products
+                const filteredData = data.filter((p: ApiProduct) => {
+                    const productType = p.product_type;
+                    const isCombo = productType && typeof productType === "string" && productType.toLowerCase() === "combo";
+                    return !isCombo;
+                });
+
                 let apiProduct: ApiProduct | undefined;
+                
+                // First, try to find by numeric ID
                 if (numericId) {
-                    apiProduct = data.find((p) => String(p.id) === String(numericId));
+                    apiProduct = filteredData.find((p) => String(p.id) === String(numericId));
                 }
+                
+                // If not found and designType is provided, find by design_type
+                // For design type products, there should be only ONE product per design type
                 if (!apiProduct && designType) {
                     const desired = designType.toLowerCase();
-                    apiProduct = data.find((p) => {
+                    apiProduct = filteredData.find((p) => {
                         const dt = (p.design_type || "").toString().toLowerCase();
                         return dt === desired;
                     });
                 }
+                
+                // Fallback: try to find by product name
                 if (!apiProduct) {
-                    apiProduct = data.find((p) =>
+                    apiProduct = filteredData.find((p) =>
                         String(p.product_name || "").toLowerCase().includes(productId.replace(/-/g, " "))
                     );
                 }
+                
+                // Last resort: try keyword matching
                 if (!apiProduct && designType) {
                     const kw = designType === "pink" ? "glow" : "collagen";
-                    apiProduct = data.find((p) => String(p.product_name || "").toLowerCase().includes(kw));
+                    apiProduct = filteredData.find((p) => String(p.product_name || "").toLowerCase().includes(kw));
                 }
+                
                 if (!apiProduct) return;
 
+                // Fetch product details to get accurate pricing information
+                let productDetails;
+                try {
+                    const detailsResponse = await productsApi.getDetails(apiProduct.id);
+                    productDetails = detailsResponse.data;
+                } catch (error) {
+                    console.error("Failed to fetch product details:", error);
+                    // Fallback to using prices from list response
+                    productDetails = null;
+                }
+
+                // Use prices from details if available, otherwise use from list
+                const prices = productDetails?.prices || apiProduct.prices;
+                
                 const image = apiProduct.image_single || apiProduct.image || (Array.isArray(apiProduct.image_all) && apiProduct.image_all[0]) || "/assets/img/green-product.png";
-                const packs = buildPacksFromPrices(apiProduct.prices, designType);
+                const packs = buildPacksFromPrices(prices, designType);
 
 
                 const hydrated: Product = {

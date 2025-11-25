@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "beyuvana.com",
+        hostname: process.env.NEXT_PUBLIC_IMAGE_HOSTNAME || "beyuvana.com",
         port: "",
         pathname: "/**",
       },
@@ -115,10 +115,13 @@ const nextConfig: NextConfig = {
   },
 
   async rewrites() {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api";
+    // Remove trailing slash if present to avoid double slashes
+    const baseUrl = apiBaseUrl.replace(/\/$/, "");
     return [
       {
         source: "/api/:path*",
-        destination: "https://beyuvana.com/api/:path*",
+        destination: `${baseUrl}/:path*`,
       },
     ];
   },

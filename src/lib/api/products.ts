@@ -123,6 +123,7 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
     image_single: apiProduct.image_single,
     image_all: apiProduct.image_all,
     prices: apiProduct.prices,
+    product_type: apiProduct.product_type,
   };
 };
 

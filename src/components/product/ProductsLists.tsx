@@ -32,6 +32,7 @@ export interface Product {
   image_single?: string;
   image_all?: string[];
   prices?: PriceTier[];
+  product_type?: string;
 }
 
 interface ProductsListsProps {
@@ -49,9 +50,39 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
     return designSlug ? `/product/${designSlug}` : `/product/${slugify(product.name)}`;
   };
 
+  // Filter out combo products (comprehensive check)
+  const filteredProducts = products.filter((product) => {
+    // Check multiple possible indicators for combo products
+    const productType = product.product_type;
+    const category = product.category || product.categorykey;
+    const productName = product.name || "";
+
+    // Check if it's a combo product by:
+    // 1. product_type field equals "combo"
+    // 2. category contains "combo"
+    // 3. product name contains "combo" (case-insensitive)
+    const isComboByType = productType && typeof productType === "string" && productType.toLowerCase() === "combo";
+    const isComboByCategory = category && typeof category === "string" && category.toLowerCase().includes("combo");
+    const isComboByName = productName.toLowerCase().includes("combo");
+
+    const isCombo = isComboByType || isComboByCategory || isComboByName;
+
+    // Debug logging in development
+    if (process.env.NODE_ENV === "development" && isCombo) {
+      console.log("ProductsLists: Filtering out combo product:", {
+        id: product.id,
+        name: product.name,
+        product_type: productType,
+        category: category,
+      });
+    }
+
+    return !isCombo;
+  });
+
   return (
     <>
-      {products.map((product, index) => (
+      {filteredProducts.map((product, index) => (
         <section key={product.id} className={`py-10 ${index % 2 === 1 ? "bg-[#F8F8F8]" : ""}`}>
           <div className="max-w-[1400px] mx-auto px-4">
             <div className="flex flex-wrap justify-between items-center">

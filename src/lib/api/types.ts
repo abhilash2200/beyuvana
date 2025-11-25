@@ -43,6 +43,7 @@ export interface Product {
   image_single?: string;
   image_all?: string[];
   design_type?: "green" | "pink" | "GREEN" | "PINK";
+  product_type?: string;
 }
 
 export interface ProductDetailsResponse {
@@ -89,6 +90,7 @@ export interface LegacyProduct {
   image_single?: string;
   image_all?: string[];
   prices?: PriceTier[];
+  product_type?: string;
 }
 
 export interface ProductsListRequest {

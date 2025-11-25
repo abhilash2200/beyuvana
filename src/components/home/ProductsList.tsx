@@ -61,12 +61,38 @@ const ProductsList = React.memo(() => {
         const pinkList = pinkResponse.data && Array.isArray(pinkResponse.data) ? pinkResponse.data : [];
         const combinedList = [...greenList, ...pinkList];
 
-        if (combinedList.length > 0) {
+        // Filter: Keep products with valid design_type (GREEN/PINK), exclude combo products that don't have design_type
+        // If a product has both design_type AND product_type=combo, we still show it (it's a design_type product)
+        const filteredList = combinedList.filter((product: Product) => {
+          const productType = product.product_type;
+          const designType = product.design_type;
+          const isCombo = productType && typeof productType === "string" && productType.toLowerCase() === "combo";
+
+          // Check if product has a valid design_type (GREEN or PINK)
+          const hasValidDesignType = designType && (
+            designType.toString().toUpperCase() === "GREEN" ||
+            designType.toString().toUpperCase() === "PINK"
+          );
+
+          // Include if:
+          // 1. Has valid design_type (GREEN/PINK) - these should always show
+          // 2. OR is not a combo product
+          const shouldInclude = hasValidDesignType || !isCombo;
+
+          return shouldInclude;
+        });
+
+        if (filteredList.length > 0) {
           const detailedProducts = await Promise.all(
-            combinedList.map(async (apiProduct: Product, idx: number) => {
+            filteredList.map(async (apiProduct: Product) => {
+              // Map to original position: green is 0, pink is 1
+              const originalIdx = greenList.some(p => p.id === apiProduct.id) ? 0 : 1;
+
               try {
                 const detailsResponse = await productsApi.getDetails(apiProduct.id);
-                if (!detailsResponse.data) return null;
+                if (!detailsResponse.data) {
+                  return null;
+                }
 
                 const productDetails = detailsResponse.data;
                 const tiers: PriceTier[] = Array.isArray(productDetails.prices) ? productDetails.prices : [];
@@ -113,7 +139,7 @@ const ProductsList = React.memo(() => {
                     2: getTierData(2).product_price_id,
                     4: getTierData(4).product_price_id,
                   },
-                  benefits: staticProducts[idx]?.benefits || [],
+                  benefits: staticProducts[originalIdx]?.benefits || [],
                   mainImage,
                   product_id: productDetails.id,
                 };
@@ -131,6 +157,7 @@ const ProductsList = React.memo(() => {
           const validProducts = detailedProducts.filter((product): product is DisplayProduct =>
             product !== null && product.product_id !== undefined
           );
+
           setDisplayProducts(validProducts);
         } else {
           setDisplayProducts([]);
@@ -145,7 +172,7 @@ const ProductsList = React.memo(() => {
       }
     };
 
-      fetchProducts();
+    fetchProducts();
   }, []);
 
   const handleSelectPack = (productId: string, pack: 1 | 2 | 4) => {

@@ -30,9 +30,27 @@ export async function apiFetch<T = unknown>(
     options: RequestInit = {},
     retryConfig?: RetryConfig
 ): Promise<ApiResponse<T>> {
-    const url = isBrowser
-        ? `${ENV_CONFIG.PROXY_URL}?endpoint=${encodeURIComponent(endpoint)}`
-        : `${ENV_CONFIG.API_BASE_URL}${endpoint}`;
+    // Server-side: always use direct API calls
+    // Browser: check if we're on the same domain as the API
+    let useDirectApi = !isBrowser;
+
+    if (isBrowser) {
+        // Check if current origin matches API base URL domain
+        try {
+            const apiUrl = new URL(ENV_CONFIG.API_BASE_URL);
+            const currentOrigin = window.location.origin;
+            const apiOrigin = `${apiUrl.protocol}//${apiUrl.host}`;
+            // Use direct API if same origin (no CORS issue)
+            useDirectApi = currentOrigin === apiOrigin;
+        } catch {
+            // If URL parsing fails, fall back to proxy
+            useDirectApi = false;
+        }
+    }
+
+    const url = useDirectApi
+        ? `${ENV_CONFIG.API_BASE_URL}${endpoint}`
+        : `${ENV_CONFIG.PROXY_URL}?endpoint=${encodeURIComponent(endpoint)}`;
 
     const defaultHeaders = {
         "Content-Type": "application/json",
