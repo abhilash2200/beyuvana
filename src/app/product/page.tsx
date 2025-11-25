@@ -2,6 +2,7 @@ import ProductsLists from '@/components/product/ProductsLists'
 import { productsApi, convertToLegacyProduct } from "@/lib/api/products";
 import React from 'react'
 import { handleError } from "@/lib/error-handling";
+import ComboProduct from '@/components/product/ComboProduct';
 
 async function fetchProducts() {
   try {
@@ -50,6 +51,7 @@ const page = async () => {
   return (
     <div>
       <ProductsLists products={products} />
+      <ComboProduct />
     </div>
   )
 }

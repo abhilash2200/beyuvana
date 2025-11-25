@@ -89,4 +89,3 @@ export const COLORS = {
     WARNING: "#F59E0B",
     GOLD: "#DFC362",
 } as const;
-

@@ -15,15 +15,10 @@ interface LogEntry {
 }
 
 interface LoggerConfig {
-    /** Minimum log level to output */
     minLevel: LogLevel;
-    /** Whether to enable logging in production */
     enableInProduction: boolean;
-    /** Whether to include timestamps */
     includeTimestamp: boolean;
-    /** Whether to include context */
     includeContext: boolean;
-    /** Custom log handler */
     customHandler?: (entry: LogEntry) => void;
 }
 

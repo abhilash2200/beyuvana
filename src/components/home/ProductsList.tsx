@@ -145,7 +145,7 @@ const ProductsList = React.memo(() => {
       }
     };
 
-    fetchProducts();
+      fetchProducts();
   }, []);
 
   const handleSelectPack = (productId: string, pack: 1 | 2 | 4) => {

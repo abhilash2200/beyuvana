@@ -29,7 +29,7 @@ export interface AppError {
     category: ErrorCategory;
     originalError?: unknown;
     statusCode?: number;
-    userMessage?: string; // User-friendly message
+    userMessage?: string;
     context?: string;
     retryable?: boolean;
 }
