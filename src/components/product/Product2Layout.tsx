@@ -23,6 +23,7 @@ import { slugify } from "@/lib/utils";
 import { backendProductIdMap } from "@/app/data/productConfigs";
 import InfluencerVideos from "./InfluencerVideos";
 import { sanitizeHTML } from "@/lib/security";
+import Toxins from "../home/Toxins";
 
 const data = [
   {
@@ -114,6 +115,11 @@ export default function Product2Layout({ product }: { product: Product }) {
             ))}
           </div>
         </div>
+      </div>
+      <div className="md:py-10 py-6 bg-[#A9B528]">
+        <Toxins />
+      </div>
+      <div className="container mx-auto px-4">
         <div className="md:py-10 py-6">
           <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
           <InfluencerVideos />

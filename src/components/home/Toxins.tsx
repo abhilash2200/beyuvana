@@ -10,11 +10,16 @@ interface ToxinItem {
 }
 
 const toxinItems: ToxinItem[] = [
-  { img: "/assets/img/non-toxic.png", text: "No Toxins\nor chemicals" },
-  { img: "/assets/img/non-toxic.png", text: "No Filters\nor chemicals" },
-  { img: "/assets/img/non-toxic.png", text: "No Toxins\nor chemicals" },
-  { img: "/assets/img/non-toxic.png", text: "No Filters\nor chemicals" },
-  { img: "/assets/img/non-toxic.png", text: "No Toxins\nor chemicals" },
+  { img: "/assets/img/heavy.png", text: "Heavy Metals\nTested" },
+  { img: "/assets/img/aflatoxins.png", text: "Aflatoxins\nTested" },
+  { img: "/assets/img/food.png", text: "Food Microbiology\nTested" },
+  { img: "/assets/img/gmo.png", text: "NON-\nGMO" },
+  { img: "/assets/img/no.png", text: "NO\nGelatin" },
+  { img: "/assets/img/lab.png", text: "Lab-Tested\nFormula" },
+  { img: "/assets/img/clinically.png", text: "Clinically Researched\nActives" },
+  { img: "/assets/img/gmp.png", text: "GMP Certified\nManufacturing" },
+  { img: "/assets/img/fssai.png", text: "FSSAI\nApproved" },
+  { img: "/assets/img/vegetarian.png", text: "100% Vegetarian\nwith icon" },
 ];
 
 const Toxins: React.FC = () => {
@@ -46,7 +51,7 @@ const Toxins: React.FC = () => {
               }`}
             >
               <Image src={item.img} width={70} height={70} alt={item.text} className="md:w-[70px] w-[50px]" />
-              <p className="whitespace-pre-line text-[#FFF] text-center text-[14px] md:text-[18px] leading-tight">
+              <p className="whitespace-pre-line text-[#FFF] text-left text-[14px] md:text-[18px] leading-tight">
                 {item.text}
               </p>
             </div>
