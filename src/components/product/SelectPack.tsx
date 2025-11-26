@@ -69,7 +69,6 @@ function buildPacksFromPrices(
     designType: "green" | "pink" | undefined
 ): Pack[] {
     if (!Array.isArray(prices)) {
-        console.warn("⚠️ buildPacksFromPrices: No prices array provided");
         return [];
     }
 
@@ -206,7 +205,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                     const detailsResponse = await productsApi.getDetails(apiProduct.id);
                     productDetails = detailsResponse.data;
                 } catch (error) {
-                    console.error("Failed to fetch product details:", error);
                     // Fallback to using prices from list response
                     productDetails = null;
                 }
@@ -231,7 +229,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                     setSelectedPack(packs[0] || null);
                 }
             } catch (e) {
-                console.error("Failed to load product packs:", e);
+                // Failed to load product packs
             }
         };
 
@@ -276,7 +274,7 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
                 short_description: product.short_description,
             });
         } catch (error) {
-            console.error("Add to cart error:", error);
+            // Add to cart error
         }
     };
 
@@ -290,7 +288,6 @@ const SelectPack = ({ productId, designType }: { productId: string; designType?:
             await handleAddToCart();
             openCart();
         } catch (error) {
-            console.error("Shop now error:", error);
             toast.error("Failed to proceed to checkout. Please try again.");
         }
     };

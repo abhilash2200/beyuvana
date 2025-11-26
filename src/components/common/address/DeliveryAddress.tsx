@@ -34,7 +34,6 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
     }
 
     if (!sessionKey) {
-      console.warn("No session key available for fetching addresses");
       setError("Session expired. Please login again.");
       setLoading(false);
       return;
@@ -71,9 +70,6 @@ export default function DeliveryAddress({ onAddAddress, onAddressSelect }: Deliv
         setAddresses([]);
       }
     } catch (err) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Failed to fetch addresses:", err);
-      }
       if (err instanceof Error && err.message.includes("401")) {
         setError("Authentication failed. Please login again.");
       } else {

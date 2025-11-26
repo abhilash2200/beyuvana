@@ -146,9 +146,6 @@ const ProductsList = React.memo(() => {
 
                 return productData;
               } catch (error) {
-                if (process.env.NODE_ENV === "development") {
-                  console.error(`Failed to fetch details for product ${apiProduct.id}:`, error);
-                }
                 return null;
               }
             })
@@ -163,9 +160,6 @@ const ProductsList = React.memo(() => {
           setDisplayProducts([]);
         }
       } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to fetch products:", error);
-        }
         setDisplayProducts([]);
       } finally {
         setIsLoading(false);
@@ -187,9 +181,6 @@ const ProductsList = React.memo(() => {
 
 
     if (!product.product_price_ids) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Product missing product_price_ids:", product);
-      }
       toast.error("Unable to add to cart: Product data incomplete. Please refresh and try again.");
       return;
     }

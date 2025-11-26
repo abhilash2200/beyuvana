@@ -80,32 +80,14 @@ class Logger {
     }
 
     /**
-     * Outputs log entry to console
+     * Outputs log entry (no-op - logging disabled)
      */
     private output(entry: LogEntry): void {
         if (this.config.customHandler) {
             this.config.customHandler(entry);
             return;
         }
-
-        const prefix = entry.context ? `[${entry.context}]` : "";
-        const timestamp = entry.timestamp ? `[${entry.timestamp}]` : "";
-        const prefixStr = [timestamp, prefix].filter(Boolean).join(" ");
-
-        switch (entry.level) {
-            case "debug":
-                console.debug(prefixStr, entry.message, entry.data || "");
-                break;
-            case "info":
-                console.info(prefixStr, entry.message, entry.data || "");
-                break;
-            case "warn":
-                console.warn(prefixStr, entry.message, entry.data || "");
-                break;
-            case "error":
-                console.error(prefixStr, entry.message, entry.data || "");
-                break;
-        }
+        // Logging disabled - no console output
     }
 
     /**
@@ -156,7 +138,7 @@ class Logger {
      */
     validationError(message: string): void {
         if (!this.shouldLog("error")) return;
-        console.error("❌", message);
+        // Logging disabled
     }
 
     /**
@@ -164,7 +146,7 @@ class Logger {
      */
     validationWarn(message: string): void {
         if (!this.shouldLog("warn")) return;
-        console.warn("⚠️", message);
+        // Logging disabled
     }
 
     /**
@@ -172,7 +154,7 @@ class Logger {
      */
     validationSuccess(message: string): void {
         if (!this.shouldLog("info")) return;
-        console.log("✅", message);
+        // Logging disabled
     }
 
     /**

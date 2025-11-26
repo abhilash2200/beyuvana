@@ -38,9 +38,6 @@ export function useAuthDialog(): UseAuthDialogReturn {
     const [otpData, setOtpData] = useState<OtpData | null>(null);
 
     const handleRegisterOtpSent = (phone: string, userData?: { name: string; email: string; phone: string }) => {
-        if (process.env.NODE_ENV === "development") {
-            console.log("🔍 useAuthDialog - handleRegisterOtpSent called with:", { phone, userData });
-        }
         setOtpData({ phone, userData });
         setRegisterStep("otp");
     };
@@ -52,9 +49,6 @@ export function useAuthDialog(): UseAuthDialogReturn {
     };
 
     const handleLoginOtpSent = (phone: string) => {
-        if (process.env.NODE_ENV === "development") {
-            console.log("🔍 useAuthDialog - handleLoginOtpSent called with:", { phone });
-        }
         setOtpData({ phone });
         setLoginStep("otp");
     };

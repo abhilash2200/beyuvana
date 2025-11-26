@@ -48,9 +48,6 @@ export function useAddressManagement({
                 setSavedAddresses([]);
             }
         } catch (err) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to fetch addresses:", err);
-            }
             setSavedAddresses([]);
         } finally {
             setLoadingAddresses(false);
@@ -74,15 +71,9 @@ export function useAddressManagement({
                 toast.success("Primary address updated successfully!");
                 onAddressSaved?.();
             } else {
-                if (process.env.NODE_ENV === "development") {
-                    console.error("Failed to set primary address:", response);
-                }
                 toast.error("Failed to set primary address. Please try again.");
             }
         } catch (err) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Failed to set primary address:", err);
-            }
             toast.error("Failed to set primary address. Please try again.");
         } finally {
             setSettingPrimary(null);
@@ -138,9 +129,6 @@ export function useAddressManagement({
                 return { success: false, error: response.message || "Failed to save address" };
             }
         } catch (err) {
-            if (process.env.NODE_ENV === "development") {
-                console.error("Save address error:", err);
-            }
             if (err instanceof Error && err.message.includes("401")) {
                 return { success: false, error: "Authentication failed. Please login again." };
             }

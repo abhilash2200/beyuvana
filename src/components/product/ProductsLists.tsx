@@ -67,15 +67,6 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
 
     const isCombo = isComboByType || isComboByCategory || isComboByName;
 
-    // Debug logging in development
-    if (process.env.NODE_ENV === "development" && isCombo) {
-      console.log("ProductsLists: Filtering out combo product:", {
-        id: product.id,
-        name: product.name,
-        product_type: productType,
-        category: category,
-      });
-    }
 
     return !isCombo;
   });

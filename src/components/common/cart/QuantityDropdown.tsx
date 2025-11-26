@@ -45,7 +45,6 @@ export default function QuantityDropdown({ itemId, currentQuantity, loading }: Q
             try {
                 await updateItemQuantity(itemId, validQuantity);
             } catch (error) {
-                console.error("Failed to update quantity:", error);
                 setLocalQuantity(currentQuantity);
             }
         }

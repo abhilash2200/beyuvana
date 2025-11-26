@@ -194,7 +194,6 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                     const detailsResponse = await productsApi.getDetails(apiProduct.id);
                     productDetails = detailsResponse.data;
                 } catch (error) {
-                    console.error("Failed to fetch product details:", error);
                     // Fallback to using prices from list response
                     productDetails = null;
                 }
@@ -219,7 +218,7 @@ const ResSelectPack = ({ productId, designType }: { productId: string; designTyp
                     setSelectedPack(packs[0] || null);
                 }
             } catch (e) {
-                console.error("Failed to load product packs:", e);
+                // Failed to load product packs
             }
         };
 

@@ -51,20 +51,6 @@ async function fetchProducts() {
 
       const isCombo = isComboByType || isComboByCategory || isComboByName;
 
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        if (isCombo) {
-          console.log("Filtering out combo product:", {
-            id: product.id,
-            name: product.product_name,
-            product_type: productType,
-            category: category,
-            isComboByType,
-            isComboByCategory,
-            isComboByName,
-          });
-        }
-      }
 
       return !isCombo;
     });

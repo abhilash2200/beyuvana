@@ -54,9 +54,6 @@ export function useProductRating({
       const stats = calculateRatingStats(reviews);
       setRatingStats(stats);
     } catch (err) {
-      if (process.env.NODE_ENV === "development") {
-        console.error('Error fetching rating data:', err);
-      }
       setError(err instanceof Error ? err.message : 'Failed to fetch rating data');
 
       setRatingStats({

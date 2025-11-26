@@ -53,7 +53,7 @@ const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
   const certificateImg = product?.certificateImg
   const certificateImages = product?.certificateImages
   const triggerImg = certificateImg ?? (certificateImages && certificateImages[0])
-  
+
   // Map certificate images to gallery items with PDFs
   const certificateGalleryItems = useMemo(() => {
     const images = certificateImages ?? (certificateImg ? [certificateImg] : [])
@@ -71,11 +71,11 @@ const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
               WHY CHOOSE BEYUVANA™ Glow Essence
             </h2>
             <p className="text-white mb-2 leading-relaxed font-light">
-            BEYUVANA™ Glow Essence is India&apos;s 1st sachet-based glow therapy powered by 18 elite plant actives. It brightens skin, reduces pigmentation, and supports collagen with Glutathione, Vitamin C & Bamboo. Amla, Inulin, and Guava Leaf help heal your gut—because glow starts from within. 
+              BEYUVANA™ Glow Essence is India&apos;s 1st sachet-based glow therapy powered by 18 elite plant actives. It brightens skin, reduces pigmentation, and supports collagen with Glutathione, Vitamin C & Bamboo. Amla, Inulin, and Guava Leaf help heal your gut—because glow starts from within.
             </p>
             <p className="text-white mb-6 leading-relaxed font-light">
-            Ashwagandha and Turmeric calm stress and fight inflammation, while Black Pepper boosts absorption. 
-            Each sugar-free, vegetarian sachet is your daily dose of skin radiance, gut vitality, and inner balance. 
+              Ashwagandha and Turmeric calm stress and fight inflammation, while Black Pepper boosts absorption.
+              Each sugar-free, vegetarian sachet is your daily dose of skin radiance, gut vitality, and inner balance.
             </p>
             <Image
               src="/assets/img/product-details/pink-1.webp"
@@ -95,13 +95,8 @@ const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
                       <p className="text-sm text-gray-200 group-hover:underline">View Lab Certificates</p>
                     </button>
                   }
-                  onPdfOpen={(pdfUrl, index) => {
-                    console.log("Certificate PDF opened:", {
-                      product_id: product?.id,
-                      product_type: "PINK",
-                      pdf_url: pdfUrl,
-                      certificate_index: index,
-                    })
+                  onPdfOpen={() => {
+                    // PDF opened
                   }}
                 />
               </div>

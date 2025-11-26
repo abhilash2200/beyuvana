@@ -15,18 +15,6 @@ export async function generateMetadata(
         description,
         alternates: { canonical: `/orders/${safeId}` },
         robots: { index: false, follow: false },
-        openGraph: {
-            title,
-            description,
-            url: `/orders/${safeId}`,
-            images: [{ url: "/assets/img/logo.png" }],
-        },
-        twitter: {
-            card: "summary",
-            title,
-            description,
-            images: ["/assets/img/logo.png"],
-        },
     };
 }
 

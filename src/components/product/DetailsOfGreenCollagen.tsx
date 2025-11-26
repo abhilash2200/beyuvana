@@ -69,7 +69,7 @@ const DetailsOfGreenCollagen = ({ product }: { product?: Product }) => {
     const certificateImg = product?.certificateImg
     const certificateImages = product?.certificateImages
     const triggerImg = certificateImg ?? (certificateImages && certificateImages[0])
-    
+
     // Map certificate images to gallery items with PDFs
     const certificateGalleryItems = useMemo(() => {
         const images = certificateImages ?? (certificateImg ? [certificateImg] : [])
@@ -100,13 +100,8 @@ const DetailsOfGreenCollagen = ({ product }: { product?: Product }) => {
                                             <p className="text-sm text-gray-200 group-hover:underline">View Lab Certificates</p>
                                         </button>
                                     }
-                                    onPdfOpen={(pdfUrl, index) => {
-                                        console.log("Certificate PDF opened:", {
-                                            product_id: product?.id,
-                                            product_type: "GREEN",
-                                            pdf_url: pdfUrl,
-                                            certificate_index: index,
-                                        })
+                                    onPdfOpen={() => {
+                                        // PDF opened
                                     }}
                                 />
                             </div>

@@ -70,9 +70,6 @@ const ComboProduct = () => {
 
                 return productData;
               } catch (error) {
-                if (process.env.NODE_ENV === "development") {
-                  console.error(`Failed to fetch details for combo product ${apiProduct.id}:`, error);
-                }
                 return null;
               }
             })
@@ -86,9 +83,6 @@ const ComboProduct = () => {
           setComboProducts([]);
         }
       } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to fetch combo products:", error);
-        }
         toast.error("Failed to load combo products. Please try again later.");
         setComboProducts([]);
       }

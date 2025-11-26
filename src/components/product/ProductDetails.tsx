@@ -64,14 +64,8 @@ const ProductDetails = ({ name, tagline, description, certificateImg, certificat
                             <p className="text-sm text-gray-500 group-hover:underline">View Lab Certificates</p>
                         </button>
                     }
-                    onPdfOpen={(pdfUrl, index) => {
-                        // Optional: Track PDF opens for analytics
-                        console.log("Certificate PDF opened:", {
-                            product_id: productId,
-                            product_type: designType,
-                            pdf_url: pdfUrl,
-                            certificate_index: index,
-                        })
+                    onPdfOpen={() => {
+                        // PDF opened
                     }}
                 />
             )}

@@ -89,7 +89,7 @@ const getDesignTypeFromSlug = async (slug: string): Promise<"GREEN" | "PINK" | n
       return "PINK";
     }
   } catch (error) {
-    console.error("Error fetching products to determine design type:", error);
+    // Error fetching products to determine design type
   }
 
   // Last resort: default to GREEN if slug suggests it, otherwise return null
@@ -199,9 +199,6 @@ const ProductDetailPage = () => {
         const designType = await getDesignTypeFromSlug(slug);
 
         if (!designType) {
-          console.error("Unable to determine design type for slug:", slug);
-          console.log("Available slugs:", Object.keys(designSlugToProductId));
-          console.log("Fallback products:", fallbackProducts.map(p => ({ id: p.id, name: p.name, design_type: p.design_type })));
           setError(`Unable to determine product design type for: ${slug}`);
           toast.error(`Product not found: ${slug}`);
           setLoading(false);
@@ -213,21 +210,6 @@ const ProductDetailPage = () => {
           (p) => p.design_type === designType
         ) || null;
 
-        // Debug: Log local product status
-        if (process.env.NODE_ENV === "development") {
-          console.log("Design Type:", designType);
-          console.log("Local Product Found:", !!localProduct);
-          if (localProduct) {
-            console.log("Local Product ID:", localProduct.id);
-            console.log("Local Product Name:", localProduct.name);
-            console.log("Has actionItems:", !!localProduct.actionItems);
-            console.log("Has whyItems:", !!localProduct.whyItems);
-            console.log("Has faq:", !!localProduct.faq);
-          } else {
-            console.warn("⚠️ No local product found for design type:", designType);
-            console.log("Available fallback products:", fallbackProducts.map(p => ({ id: p.id, design_type: p.design_type, name: p.name })));
-          }
-        }
 
         // Step 3: Fetch ALL products of this design type from API
         const apiResponse = await productsApi.getList({
@@ -286,28 +268,12 @@ const ProductDetailPage = () => {
         // Step 5: Merge local (rich content) + API (product data) products
         const mergedProduct = mergeProductData(designType, localProduct, convertedApiProducts);
 
-        // Debug: Log merged product status
-        if (process.env.NODE_ENV === "development") {
-          console.log("=== Merged Product ===");
-          console.log("ID:", mergedProduct.id);
-          console.log("Name:", mergedProduct.name);
-          console.log("Design Type:", mergedProduct.design_type);
-          console.log("Images Count:", mergedProduct.images?.length || 0);
-          console.log("Has actionItems:", !!mergedProduct.actionItems, "Count:", mergedProduct.actionItems?.length || 0);
-          console.log("Has whyItems:", !!mergedProduct.whyItems, "Count:", mergedProduct.whyItems?.length || 0);
-          console.log("Has faq:", !!mergedProduct.faq, "Count:", mergedProduct.faq?.length || 0);
-          console.log("Has compare:", !!mergedProduct.compare, "Count:", mergedProduct.compare?.length || 0);
-          console.log("Has builder:", !!mergedProduct.builder, "Count:", mergedProduct.builder?.length || 0);
-          console.log("Has plants:", !!mergedProduct.plants, "Count:", mergedProduct.plants?.length || 0);
-          console.log("Has tabItems:", !!mergedProduct.tabItems, "Count:", mergedProduct.tabItems?.length || 0);
-        }
 
         setProduct(mergedProduct);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Failed to load product";
         setError(errorMessage);
         toast.error("Failed to load product. Please try again.");
-        console.error("Error fetching product:", err);
       } finally {
         setLoading(false);
       }
