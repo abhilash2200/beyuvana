@@ -23,7 +23,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [authInitialized, setAuthInitialized] = useState(false);
   const [cartLoadedFromStorage, setCartLoadedFromStorage] = useState(false);
   const [isPageRefresh, setIsPageRefresh] = useState(true);
-  const { user, sessionKey } = useAuth();
+  const { user, sessionKey, isSessionValidating } = useAuth();
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
@@ -67,13 +67,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       ? (localStorage.getItem("user") || localStorage.getItem("session_key"))
       : null;
     if (hasStoredAuth) {
-      if (user !== null || sessionKey !== null) {
+      // Wait for session validation to complete before initializing auth
+      if (!isSessionValidating && (user !== null || sessionKey !== null)) {
         setAuthInitialized(true);
       }
     } else {
+      // No stored auth, so no need to wait for validation
       setAuthInitialized(true);
     }
-  }, [user, sessionKey]);
+  }, [user, sessionKey, isSessionValidating]);
 
   useEffect(() => {
     if (authInitialized) {

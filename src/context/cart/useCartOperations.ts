@@ -77,6 +77,10 @@ export function useCartOperations({
                 return;
             }
 
+            // Note: Session validation is handled in AuthProvider
+            // If session is invalid, user and sessionKey will be cleared
+            // So we don't need to check isSessionValidating here
+
             if (!item.product_id) {
                 toast.error("Unable to add to cart: Missing product information.");
                 return;
