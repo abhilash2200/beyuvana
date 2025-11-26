@@ -21,7 +21,7 @@ import ResDropdown from "./ResponsiveV/ResDropdown";
 import { productDesignSlugs } from "@/app/data/productConfigs";
 import { slugify } from "@/lib/utils";
 import { backendProductIdMap } from "@/app/data/productConfigs";
-import InfluencerVideos from "./InfluencerVideos";
+// import InfluencerVideos from "./InfluencerVideos";
 import { sanitizeHTML } from "@/lib/security";
 import Toxins from "../home/Toxins";
 
@@ -120,10 +120,10 @@ export default function Product2Layout({ product }: { product: Product }) {
         <Toxins />
       </div>
       <div className="container mx-auto px-4">
-        <div className="md:py-10 py-6">
+        {/* <div className="md:py-10 py-6">
           <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
           <InfluencerVideos />
-        </div>
+        </div> */}
         <div className="md:py-10 py-6 bg-[#FFF0F0] rounded-[20px]">
           <div className="flex flex-col">
             <div className="relative px-4">
@@ -190,7 +190,7 @@ export default function Product2Layout({ product }: { product: Product }) {
             </div>
             <div className="w-full md:w-[48%]">
               <Image
-                src="/assets/img/product-details/pink-lady.jpg"
+                src="/assets/img/product-details/pink-lady.webp"
                 width={880}
                 height={580}
                 alt="detail info"
@@ -205,9 +205,9 @@ export default function Product2Layout({ product }: { product: Product }) {
           <WhyBeyuvana product={product} />
         </div>
         <div className="md:py-10 py-6">
-          <div className="flex flex-wrap items-center justify-between">
+          <div className="flex flex-wrap items-start justify-between">
             <div className="w-full md:w-[48%]">
-              <Image src="/assets/img/product-details/pink-288484.png" width={772} height={684} alt="detail info" className="w-full h-auto" />
+              <Image src="/assets/img/product-details/pink-288484.webp" width={772} height={684} alt="detail info" className="w-full md:h-[650px] h-auto object-contain" />
             </div>
             <div className="w-full md:w-[48%]">
               <Compare product={product} />
@@ -239,7 +239,7 @@ export default function Product2Layout({ product }: { product: Product }) {
       </div>
       <div className="md:py-10 py-6">
         <div className="container mx-auto px-4">
-          <DetailsOfRedCollagen />
+          <DetailsOfRedCollagen product={product} />
         </div>
       </div>
       <div className="md:py-10 py-6">

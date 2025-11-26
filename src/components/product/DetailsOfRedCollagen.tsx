@@ -1,8 +1,12 @@
 "use client"
 
+import { useMemo } from "react"
 import Image from "next/image"
+import ImageGalleryDialogWithPdf from "@/components/ui/ImageGalleryDialogWithPdf"
+import { Product } from "@/app/data/fallbackProducts"
+import { mapCertificateImagesToGallery } from "@/lib/productGalleryUtils"
 
-const DetailsOfRedCollagen = () => {
+const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
   const coreActivities = [
     {
       title: " Brightens skin tone",
@@ -46,6 +50,18 @@ const DetailsOfRedCollagen = () => {
     },
   ]
 
+  const certificateImg = product?.certificateImg
+  const certificateImages = product?.certificateImages
+  const triggerImg = certificateImg ?? (certificateImages && certificateImages[0])
+  
+  // Map certificate images to gallery items with PDFs
+  const certificateGalleryItems = useMemo(() => {
+    const images = certificateImages ?? (certificateImg ? [certificateImg] : [])
+    if (images.length === 0) return []
+    // Product ID 2 = PINK design type
+    return mapCertificateImagesToGallery(images, "PINK", product?.name)
+  }, [certificateImages, certificateImg, product?.name])
+
   return (
     <div>
       <div className="bg-[#E02D2D] rounded-[20px] md:p-6 p-4">
@@ -55,19 +71,41 @@ const DetailsOfRedCollagen = () => {
               WHY CHOOSE BEYUVANA™ Glow Essence
             </h2>
             <p className="text-white mb-2 leading-relaxed font-light">
-            BEYUVANA™ Glow Essence is India’s 1st sachet-based glow therapy powered by 18 elite plant actives. It brightens skin, reduces pigmentation, and supports collagen with Glutathione, Vitamin C & Bamboo. Amla, Inulin, and Guava Leaf help heal your gut—because glow starts from within. 
+            BEYUVANA™ Glow Essence is India&apos;s 1st sachet-based glow therapy powered by 18 elite plant actives. It brightens skin, reduces pigmentation, and supports collagen with Glutathione, Vitamin C & Bamboo. Amla, Inulin, and Guava Leaf help heal your gut—because glow starts from within. 
             </p>
             <p className="text-white mb-6 leading-relaxed font-light">
             Ashwagandha and Turmeric calm stress and fight inflammation, while Black Pepper boosts absorption. 
             Each sugar-free, vegetarian sachet is your daily dose of skin radiance, gut vitality, and inner balance. 
             </p>
             <Image
-              src="/assets/img/product-details/green-1.png"
+              src="/assets/img/product-details/pink-1.webp"
               width={772}
-              height={684}
+              height={500}
               alt="detail info"
               className="w-full h-auto mb-6"
             />
+            {triggerImg && certificateGalleryItems.length > 0 && (
+              <div className="flex items-center justify-start gap-x-2 mt-4">
+                <ImageGalleryDialogWithPdf
+                  items={certificateGalleryItems}
+                  title="Lab Certificates"
+                  trigger={
+                    <button type="button" className="flex items-center gap-2 group hover:cursor-pointer hover:no-underline">
+                      <Image src={triggerImg} alt="certificate" width={40} height={40} className="w-auto h-auto" />
+                      <p className="text-sm text-gray-200 group-hover:underline">View Lab Certificates</p>
+                    </button>
+                  }
+                  onPdfOpen={(pdfUrl, index) => {
+                    console.log("Certificate PDF opened:", {
+                      product_id: product?.id,
+                      product_type: "PINK",
+                      pdf_url: pdfUrl,
+                      certificate_index: index,
+                    })
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           <div className="w-full md:w-[48%]">

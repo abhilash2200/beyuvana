@@ -20,7 +20,7 @@ import ResProductImg from "./ResponsiveV/ResProductImg";
 import ResSelectPack from "./ResponsiveV/ResSelectPack";
 import ResDropdown from "./ResponsiveV/ResDropdown";
 import { backendProductIdMap } from "@/app/data/productConfigs";
-import InfluencerVideos from "./InfluencerVideos";
+// import InfluencerVideos from "./InfluencerVideos";
 import CompareProduct from "./CompareProduct";
 import { sanitizeHTML } from "@/lib/security";
 import Toxins from "../home/Toxins";
@@ -143,10 +143,10 @@ export default function Product1Layout({ product }: { product: Product }) {
                     <Toxins />
                 </div>
             <div className="container mx-auto px-4">
-                <div className="md:py-10 py-6">
+                {/* <div className="md:py-10 py-6">
                     <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
                     <InfluencerVideos />
-                </div>
+                </div> */}
                 <div className="md:py-10 py-6 bg-[#F8FFF9] rounded-[20px]">
                     <div className="flex flex-col">
                         <div className="relative px-4">
@@ -228,7 +228,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                         </div>
                         <div className="w-full md:w-[48%]">
                             <Image
-                                src="/assets/img/product-details/green-lady.png"
+                                src="/assets/img/product-details/green-lady.webp"
                                 width={880}
                                 height={580}
                                 alt="detail info"
@@ -243,9 +243,9 @@ export default function Product1Layout({ product }: { product: Product }) {
                     <WhyBeyuvana product={product} />
                 </div>
                 <div className="md:py-10 py-6">
-                    <div className="flex flex-wrap items-center justify-between">
+                    <div className="flex flex-wrap items-start justify-between">
                         <div className="w-full md:w-[48%]">
-                            <Image src="/assets/img/product-details/green-288484.png" width={772} height={684} alt="detail info" className="w-full h-auto" />
+                            <Image src="/assets/img/product-details/green-288484.webp" width={772} height={684} alt="detail info" className="w-full h-auto md:h-[600px] object-contain" />
                         </div>
                         <div className="w-full md:w-[48%]">
                             <Compare product={product} />

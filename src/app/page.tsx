@@ -4,7 +4,7 @@ import HeaderText from "@/components/common/HeaderText"
 import CashBack from "@/components/home/CashBack"
 import Choose from "@/components/home/Choose"
 import HomeAccordion from "@/components/home/HomeAccordion"
-import InfluencerVideo from "@/components/home/InfluencerVideo"
+// import InfluencerVideo from "@/components/home/InfluencerVideo"
 import ProductsList from "@/components/home/ProductsList"
 import Testimonial from "@/components/home/Testimonial"
 import Toxins from "@/components/home/Toxins"
@@ -55,7 +55,7 @@ const page = () => {
         </div>
       </section>
 
-      <section className="md:py-10 py-6">
+      {/* <section className="md:py-10 py-6">
         <div className="container mx-auto md:ps-20 lg:ps-8">
           <div className="flex flex-col items-center justify-center gap-y-2">
             <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
@@ -65,7 +65,7 @@ const page = () => {
         <div className="md:pt-12 pt-6 ms-auto">
           <InfluencerVideo />
         </div>
-      </section>
+      </section> */}
 
       <section className="md:py-10 py-6">
         <div className="container mx-auto px-4">

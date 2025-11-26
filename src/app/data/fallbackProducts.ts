@@ -121,12 +121,15 @@ export const fallbackProducts: Product[] = [
     ],
     certificateImg: "/assets/img/product-details/certificate.png",
     certificateImages: [
-      "/assets/img/product-details/Green_1.png",
-      "/assets/img/product-details/Green_2.png",
-      "/assets/img/product-details/Green_3.png",
+      "/assets/img/product-details/pdf1.png",
+      "/assets/img/product-details/pdf2.png",
+      "/assets/img/product-details/pdf3.png",
+      "/assets/img/product-details/pdf4.png",
+      "/assets/img/product-details/pdf5.png",
+      "/assets/img/product-details/pdf6.png",
     ],
     images: [
-      "/assets/img/product-details/Green_1.png",
+      "/assets/img/product-details/Green_1.webp",
       "/assets/img/product-details/Green_2.png",
       "/assets/img/product-details/Green_3.png",
       "/assets/img/product-details/Green_4.png",
@@ -985,12 +988,15 @@ export const fallbackProducts: Product[] = [
     ],
     certificateImg: "/assets/img/product-details/certificate.png",
     certificateImages: [
-      "/assets/img/product-details/Artboard_1.png",
-      "/assets/img/product-details/Artboard_2.png",
-      "/assets/img/product-details/Artboard_3.png",
+      "/assets/img/product-details/pdf1.png",
+      "/assets/img/product-details/pdf2.png",
+      "/assets/img/product-details/pdf3.png",
+      "/assets/img/product-details/pdf4.png",
+      "/assets/img/product-details/pdf5.png",
+      "/assets/img/product-details/pdf6.png",
     ],
     images: [
-      "/assets/img/product-details/Artboard_1.png",
+      "/assets/img/product-details/Artboard_1.webp",
       "/assets/img/product-details/Artboard_2.png",
       "/assets/img/product-details/Artboard_3.png",
       "/assets/img/product-details/Artboard_4.png",
@@ -1215,7 +1221,7 @@ export const fallbackProducts: Product[] = [
     builder: [
       {
         id: 1,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/1.png",
         title: "If you’re tired of dark spots, tanning, or uneven skin tone",
         desc: "Glow Essence targets pigmentation from the root, giving visibly brighter, even-toned skin. Glutathione, Amla, Licorice, and Vitamin C reduce melanin and fade stubborn pigmentation. This blend helps restore a more luminous complexion without needing harsh creams or peels.",
         bgColor: "#B00404",
@@ -1224,7 +1230,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/2.png",
         title: "If your skin looks dull and lacks glow",
         desc: "For those who feel their skin looks tired or lifeless — this restores that fresh, healthy glow. Guava Leaf, Lemon Powder, and Niacinamide work together to increase natural radiance.They boost cellular energy and circulation, helping your skin glow from within. ",
         bgColor: "#B00404",
@@ -1233,7 +1239,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 3,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/3.png",
         title: "If you struggle with acne, redness, or breakouts",
         desc: "This is for people facing active acne, clogged pores, or hormonal skin flare-ups. Neem, Green Tea, Curcuma, and Guava Leaf fight acne-causing bacteria and soothe inflammation. They purify the skin internally, helping prevent future breakouts while calming existing ones. ",
         bgColor: "#B00404",
@@ -1242,7 +1248,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 4,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/4.png",
         title: "If your skin feels dry, flaky, or dehydrated",
         desc: "If your skin lacks moisture and feels tight — this deeply hydrates from within. Hyaluronic Acid, Bamboo Extract, and Inulin replenish hydration at a cellular level. They lock in moisture and restore your skin barrier, making your skin soft and plump. ",
         bgColor: "#B00404",
@@ -1251,7 +1257,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 5,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/5.png",
         title: "If your gut health is affecting your skin",
         desc: "For those dealing with hormonal acne, inflammation, or poor digestion-linked skin issues. Inulin, Ashwagandha, and Lemon Powder restore gut balance and reduce internal stressors. This improves nutrient absorption and skin clarity through the gut-skin axis. ",
         bgColor: "#B00404",
@@ -1260,7 +1266,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 6,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/6.png",
         title: "If you want real results without relying on creams or filters",
         desc: "For those who want long-term visible improvement instead of temporary coverups. This is a daily drink that works from within — targeting the root of your skin concerns.It gives you healthier, more radiant skin naturally — without the need for makeup filters. ",
         bgColor: "#B00404",
@@ -1269,7 +1275,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 7,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/7.png",
         title: "If stress or lifestyle is ruining your skin",
         desc: "Designed for modern lifestyles — work stress, lack of sleep, or hormonal imbalances. Adaptogens like Ashwagandha and Curcuma reduce cortisol and fight internal inflammation.They calm skin stress, reduce flare-ups, and support hormonal balance.",
         bgColor: "#B00404",
@@ -1278,7 +1284,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 8,
-        img: "/assets/img/product-details/builder.png",
+        img: "/assets/img/product-details/green-who/8.png",
         title: "If you want better nutrient absorption for faster skin transformation",
         desc: "Because even the best actives won’t work if your body can’t absorb them well. Piper Nigrum (Black Pepper Extract) enhances bioavailability of key nutrients. This ensures faster, more visible results — maximizing every ingredient’s power.",
         bgColor: "#B00404",

@@ -1,8 +1,10 @@
 "use client"
 
+import { useMemo } from "react"
 import Image from "next/image"
-import ImageGalleryDialog from "@/components/ui/ImageGalleryDialog"
+import ImageGalleryDialogWithPdf from "@/components/ui/ImageGalleryDialogWithPdf"
 import { Product } from "@/app/data/fallbackProducts"
+import { mapCertificateImagesToGallery } from "@/lib/productGalleryUtils"
 
 const DetailsOfGreenCollagen = ({ product }: { product?: Product }) => {
     const coreActions = [
@@ -67,6 +69,15 @@ const DetailsOfGreenCollagen = ({ product }: { product?: Product }) => {
     const certificateImg = product?.certificateImg
     const certificateImages = product?.certificateImages
     const triggerImg = certificateImg ?? (certificateImages && certificateImages[0])
+    
+    // Map certificate images to gallery items with PDFs
+    const certificateGalleryItems = useMemo(() => {
+        const images = certificateImages ?? (certificateImg ? [certificateImg] : [])
+        if (images.length === 0) return []
+        // Product ID 1 = GREEN design type
+        return mapCertificateImagesToGallery(images, "GREEN", product?.name)
+    }, [certificateImages, certificateImg, product?.name])
+
     return (
         <div>
             <div className="bg-[#1A2819] rounded-[20px] md:p-6 p-4">
@@ -74,14 +85,14 @@ const DetailsOfGreenCollagen = ({ product }: { product?: Product }) => {
                     <div className="w-full md:w-[48%]">
                         <h2 className="text-white font-[Grafiels] md:text-[23px] text-[18px] leading-tight mb-5">Why Choose BEYUVANA™ Premium Collagen Builder?</h2>
                         <p className="text-white mb-6 md:leading-relaxed text-[15px] leading-tight font-light">A Smarter, Safer Path to Ageless Skin. Not Just Collagen — A Complete Skin Nutrition Ritual.</p>
-                        <p className="text-white mb-6 md:leading-relaxed text-[15px] leading-tight font-light">BEYUVANA™ is more than a collagen supplement. Its a powerful, plant-based formula that activates your skin’s natural renewal systems from within. We don’t just give you collagen — we help your body create, protect, and preserve its own.</p>
+                        <p className="text-white mb-6 md:leading-relaxed text-[15px] leading-tight font-light">BEYUVANA™ is more than a collagen supplement. Its a powerful, plant-based formula that activates your skin&apos;s natural renewal systems from within. We don&apos;t just give you collagen — we help your body create, protect, and preserve its own.</p>
                         <p className="text-white mb-6 md:leading-relaxed text-[15px] leading-tight font-light">100% vegetarian, sugar-free, gelatin-free — crafted for those who want visible results, naturally. Every ingredient has a purpose, and every sachet is a step toward long-term skin health.</p>
 
-                        <Image src="/assets/img/product-details/green-1.png" width={772} height={684} alt="detail info" className="w-full h-auto mb-6" />
-                        {triggerImg && (
+                        <Image src="/assets/img/product-details/green-1.webp" width={772} height={684} alt="detail info" className="w-full h-auto mb-6" />
+                        {triggerImg && certificateGalleryItems.length > 0 && (
                             <div className="flex items-center justify-start gap-x-2 mt-4">
-                                <ImageGalleryDialog
-                                    images={certificateImages ?? (certificateImg ? [certificateImg] : [])}
+                                <ImageGalleryDialogWithPdf
+                                    items={certificateGalleryItems}
                                     title="Lab Certificates"
                                     trigger={
                                         <button type="button" className="flex items-center gap-2 group hover:cursor-pointer hover:no-underline">
@@ -89,6 +100,14 @@ const DetailsOfGreenCollagen = ({ product }: { product?: Product }) => {
                                             <p className="text-sm text-gray-200 group-hover:underline">View Lab Certificates</p>
                                         </button>
                                     }
+                                    onPdfOpen={(pdfUrl, index) => {
+                                        console.log("Certificate PDF opened:", {
+                                            product_id: product?.id,
+                                            product_type: "GREEN",
+                                            pdf_url: pdfUrl,
+                                            certificate_index: index,
+                                        })
+                                    }}
                                 />
                             </div>
                         )}

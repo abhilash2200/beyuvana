@@ -1,13 +1,15 @@
 "use client"
 
+import { useMemo } from "react"
 import Image from "next/image"
-import ImageGalleryDialog from "@/components/ui/ImageGalleryDialog"
+import ImageGalleryDialogWithPdf from "@/components/ui/ImageGalleryDialogWithPdf"
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
+import { mapCertificateImagesToGallery } from "@/lib/productGalleryUtils"
 
 interface FaqItem {
     id: string
@@ -26,6 +28,16 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails = ({ name, tagline, description, certificateImg, certificateImages, faq, productId }: ProductDetailsProps) => {
+    // Determine design type from productId (1 = GREEN, 2 = PINK)
+    const designType: "GREEN" | "PINK" = productId === 1 ? "GREEN" : "PINK"
+
+    // Map certificate images to gallery items with PDFs
+    const certificateGalleryItems = useMemo(() => {
+        const images = certificateImages ?? (certificateImg ? [certificateImg] : [])
+        if (images.length === 0) return []
+        return mapCertificateImagesToGallery(images, designType, name)
+    }, [certificateImages, certificateImg, designType, name])
+
     return (
         <div className="flex flex-col gap-4">
             <h1 className="md:text-2xl text-xl leading-tight font-[Grafiels]">{name}</h1>
@@ -42,16 +54,25 @@ const ProductDetails = ({ name, tagline, description, certificateImg, certificat
                 <p key={index} className="text-sm text-gray-500">{item}</p>
             ))}
 
-            {certificateImg && (
-                <ImageGalleryDialog
-                    images={certificateImages ?? (certificateImg ? [certificateImg] : [])}
+            {certificateGalleryItems.length > 0 && (
+                <ImageGalleryDialogWithPdf
+                    items={certificateGalleryItems}
                     title="Lab Certificates"
                     trigger={
                         <button type="button" className="flex items-center gap-2 group hover:cursor-pointer hover:no-underline">
-                            <Image src={certificateImg} alt="certificate" width={40} height={40} className="w-auto h-auto" />
+                            <Image src={certificateImg || certificateGalleryItems[0]?.image || ""} alt="certificate" width={40} height={40} className="w-auto h-auto" />
                             <p className="text-sm text-gray-500 group-hover:underline">View Lab Certificates</p>
                         </button>
                     }
+                    onPdfOpen={(pdfUrl, index) => {
+                        // Optional: Track PDF opens for analytics
+                        console.log("Certificate PDF opened:", {
+                            product_id: productId,
+                            product_type: designType,
+                            pdf_url: pdfUrl,
+                            certificate_index: index,
+                        })
+                    }}
                 />
             )}
 
