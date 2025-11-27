@@ -41,7 +41,7 @@ export const reviewApi = {
       }
 
       const deliveredOrders = productOrders.filter(
-        (order) => order.status === "delivered"
+        (order) => order.status === "DELIVERED" || order.status === "COMPLETED"
       );
 
       if (deliveredOrders.length > 0) {
@@ -52,7 +52,7 @@ export const reviewApi = {
       }
 
       const cancelledOrders = productOrders.filter(
-        (order) => order.status === "cancelled"
+        (order) => order.status === "CANCELLED" || order.status === "ORDER_RETURN" || order.status === "NOT_DELIVERED"
       );
 
       if (cancelledOrders.length === productOrders.length) {

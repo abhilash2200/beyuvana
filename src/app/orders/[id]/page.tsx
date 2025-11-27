@@ -13,7 +13,10 @@ import { useAuth } from "@/context/AuthProvider";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { logger } from "@/lib/logger";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { mapOrderStatus, getStatusColor } from "@/lib/utils/orderStatus";
 import { toast } from "react-toastify";
+
+import type { OrderStatus } from "@/lib/utils/orderStatus";
 
 interface Order {
     id: string;
@@ -21,7 +24,8 @@ interface Order {
     productImage: string;
     shortdecs: string;
     quantity: number;
-    status: string;
+    status: OrderStatus;
+    displayStatus?: string;
     address: string;
     bagPrice: number;
     discount: number;
@@ -52,6 +56,18 @@ const OrderDetailPage = () => {
     const [userName, setUserName] = useState("");
     const [retryCount, setRetryCount] = useState(0);
     const [reviewStatus, setReviewStatus] = useState<"arriving" | "cancelled" | "delivered" | null>(null);
+
+    // Helper to map new status to review status format
+    const mapToReviewStatus = (status: string): "arriving" | "cancelled" | "delivered" => {
+        const statusUpper = status.toUpperCase();
+        if (statusUpper === "DELIVERED" || statusUpper === "COMPLETED") {
+            return "delivered";
+        }
+        if (statusUpper === "CANCELLED" || statusUpper === "ORDER_RETURN" || statusUpper === "NOT_DELIVERED") {
+            return "cancelled";
+        }
+        return "arriving";
+    };
 
     const retryFetch = () => {
         if (retryCount < 3) {
@@ -122,21 +138,11 @@ const OrderDetailPage = () => {
 
                     const firstItem = data.item_list[0];
                     if (firstItem) {
-                        const backendStatus = String(data.order_details.status ?? "").toUpperCase();
-                        const payStatus = String(data.order_details.pay_status ?? "").toUpperCase();
-                        let mappedStatus: "arriving" | "cancelled" | "delivered" = "arriving";
-                        let displayStatus = "Processing";
-
-                        if (backendStatus === "DELIVERED" || backendStatus === "COMPLETED") {
-                            mappedStatus = "delivered";
-                            displayStatus = "Delivered";
-                        } else if (backendStatus === "CANCELLED" || payStatus === "FAILED") {
-                            mappedStatus = "cancelled";
-                            displayStatus = "Cancelled";
-                        } else if (backendStatus === "PENDING") {
-                            mappedStatus = "arriving";
-                            displayStatus = "Processing";
-                        }
+                        // Use shared status mapping utility for consistency with API
+                        const { mappedStatus, displayStatus } = mapOrderStatus(
+                            data.order_details.status,
+                            data.order_details.pay_status
+                        );
 
                         const localOrder: Order = {
                             id: data.order_details.id,
@@ -144,14 +150,15 @@ const OrderDetailPage = () => {
                             productImage: data.order_details.thumbnail || firstItem.image || "",
                             shortdecs: `${firstItem.product_name} - ${firstItem.product_code}`,
                             quantity: parseInt(firstItem.qty),
-                            status: displayStatus,
+                            status: mappedStatus,
+                            displayStatus: displayStatus,
                             address: `${data.address.address1}, ${data.address.address2}, ${data.address.city}, ${data.address.pincode}`,
                             bagPrice: parseFloat(data.order_details.paid_amount),
                             discount: parseFloat(data.order_details.discount_amount),
                             deliveryPrice: 0,
                         };
                         setOrder(localOrder);
-                        setReviewStatus(mappedStatus);
+                        setReviewStatus(mapToReviewStatus(mappedStatus));
                     } else {
                         setError("No items found in this order");
                     }
@@ -265,18 +272,6 @@ const OrderDetailPage = () => {
         );
     }
 
-    const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
-            case "arriving today":
-                return "text-orange-500";
-            case "cancelled":
-                return "text-red-500";
-            case "delivered":
-                return "text-green-500";
-            default:
-                return "text-gray-700";
-        }
-    };
 
     return (
         <ErrorBoundary>
@@ -315,7 +310,7 @@ const OrderDetailPage = () => {
                         </div>
                     </div>
                     <div className="md:block hidden">
-                        <p className={`font-semibold ${getStatusColor(order.status)}`}>{order.status}</p>
+                        <p className={`font-semibold ${getStatusColor(order.status)}`}>{order.displayStatus || order.status}</p>
                         <Button
                             onClick={handleDownloadInvoice}
                             variant="ghost"

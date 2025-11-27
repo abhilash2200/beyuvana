@@ -14,6 +14,7 @@ import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { logger } from "@/lib/logger";
 import { handleError } from "@/lib/error-handling";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { getStatusColor } from "@/lib/utils/orderStatus";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -47,7 +48,8 @@ const OrdersPage = () => {
           return;
         }
 
-        const response = await ordersApi.getOrderList(sessionKey, user?.id, "Upcoming");
+        // Fetch all orders (pass empty string to skip status filter and get all orders including delivered)
+        const response = await ordersApi.getOrderList(sessionKey, user?.id, "");
 
         if (response.data && Array.isArray(response.data)) {
           setOrders(response.data);
@@ -71,29 +73,16 @@ const OrdersPage = () => {
     fetchOrders();
   }, [user, sessionKey]);
 
-  const getStatusUI = (status: Order["status"], date?: string) => {
-    switch (status) {
-      case "arriving":
-        return (
-          <p className="inline-flex items-center gap-x-1">
-            <PiDotOutlineFill className="w-10 h-10 text-orange-500" /> Arriving Today
-          </p>
-        );
-      case "cancelled":
-        return (
-          <p className="inline-flex items-center gap-x-1">
-            <PiDotOutlineFill className="w-10 h-10 text-red-500" /> Cancelled {date}
-          </p>
-        );
-      case "delivered":
-        return (
-          <p className="inline-flex items-center gap-x-1">
-            <PiDotOutlineFill className="w-10 h-10 text-green-500" /> Delivered {date}
-          </p>
-        );
-      default:
-        return null;
-    }
+  const getStatusUI = (order: Order) => {
+    const { status, displayStatus, date } = order;
+    const statusText = displayStatus || status;
+    const colorClass = getStatusColor(status);
+
+    return (
+      <p className="inline-flex items-center gap-x-1">
+        <PiDotOutlineFill className={`w-10 h-10 ${colorClass}`} /> {statusText} {date ? `${new Date(date).toLocaleDateString()}` : ""}
+      </p>
+    );
   };
 
   return (
@@ -206,7 +195,7 @@ const OrdersPage = () => {
                     </div>
 
                     <div className="w-full md:w-[20%] hidden md:block">
-                      {getStatusUI(order.status, order.date)}
+                      {getStatusUI(order)}
                     </div>
 
 

@@ -174,12 +174,15 @@ export interface CartItem {
 }
 
 // Order Types
+import type { OrderStatus } from "../utils/orderStatus";
+
 export interface Order {
   id: string;
   productName: string;
   description: string;
   price: number;
-  status: "arriving" | "cancelled" | "delivered";
+  status: OrderStatus;
+  displayStatus?: string; // Formatted display text
   date?: string;
   image: string;
   thumbnail?: string;

@@ -5,6 +5,7 @@
 
 import { apiFetch, ApiResponse } from "./core";
 import { buildAuthHeaders } from "../api-utils";
+import { mapOrderStatus } from "../utils/orderStatus";
 import type {
   Order,
   BackendOrderItem,
@@ -26,10 +27,10 @@ export const ordersApi = {
           headers: buildAuthHeaders(sessionKey || undefined),
           body: JSON.stringify(payload),
         });
-        
+
         const rawLocal = respLocal as ApiResponse<BackendOrderItem[]>;
-        const listLocal: BackendOrderItem[] = Array.isArray(rawLocal?.data) 
-          ? (rawLocal.data as BackendOrderItem[]) 
+        const listLocal: BackendOrderItem[] = Array.isArray(rawLocal?.data)
+          ? (rawLocal.data as BackendOrderItem[])
           : [];
 
         const mappedLocal: Order[] = listLocal.map((o): Order => {
@@ -37,28 +38,31 @@ export const ordersApi = {
           const productName = String(o?.product_name ?? o?.order_no ?? "Order");
           const description = `Order ${o?.order_no ?? id} • Qty ${o?.qty ?? "1"}`;
           const price = Math.round(parseFloat(String(o?.paid_amount ?? o?.gross_amount ?? 0)) || 0);
-          const backendStatus = String(o?.status ?? "").toUpperCase();
-          const payStatus = String(o?.pay_status ?? "").toUpperCase();
-          const statusMapped: Order["status"] = backendStatus === "DELIVERED" || backendStatus === "COMPLETED"
-            ? "delivered"
-            : backendStatus === "CANCELLED" || payStatus === "FAILED"
-              ? "cancelled"
-              : "arriving";
+
+          // Use shared status mapping utility
+          const { mappedStatus, displayStatus } = mapOrderStatus(o?.status, o?.pay_status);
+
           const date = String(o?.created_date ?? o?.updated_at ?? "");
           const image = o?.thumbnail || "/assets/img/product-1.png";
           const thumbnail = o?.thumbnail;
           const product_id = o?.product_id ? String(o.product_id) : undefined;
 
-          return { id, productName, description, price, status: statusMapped, date, image, thumbnail, product_id };
+          return { id, productName, description, price, status: mappedStatus, displayStatus, date, image, thumbnail, product_id };
         });
-        
+
         return { resp: respLocal, mapped: mappedLocal };
+      }
+
+      // If status is empty or undefined, fetch all orders without status filter
+      if (!status || status.trim() === "") {
+        const result = await fetchAndMap({ user_id: uid, session_key: sessionKey || null });
+        return { ...result.resp, data: result.mapped } as ApiResponse<Order[]>;
       }
 
       // 1) Try with given status
       let { resp, mapped } = await fetchAndMap({ user_id: uid, status, session_key: sessionKey || null });
-      
-      // 2) If empty, try without status
+
+      // 2) If empty, try without status to get all orders
       if (mapped.length === 0) {
         const result = await fetchAndMap({ user_id: uid, session_key: sessionKey || null });
         resp = result.resp;
@@ -72,7 +76,7 @@ export const ordersApi = {
         resp = result.resp;
         mapped = result.mapped;
       }
-      
+
       return { ...resp, data: mapped } as ApiResponse<Order[]>;
     } catch (error) {
       if (error instanceof Error && error.message.includes("500")) {
