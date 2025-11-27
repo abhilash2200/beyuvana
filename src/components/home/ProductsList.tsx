@@ -264,21 +264,21 @@ const ProductsList = React.memo(() => {
                   </h2>
                 </Link>
 
-                {index === 0 && (
+                
                   <div>
                     <p className="inline-flex border border-black rounded-[5px] py-2 px-2 font-light">
                       {product.shortdescription}
                     </p>
                   </div>
-                )}
+                
 
                 <p className="font-light">{product.description}</p>
 
-                {index === 1 && (
+                {/* {index === 1 && (
                   <div className="mb-3">
                     <p className="font-light">{product.descriptiontext}</p>
                   </div>
-                )}
+                )} */}
 
                 <div className="flex flex-wrap justify-between gap-4 mb-3">
                   {product.benefits.map((b, i) => (

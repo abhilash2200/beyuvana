@@ -15,9 +15,10 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const excludePaymentSuccess = pathname?.startsWith("/payment-success");
   const excludePaymentFailed = pathname?.startsWith("/payment-failed");
   const excludePaymentInitiate = pathname?.startsWith("/payment-initiate");
+  const excludeInvoice = pathname?.startsWith("/invoice");
 
   // Pages that should not have header/footer
-  const shouldExcludeLayout = excludeThankYou || excludePaymentSuccess || excludePaymentFailed || excludePaymentInitiate;
+  const shouldExcludeLayout = excludeThankYou || excludePaymentSuccess || excludePaymentFailed || excludePaymentInitiate || excludeInvoice;
 
   if (shouldExcludeLayout) {
     return <>{children}</>;

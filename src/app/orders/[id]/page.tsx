@@ -13,8 +13,6 @@ import { useAuth } from "@/context/AuthProvider";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { logger } from "@/lib/logger";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { ENV_CONFIG } from "@/lib/constants";
-import { buildAuthHeaders } from "@/lib/api-utils";
 import { toast } from "react-toastify";
 
 interface Order {
@@ -54,7 +52,6 @@ const OrderDetailPage = () => {
     const [userName, setUserName] = useState("");
     const [retryCount, setRetryCount] = useState(0);
     const [reviewStatus, setReviewStatus] = useState<"arriving" | "cancelled" | "delivered" | null>(null);
-    const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
     const retryFetch = () => {
         if (retryCount < 3) {
@@ -64,53 +61,13 @@ const OrderDetailPage = () => {
         }
     };
 
-    const handleDownloadInvoice = async () => {
-        if (!orderId || !user || !sessionKey) {
-            toast.error("Unable to download invoice. Please try again.");
+    const handleDownloadInvoice = () => {
+        if (!orderId) {
+            toast.error("Unable to view invoice. Please try again.");
             return;
         }
-
-        try {
-            setDownloadingInvoice(true);
-
-            // Construct invoice download URL
-            const invoiceUrl = `${ENV_CONFIG.API_BASE_URL}/api/invoice/${orderId}`;
-
-            // Create a temporary link to trigger download
-            const link = document.createElement('a');
-            link.href = invoiceUrl;
-            link.download = `invoice-${orderId}.pdf`;
-
-            // Add authentication headers via fetch first to check if file exists
-            const response = await fetch(invoiceUrl, {
-                method: 'GET',
-                headers: buildAuthHeaders(sessionKey),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to download invoice');
-            }
-
-            // Get the blob and create object URL
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            link.href = url;
-
-            // Trigger download
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Clean up
-            window.URL.revokeObjectURL(url);
-
-            toast.success("Invoice downloaded successfully");
-        } catch (error) {
-            logger.error("Failed to download invoice", error, "orders/[id]/page");
-            toast.error("Failed to download invoice. Please try again.");
-        } finally {
-            setDownloadingInvoice(false);
-        }
+        // Navigate to invoice page with order ID
+        router.push(`/invoice?orderId=${encodeURIComponent(orderId)}`);
     };
 
     useEffect(() => {
@@ -361,13 +318,12 @@ const OrderDetailPage = () => {
                         <p className={`font-semibold ${getStatusColor(order.status)}`}>{order.status}</p>
                         <Button
                             onClick={handleDownloadInvoice}
-                            disabled={downloadingInvoice}
                             variant="ghost"
                             className="flex items-center gap-2 text-gray-700 md:text-[18px] text-[16px] hover:cursor-pointer
-                            p-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-transparent hover:text-gray-700"
+                            p-2 rounded-md transition-colors hover:bg-transparent hover:text-gray-700"
                         >
                             <PiFilePdfBold size={22} />
-                            <span className="text-sm">{downloadingInvoice ? "Downloading..." : "Invoice"}</span>
+                            <span className="text-sm">Download Invoice</span>
                         </Button>
                     </div>
                 </div>

@@ -121,7 +121,7 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
                     <h2 className="text-[#1A2819] hover:text-[#057A37] hover:cursor-pointer font-[Grafiels] text-[25px] leading-tight mb-4">{product.name}</h2>
                   </Link>
                   <div>
-                    {index === 0 && product.tagline && <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">{product.tagline}</p>}
+                    <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">{product.tagline}</p>
                   </div>
                   {/* <div className="flex flex-wrap gap-2 items-center mb-3 text-[12px] text-[#555]">
                     {product.brand && <span className="px-2 py-1 border rounded">Brand: {product.brand}</span>}
@@ -139,11 +139,11 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
                       className="text-[12px]"
                     />
                   </div>
-                  {index === 1 && (
+                  {/* {index === 1 && (
                     <div>
                       <p className="mb-3 text-[15px]">{product.short_description}</p>
                     </div>
-                  )}
+                  )} */}
                   {product.description.map((desc, i) => (
                     <p key={i} className="text-[15px] mb-3">{desc}</p>
                   ))}
