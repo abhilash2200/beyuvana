@@ -2,8 +2,9 @@
 
 import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
+import { invoiceApi } from "@/lib/api/invoice"
 import { orderDetailsApi } from "@/lib/api/orders"
-import type { OrderDetailsData } from "@/lib/api/types"
+import type { InvoiceData } from "@/lib/api/types"
 import { useAuth } from "@/context/AuthProvider"
 import { toast } from "react-toastify"
 import { ErrorBoundary } from "@/components/common/ErrorBoundary"
@@ -16,17 +17,17 @@ import { PiFilePdfBold } from "react-icons/pi"
 
 function InvoicePageContent() {
     const searchParams = useSearchParams()
-    const orderIdParam = searchParams.get("orderId")
+    const orderNoParam = searchParams.get("orderNo") || searchParams.get("orderId")
 
-    const [orderDetails, setOrderDetails] = useState<OrderDetailsData | null>(null)
+    const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const { user, sessionKey } = useAuth()
 
     useEffect(() => {
-        const fetchOrderDetails = async () => {
-            if (!orderIdParam) {
-                setError("No order ID provided")
+        const fetchInvoice = async () => {
+            if (!orderNoParam) {
+                setError("No order number provided")
                 setLoading(false)
                 return
             }
@@ -42,16 +43,80 @@ function InvoicePageContent() {
                 setLoading(true)
                 setError(null)
 
-                const response = await orderDetailsApi.getOrderDetails(orderIdParam, user.id.toString(), sessionKey)
+                const userId = parseInt(user.id)
+                if (isNaN(userId)) {
+                    throw new Error("Invalid user ID")
+                }
 
-                if (response && response.status && response.data) {
-                    setOrderDetails(response.data)
+                // Check if orderNoParam is a numeric ID or an order number
+                // Order numbers typically start with "ORD" or similar prefix
+                // If it's just a number, we need to fetch order details first to get the order number
+                let actualOrderNo = orderNoParam
+                const isNumericId = /^\d+$/.test(orderNoParam || "")
+
+                if (isNumericId && orderNoParam) {
+                    // It's a numeric ID, fetch order details to get the order number
+                    try {
+                        const orderDetailsResponse = await orderDetailsApi.getOrderDetails(
+                            orderNoParam,
+                            user.id.toString(),
+                            sessionKey
+                        )
+
+                        if (orderDetailsResponse && orderDetailsResponse.status && orderDetailsResponse.data) {
+                            actualOrderNo = orderDetailsResponse.data.order_details.order_no
+                        } else {
+                            throw new Error(orderDetailsResponse?.message || "Failed to fetch order details. Please check the order ID.")
+                        }
+                    } catch (orderError) {
+                        throw new Error(`Failed to fetch order details: ${orderError instanceof Error ? orderError.message : "Unknown error"}`)
+                    }
+                }
+
+                const response = await invoiceApi.getInvoice(userId, actualOrderNo, sessionKey)
+
+                // Check if response is valid
+                if (!response) {
+                    setError("No response received from server")
+                    toast.error("No response received from server")
+                    return
+                }
+
+                // The API returns: { status: true, message: "...", code: 200, data: {...} }
+                // When record is found: data is an object
+                // When record is not found: data is an empty array [] and message is "Record not found"
+
+                if (response.status === true && response.data) {
+                    // Check if data is an array (record not found case)
+                    if (Array.isArray(response.data)) {
+                        if (response.data.length === 0) {
+                            // Empty array means record not found
+                            const errorMsg = response.message || "Invoice not found. Please check the order number."
+                            setError(errorMsg)
+                            toast.error(errorMsg)
+                            return
+                        }
+                        // If array has items, it's unexpected - show error
+                        setError("Invalid invoice data format received from server")
+                        toast.error("Invalid invoice data format received from server")
+                        return
+                    }
+
+                    // Check if data has the expected structure (object)
+                    if (typeof response.data === 'object' && response.data !== null) {
+                        setInvoiceData(response.data as InvoiceData)
+                    } else {
+                        setError("Invalid invoice data received from server")
+                        toast.error("Invalid invoice data received from server")
+                    }
                 } else {
-                    setError(response?.message || "Failed to load invoice details")
-                    toast.error(response?.message || "Failed to load invoice details")
+                    // Handle case where status is false or data is missing
+                    const errorMsg = response?.message || `Failed to load invoice. Status: ${response?.status}, Has data: ${!!response?.data}`
+                    setError(errorMsg)
+                    toast.error(errorMsg)
                 }
             } catch (err) {
-                logger.error("Failed to fetch order details", err, "invoice/page")
+                logger.error("Failed to fetch invoice", err, "invoice/page")
                 const appError = handleError(err, {
                     context: "invoice/page",
                     userMessage: "Failed to load invoice. Please try again.",
@@ -63,8 +128,8 @@ function InvoicePageContent() {
             }
         }
 
-        fetchOrderDetails()
-    }, [orderIdParam, user, sessionKey])
+        fetchInvoice()
+    }, [orderNoParam, user, sessionKey])
 
     const handleSaveAsPdf = () => {
         // Trigger browser print dialog
@@ -92,7 +157,7 @@ function InvoicePageContent() {
         )
     }
 
-    if (!orderDetails) {
+    if (!invoiceData) {
         return (
             <div className="flex justify-center items-center py-20 min-h-[400px]">
                 <div className="text-center max-w-md">
@@ -212,8 +277,8 @@ function InvoicePageContent() {
                     {/* Invoice Display */}
                     <div className="invoice-container px-4 md:px-6 rounded-lg mb-6">
                         <InvoiceDisplay
-                            orderDetails={orderDetails}
-                            invoiceNumber={orderDetails.order_details.order_no}
+                            invoiceData={invoiceData}
+                            invoiceNumber={invoiceData.invoice_number}
                         />
                     </div>
 

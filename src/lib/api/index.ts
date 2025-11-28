@@ -16,6 +16,7 @@ export { checkoutApi } from "./checkout";
 export { reviewApi } from "./reviews";
 export { contactApi } from "./contact";
 export { promoApi } from "./promo";
+export { invoiceApi } from "./invoice";
 
 // Type exports
 export type * from "./types";

@@ -446,3 +446,69 @@ export interface CheckoutResponseData {
   payment_response?: PaymentResponse[];
 }
 
+// Invoice Types
+export interface InvoiceSoldBy {
+  name: string;
+  address: string;
+  gstin: string;
+  irn: string;
+}
+
+export interface InvoiceBillTo {
+  name: string;
+  business: string;
+  address: string;
+  phone: string;
+  gstin: string | null;
+}
+
+export interface InvoiceShipTo {
+  name: string;
+  address: string;
+  phone: string;
+}
+
+export interface InvoiceItem {
+  product: string;
+  title: string;
+  fsn: string;
+  hsn_sac: string;
+  warranty: string;
+  qty: number;
+  gross_amount: number;
+  discount: number;
+  taxable_value: number;
+  cgst: number;
+  sgst_utgst: number;
+  total: number;
+}
+
+export interface InvoiceSummary {
+  total_items: number;
+  total_amount_before_discount: number;
+  total_discount: number;
+  taxable_value: number;
+  cgst: number;
+  sgst_utgst: number;
+  grand_total: number;
+}
+
+export interface InvoiceData {
+  invoice_number: string;
+  invoice_date: string;
+  order_id: string;
+  order_date: string;
+  payment_reference: string | null;
+  sold_by: InvoiceSoldBy;
+  bill_to: InvoiceBillTo;
+  ship_to: InvoiceShipTo;
+  items: InvoiceItem[];
+  summary: InvoiceSummary;
+  signature: string;
+}
+
+export interface InvoiceRequest {
+  user_id: number;
+  order_no: string;
+}
+
