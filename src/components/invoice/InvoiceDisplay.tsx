@@ -247,7 +247,7 @@ const InvoiceDisplay = ({
                             <p className="text-sm font-semibold text-gray-800">{signature || "Authorized Signatory - BTPL Distribution Private Limited"}</p>
                         </div>
                         <div className="mt-2">
-                            <Image src="/assets/img/signature.jpg" alt="Signature" width={100} height={100} className="w-48 h-48 object-contain" />
+                            <Image src="/assets/img/signature.png" alt="Signature" width={100} height={100} className="w-48 h-16" />
                             <div className="border-b-2 border-gray-600 w-48 mb-1"></div>
                             <p className="text-xs text-gray-600">Authorized Signatory</p>
                         </div>
