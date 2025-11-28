@@ -2,6 +2,7 @@
 
 import React from "react"
 import type { InvoiceData } from "@/lib/api/types"
+import Image from "next/image"
 
 interface InvoiceDisplayProps {
     invoiceData: InvoiceData
@@ -245,7 +246,8 @@ const InvoiceDisplay = ({
                         <div className="mb-2">
                             <p className="text-sm font-semibold text-gray-800">{signature || "Authorized Signatory - BTPL Distribution Private Limited"}</p>
                         </div>
-                        <div className="mt-16">
+                        <div className="mt-2">
+                            <Image src="/assets/img/signature.jpg" alt="Signature" width={100} height={100} className="w-48 h-48 object-contain" />
                             <div className="border-b-2 border-gray-600 w-48 mb-1"></div>
                             <p className="text-xs text-gray-600">Authorized Signatory</p>
                         </div>
