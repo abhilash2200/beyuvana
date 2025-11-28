@@ -2,8 +2,8 @@ import ProductsLists from '@/components/product/ProductsLists'
 import { productsApi, convertToLegacyProduct } from "@/lib/api/products";
 import React from 'react'
 import { handleError } from "@/lib/error-handling";
-import ComboProduct from '@/components/product/ComboProduct';
-import type { Product } from "@/lib/api/types";
+import ComboProduct, { type ComboProductData } from '@/components/product/ComboProduct';
+import type { Product, PriceTier } from "@/lib/api/types";
 
 async function fetchProducts() {
   try {
@@ -74,13 +74,83 @@ async function fetchProducts() {
   }
 }
 
+async function fetchComboProducts(): Promise<ComboProductData[]> {
+  try {
+    const response = await productsApi.getList({
+      filter: { product_type: ["combo"] },
+      sort: { id: "DESC" },
+      page: 1,
+      limit: 100,
+    });
+
+    const productsList = response.data && Array.isArray(response.data) ? response.data : [];
+
+    if (productsList.length === 0) {
+      return [];
+    }
+
+    // Fetch details for each combo product to get pricing information
+    const detailedProducts = await Promise.all(
+      productsList.map(async (apiProduct: Product) => {
+        try {
+          const detailsResponse = await productsApi.getDetails(apiProduct.id);
+          if (!detailsResponse.data) return null;
+
+          const productDetails = detailsResponse.data;
+          const tiers: PriceTier[] = Array.isArray(productDetails.prices) ? productDetails.prices : [];
+
+          // Get the first available tier (usually pack of 1)
+          const firstTier = tiers.length > 0 ? tiers[0] : null;
+
+          const mainImage = Array.isArray(productDetails.image) && productDetails.image.length > 0
+            ? productDetails.image[0]
+            : apiProduct.image_single || apiProduct.image || "/assets/img/collagen-green-product.png";
+
+          const productData: ComboProductData = {
+            id: productDetails.id,
+            name: productDetails.product_name,
+            price: firstTier ? Math.round(parseFloat(firstTier.final_price) || 0) : Math.round(parseFloat(productDetails.discount_price || "0") || 0),
+            mrp_price: firstTier ? Math.round(parseFloat(firstTier.mrp) || 0) : Math.round(parseFloat(productDetails.product_price || "0") || 0),
+            image: mainImage,
+            product_id: productDetails.id,
+            product_price_id: firstTier ? firstTier.product_price_id : "",
+            short_description: productDetails.short_description || "",
+            product_description: productDetails.product_description || "",
+          };
+
+          return productData;
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    const validProducts = detailedProducts.filter((product): product is ComboProductData =>
+      product !== null && product.product_price_id !== undefined && product.product_price_id !== ""
+    );
+
+    return validProducts;
+  } catch (err) {
+    handleError(err, {
+      context: "product/page - fetchComboProducts",
+      userMessage: "Failed to fetch combo products. Please try again.",
+      showToast: false,
+      silent: false,
+    });
+    return [];
+  }
+}
+
 const Page = async () => {
-  const products = await fetchProducts();
+  const [products, comboProducts] = await Promise.all([
+    fetchProducts(),
+    fetchComboProducts(),
+  ]);
 
   return (
     <div>
       <ProductsLists products={products} />
-      <ComboProduct />
+      <ComboProduct comboProducts={comboProducts} />
     </div>
   )
 }

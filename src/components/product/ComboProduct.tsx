@@ -10,7 +10,7 @@ import { useState, useEffect } from "react"
 import { productsApi } from "@/lib/api/products"
 import type { Product, PriceTier } from "@/lib/api/types"
 
-interface ComboProductData {
+export interface ComboProductData {
   id: string;
   name: string;
   price: number;
@@ -22,11 +22,20 @@ interface ComboProductData {
   product_description: string;
 }
 
-const ComboProduct = () => {
+interface ComboProductProps {
+  comboProducts?: ComboProductData[];
+}
+
+const ComboProduct = ({ comboProducts: initialComboProducts }: ComboProductProps) => {
   const { addToCart, loading, openCart } = useCart();
-  const [comboProducts, setComboProducts] = useState<ComboProductData[]>([]);
+  const [comboProducts, setComboProducts] = useState<ComboProductData[]>(initialComboProducts || []);
 
   useEffect(() => {
+    // Only fetch if no initial products were provided (backward compatibility)
+    if (initialComboProducts && initialComboProducts.length > 0) {
+      return;
+    }
+
     const fetchComboProducts = async () => {
       try {
         const response = await productsApi.getList({
@@ -89,7 +98,7 @@ const ComboProduct = () => {
     };
 
     fetchComboProducts();
-  }, []);
+  }, [initialComboProducts]);
 
   const handleAddToCart = async (product: ComboProductData) => {
     if (!product.product_price_id) {
