@@ -40,6 +40,18 @@ export interface Compare {
   paraColor: string;
 }
 
+export interface CompareProductData {
+  leftContent: {
+    title: string;
+    points: string[];
+  };
+  rightContent: {
+    title: string;
+    points: string[];
+  };
+  image: string;
+}
+
 export interface Builder {
   id: number;
   img: string;
@@ -100,6 +112,7 @@ export interface Product {
   actionItems?: ActionItem[];
   whyItems?: WhyItem[];
   compare?: Compare[];
+  compareProduct?: CompareProductData;
   builder?: Builder[];
   plants?: Plant[];
   tabItems?: TabItem[];
@@ -828,7 +841,7 @@ export const fallbackProducts: Product[] = [
         plusColor: "#057A37",
         xColor: "#FFFFFF",
       },
-    
+
       // ⚗️ --- Chemical / nutrient compounds after ---
       {
         id: 9,
@@ -975,6 +988,48 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
     ],
+    compareProduct: {
+      leftContent: {
+        title: "BEYUVANA™ Premium Collagen Builder",
+        points: [
+          "100% Vegetarian • No Gelatin",
+          "Complete Collagen Support Nutrients (Amla Vitamin C,Bamboo Silica, Lysine,Proline)",
+          "21 Synergistic Plant-Based Actives",
+          "Advanced Antioxidant Protection (CoQ10,Astaxanthin, Resveratrol)",
+          "Hyaluronic Acid for Deep Hydration",
+          "Clinically Proven Ingredients • ScienceBacked Formula",
+          "Essential Vitamins & Minerals (Vit C, Vit E, Zinc,Selenium)",
+          "Naturally Sweetened with Stevia (Optional)",
+          "Multi-Benefit Skin, Hair & Wellness Support",
+          "Fresh-Lock Sachet Packaging",
+          "Balanced, Daily-Use Friendly Formula",
+          "NON-GMO Ingredients",
+          "GMP Certified Manufacturing",
+          "Triple Lab-Tested Safety (Heavy Metals, Aflatoxins, Microbiology)",
+          "FSSAI Approved",
+        ],
+      },
+      rightContent: {
+        title: "Typical Market Anti-Aging Products",
+        points: [
+          "Marine/Bovine collagen, gelatin capsules",
+          "Only collagen peptides, no supporting nutrients.",
+          "Minimal antioxidant support",
+          "Rarely included",
+          "No clinical-strength actives",
+          "Low or ineffective dosage",
+          "Sucralose, maltodextrin, artificial sweeteners",
+          "Collagen-only focus (wrinkles/elasticity only)",
+          "Bulk tubs, lower freshness & oxidation",
+          "Unbalanced singleingredient doses",
+          "Unknown or mixed sourcing",
+          "Rarely fully lab-tested",
+          "No clear manufacturing standards",
+          "Not always compliancebacked",
+        ],
+      },
+      image: "/assets/img/product-details/compare-glow-green.png",
+    },
   },
   {
     id: 2,
@@ -1429,7 +1484,7 @@ export const fallbackProducts: Product[] = [
           {
             value: "61%",
             description: " Vitamin D, B12",
-            source:  "NLM-indexed meta-analyses and national nutrition surveys",
+            source: "NLM-indexed meta-analyses and national nutrition surveys",
           },
           {
             value: "",
@@ -1736,7 +1791,7 @@ export const fallbackProducts: Product[] = [
         plusColor: "#B00404",
         xColor: "#FFFFFF",
       },
-    
+
       {
         id: 13,
         img: "/assets/img/product-details/gif/l-glutathione.jpg",
@@ -1810,5 +1865,38 @@ export const fallbackProducts: Product[] = [
         xColor: "#FFFFFF",
       },
     ],
+    compareProduct: {
+      leftContent: {
+        title: "BEYUVANA™ Glow Essence",
+        points: [
+          "Uses 4X Liposomal Glutathione + Liposomal Vitamin C for enhanced absorption & deeper skin brightening.",
+          "Contains 18 clinically-backed synergistic actives for glow, acne, hydration, pigmentation & gut health.",
+          "Delivered in delicious 8g daily sachets with natural flavors—improves routine consistency & absorption.",
+          "Rich in powerful antioxidants like Grape Seed Extract, Astaxanthin, Green Tea, and Pomegranate.",
+          "Includes gut-skin axis support with Glutathione, Green Tea, and Pomegranate for holistic skin repair.",
+          "Powered by Ayurvedic adaptogens (Ashwagandha, Gotu Kola, Shatavari) for stress & hormonal balance.",
+          "Fuses modern science (Glutathione, HA, Zinc) with Ayurvedic wisdom for deeper rejuvenation.",
+          "Tailored for Indian skin needs using botanicals like Amla, Licorice, Ashwagandha.",
+          "Shows visible skin radiance from Week 3, with deep cellular improvements by Week 10.",
+          "Treats skin issues from within (inside-out approach) unlike serums that only act on the outer skin layer.",
+        ],
+      },
+      rightContent: {
+        title: "Typical Market Skin Products",
+        points: [
+          "Uses regular glutathione with poor absorption and minimal visible results.",
+          "Limited to 5–8 basic actives focused only on superficial glow.",
+          "Capsules/tablets often have poor compliance due to taste and digestion issues.",
+          "Lacks antioxidant synergy or uses synthetic alternatives.",
+          "Ignores gut health, focusing only on temporary surface-level appearance.",
+          "Offers no internal support for stress or hormone-related skin concerns.",
+          "One-sided: either synthetic chemicals or limited herbs—not an integrated blend.",
+          "Generic international formulas often not suited to Indian skin or climate.",
+          "Slower or inconsistent results due to weaker ingredients and lower bioactivity.",
+          "Serums provide surface-level glow without correcting internal skin dysfunction.",
+        ],
+      },
+      image: "/assets/img/product-details/compare-glow-pink.png",
+    },
   },
 ];

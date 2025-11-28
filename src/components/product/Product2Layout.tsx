@@ -246,7 +246,7 @@ export default function Product2Layout({ product }: { product: Product }) {
         <div className="container mx-auto px-4">
           <HeaderText textalign="text-center" heading="GLOW ESSENCE VS OTHER PRODUCTS" textcolor="text-[#1A2819]" />
           <p className="text-center mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">“Powered by 18 precision-selected plant actives to nourish your skin, strengthen your gut, and restore emotional balance.”</p>
-          <CompareProduct layoutType="pink" />
+          <CompareProduct layoutType="pink" product={product} />
         </div>
       </div>
       <div className="md:py-10 py-6">

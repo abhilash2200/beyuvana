@@ -139,9 +139,9 @@ export default function Product1Layout({ product }: { product: Product }) {
                     </div>
                 </div>
             </div>
-                <div className="md:py-10 py-6 bg-[#A9B528]">
-                    <Toxins />
-                </div>
+            <div className="md:py-10 py-6 bg-[#A9B528]">
+                <Toxins />
+            </div>
             <div className="container mx-auto px-4">
                 {/* <div className="md:py-10 py-6">
                     <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
@@ -286,7 +286,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                 <div className="container mx-auto px-4">
                     <HeaderText textalign="text-center" heading="BEYUVANA™ PREMIUM COLLAGEN BUILDER VS OTHER PRODUCTS" textcolor="text-[#1A2819]" />
                     <p className="text-center mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">“Powered by 18 precision-selected plant actives to nourish your skin, strengthen your gut, and restore emotional balance.”</p>
-                    <CompareProduct layoutType="green" />
+                    <CompareProduct layoutType="green" product={product} />
                 </div>
             </div>
             <div className="md:py-10 py-6">

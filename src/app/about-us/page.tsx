@@ -87,19 +87,27 @@ const page = () => {
       <section className='md:py-10 py-6'>
         <div className='container mx-auto px-4'>
           <div className='flex flex-wrap justify-evenly items-center gap-y-4'>
-            <div className='w-full md:w-[35%]'>
+            <div className='w-full md:w-[45%]'>
               <div className='flex flex-col gap-y-3'>
                 <Image src="/assets/img/misison.png" width={463} height={406} alt="misison" className='mb-3' />
                 <h2 className='text-[#122014] font-[Grafiels] text-[25px]'>Mission</h2>
-                <p className='w-full md:max-w-[80%]'>To empower every household with clean, affordable, plant-based nutrition—Helping people glow naturally, live energetically, and age gracefully, without ever compromising on quality or values.</p>
+                <p className='w-full md:max-w-[80%]'>Our mission is to create honest, science-backed inner-beauty nutrition that helps people feel
+                  confident, healthy, and naturally radiant from within. We are committed to clean, vegetarian
+                  formulations, lab-tested safety, and ingredients chosen with pure intention. Every product we
+                  make is crafted to support real people with real skin concerns — gently, transparently, and
+                  effectively.</p>
               </div>
             </div>
             <div className='w-1 h-96 border-r-1 border-dashed md:block hidden'></div>
-            <div className='w-full md:w-[35%]'>
+            <div className='w-full md:w-[45%]'>
               <div className='flex flex-col gap-y-3'>
                 <Image src="/assets/img/vision.png" width={463} height={406} alt="vision" className='mb-3' />
                 <h2 className='text-[#122014] font-[Grafiels] text-[25px]'>Vision</h2>
-                <p className='w-full md:max-w-[80%]'>To empower every household with clean, affordable, plant-based nutrition—Helping people glow naturally, live energetically, and age gracefully, without ever compromising on quality or values.</p>
+                <p className='w-full md:max-w-[80%]'>Our vision is to redefine beauty from the inside out.
+                  We aim to become India’s most trusted inner-beauty brand — known for purity, innovation,
+                  and heartfelt care. Through clean nutrition, scientific integrity, and genuine human
+                  connection, we envision a world where every person can experience skin that feels healthier,
+                  brighter, and truly their own — without filters, fear, or false promises.</p>
               </div>
             </div>
           </div>

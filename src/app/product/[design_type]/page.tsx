@@ -173,6 +173,7 @@ const mergeProductData = (
     actionItems: localProduct?.actionItems,
     whyItems: localProduct?.whyItems,
     compare: localProduct?.compare,
+    compareProduct: localProduct?.compareProduct,
     builder: localProduct?.builder,
     plants: localProduct?.plants,
     tabItems: localProduct?.tabItems,
