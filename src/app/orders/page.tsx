@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import HeaderText from "@/components/common/HeaderText"
-import Image from "next/image"
+import HeaderText from "@/components/common/HeaderText";
+import Image from "next/image";
 import { PiDotOutlineFill } from "react-icons/pi";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -22,11 +22,15 @@ const OrdersPage = () => {
   const [error, setError] = useState<string | null>(null);
   const { user, sessionKey } = useAuth();
 
-
   useEffect(() => {
-    if (typeof window !== 'undefined' && process.env.NODE_ENV === "development") {
-      (window as unknown as Record<string, unknown>).testOrderNavigation = (orderId?: string) => {
-        const testId = orderId || (orders.length > 0 ? orders[0].id : '81');
+    if (
+      typeof window !== "undefined" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      (window as unknown as Record<string, unknown>).testOrderNavigation = (
+        orderId?: string,
+      ) => {
+        const testId = orderId || (orders.length > 0 ? orders[0].id : "81");
         const encodedId = encodeURIComponent(testId);
         const url = `/orders/${encodedId}`;
 
@@ -55,7 +59,10 @@ const OrdersPage = () => {
           setOrders(response.data);
         } else {
           setError(response.message || "Failed to fetch orders");
-          if (response.message && !response.message.includes("under development")) {
+          if (
+            response.message &&
+            !response.message.includes("under development")
+          ) {
             toast.error(response.message);
           }
         }
@@ -80,7 +87,8 @@ const OrdersPage = () => {
 
     return (
       <p className="inline-flex items-center gap-x-1">
-        <PiDotOutlineFill className={`w-10 h-10 ${colorClass}`} /> {statusText} {date ? `${new Date(date).toLocaleDateString()}` : ""}
+        <PiDotOutlineFill className={`w-10 h-10 ${colorClass}`} /> {statusText}{" "}
+        {date ? `${new Date(date).toLocaleDateString()}` : ""}
       </p>
     );
   };
@@ -107,16 +115,24 @@ const OrdersPage = () => {
                 <div className="text-center max-w-md">
                   {error.includes("under development") ? (
                     <div className="text-orange-600">
-                      <p className="text-lg font-semibold mb-2">🚧 Feature Coming Soon</p>
+                      <p className="text-lg font-semibold mb-2">
+                        🚧 Feature Coming Soon
+                      </p>
                       <p>{error}</p>
-                      <Link href="/product" className="text-blue-600 underline mt-2 block">
+                      <Link
+                        href="/product"
+                        className="text-blue-600 underline mt-2 block"
+                      >
                         Browse our products instead
                       </Link>
                     </div>
                   ) : error.includes("log in") ? (
                     <div className="text-red-600">
                       <p>{error}</p>
-                      <Link href="/auth" className="text-blue-600 underline mt-2 block">
+                      <Link
+                        href="/auth"
+                        className="text-blue-600 underline mt-2 block"
+                      >
                         Please log in to view your orders
                       </Link>
                     </div>
@@ -139,70 +155,82 @@ const OrdersPage = () => {
               <div className="flex justify-center items-center py-10 min-h-[400px]">
                 <div className="text-gray-600 text-center">
                   <p>No orders found</p>
-                  <Link href="/product" className="text-blue-600 underline mt-2 block">
+                  <Link
+                    href="/product"
+                    className="text-blue-600 underline mt-2 block"
+                  >
                     Browse our products
                   </Link>
                 </div>
               </div>
             )}
 
-            {!loading && !error && orders.map((order) => {
-              const orderId = order.id?.trim();
-              if (!orderId) {
-                logger.warn("Order missing ID", { order }, "orders/page");
-                return null;
-              }
+            {!loading &&
+              !error &&
+              orders.map((order) => {
+                const orderId = order.id?.trim();
+                if (!orderId) {
+                  logger.warn("Order missing ID", { order }, "orders/page");
+                  return null;
+                }
 
-              return (
-                <Link
-                  key={order.id}
-                  href={`/orders/${encodeURIComponent(orderId)}`}
-                  className="block py-5 border-b border-gray-300 border-dashed hover:bg-gray-50 transition"
-                >
-                  <div className="flex flex-wrap justify-between items-center">
-                    <div className="w-full md:w-[40%]">
-                      <div className="flex gap-3">
-                        <div className="md:w-28 md:h-28 w-20 h-20 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
-                          {order.thumbnail ? (
-                            <Image
-                              src={order.thumbnail}
-                              width={120}
-                              height={120}
-                              alt={order.productName}
-                              className="object-contain max-h-full max-w-full"
-                            />
-                          ) : (
-                            <div className="text-gray-400 text-xs text-center p-2">
-                              No Image
-                            </div>
-                          )}
-                        </div>
+                return (
+                  <Link
+                    key={order.id}
+                    href={`/orders/${encodeURIComponent(orderId)}`}
+                    className="block py-5 border-b border-gray-300 border-dashed hover:bg-gray-50 transition"
+                  >
+                    <div className="flex flex-wrap justify-between items-center">
+                      <div className="w-full md:w-[40%]">
+                        <div className="flex gap-3">
+                          <div className="md:w-28 md:h-28 w-20 h-20 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden">
+                            {order.thumbnail ? (
+                              <Image
+                                src={order.thumbnail}
+                                width={120}
+                                height={120}
+                                alt={order.productName}
+                                className="object-contain max-h-full max-w-full"
+                              />
+                            ) : (
+                              <div className="text-gray-400 text-xs text-center p-2">
+                                No Image
+                              </div>
+                            )}
+                          </div>
 
-                        <div className="flex-1 flex flex-col">
-                          <p className="text-[10px] text-[#F24E1E] mb-1">Order ID: #{order.id}</p>
-                          <h2 className="font-[Grafiels] md:text-[18px] text-[16px] md:line-clamp-2 line-clamp-1 leading-tight mb-1 text-[#1A2819]">{order.productName}</h2>
-                          <p className="text-gray-600 md:text-[15px] text-[13px] line-clamp-2">{order.description}</p>
-                        </div>
-                        <div className="flex items-center justify-center md:hidden">
-                          <span><FaChevronRight className="text-black" /></span>
+                          <div className="flex-1 flex flex-col">
+                            <p className="text-[10px] text-[#F24E1E] mb-1">
+                              Order ID: #{order.id}
+                            </p>
+                            <h2 className="font-[Grafiels] md:text-[18px] text-[16px] md:line-clamp-2 line-clamp-1 leading-tight mb-1 text-[#1A2819]">
+                              {order.productName}
+                            </h2>
+                            <p className="text-gray-600 md:text-[15px] text-[13px] line-clamp-2">
+                              {order.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-center md:hidden">
+                            <span>
+                              <FaChevronRight className="text-black" />
+                            </span>
+                          </div>
                         </div>
                       </div>
 
+                      <div className="w-full md:w-[20%] hidden md:block">
+                        <p className="font-semibold">
+                          ₹{Math.round(order.price)}
+                        </p>
+                      </div>
+
+                      <div className="w-full md:w-[20%] hidden md:block">
+                        {getStatusUI(order)}
+                      </div>
                     </div>
-
-                    <div className="w-full md:w-[20%] hidden md:block">
-                      <p className="font-semibold">₹{Math.round(order.price)}</p>
-                    </div>
-
-                    <div className="w-full md:w-[20%] hidden md:block">
-                      {getStatusUI(order)}
-                    </div>
-
-
-                  </div>
-                </Link>
-              );
-            })}
+                  </Link>
+                );
+              })}
           </div>
         </div>
       </section>

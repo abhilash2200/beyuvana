@@ -112,10 +112,16 @@
 @keyframes glow {
   0%,
   100% {
-    text-shadow: 0 0 1px #02ff9e, 0 0 1px #02ff9e, 0 0 2px #02ff9e;
+    text-shadow:
+      0 0 1px #02ff9e,
+      0 0 1px #02ff9e,
+      0 0 2px #02ff9e;
   }
   50% {
-    text-shadow: 0 0 2px #02ff9e, 0 0 2px #02ff9e, 0 0 4px #00ff9d;
+    text-shadow:
+      0 0 2px #02ff9e,
+      0 0 2px #02ff9e,
+      0 0 4px #00ff9d;
   }
 }
 
@@ -173,8 +179,6 @@
 .comparearrow-btn:hover {
   @apply !bg-gray-100;
 }
-
-
 
 .respagination {
   @apply !absolute md:!bottom-[-0.8rem] !bottom-[-1.5rem] !flex gap-2;

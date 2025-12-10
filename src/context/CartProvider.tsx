@@ -57,15 +57,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     syncLockRef,
   });
 
-
   useEffect(() => {
     setCartLoadedFromStorage(true);
   }, []);
 
   useEffect(() => {
-    const hasStoredAuth = typeof window !== "undefined"
-      ? (localStorage.getItem("user") || localStorage.getItem("session_key"))
-      : null;
+    const hasStoredAuth =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || localStorage.getItem("session_key")
+        : null;
     if (hasStoredAuth) {
       // Wait for session validation to complete before initializing auth
       if (!isSessionValidating && (user !== null || sessionKey !== null)) {
@@ -82,7 +82,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setIsPageRefresh(false);
     }
   }, [authInitialized]);
-
 
   // Cart enhancement hook
   const { enhanceCartItems, enhancementInProgressRef } = useCartEnhancement({
@@ -118,7 +117,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (authInitialized && user && sessionKey && cartLoadedFromStorage) {
       syncWithServer();
     }
-  }, [user, sessionKey, authInitialized, cartLoadedFromStorage, syncWithServer]);
+  }, [
+    user,
+    sessionKey,
+    authInitialized,
+    cartLoadedFromStorage,
+    syncWithServer,
+  ]);
 
   // Enhance cart items with product details
   useEffect(() => {
@@ -126,7 +131,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       enhanceCartItems();
     }
   }, [cartItems, user, sessionKey, authInitialized, enhanceCartItems]);
-
 
   // Clear cart when user logs out
   useEffect(() => {
@@ -147,7 +151,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setCartItems([...cartItems]);
     }
   };
-
 
   return (
     <CartContext.Provider

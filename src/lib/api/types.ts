@@ -511,4 +511,3 @@ export interface InvoiceRequest {
   user_id: number;
   order_no: string;
 }
-

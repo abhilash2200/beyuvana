@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import Image from "next/image";
-import { Product } from "@/app/data/fallbackProducts"
+import { Product } from "@/app/data/fallbackProducts";
 
 const Builder = ({ product }: { product: Product }) => {
-  const slides = product?.builder || []
+  const slides = product?.builder || [];
 
   return (
     <div className="py-8">
@@ -49,7 +49,12 @@ const Builder = ({ product }: { product: Product }) => {
                 >
                   {item.title}
                 </h2>
-                <p className="md:text-[15px] text-[13px]" style={{ color: item.paraColor }}>{item.desc}</p>
+                <p
+                  className="md:text-[15px] text-[13px]"
+                  style={{ color: item.paraColor }}
+                >
+                  {item.desc}
+                </p>
               </div>
             </div>
           </SplideSlide>

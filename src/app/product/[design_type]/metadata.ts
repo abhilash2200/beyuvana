@@ -21,8 +21,14 @@ export function generateProductMetadata(designType: string): Metadata {
   }
 
   const productName = product.name;
-  const description = product.tagline || (product.description && product.description[0]) || `${productName} - Premium plant-based wellness supplement from BEYUVANA™`;
-  const image = product.images && product.images[0] ? product.images[0] : "/assets/img/logo.png";
+  const description =
+    product.tagline ||
+    (product.description && product.description[0]) ||
+    `${productName} - Premium plant-based wellness supplement from BEYUVANA™`;
+  const image =
+    product.images && product.images[0]
+      ? product.images[0]
+      : "/assets/img/logo.png";
 
   return {
     title: `${productName} | BEYUVANA™`,
@@ -58,4 +64,3 @@ export function generateProductMetadata(designType: string): Metadata {
     },
   };
 }
-

@@ -6,27 +6,30 @@
 import { apiFetch, ApiResponse } from "./core";
 import { buildAuthHeaders } from "../api-utils";
 import { mapOrderStatus } from "../utils/orderStatus";
-import type {
-  Order,
-  BackendOrderItem,
-  OrderDetailsData,
-} from "./types";
+import type { Order, BackendOrderItem, OrderDetailsData } from "./types";
 
 export const ordersApi = {
   getOrderList: async (
     sessionKey?: string,
     userId?: string,
-    status: string = "PENDING"
+    status: string = "PENDING",
   ): Promise<ApiResponse<Order[]>> => {
     try {
       const uid = userId ? Number(userId) : null;
 
-      async function fetchAndMap(payload: { user_id: number | null; status?: string; session_key: string | null }): Promise<{ resp: ApiResponse<BackendOrderItem[]>; mapped: Order[] }> {
-        const respLocal = await apiFetch<BackendOrderItem[]>("/api/order_list", {
-          method: "POST",
-          headers: buildAuthHeaders(sessionKey || undefined),
-          body: JSON.stringify(payload),
-        });
+      async function fetchAndMap(payload: {
+        user_id: number | null;
+        status?: string;
+        session_key: string | null;
+      }): Promise<{ resp: ApiResponse<BackendOrderItem[]>; mapped: Order[] }> {
+        const respLocal = await apiFetch<BackendOrderItem[]>(
+          "/api/order_list",
+          {
+            method: "POST",
+            headers: buildAuthHeaders(sessionKey || undefined),
+            body: JSON.stringify(payload),
+          },
+        );
 
         const rawLocal = respLocal as ApiResponse<BackendOrderItem[]>;
         const listLocal: BackendOrderItem[] = Array.isArray(rawLocal?.data)
@@ -37,17 +40,33 @@ export const ordersApi = {
           const id = String(o?.id ?? "");
           const productName = String(o?.product_name ?? o?.order_no ?? "Order");
           const description = `Order ${o?.order_no ?? id} • Qty ${o?.qty ?? "1"}`;
-          const price = Math.round(parseFloat(String(o?.paid_amount ?? o?.gross_amount ?? 0)) || 0);
+          const price = Math.round(
+            parseFloat(String(o?.paid_amount ?? o?.gross_amount ?? 0)) || 0,
+          );
 
           // Use shared status mapping utility
-          const { mappedStatus, displayStatus } = mapOrderStatus(o?.status, o?.pay_status);
+          const { mappedStatus, displayStatus } = mapOrderStatus(
+            o?.status,
+            o?.pay_status,
+          );
 
           const date = String(o?.created_date ?? o?.updated_at ?? "");
           const image = o?.thumbnail || "/assets/img/product-1.png";
           const thumbnail = o?.thumbnail;
           const product_id = o?.product_id ? String(o.product_id) : undefined;
 
-          return { id, productName, description, price, status: mappedStatus, displayStatus, date, image, thumbnail, product_id };
+          return {
+            id,
+            productName,
+            description,
+            price,
+            status: mappedStatus,
+            displayStatus,
+            date,
+            image,
+            thumbnail,
+            product_id,
+          };
         });
 
         return { resp: respLocal, mapped: mappedLocal };
@@ -55,24 +74,39 @@ export const ordersApi = {
 
       // If status is empty or undefined, fetch all orders without status filter
       if (!status || status.trim() === "") {
-        const result = await fetchAndMap({ user_id: uid, session_key: sessionKey || null });
+        const result = await fetchAndMap({
+          user_id: uid,
+          session_key: sessionKey || null,
+        });
         return { ...result.resp, data: result.mapped } as ApiResponse<Order[]>;
       }
 
       // 1) Try with given status
-      let { resp, mapped } = await fetchAndMap({ user_id: uid, status, session_key: sessionKey || null });
+      let { resp, mapped } = await fetchAndMap({
+        user_id: uid,
+        status,
+        session_key: sessionKey || null,
+      });
 
       // 2) If empty, try without status to get all orders
       if (mapped.length === 0) {
-        const result = await fetchAndMap({ user_id: uid, session_key: sessionKey || null });
+        const result = await fetchAndMap({
+          user_id: uid,
+          session_key: sessionKey || null,
+        });
         resp = result.resp;
         mapped = result.mapped;
       }
 
       // 3) If still empty, swap between "PENDING" and "Upcoming"
       if (mapped.length === 0) {
-        const alt = status?.toUpperCase() === "Upcoming" ? "PENDING" : "Upcoming";
-        const result = await fetchAndMap({ user_id: uid, status: alt, session_key: sessionKey || null });
+        const alt =
+          status?.toUpperCase() === "Upcoming" ? "PENDING" : "Upcoming";
+        const result = await fetchAndMap({
+          user_id: uid,
+          status: alt,
+          session_key: sessionKey || null,
+        });
         resp = result.resp;
         mapped = result.mapped;
       }
@@ -106,7 +140,11 @@ export const ordersApi = {
 };
 
 export const orderDetailsApi = {
-  getOrderDetails: async (orderId: string, userId: string, sessionKey?: string): Promise<ApiResponse<OrderDetailsData>> => {
+  getOrderDetails: async (
+    orderId: string,
+    userId: string,
+    sessionKey?: string,
+  ): Promise<ApiResponse<OrderDetailsData>> => {
     try {
       const requestBody = {
         user_id: parseInt(userId),
@@ -142,4 +180,3 @@ export const orderDetailsApi = {
     }
   },
 };
-

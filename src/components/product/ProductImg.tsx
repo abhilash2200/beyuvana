@@ -14,12 +14,18 @@ interface ProductImgProps {
   designType?: "GREEN" | "PINK"; // Design type to find correct product
 }
 
-const ProductImg = React.memo(function ProductImg({ designType }: ProductImgProps) {
+const ProductImg = React.memo(function ProductImg({
+  designType,
+}: ProductImgProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const splideRef = useRef<{ splide: { go: (direction: string | number) => void; index: number } } | null>(null);
+  const splideRef = useRef<{
+    splide: { go: (direction: string | number) => void; index: number };
+  } | null>(null);
 
   // Get images ONLY from fallbackProducts.ts based on design type
-  const localProduct = fallbackProducts.find((p) => p.design_type === designType);
+  const localProduct = fallbackProducts.find(
+    (p) => p.design_type === designType,
+  );
   const images = localProduct?.images || [];
 
   return (
@@ -78,8 +84,11 @@ const ProductImg = React.memo(function ProductImg({ designType }: ProductImgProp
                   setSelectedIndex(idx);
                   splideRef.current?.splide?.go(idx);
                 }}
-                className={`p-2 rounded-xl border transition ${selectedIndex === idx ? "border-green-500 shadow-md" : "border-transparent"
-                  }`}
+                className={`p-2 rounded-xl border transition ${
+                  selectedIndex === idx
+                    ? "border-green-500 shadow-md"
+                    : "border-transparent"
+                }`}
               >
                 <Image
                   src={img}

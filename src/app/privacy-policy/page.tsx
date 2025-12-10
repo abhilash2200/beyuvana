@@ -12,43 +12,55 @@ const Page = () => {
       />
 
       <p className="mt-6">
-        At <strong>Beyuvana</strong>, we value your privacy and are committed to protecting
-        the personal information you share with us. This Privacy Policy explains
-        how we collect, use, and safeguard your information when you visit our
-        website or make a purchase.
+        At <strong>Beyuvana</strong>, we value your privacy and are committed to
+        protecting the personal information you share with us. This Privacy
+        Policy explains how we collect, use, and safeguard your information when
+        you visit our website or make a purchase.
       </p>
 
       <h2 className="mt-8 font-semibold text-lg">1. Information We Collect</h2>
-      <p className="mt-2">
-        We may collect the following types of information:
-      </p>
+      <p className="mt-2">We may collect the following types of information:</p>
       <ul className="list-disc ml-6 mt-2">
-        <li>Personal details such as name, email, phone number, and shipping address.</li>
-        <li>Payment information, which is securely processed by our payment gateway.</li>
-        <li>Order history and preferences to improve your shopping experience.</li>
+        <li>
+          Personal details such as name, email, phone number, and shipping
+          address.
+        </li>
+        <li>
+          Payment information, which is securely processed by our payment
+          gateway.
+        </li>
+        <li>
+          Order history and preferences to improve your shopping experience.
+        </li>
         <li>Cookies and browsing data to understand website usage.</li>
       </ul>
 
-      <h2 className="mt-8 font-semibold text-lg">2. How We Use Your Information</h2>
+      <h2 className="mt-8 font-semibold text-lg">
+        2. How We Use Your Information
+      </h2>
       <p className="mt-2">
         Your information is used for the following purposes:
       </p>
       <ul className="list-disc ml-6 mt-2">
         <li>Processing and fulfilling your orders.</li>
         <li>Providing customer support and responding to inquiries.</li>
-        <li>Sending promotional emails or updates (you can unsubscribe anytime).</li>
+        <li>
+          Sending promotional emails or updates (you can unsubscribe anytime).
+        </li>
         <li>Improving website functionality and user experience.</li>
       </ul>
 
       <h2 className="mt-8 font-semibold text-lg">3. Data Security</h2>
       <p className="mt-2">
-        We implement industry-standard security measures to protect your personal
-        information from unauthorized access, disclosure, or alteration. Payment
-        details are handled securely by trusted third-party gateways and are
-        not stored on our servers.
+        We implement industry-standard security measures to protect your
+        personal information from unauthorized access, disclosure, or
+        alteration. Payment details are handled securely by trusted third-party
+        gateways and are not stored on our servers.
       </p>
 
-      <h2 className="mt-8 font-semibold text-lg">4. Sharing Your Information</h2>
+      <h2 className="mt-8 font-semibold text-lg">
+        4. Sharing Your Information
+      </h2>
       <p className="mt-2">
         We do not sell or rent your personal information to third parties. Your
         data may be shared only with trusted partners or service providers to
@@ -71,10 +83,12 @@ const Page = () => {
 
       <h2 className="mt-8 font-semibold text-lg">7. Contact Us</h2>
       <p className="mt-2">
-        If you have questions or concerns about this Privacy Policy, please contact us at{" "}
+        If you have questions or concerns about this Privacy Policy, please
+        contact us at{" "}
         <a href="mailto:support@beyuvana.com" className="text-[#057A37]">
           support@beyuvana.com
-        </a>.
+        </a>
+        .
       </p>
 
       <p className="mt-8 text-sm italic">

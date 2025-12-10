@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { reviewApi } from '@/lib/api/reviews';
-import { calculateRatingStats, RatingStats } from '@/lib/ratingUtils';
+import { useState, useEffect, useCallback } from "react";
+import { reviewApi } from "@/lib/api/reviews";
+import { calculateRatingStats, RatingStats } from "@/lib/ratingUtils";
 
 interface UseProductRatingProps {
   productId: number | string;
@@ -20,12 +20,12 @@ interface UseProductRatingReturn {
 export function useProductRating({
   productId,
   sessionKey,
-  enabled = true
+  enabled = true,
 }: UseProductRatingProps): UseProductRatingReturn {
   const [ratingStats, setRatingStats] = useState<RatingStats>({
     averageRating: 0,
     totalReviews: 0,
-    ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+    ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,10 @@ export function useProductRating({
     setError(null);
 
     try {
-      const response = await reviewApi.getReviews(Number(productId), sessionKey);
+      const response = await reviewApi.getReviews(
+        Number(productId),
+        sessionKey,
+      );
 
       let reviews = [];
       if (response?.data) {
@@ -54,12 +57,14 @@ export function useProductRating({
       const stats = calculateRatingStats(reviews);
       setRatingStats(stats);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch rating data');
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch rating data",
+      );
 
       setRatingStats({
         averageRating: 0,
         totalReviews: 0,
-        ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+        ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
       });
     } finally {
       setLoading(false);
@@ -77,6 +82,6 @@ export function useProductRating({
     ratingStats,
     loading,
     error,
-    refetch: fetchRatingData
+    refetch: fetchRatingData,
   };
 }

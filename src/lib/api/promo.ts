@@ -23,7 +23,7 @@ export interface PromoDetailsResponse {
 export const promoApi = {
   getPromoDetails: async (
     promoData: PromoDetailsRequest,
-    sessionKey?: string
+    sessionKey?: string,
   ): Promise<ApiResponse<PromoDetailsResponse>> => {
     try {
       const { cachedApiCall } = await import("../api-cache");
@@ -48,15 +48,14 @@ export const promoApi = {
             ttl: 60 * 1000,
           },
           requestOptions,
-        }
+        },
       );
     } catch (error) {
       throw new Error(
         error instanceof Error
           ? error.message
-          : "Failed to get promo details. Please try again later."
+          : "Failed to get promo details. Please try again later.",
       );
     }
   },
 };
-

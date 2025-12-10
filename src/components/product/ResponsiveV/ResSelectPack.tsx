@@ -13,360 +13,395 @@ import { designSlugToProductId } from "@/app/data/productConfigs";
 import ProductRating from "../ProductRating";
 
 type Pack = {
-    qty: number;
-    sachets: number;
-    price: number;
-    originalPrice: number;
-    discount: string;
-    tagline: string;
-    product_price_id?: string;
-    unit_name?: string;
-    isTrialPack?: boolean;
+  qty: number;
+  sachets: number;
+  price: number;
+  originalPrice: number;
+  discount: string;
+  tagline: string;
+  product_price_id?: string;
+  unit_name?: string;
+  isTrialPack?: boolean;
 };
 
 type Product = {
-    id: string;
-    name: string;
-    packs: Pack[];
-    image: string;
-    product_details?: ApiProduct;
-    short_description?: string;
+  id: string;
+  name: string;
+  packs: Pack[];
+  image: string;
+  product_details?: ApiProduct;
+  short_description?: string;
 };
 
 function formatINR(value: number): string {
-    const rounded = Math.round(value || 0);
-    return new Intl.NumberFormat("en-IN").format(rounded);
+  const rounded = Math.round(value || 0);
+  return new Intl.NumberFormat("en-IN").format(rounded);
 }
 
-function getDefaultSachets(designType: "green" | "pink" | undefined, qty: number): number {
-    if (designType === "green") {
-        const base = 15;
-        return qty * base;
-    }
-    if (designType === "pink") {
-        const base = 20;
-        return qty * base;
-    }
-    return qty;
+function getDefaultSachets(
+  designType: "green" | "pink" | undefined,
+  qty: number,
+): number {
+  if (designType === "green") {
+    const base = 15;
+    return qty * base;
+  }
+  if (designType === "pink") {
+    const base = 20;
+    return qty * base;
+  }
+  return qty;
 }
 
 function getPackTagline(
-    designType: "green" | "pink" | undefined,
-    qty: number
+  designType: "green" | "pink" | undefined,
+  qty: number,
 ): string {
-    if (designType === "green") {
-        if (qty === 1) return "See first glow in 2 weeks";
-        if (qty === 2) return "Best for visible results in 30 days";
-        if (qty === 4) return "Transform your skin in 60 days";
-    }
-    if (designType === "pink") {
-        if (qty === 1) return "Glow in just 10 days";
-        if (qty === 2) return "Perfect for 2 months care";
-        if (qty === 4) return "Perfect for 3 months care";
-    }
-    return "";
+  if (designType === "green") {
+    if (qty === 1) return "See first glow in 2 weeks";
+    if (qty === 2) return "Best for visible results in 30 days";
+    if (qty === 4) return "Transform your skin in 60 days";
+  }
+  if (designType === "pink") {
+    if (qty === 1) return "Glow in just 10 days";
+    if (qty === 2) return "Perfect for 2 months care";
+    if (qty === 4) return "Perfect for 3 months care";
+  }
+  return "";
 }
 
 function buildPacksFromPrices(
-    prices: PriceTier[] | undefined,
-    designType: "green" | "pink" | undefined
+  prices: PriceTier[] | undefined,
+  designType: "green" | "pink" | undefined,
 ): Pack[] {
-    if (!Array.isArray(prices) || prices.length === 0) return [];
+  if (!Array.isArray(prices) || prices.length === 0) return [];
 
-    const trialPackTier = prices.find((tier) => tier.unit_name === "Pc");
-    const regularPacksTiers = prices.filter((tier) => tier.unit_name !== "Pc");
+  const trialPackTier = prices.find((tier) => tier.unit_name === "Pc");
+  const regularPacksTiers = prices.filter((tier) => tier.unit_name !== "Pc");
 
-    const trialPack: Pack | null = trialPackTier
-        ? (() => {
-            const qty = Number(trialPackTier.qty);
-            const mrp = parseFloat(trialPackTier.mrp || "0");
-            const final = parseFloat(trialPackTier.final_price || "0");
-            const discountPercent = parseFloat(trialPackTier.discount_off_inpercent || "0");
+  const trialPack: Pack | null = trialPackTier
+    ? (() => {
+        const qty = Number(trialPackTier.qty);
+        const mrp = parseFloat(trialPackTier.mrp || "0");
+        const final = parseFloat(trialPackTier.final_price || "0");
+        const discountPercent = parseFloat(
+          trialPackTier.discount_off_inpercent || "0",
+        );
 
-            return {
-                qty,
-                sachets: 5,
-                price: Math.round(final),
-                originalPrice: Math.round(mrp),
-                discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
-                tagline: "Free Trial",
-                product_price_id: trialPackTier.product_price_id,
-                unit_name: trialPackTier.unit_name,
-                isTrialPack: true,
-            } as Pack;
-        })()
-        : null;
+        return {
+          qty,
+          sachets: 5,
+          price: Math.round(final),
+          originalPrice: Math.round(mrp),
+          discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
+          tagline: "Free Trial",
+          product_price_id: trialPackTier.product_price_id,
+          unit_name: trialPackTier.unit_name,
+          isTrialPack: true,
+        } as Pack;
+      })()
+    : null;
 
-    const regularPacks = regularPacksTiers
-        .map((tier) => {
-            const qty = Number(tier.qty);
-            const mrp = parseFloat(tier.mrp || "0");
-            const final = parseFloat(tier.final_price || "0");
-            const discountPercent = parseFloat(tier.discount_off_inpercent || "0");
+  const regularPacks = regularPacksTiers
+    .map((tier) => {
+      const qty = Number(tier.qty);
+      const mrp = parseFloat(tier.mrp || "0");
+      const final = parseFloat(tier.final_price || "0");
+      const discountPercent = parseFloat(tier.discount_off_inpercent || "0");
 
-            return {
-                qty,
-                sachets: getDefaultSachets(designType, qty),
-                price: Math.round(final),
-                originalPrice: Math.round(mrp),
-                discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
-                tagline: getPackTagline(designType, qty),
-                product_price_id: tier.product_price_id,
-                unit_name: tier.unit_name,
-                isTrialPack: false,
-            } as Pack;
-        })
-        .sort((a, b) => a.qty - b.qty);
+      return {
+        qty,
+        sachets: getDefaultSachets(designType, qty),
+        price: Math.round(final),
+        originalPrice: Math.round(mrp),
+        discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
+        tagline: getPackTagline(designType, qty),
+        product_price_id: tier.product_price_id,
+        unit_name: tier.unit_name,
+        isTrialPack: false,
+      } as Pack;
+    })
+    .sort((a, b) => a.qty - b.qty);
 
-    return trialPack ? [trialPack, ...regularPacks] : regularPacks;
+  return trialPack ? [trialPack, ...regularPacks] : regularPacks;
 }
 
-const ResSelectPack = ({ productId, designType }: { productId: string; designType?: "green" | "pink" }) => {
-    const { addToCart, openCart } = useCart();
+const ResSelectPack = ({
+  productId,
+  designType,
+}: {
+  productId: string;
+  designType?: "green" | "pink";
+}) => {
+  const { addToCart, openCart } = useCart();
 
-    const [product, setProduct] = useState<Product | null>(null);
-    const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
-    useEffect(() => {
-        let ignore = false;
+  useEffect(() => {
+    let ignore = false;
 
-        const loadProduct = async () => {
-            try {
-                const numericId = designSlugToProductId[productId];
-                
-                // Fetch products filtered by design_type and exclude combo products
-                const designTypeFilter = designType 
-                    ? designType === "green" ? ["green", "GREEN"] : ["pink", "PINK"]
-                    : undefined;
-                
-                const { data } = await productsApi.getList({
-                    filter: designTypeFilter ? { 
-                        design_type: designTypeFilter,
-                    } : {},
-                    sort: { id: "DESC" },
-                    page: 1,
-                    limit: 100,
-                });
-                if (!Array.isArray(data)) return;
+    const loadProduct = async () => {
+      try {
+        const numericId = designSlugToProductId[productId];
 
-                // Filter out combo products
-                const filteredData = data.filter((p: ApiProduct) => {
-                    const productType = p.product_type;
-                    const isCombo = productType && typeof productType === "string" && productType.toLowerCase() === "combo";
-                    return !isCombo;
-                });
+        // Fetch products filtered by design_type and exclude combo products
+        const designTypeFilter = designType
+          ? designType === "green"
+            ? ["green", "GREEN"]
+            : ["pink", "PINK"]
+          : undefined;
 
-                let apiProduct: ApiProduct | undefined;
-                
-                // First, try to find by numeric ID
-                if (numericId) {
-                    apiProduct = filteredData.find((p) => String(p.id) === String(numericId));
-                }
-                
-                // If not found and designType is provided, find by design_type
-                // For design type products, there should be only ONE product per design type
-                if (!apiProduct && designType) {
-                    const desired = designType.toLowerCase();
-                    apiProduct = filteredData.find((p) => {
-                        const dt = (p.design_type || "").toString().toLowerCase();
-                        return dt === desired;
-                    });
-                }
-                
-                // Fallback: try to find by product name
-                if (!apiProduct) {
-                    apiProduct = filteredData.find((p) =>
-                        String(p.product_name || "").toLowerCase().includes(productId.replace(/-/g, " "))
-                    );
-                }
-                
-                // Last resort: try keyword matching
-                if (!apiProduct && designType) {
-                    const kw = designType === "pink" ? "glow" : "collagen";
-                    apiProduct = filteredData.find((p) => String(p.product_name || "").toLowerCase().includes(kw));
-                }
-                
-                if (!apiProduct) return;
+        const { data } = await productsApi.getList({
+          filter: designTypeFilter
+            ? {
+                design_type: designTypeFilter,
+              }
+            : {},
+          sort: { id: "DESC" },
+          page: 1,
+          limit: 100,
+        });
+        if (!Array.isArray(data)) return;
 
-                // Fetch product details to get accurate pricing information
-                let productDetails;
-                try {
-                    const detailsResponse = await productsApi.getDetails(apiProduct.id);
-                    productDetails = detailsResponse.data;
-                } catch (error) {
-                    // Fallback to using prices from list response
-                    productDetails = null;
-                }
-
-                // Use prices from details if available, otherwise use from list
-                const prices = productDetails?.prices || apiProduct.prices;
-
-                const image = apiProduct.image_single || apiProduct.image || (Array.isArray(apiProduct.image_all) && apiProduct.image_all[0]) || "/assets/img/green-product.png";
-                const packs = buildPacksFromPrices(prices, designType);
-
-                const hydrated: Product = {
-                    id: String(apiProduct.id),
-                    name: apiProduct.product_name,
-                    packs,
-                    image,
-                    product_details: apiProduct,
-                    short_description: apiProduct.short_description,
-                };
-
-                if (!ignore) {
-                    setProduct(hydrated);
-                    setSelectedPack(packs[0] || null);
-                }
-            } catch (e) {
-                // Failed to load product packs
-            }
-        };
-
-        loadProduct();
-        return () => {
-            ignore = true;
-        };
-    }, [productId, designType]);
-
-    const handleAddToCart = async () => {
-        if (!product || !selectedPack) {
-            toast.warning("Please select a pack size first!");
-            return;
-        }
-
-        if (!selectedPack.product_price_id) {
-            toast.error("Unable to add to cart: Missing price information. Please try again.");
-            return;
-        }
-
-        const packName = selectedPack.isTrialPack
-            ? `${product.name} - Trial Pack`
-            : `${product.name} - Pack of ${selectedPack.qty}`;
-
-        // Extract discount percentage from discount string (e.g., "10% Off" -> "10")
-        const discountPercent = selectedPack.discount
-            ? selectedPack.discount.replace(/%\s*Off/gi, '').trim()
-            : undefined;
-
-        await addToCart({
-            id: `${product.id}-${selectedPack.qty}`,
-            name: packName,
-            quantity: 1,
-            price: selectedPack.price,
-            image: product.image,
-            product_id: product.id,
-            mrp_price: selectedPack.originalPrice,
-            discount_percent: discountPercent,
-            pack_qty: selectedPack.qty,
-            product_price_id: selectedPack.product_price_id,
-            short_description: product.short_description,
+        // Filter out combo products
+        const filteredData = data.filter((p: ApiProduct) => {
+          const productType = p.product_type;
+          const isCombo =
+            productType &&
+            typeof productType === "string" &&
+            productType.toLowerCase() === "combo";
+          return !isCombo;
         });
 
-    };
+        let apiProduct: ApiProduct | undefined;
 
-    const handleShopNow = async () => {
-        if (!product || !selectedPack) {
-            toast.warning("Please select a pack size first!");
-            return;
+        // First, try to find by numeric ID
+        if (numericId) {
+          apiProduct = filteredData.find(
+            (p) => String(p.id) === String(numericId),
+          );
         }
-        await handleAddToCart();
-        openCart();
+
+        // If not found and designType is provided, find by design_type
+        // For design type products, there should be only ONE product per design type
+        if (!apiProduct && designType) {
+          const desired = designType.toLowerCase();
+          apiProduct = filteredData.find((p) => {
+            const dt = (p.design_type || "").toString().toLowerCase();
+            return dt === desired;
+          });
+        }
+
+        // Fallback: try to find by product name
+        if (!apiProduct) {
+          apiProduct = filteredData.find((p) =>
+            String(p.product_name || "")
+              .toLowerCase()
+              .includes(productId.replace(/-/g, " ")),
+          );
+        }
+
+        // Last resort: try keyword matching
+        if (!apiProduct && designType) {
+          const kw = designType === "pink" ? "glow" : "collagen";
+          apiProduct = filteredData.find((p) =>
+            String(p.product_name || "")
+              .toLowerCase()
+              .includes(kw),
+          );
+        }
+
+        if (!apiProduct) return;
+
+        // Fetch product details to get accurate pricing information
+        let productDetails;
+        try {
+          const detailsResponse = await productsApi.getDetails(apiProduct.id);
+          productDetails = detailsResponse.data;
+        } catch (error) {
+          // Fallback to using prices from list response
+          productDetails = null;
+        }
+
+        // Use prices from details if available, otherwise use from list
+        const prices = productDetails?.prices || apiProduct.prices;
+
+        const image =
+          apiProduct.image_single ||
+          apiProduct.image ||
+          (Array.isArray(apiProduct.image_all) && apiProduct.image_all[0]) ||
+          "/assets/img/green-product.png";
+        const packs = buildPacksFromPrices(prices, designType);
+
+        const hydrated: Product = {
+          id: String(apiProduct.id),
+          name: apiProduct.product_name,
+          packs,
+          image,
+          product_details: apiProduct,
+          short_description: apiProduct.short_description,
+        };
+
+        if (!ignore) {
+          setProduct(hydrated);
+          setSelectedPack(packs[0] || null);
+        }
+      } catch (e) {
+        // Failed to load product packs
+      }
     };
 
-    if (!product) return <p>Product not found</p>;
+    loadProduct();
+    return () => {
+      ignore = true;
+    };
+  }, [productId, designType]);
 
-    return (
-        <div>
-            <div className="flex items-center justify-center gap-2 mb-4">
-                <h3 className="text-[16px] font-[Grafiels] text-[#1A2819]">Select Pack</h3>
-                <span>|</span>
-                <ProductRating
-                    productId={product.id}
-                    className="text-[12px]"
-                />
-            </div>
-            <div className="md:hidden mt-4">
-                <Splide
-                    className="custom-splide"
-                    options={{
-                        perPage: 3,
-                        gap: "0.75rem",
-                        arrows: false,
-                        pagination: false,
-                        rewind: true,
-                    }}
+  const handleAddToCart = async () => {
+    if (!product || !selectedPack) {
+      toast.warning("Please select a pack size first!");
+      return;
+    }
+
+    if (!selectedPack.product_price_id) {
+      toast.error(
+        "Unable to add to cart: Missing price information. Please try again.",
+      );
+      return;
+    }
+
+    const packName = selectedPack.isTrialPack
+      ? `${product.name} - Trial Pack`
+      : `${product.name} - Pack of ${selectedPack.qty}`;
+
+    // Extract discount percentage from discount string (e.g., "10% Off" -> "10")
+    const discountPercent = selectedPack.discount
+      ? selectedPack.discount.replace(/%\s*Off/gi, "").trim()
+      : undefined;
+
+    await addToCart({
+      id: `${product.id}-${selectedPack.qty}`,
+      name: packName,
+      quantity: 1,
+      price: selectedPack.price,
+      image: product.image,
+      product_id: product.id,
+      mrp_price: selectedPack.originalPrice,
+      discount_percent: discountPercent,
+      pack_qty: selectedPack.qty,
+      product_price_id: selectedPack.product_price_id,
+      short_description: product.short_description,
+    });
+  };
+
+  const handleShopNow = async () => {
+    if (!product || !selectedPack) {
+      toast.warning("Please select a pack size first!");
+      return;
+    }
+    await handleAddToCart();
+    openCart();
+  };
+
+  if (!product) return <p>Product not found</p>;
+
+  return (
+    <div>
+      <div className="flex items-center justify-center gap-2 mb-4">
+        <h3 className="text-[16px] font-[Grafiels] text-[#1A2819]">
+          Select Pack
+        </h3>
+        <span>|</span>
+        <ProductRating productId={product.id} className="text-[12px]" />
+      </div>
+      <div className="md:hidden mt-4">
+        <Splide
+          className="custom-splide"
+          options={{
+            perPage: 3,
+            gap: "0.75rem",
+            arrows: false,
+            pagination: false,
+            rewind: true,
+          }}
+        >
+          {product.packs.map((pack: Pack, index) => {
+            const isSelected = selectedPack
+              ? selectedPack.product_price_id && pack.product_price_id
+                ? selectedPack.product_price_id === pack.product_price_id
+                : selectedPack.qty === pack.qty &&
+                  selectedPack.isTrialPack === pack.isTrialPack
+              : false;
+
+            return (
+              <SplideSlide
+                key={`${pack.qty}-${pack.isTrialPack ? "trial" : "regular"}-${pack.product_price_id || index}`}
+              >
+                <div
+                  onClick={() => setSelectedPack(pack)}
+                  className={`p-3 rounded-md border cursor-pointer transition ${
+                    isSelected
+                      ? "border-2 border-[#057A37] bg-[#F0FFF5]"
+                      : "border-gray-300"
+                  }`}
                 >
-                    {product.packs.map((pack: Pack, index) => {
-                        const isSelected = selectedPack
-                            ? (selectedPack.product_price_id && pack.product_price_id
-                                ? selectedPack.product_price_id === pack.product_price_id
-                                : selectedPack.qty === pack.qty && selectedPack.isTrialPack === pack.isTrialPack)
-                            : false;
+                  <p className="text-sm font-normal text-[#1A2819] leading-tight">
+                    {pack.isTrialPack ? "Trial Pack" : `${pack.qty} Pack`}{" "}
+                    <br />
+                    <span className="text-xs text-[#747474]">
+                      {pack.sachets} Sachets
+                    </span>
+                  </p>
 
-                        return (
-                            <SplideSlide key={`${pack.qty}-${pack.isTrialPack ? 'trial' : 'regular'}-${pack.product_price_id || index}`}>
-                                <div
-                                    onClick={() => setSelectedPack(pack)}
-                                    className={`p-3 rounded-md border cursor-pointer transition ${isSelected
-                                        ? "border-2 border-[#057A37] bg-[#F0FFF5]"
-                                        : "border-gray-300"
-                                        }`}
-                                >
-                                    <p className="text-sm font-normal text-[#1A2819] leading-tight">
-                                        {pack.isTrialPack ? "Trial Pack" : `${pack.qty} Pack`} <br />
-                                        <span className="text-xs text-[#747474]">
-                                            {pack.sachets} Sachets
-                                        </span>
-                                    </p>
+                  <p className="text-lg font-bold text-[#057A37] mt-1">
+                    ₹{formatINR(pack.price)}
+                  </p>
 
-                                    <p className="text-lg font-bold text-[#057A37] mt-1">
-                                        ₹{formatINR(pack.price)}
-                                    </p>
+                  <div className="gap-2">
+                    <p className="text-xs text-gray-500 line-through">
+                      ₹{formatINR(pack.originalPrice)}
+                    </p>
 
-                                    <div className="gap-2">
-                                        <p className="text-xs text-gray-500 line-through">
-                                            ₹{formatINR(pack.originalPrice)}
-                                        </p>
+                    <p className="text-xs text-[#D31714]">{pack.discount}</p>
+                  </div>
 
-                                        <p className="text-xs text-[#D31714]">{pack.discount}</p>
-                                    </div>
+                  <p className="text-xs text-green-600 mt-1">In stock</p>
+                </div>
+              </SplideSlide>
+            );
+          })}
+        </Splide>
+      </div>
 
-                                    <p className="text-xs text-green-600 mt-1">In stock</p>
-                                </div>
-                            </SplideSlide>
-                        );
-                    })}
-                </Splide>
-            </div>
+      <div className="bg-[#FFE2E2] px-4 py-2 my-5 flex items-center justify-center gap-2">
+        <Image
+          src="/assets/img/product-details/sale.png"
+          alt="pack-icon"
+          width={20}
+          height={20}
+        />
+        <p className="text-xs text-[#1A2819]">
+          Get Extra 5% off on Prepaid orders
+        </p>
+      </div>
 
-            <div className="bg-[#FFE2E2] px-4 py-2 my-5 flex items-center justify-center gap-2">
-                <Image
-                    src="/assets/img/product-details/sale.png"
-                    alt="pack-icon"
-                    width={20}
-                    height={20}
-                />
-                <p className="text-xs text-[#1A2819]">
-                    Get Extra 5% off on Prepaid orders
-                </p>
-            </div>
-
-            <div className="flex gap-4 items-center my-2 justify-center">
-                <Button
-                    onClick={handleShopNow}
-                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-[#057A37] text-white w-42"
-                >
-                    <ShoppingBag size={16} /> Buy Now
-                </Button>
-                <Button
-                    onClick={handleAddToCart}
-                    className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-white text-black border border-black w-42"
-                >
-                    <ShoppingCart size={16} /> Add to Cart
-                </Button>
-            </div>
-        </div>
-    );
+      <div className="flex gap-4 items-center my-2 justify-center">
+        <Button
+          onClick={handleShopNow}
+          className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-[#057A37] text-white w-42"
+        >
+          <ShoppingBag size={16} /> Buy Now
+        </Button>
+        <Button
+          onClick={handleAddToCart}
+          className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-white text-black border border-black w-42"
+        >
+          <ShoppingCart size={16} /> Add to Cart
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default ResSelectPack;

@@ -39,7 +39,11 @@ function validateEndpoint(endpoint: string | null): string | null {
   try {
     const decoded = decodeURIComponent(trimmedEndpoint);
     // Check for common SSRF indicators after decoding
-    if (decoded.includes("http://") || decoded.includes("https://") || decoded.includes("ftp://")) {
+    if (
+      decoded.includes("http://") ||
+      decoded.includes("https://") ||
+      decoded.includes("ftp://")
+    ) {
       return null;
     }
     // Check for private IP ranges (common SSRF attack vector)
@@ -66,7 +70,7 @@ async function handler(request: NextRequest) {
     if (!endpoint) {
       return NextResponse.json(
         { error: "Invalid or missing endpoint parameter" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -83,7 +87,9 @@ async function handler(request: NextRequest) {
 
     request.headers.forEach((value, key) => {
       const lowerKey = key.toLowerCase();
-      if (allowedHeaders.some(allowed => allowed.toLowerCase() === lowerKey)) {
+      if (
+        allowedHeaders.some((allowed) => allowed.toLowerCase() === lowerKey)
+      ) {
         headers[key] = value;
       }
     });
@@ -91,8 +97,6 @@ async function handler(request: NextRequest) {
     if (!headers["content-type"] && !headers["Content-Type"]) {
       headers["Content-Type"] = "application/json";
     }
-
-
 
     // Safely construct the URL with validated endpoint
     const queryParams = new URLSearchParams(searchParams);
@@ -107,21 +111,22 @@ async function handler(request: NextRequest) {
 
       // Ensure the hostname matches the configured API base URL
       if (urlObj.hostname !== baseUrlObj.hostname && urlObj.hostname !== "") {
-        logger.error("SSRF attempt detected - hostname mismatch", {
-          requested: urlObj.hostname,
-          expected: baseUrlObj.hostname,
-        }, "proxy/route");
-        return NextResponse.json(
-          { error: "Invalid request" },
-          { status: 400 }
+        logger.error(
+          "SSRF attempt detected - hostname mismatch",
+          {
+            requested: urlObj.hostname,
+            expected: baseUrlObj.hostname,
+          },
+          "proxy/route",
         );
+        return NextResponse.json({ error: "Invalid request" }, { status: 400 });
       }
     } catch (urlError) {
       // If URL parsing fails, reject the request
       logger.error("Invalid URL constructed", urlError, "proxy/route");
       return NextResponse.json(
         { error: "Invalid request URL" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -134,7 +139,7 @@ async function handler(request: NextRequest) {
       if (body.length > MAX_BODY_SIZE) {
         return NextResponse.json(
           { error: "Request body too large" },
-          { status: 413 }
+          { status: 413 },
         );
       }
 
@@ -145,18 +150,16 @@ async function handler(request: NextRequest) {
         logger.error("Invalid JSON in request body", parseError, "proxy/route");
         return NextResponse.json(
           { error: "Invalid JSON in request body" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
-
 
     const response = await fetch(url, {
       method: request.method,
       headers,
       body,
     });
-
 
     const textData = await response.text();
 
@@ -177,14 +180,23 @@ async function handler(request: NextRequest) {
 
     // Add CORS headers (restrictive by default)
     const origin = request.headers.get("origin");
-    const allowedOrigins = [
-      ENV_CONFIG.SITE_URL,
-    ];
+    const allowedOrigins = [ENV_CONFIG.SITE_URL];
 
-    if (origin && allowedOrigins.some(allowed => origin === allowed || origin.startsWith(allowed))) {
+    if (
+      origin &&
+      allowedOrigins.some(
+        (allowed) => origin === allowed || origin.startsWith(allowed),
+      )
+    ) {
       forwardHeaders.set("Access-Control-Allow-Origin", origin);
-      forwardHeaders.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-      forwardHeaders.set("Access-Control-Allow-Headers", "Content-Type, Authorization, session_key");
+      forwardHeaders.set(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+      );
+      forwardHeaders.set(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization, session_key",
+      );
       forwardHeaders.set("Access-Control-Max-Age", "86400");
     }
 
@@ -200,7 +212,6 @@ async function handler(request: NextRequest) {
       }
     }
 
-
     return new NextResponse(textData, {
       status: response.status,
       headers: forwardHeaders,
@@ -209,7 +220,7 @@ async function handler(request: NextRequest) {
     logger.error("Proxy error", error, "proxy/route");
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -217,16 +228,25 @@ async function handler(request: NextRequest) {
 // Handle OPTIONS requests for CORS preflight
 async function optionsHandler(request: NextRequest) {
   const origin = request.headers.get("origin");
-  const allowedOrigins = [
-    ENV_CONFIG.SITE_URL,
-  ];
+  const allowedOrigins = [ENV_CONFIG.SITE_URL];
 
   const headers = new Headers();
 
-  if (origin && allowedOrigins.some(allowed => origin === allowed || origin.startsWith(allowed))) {
+  if (
+    origin &&
+    allowedOrigins.some(
+      (allowed) => origin === allowed || origin.startsWith(allowed),
+    )
+  ) {
     headers.set("Access-Control-Allow-Origin", origin);
-    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, session_key");
+    headers.set(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+    );
+    headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, session_key",
+    );
     headers.set("Access-Control-Max-Age", "86400");
   }
 

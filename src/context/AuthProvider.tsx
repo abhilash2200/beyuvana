@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useRef,
+} from "react";
 import { logger } from "@/lib/logger";
 
 type User = { id: string; name: string; email: string; phone: string } | null;
@@ -34,7 +41,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       } catch (err) {
-        logger.warn("Failed to parse user from localStorage", err, "AuthProvider");
+        logger.warn(
+          "Failed to parse user from localStorage",
+          err,
+          "AuthProvider",
+        );
         localStorage.removeItem("user");
       }
     }
@@ -42,7 +53,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (storedSession) {
       setSessionKey(storedSession);
       // Log that session was loaded (without exposing the key)
-      logger.debug("Session key loaded from storage", undefined, "AuthProvider");
+      logger.debug(
+        "Session key loaded from storage",
+        undefined,
+        "AuthProvider",
+      );
     }
   }, []);
 
@@ -64,13 +79,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         // Check if we got an authentication error (session expired)
         // getCart returns status: false with message "Please log in to sync your cart." for 401 errors
-        if (response.status === false && (
-          response.message?.includes("log in") || 
-          response.message?.includes("401") ||
-          response.message?.includes("authentication") ||
-          response.message?.includes("unauthorized")
-        )) {
-          logger.info("Session expired or invalid, clearing auth state", undefined, "AuthProvider");
+        if (
+          response.status === false &&
+          (response.message?.includes("log in") ||
+            response.message?.includes("401") ||
+            response.message?.includes("authentication") ||
+            response.message?.includes("unauthorized"))
+        ) {
+          logger.info(
+            "Session expired or invalid, clearing auth state",
+            undefined,
+            "AuthProvider",
+          );
           // Clear localStorage and reset state
           localStorage.removeItem("user");
           localStorage.removeItem("session_key");
@@ -78,16 +98,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSessionKey(null);
         } else {
           // Session is valid (response succeeded or is a non-auth error)
-          logger.debug("Session validated successfully", undefined, "AuthProvider");
+          logger.debug(
+            "Session validated successfully",
+            undefined,
+            "AuthProvider",
+          );
         }
       } catch (error) {
         // Check if it's a 401 or authentication error
-        if (error instanceof Error && (
-          error.message.includes("401") || 
-          error.message.includes("authentication") ||
-          error.message.includes("unauthorized")
-        )) {
-          logger.info("Session expired (401/authentication error), clearing auth state", undefined, "AuthProvider");
+        if (
+          error instanceof Error &&
+          (error.message.includes("401") ||
+            error.message.includes("authentication") ||
+            error.message.includes("unauthorized"))
+        ) {
+          logger.info(
+            "Session expired (401/authentication error), clearing auth state",
+            undefined,
+            "AuthProvider",
+          );
           localStorage.removeItem("user");
           localStorage.removeItem("session_key");
           setUser(null);
@@ -95,7 +124,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           // For other errors (network, etc.), assume session might still be valid
           // Don't clear auth state on network errors - user might be offline
-          logger.warn("Session validation error (non-auth), keeping auth state", error, "AuthProvider");
+          logger.warn(
+            "Session validation error (non-auth), keeping auth state",
+            error,
+            "AuthProvider",
+          );
         }
       } finally {
         setIsSessionValidating(false);
@@ -140,7 +173,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, sessionKey, setUser, setSessionKey, logout, isSessionValidating }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        sessionKey,
+        setUser,
+        setSessionKey,
+        logout,
+        isSessionValidating,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

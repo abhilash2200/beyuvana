@@ -16,9 +16,7 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-
   const handleLogout = async () => {
-
     if (!user) {
       toast.warning("No user logged in.");
       return;
@@ -62,13 +60,26 @@ export default function LogoutButton({ children }: LogoutButtonProps) {
   };
 
   if (children && isValidElement(children)) {
-    return cloneElement(children as React.ReactElement<{ onClick?: (...args: unknown[]) => void; disabled?: boolean }>, {
-      onClick: (...args: unknown[]) => {
-        (children as React.ReactElement<{ onClick?: (...args: unknown[]) => void }>).props?.onClick?.(...args);
-        handleLogout();
+    return cloneElement(
+      children as React.ReactElement<{
+        onClick?: (...args: unknown[]) => void;
+        disabled?: boolean;
+      }>,
+      {
+        onClick: (...args: unknown[]) => {
+          (
+            children as React.ReactElement<{
+              onClick?: (...args: unknown[]) => void;
+            }>
+          ).props?.onClick?.(...args);
+          handleLogout();
+        },
+        disabled:
+          loading ||
+          (children as React.ReactElement<{ disabled?: boolean }>).props
+            ?.disabled,
       },
-      disabled: loading || (children as React.ReactElement<{ disabled?: boolean }>).props?.disabled,
-    });
+    );
   }
 
   return (

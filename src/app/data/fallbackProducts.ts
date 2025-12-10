@@ -509,7 +509,8 @@ export const fallbackProducts: Product[] = [
         stats: [
           {
             value: "20%",
-            description: "More pigmentation in women exposed to urban pollution",
+            description:
+              "More pigmentation in women exposed to urban pollution",
             source: "Science Direct",
           },
           {
@@ -665,7 +666,8 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: "02",
-        question: "How does it support collagen production without animal collagen?",
+        question:
+          "How does it support collagen production without animal collagen?",
         answer: [
           "Our formula includes nutrients like Amla Extract (Vitamin C), Bamboo Extract (Silica), L-Lysine, and L-Proline, which are essential building blocks for collagen synthesis in the body. ",
         ],
@@ -673,7 +675,8 @@ export const fallbackProducts: Product[] = [
       {
         id: "03",
         question: "What benefits can I expect? ",
-        answer: ["Regular use may help:",
+        answer: [
+          "Regular use may help:",
           "• Support natural collagen production",
           "• Promote skin hydration and elasticity (Hyaluronic Acid)",
           "• Improve skin radiance and even tone (Glutathione, Vitamin C, Vitamin E)",
@@ -684,44 +687,39 @@ export const fallbackProducts: Product[] = [
       {
         id: "04",
         question: "Is it suitable for vegetarians?",
-        answer: ["Yes. BEYUVANA™ is 100% vegetarian, with no marine or bovine collagen and no animal-derived ingredients. "],
-      },
-      {
-        id: "05",
-        question:
-          "Does it contain sugar or artificial sweeteners?",
         answer: [
-          "No. It has no added sugar and uses only natural flavors.",
+          "Yes. BEYUVANA™ is 100% vegetarian, with no marine or bovine collagen and no animal-derived ingredients. ",
         ],
       },
       {
+        id: "05",
+        question: "Does it contain sugar or artificial sweeteners?",
+        answer: ["No. It has no added sugar and uses only natural flavors."],
+      },
+      {
         id: "06",
-        question:
-          "When will I start noticing results?",
+        question: "When will I start noticing results?",
         answer: [
           "Results vary per individual, but with daily use, visible skin hydration and glow may be noticed within a few weeks, while deeper collagen support benefits are typically experienced over consistent use. ",
         ],
       },
       {
         id: "07",
-        question:
-          "Can it help with pigmentation and dull skin?",
+        question: "Can it help with pigmentation and dull skin?",
         answer: [
           "Yes. Ingredients like Glutathione, Vitamin C, Grape Seed Extract, and Pomegranate Extract support skin radiance and help maintain an even skin tone.",
         ],
       },
       {
         id: "08",
-        question:
-          "Does it help with stress-related skin issues? ",
+        question: "Does it help with stress-related skin issues? ",
         answer: [
           "Yes. Our Ayurvedic Adaptogen Blend (Ashwagandha, Gotu Kola, Shatavari) helps the body adapt to stress, which may positively impact skin health. ",
         ],
       },
       {
         id: "09",
-        question:
-          "How is it different from ordinary collagen powders?",
+        question: "How is it different from ordinary collagen powders?",
         answer: [
           "Unlike marine or bovine collagen powders, BEYUVANA™ contains a complete blend of plant-based nutrients that help your body produce collagen naturally, along with antioxidants, vitamins, minerals, and adaptogens for overall skin wellness.",
         ],
@@ -736,8 +734,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: "11",
-        question:
-          "Is it safe? Are there any side effects? ",
+        question: "Is it safe? Are there any side effects? ",
         answer: [
           "BEYUVANA™ Premium Collagen Builder is formulated with well-researched plant-based ingredients that are generally considered safe for daily use within the recommended serving. No side effects are expected when consumed as directed. However, individuals with allergies to any listed ingredients, or those who are pregnant, breastfeeding, or on medication, should consult a healthcare professional before use.",
         ],
@@ -1340,7 +1337,8 @@ export const fallbackProducts: Product[] = [
       {
         id: 8,
         img: "/assets/img/product-details/green-who/8.png",
-        title: "If you want better nutrient absorption for faster skin transformation",
+        title:
+          "If you want better nutrient absorption for faster skin transformation",
         desc: "Because even the best actives won’t work if your body can’t absorb them well. Piper Nigrum (Black Pepper Extract) enhances bioavailability of key nutrients. This ensures faster, more visible results — maximizing every ingredient’s power.",
         bgColor: "#B00404",
         headingColor: "#FFFFFF",
@@ -1560,7 +1558,8 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: "02",
-        question: "What makes Glow Essence different from other skin supplements?",
+        question:
+          "What makes Glow Essence different from other skin supplements?",
         answer: [
           "Unlike typical capsules or tablets, Glow Essence is a sachet-based powder that’s more bioavailable and easier to absorb. It combines liposomal antioxidants, gut-supporting botanicals, and adaptogens that treat the root causes of dull, uneven, or acne-prone skin.",
         ],
@@ -1639,7 +1638,8 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: "13",
-        question: "Can I consume GLOW ESSENCE with other BEYUVANA™ supplements? Is it safe? ",
+        question:
+          "Can I consume GLOW ESSENCE with other BEYUVANA™ supplements? Is it safe? ",
         answer: [
           "Yes, Glow Essence is formulated with research-backed, plant-derived actives and can generally be taken alongside other BEYUVANA™ supplements, provided there is no ingredient overlap or excessive nutrient duplication.",
           "BEYUVANA™ supplements are designed to be safe, and gentle on the body — but personal needs may vary. ",

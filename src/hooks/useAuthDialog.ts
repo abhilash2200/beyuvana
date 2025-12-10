@@ -3,27 +3,30 @@
 import { useState } from "react";
 
 interface OtpData {
-    phone: string;
-    userData?: { name: string; email: string; phone: string };
+  phone: string;
+  userData?: { name: string; email: string; phone: string };
 }
 
 interface UseAuthDialogReturn {
-    // State
-    isLoginOpen: boolean;
-    isRegisterOpen: boolean;
-    loginStep: "form" | "otp";
-    registerStep: "form" | "otp";
-    otpData: OtpData | null;
+  // State
+  isLoginOpen: boolean;
+  isRegisterOpen: boolean;
+  loginStep: "form" | "otp";
+  registerStep: "form" | "otp";
+  otpData: OtpData | null;
 
-    // Setters
-    setIsLoginOpen: (open: boolean) => void;
-    setIsRegisterOpen: (open: boolean) => void;
+  // Setters
+  setIsLoginOpen: (open: boolean) => void;
+  setIsRegisterOpen: (open: boolean) => void;
 
-    // Handlers
-    handleLoginOtpSent: (phone: string) => void;
-    handleLoginOtpVerified: () => void;
-    handleRegisterOtpSent: (phone: string, userData?: { name: string; email: string; phone: string }) => void;
-    handleRegisterOtpVerified: () => void;
+  // Handlers
+  handleLoginOtpSent: (phone: string) => void;
+  handleLoginOtpVerified: () => void;
+  handleRegisterOtpSent: (
+    phone: string,
+    userData?: { name: string; email: string; phone: string },
+  ) => void;
+  handleRegisterOtpVerified: () => void;
 }
 
 /**
@@ -31,46 +34,48 @@ interface UseAuthDialogReturn {
  * Extracted from Header and MobileNav to eliminate duplication
  */
 export function useAuthDialog(): UseAuthDialogReturn {
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
-    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-    const [registerStep, setRegisterStep] = useState<"form" | "otp">("form");
-    const [loginStep, setLoginStep] = useState<"form" | "otp">("form");
-    const [otpData, setOtpData] = useState<OtpData | null>(null);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [registerStep, setRegisterStep] = useState<"form" | "otp">("form");
+  const [loginStep, setLoginStep] = useState<"form" | "otp">("form");
+  const [otpData, setOtpData] = useState<OtpData | null>(null);
 
-    const handleRegisterOtpSent = (phone: string, userData?: { name: string; email: string; phone: string }) => {
-        setOtpData({ phone, userData });
-        setRegisterStep("otp");
-    };
+  const handleRegisterOtpSent = (
+    phone: string,
+    userData?: { name: string; email: string; phone: string },
+  ) => {
+    setOtpData({ phone, userData });
+    setRegisterStep("otp");
+  };
 
-    const handleRegisterOtpVerified = () => {
-        setRegisterStep("form");
-        setOtpData(null);
-        setIsRegisterOpen(false);
-    };
+  const handleRegisterOtpVerified = () => {
+    setRegisterStep("form");
+    setOtpData(null);
+    setIsRegisterOpen(false);
+  };
 
-    const handleLoginOtpSent = (phone: string) => {
-        setOtpData({ phone });
-        setLoginStep("otp");
-    };
+  const handleLoginOtpSent = (phone: string) => {
+    setOtpData({ phone });
+    setLoginStep("otp");
+  };
 
-    const handleLoginOtpVerified = () => {
-        setLoginStep("form");
-        setOtpData(null);
-        setIsLoginOpen(false);
-    };
+  const handleLoginOtpVerified = () => {
+    setLoginStep("form");
+    setOtpData(null);
+    setIsLoginOpen(false);
+  };
 
-    return {
-        isLoginOpen,
-        isRegisterOpen,
-        loginStep,
-        registerStep,
-        otpData,
-        setIsLoginOpen,
-        setIsRegisterOpen,
-        handleLoginOtpSent,
-        handleLoginOtpVerified,
-        handleRegisterOtpSent,
-        handleRegisterOtpVerified,
-    };
+  return {
+    isLoginOpen,
+    isRegisterOpen,
+    loginStep,
+    registerStep,
+    otpData,
+    setIsLoginOpen,
+    setIsRegisterOpen,
+    handleLoginOtpSent,
+    handleLoginOtpVerified,
+    handleRegisterOtpSent,
+    handleRegisterOtpVerified,
+  };
 }
-

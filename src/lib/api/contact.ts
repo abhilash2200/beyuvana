@@ -28,7 +28,10 @@ export const contactApi = {
       });
     } catch (error: unknown) {
       // Extract error message if available
-      if ((error as Error)?.message && (error as Error).message.includes("API error:")) {
+      if (
+        (error as Error)?.message &&
+        (error as Error).message.includes("API error:")
+      ) {
         try {
           const errorText = (error as Error).message.split(" - ")[1];
           const errorData = JSON.parse(errorText);
@@ -41,9 +44,8 @@ export const contactApi = {
       }
 
       throw new Error(
-        "Failed to submit form. Please check your internet connection and try again."
+        "Failed to submit form. Please check your internet connection and try again.",
       );
     }
   },
 };
-

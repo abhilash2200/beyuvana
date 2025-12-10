@@ -9,8 +9,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
 
-  // Optimize bundle size
-  swcMinify: true,
   experimental: {
     optimizePackageImports: [
       "lucide-react",
@@ -115,7 +113,8 @@ const nextConfig: NextConfig = {
   },
 
   async rewrites() {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api";
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api";
     // Remove trailing slash if present to avoid double slashes
     const baseUrl = apiBaseUrl.replace(/\/$/, "");
     return [

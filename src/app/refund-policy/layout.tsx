@@ -1,19 +1,15 @@
-import { Metadata } from "next"
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Refund Policy',
-  description: 'Read BEYUVANA™ refund policy for damaged or incorrect products.',
-}
-
+  title: "Refund Policy",
+  description:
+    "Read BEYUVANA™ refund policy for damaged or incorrect products.",
+};
 
 export default function ProductLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return (
-    <>
-      {children}
-    </>
-  )
+  return <>{children}</>;
 }

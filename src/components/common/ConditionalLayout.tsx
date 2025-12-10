@@ -9,7 +9,9 @@ interface ConditionalLayoutProps {
   children: React.ReactNode;
 }
 
-export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
+export default function ConditionalLayout({
+  children,
+}: ConditionalLayoutProps) {
   const pathname = usePathname();
   const excludeThankYou = pathname?.startsWith("/thank-you");
   const excludePaymentSuccess = pathname?.startsWith("/payment-success");
@@ -18,7 +20,12 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const excludeInvoice = pathname?.startsWith("/invoice");
 
   // Pages that should not have header/footer
-  const shouldExcludeLayout = excludeThankYou || excludePaymentSuccess || excludePaymentFailed || excludePaymentInitiate || excludeInvoice;
+  const shouldExcludeLayout =
+    excludeThankYou ||
+    excludePaymentSuccess ||
+    excludePaymentFailed ||
+    excludePaymentInitiate ||
+    excludeInvoice;
 
   if (shouldExcludeLayout) {
     return <>{children}</>;

@@ -5,25 +5,27 @@
 
 import { apiFetch, ApiResponse } from "./core";
 import { buildAuthHeaders } from "../api-utils";
-import type {
-  AddToCartRequest,
-  CartItem,
-} from "./types";
+import type { AddToCartRequest, CartItem } from "./types";
 
 export const cartApi = {
   addToCart: async (
-    cartData: AddToCartRequest & { price_qty?: number; price_unit_name?: string },
+    cartData: AddToCartRequest & {
+      price_qty?: number;
+      price_unit_name?: string;
+    },
     sessionKey?: string,
-    userId?: string | number
+    userId?: string | number,
   ): Promise<ApiResponse<CartItem[]>> => {
     try {
       const payload = {
         user_id: userId != null ? Number(userId) : undefined,
         product_id: Number(cartData.product_id),
-        product_price_id: cartData.product_price_id ? Number(cartData.product_price_id) : undefined,
+        product_price_id: cartData.product_price_id
+          ? Number(cartData.product_price_id)
+          : undefined,
         qty: Number(cartData.quantity),
         price_qty: cartData.price_qty ?? 0,
-        price_unit_name: cartData.price_unit_name ?? ""
+        price_unit_name: cartData.price_unit_name ?? "",
       };
 
       const response = await apiFetch<CartItem[]>("/cart/add/v1/", {
@@ -38,11 +40,14 @@ export const cartApi = {
     }
   },
 
-  getCart: async (sessionKey?: string, userId?: string | number): Promise<ApiResponse<CartItem[]>> => {
+  getCart: async (
+    sessionKey?: string,
+    userId?: string | number,
+  ): Promise<ApiResponse<CartItem[]>> => {
     try {
       const payload = {
         user_id: userId ? Number(userId) : undefined,
-        limit: 0
+        limit: 0,
       };
 
       const response = await apiFetch<CartItem[]>("/cart/lists/v1/", {
@@ -71,16 +76,25 @@ export const cartApi = {
     }
   },
 
-  updateCart: async (cartData: AddToCartRequest, sessionKey?: string, userId?: string | number): Promise<ApiResponse<CartItem[]>> => {
+  updateCart: async (
+    cartData: AddToCartRequest,
+    sessionKey?: string,
+    userId?: string | number,
+  ): Promise<ApiResponse<CartItem[]>> => {
     return await cartApi.addToCart(cartData, sessionKey, userId);
   },
 
-  removeFromCart: async (productId: string, sessionKey?: string, userId?: string | number, cartId?: string): Promise<ApiResponse<CartItem[]>> => {
+  removeFromCart: async (
+    productId: string,
+    sessionKey?: string,
+    userId?: string | number,
+    cartId?: string,
+  ): Promise<ApiResponse<CartItem[]>> => {
     try {
       const payload = {
         user_id: userId ? Number(userId) : undefined,
         product_id: Number(productId),
-        cart_id: cartId ? Number(cartId) : undefined
+        cart_id: cartId ? Number(cartId) : undefined,
       };
 
       return await apiFetch<CartItem[]>("/cart/remove/v1/", {
@@ -90,12 +104,15 @@ export const cartApi = {
       });
     } catch {
       throw new Error(
-        "Failed to remove item from cart. Please try again later."
+        "Failed to remove item from cart. Please try again later.",
       );
     }
   },
 
-  decreaseQuantity: async (productId: string, sessionKey?: string): Promise<ApiResponse<CartItem[]>> => {
+  decreaseQuantity: async (
+    productId: string,
+    sessionKey?: string,
+  ): Promise<ApiResponse<CartItem[]>> => {
     try {
       return await apiFetch<CartItem[]>("/cart/removeone/v1/", {
         method: "POST",
@@ -119,7 +136,10 @@ export const cartApi = {
     }
   },
 
-  removeAllFromCart: async (userId: number, sessionKey?: string): Promise<ApiResponse<CartItem[]>> => {
+  removeAllFromCart: async (
+    userId: number,
+    sessionKey?: string,
+  ): Promise<ApiResponse<CartItem[]>> => {
     try {
       const payload = {
         user_id: userId,
@@ -131,8 +151,9 @@ export const cartApi = {
         body: JSON.stringify(payload),
       });
     } catch {
-      throw new Error("Failed to remove all items from cart. Please try again later.");
+      throw new Error(
+        "Failed to remove all items from cart. Please try again later.",
+      );
     }
   },
 };
-

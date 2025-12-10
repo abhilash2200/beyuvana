@@ -1,14 +1,17 @@
-import { Metadata } from "next"
+import { Metadata } from "next";
 
-export async function generateMetadata(
-  { params }: { params: Promise<{ design_type?: string }> }
-): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ design_type?: string }>;
+}): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = String(resolvedParams?.design_type || "");
 
   // Basic metadata without importing client-side dependencies
   const title = `Product | BEYUVANA™`;
-  const description = "Explore BEYUVANA™ plant-powered skin nutrition for visible glow.";
+  const description =
+    "Explore BEYUVANA™ plant-powered skin nutrition for visible glow.";
 
   return {
     title,
@@ -33,21 +36,13 @@ export async function generateMetadata(
 
 export function generateStaticParams() {
   // Return known product slugs without importing client-side dependencies
-  return [
-    { design_type: "collagen-green" },
-    { design_type: "collagen-pink" },
-  ];
+  return [{ design_type: "collagen-green" }, { design_type: "collagen-pink" }];
 }
-
 
 export default function ProductLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return (
-    <>
-      {children}
-    </>
-  )
+  return <>{children}</>;
 }

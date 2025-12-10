@@ -12,9 +12,9 @@ const Page = () => {
       />
 
       <p className="mt-6">
-        At <strong>Beyuvana</strong>, we are committed to ensuring your satisfaction
-        with our collagen products. Please read our refund policy carefully before
-        making a purchase.
+        At <strong>Beyuvana</strong>, we are committed to ensuring your
+        satisfaction with our collagen products. Please read our refund policy
+        carefully before making a purchase.
       </p>
 
       <h2 className="mt-8 font-semibold text-lg">1. Eligibility for Refund</h2>
@@ -29,7 +29,8 @@ const Page = () => {
 
       <h2 className="mt-8 font-semibold text-lg">2. Non-Refundable Items</h2>
       <p className="mt-2">
-        Please note that we <strong>do not accept returns or refunds</strong> for:
+        Please note that we <strong>do not accept returns or refunds</strong>{" "}
+        for:
       </p>
       <ul className="list-disc ml-6 mt-2">
         <li>Products that have been opened or used.</li>
@@ -39,17 +40,18 @@ const Page = () => {
 
       <h2 className="mt-8 font-semibold text-lg">3. Refund Process</h2>
       <p className="mt-2">
-        To request a refund, please contact our support team within <strong>48 hours</strong> of
-        receiving the product. Provide your order number, product details, and
-        photos showing the issue (if applicable). Upon verification, we will
-        process your refund within <strong>7–10 business days</strong> using the original
-        payment method.
+        To request a refund, please contact our support team within{" "}
+        <strong>48 hours</strong> of receiving the product. Provide your order
+        number, product details, and photos showing the issue (if applicable).
+        Upon verification, we will process your refund within{" "}
+        <strong>7–10 business days</strong> using the original payment method.
       </p>
 
       <h2 className="mt-8 font-semibold text-lg">4. Replacement Policy</h2>
       <p className="mt-2">
-        If you receive a damaged or incorrect item, you may request a replacement
-        instead of a refund. We will ship the replacement at no additional cost.
+        If you receive a damaged or incorrect item, you may request a
+        replacement instead of a refund. We will ship the replacement at no
+        additional cost.
       </p>
 
       <h2 className="mt-8 font-semibold text-lg">5. Contact Us</h2>
@@ -57,7 +59,8 @@ const Page = () => {
         For any questions or refund requests, please contact us at{" "}
         <a href="mailto:support@beyuvana.com" className="text-[#057A37]">
           support@beyuvana.com
-        </a>.
+        </a>
+        .
       </p>
 
       <p className="mt-8 text-sm italic">

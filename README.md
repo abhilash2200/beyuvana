@@ -11,12 +11,14 @@ First, set up your environment variables:
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with your configuration. 
+Edit `.env.local` with your configuration.
 
 **📖 Quick Setup Guide:**
 
 **Easiest Method:**
+
 1. **For Local Development:**
+
    ```bash
    # Copy the template file
    cp env.local.template .env.local
@@ -31,6 +33,7 @@ Edit `.env.local` with your configuration.
    ```
 
 **What to Change in Production:**
+
 - ✅ `NEXT_PUBLIC_SITE_URL` → Your production domain (e.g., `https://www.beyuvana.com`)
 - ✅ `NEXT_PUBLIC_PREPAID_PROMO_CODE` → Your production promo code
 - ✅ `NODE_ENV` → Set to `production`

@@ -61,8 +61,17 @@ const WhyNeed: React.FC = () => {
           arrows: false,
           pagination: false,
           breakpoints: {
-            1024: { perPage: 2, gap: "1rem", padding: { left: "2rem", right: "2rem" } },
-            640: { perPage: 2, gap: "1rem", padding: { left: "1rem", right: "1rem" }, pagination: true },
+            1024: {
+              perPage: 2,
+              gap: "1rem",
+              padding: { left: "2rem", right: "2rem" },
+            },
+            640: {
+              perPage: 2,
+              gap: "1rem",
+              padding: { left: "1rem", right: "1rem" },
+              pagination: true,
+            },
           },
           classes: {
             pagination: "splide__pagination testpagination",
@@ -84,7 +93,10 @@ const WhyNeed: React.FC = () => {
                 <h2 className="font-[Grafiels] text-[18px] md:text-[28px] leading-tight">
                   {item.title1}
                 </h2>
-                <Plus className="w-8 h-8 my-1 sm:w-6 sm:h-6 xs:w-5 xs:h-5" strokeWidth={0.85} />
+                <Plus
+                  className="w-8 h-8 my-1 sm:w-6 sm:h-6 xs:w-5 xs:h-5"
+                  strokeWidth={0.85}
+                />
                 <h2 className="font-[Grafiels] text-[18px] md:text-[28px] leading-tight">
                   {item.title2}
                 </h2>

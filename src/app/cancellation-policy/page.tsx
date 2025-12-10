@@ -12,16 +12,16 @@ const Page = () => {
       />
 
       <p className="mt-6">
-        At <strong>Beyuvana</strong>, we understand that sometimes you may need to
-        cancel your order. Please read our cancellation policy carefully to know
-        your options.
+        At <strong>Beyuvana</strong>, we understand that sometimes you may need
+        to cancel your order. Please read our cancellation policy carefully to
+        know your options.
       </p>
 
       <h2 className="mt-8 font-semibold text-lg">1.Order Cancelling Window</h2>
       <p className="mt-2">
-        Orders can be canceled within <strong>2 hours</strong> of placing the order, before
-        the order is processed for shipping. Once the order has been processed,
-        it cannot be canceled.
+        Orders can be canceled within <strong>2 hours</strong> of placing the
+        order, before the order is processed for shipping. Once the order has
+        been processed, it cannot be canceled.
       </p>
 
       <h2 className="mt-8 font-semibold text-lg">2. How to Cancel</h2>
@@ -32,27 +32,31 @@ const Page = () => {
         frame.
       </p>
 
-      <h2 className="mt-8 font-semibold text-lg">3. Refunds for Canceled Orders</h2>
+      <h2 className="mt-8 font-semibold text-lg">
+        3. Refunds for Canceled Orders
+      </h2>
       <p className="mt-2">
         If your order is successfully canceled within the allowed window, a full
         refund will be processed using the original payment method within{" "}
-        <strong>7–10 business days</strong>. Refund processing times may vary based
-        on your bank or payment provider.
+        <strong>7–10 business days</strong>. Refund processing times may vary
+        based on your bank or payment provider.
       </p>
 
       <h2 className="mt-8 font-semibold text-lg">4. Orders Already Shipped</h2>
       <p className="mt-2">
-        Once the order has been shipped, it cannot be canceled. You may refer
-        to our <strong>Return & Refund Policy</strong> if you wish to return the
+        Once the order has been shipped, it cannot be canceled. You may refer to
+        our <strong>Return & Refund Policy</strong> if you wish to return the
         product after delivery.
       </p>
 
       <h2 className="mt-8 font-semibold text-lg">5. Contact Us</h2>
       <p className="mt-2">
-        For cancellations or inquiries regarding your order, please contact us at{" "}
+        For cancellations or inquiries regarding your order, please contact us
+        at{" "}
         <a href="mailto:support@beyuvana.com" className="text-[#057A37]">
           support@beyuvana.com
-        </a>.
+        </a>
+        .
       </p>
 
       <p className="mt-8 text-sm italic">

@@ -1,87 +1,89 @@
 // API Configuration
 export const API_CONFIG = {
-    TIMEOUT: 15000, // 15 seconds
-    MAX_RETRIES: 3,
-    RETRY_DELAY_BASE: 1000, // 1 second base delay for exponential backoff
-    RETRY_STATUS_CODES: [408, 429, 500, 502, 503, 504], // Status codes that should trigger retry
+  TIMEOUT: 15000, // 15 seconds
+  MAX_RETRIES: 3,
+  RETRY_DELAY_BASE: 1000, // 1 second base delay for exponential backoff
+  RETRY_STATUS_CODES: [408, 429, 500, 502, 503, 504], // Status codes that should trigger retry
 } as const;
 
 // Cart Configuration
 export const CART_CONFIG = {
-    MIN_QUANTITY: 1,
-    MAX_QUANTITY: 10,
-    DEBOUNCE_DELAY: 500, // ms for quantity updates
-    INPUT_DEBOUNCE_DELAY: 800, // ms for direct input changes
+  MIN_QUANTITY: 1,
+  MAX_QUANTITY: 10,
+  DEBOUNCE_DELAY: 500, // ms for quantity updates
+  INPUT_DEBOUNCE_DELAY: 800, // ms for direct input changes
 } as const;
 
 // Phone Validation
 export const PHONE_CONFIG = {
-    LENGTH: 10,
-    VALID_PREFIXES: ['6', '7', '8', '9'],
+  LENGTH: 10,
+  VALID_PREFIXES: ["6", "7", "8", "9"],
 } as const;
 
 export const ENV_CONFIG = {
-    API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api",
-    PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL || "/api/proxy",
-    SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  API_BASE_URL:
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api",
+  PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL || "/api/proxy",
+  SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
 
-    NODE_ENV: process.env.NODE_ENV || "development",
-    IS_PRODUCTION: process.env.NODE_ENV === "production",
-    IS_DEVELOPMENT: process.env.NODE_ENV === "development" || !process.env.NODE_ENV,
+  NODE_ENV: process.env.NODE_ENV || "development",
+  IS_PRODUCTION: process.env.NODE_ENV === "production",
+  IS_DEVELOPMENT:
+    process.env.NODE_ENV === "development" || !process.env.NODE_ENV,
 } as const;
 
 // Promo Code Configuration
 export const PROMO_CONFIG = {
-    /**
-     * Default promo code for prepaid orders
-     * Can be overridden via NEXT_PUBLIC_PREPAID_PROMO_CODE environment variable
-     * Set to empty string to disable automatic promo code application
-     */
-    PREPAID_PROMO_CODE: process.env.NEXT_PUBLIC_PREPAID_PROMO_CODE || "TEST150",
+  /**
+   * Default promo code for prepaid orders
+   * Can be overridden via NEXT_PUBLIC_PREPAID_PROMO_CODE environment variable
+   * Set to empty string to disable automatic promo code application
+   */
+  PREPAID_PROMO_CODE: process.env.NEXT_PUBLIC_PREPAID_PROMO_CODE || "TEST150",
 
-    /**
-     * Whether to automatically apply promo code for prepaid orders
-     * Set NEXT_PUBLIC_AUTO_APPLY_PROMO=false to disable
-     */
-    AUTO_APPLY_PROMO: process.env.NEXT_PUBLIC_AUTO_APPLY_PROMO !== "false",
+  /**
+   * Whether to automatically apply promo code for prepaid orders
+   * Set NEXT_PUBLIC_AUTO_APPLY_PROMO=false to disable
+   */
+  AUTO_APPLY_PROMO: process.env.NEXT_PUBLIC_AUTO_APPLY_PROMO !== "false",
 } as const;
 
 // Cache Configuration
 export const CACHE_CONFIG = {
-    IMAGES_MAX_AGE: 604800, // 7 days
-    ASSETS_MAX_AGE: 86400, // 1 day
-    FONTS_MAX_AGE: 31536000, // 1 year
+  IMAGES_MAX_AGE: 604800, // 7 days
+  ASSETS_MAX_AGE: 86400, // 1 day
+  FONTS_MAX_AGE: 31536000, // 1 year
 } as const;
 
 // Payment Method Constants
 export const PAYMENT_METHODS = {
-    PREPAID: "prepaid",
-    COD: "cod",
+  PREPAID: "prepaid",
+  COD: "cod",
 } as const;
 
 // Route Constants
 export const ROUTES = {
-    PAYMENT_INITIAL: "/payment-initial/",
-    PAYMENT_SUCCESS: "/payment-success",
-    PAYMENT_FAILED: "/payment-failed",
+  PAYMENT_INITIAL: "/payment-initial/",
+  PAYMENT_SUCCESS: "/payment-success",
+  PAYMENT_FAILED: "/payment-failed",
 } as const;
 
 // Color Constants (for consistency across the app)
 export const COLORS = {
-    PRIMARY: "#057A37",
-    PRIMARY_DARK: "#04662a",
-    PRIMARY_LIGHT: "#A9B528",
-    SECONDARY: "#1A2819",
-    TEXT_PRIMARY: "#1A2819",
-    TEXT_SECONDARY: "#3B3B3B",
-    TEXT_TERTIARY: "#555",
-    BACKGROUND_LIGHT: "#F8F8F8",
-    BACKGROUND_ACCENT: "#F2FFF7",
-    BACKGROUND_WHITE: "#FFFFFF",
-    BORDER: "#606060",
-    BORDER_LIGHT: "#E5E5E5",
-    SUCCESS: "#057A37",
-    ERROR: "#EF4444",
-    WARNING: "#F59E0B",
-    GOLD: "#DFC362",
+  PRIMARY: "#057A37",
+  PRIMARY_DARK: "#04662a",
+  PRIMARY_LIGHT: "#A9B528",
+  SECONDARY: "#1A2819",
+  TEXT_PRIMARY: "#1A2819",
+  TEXT_SECONDARY: "#3B3B3B",
+  TEXT_TERTIARY: "#555",
+  BACKGROUND_LIGHT: "#F8F8F8",
+  BACKGROUND_ACCENT: "#F2FFF7",
+  BACKGROUND_WHITE: "#FFFFFF",
+  BORDER: "#606060",
+  BORDER_LIGHT: "#E5E5E5",
+  SUCCESS: "#057A37",
+  ERROR: "#EF4444",
+  WARNING: "#F59E0B",
+  GOLD: "#DFC362",
 } as const;

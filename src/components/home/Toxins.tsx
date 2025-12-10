@@ -50,7 +50,13 @@ const Toxins: React.FC = () => {
                 index !== toxinItems.length - 1 ? "border-r border-white" : ""
               }`}
             >
-              <Image src={item.img} width={70} height={70} alt={item.text} className="md:w-[70px] w-[50px]" />
+              <Image
+                src={item.img}
+                width={70}
+                height={70}
+                alt={item.text}
+                className="md:w-[70px] w-[50px]"
+              />
               <p className="whitespace-pre-line text-[#FFF] text-left text-[14px] md:text-[18px] leading-tight">
                 {item.text}
               </p>

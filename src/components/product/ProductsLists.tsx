@@ -39,7 +39,9 @@ interface ProductsListsProps {
   products: Product[];
 }
 
-const ProductsLists = React.memo(function ProductsLists({ products }: ProductsListsProps) {
+const ProductsLists = React.memo(function ProductsLists({
+  products,
+}: ProductsListsProps) {
   const formatINR = (value: number): string => {
     const rounded = Math.round(value || 0);
     return new Intl.NumberFormat("en-IN").format(rounded);
@@ -47,7 +49,9 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
 
   const getProductDetailUrl = (product: Product): string => {
     const designSlug = productDesignSlugs[product.id];
-    return designSlug ? `/product/${designSlug}` : `/product/${slugify(product.name)}`;
+    return designSlug
+      ? `/product/${designSlug}`
+      : `/product/${slugify(product.name)}`;
   };
 
   // Filter out combo products (comprehensive check)
@@ -61,12 +65,17 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
     // 1. product_type field equals "combo"
     // 2. category contains "combo"
     // 3. product name contains "combo" (case-insensitive)
-    const isComboByType = productType && typeof productType === "string" && productType.toLowerCase() === "combo";
-    const isComboByCategory = category && typeof category === "string" && category.toLowerCase().includes("combo");
+    const isComboByType =
+      productType &&
+      typeof productType === "string" &&
+      productType.toLowerCase() === "combo";
+    const isComboByCategory =
+      category &&
+      typeof category === "string" &&
+      category.toLowerCase().includes("combo");
     const isComboByName = productName.toLowerCase().includes("combo");
 
     const isCombo = isComboByType || isComboByCategory || isComboByName;
-
 
     return !isCombo;
   });
@@ -74,13 +83,18 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
   return (
     <>
       {filteredProducts.map((product, index) => (
-        <section key={product.id} className={`py-10 ${index % 2 === 1 ? "bg-[#F8F8F8]" : ""}`}>
+        <section
+          key={product.id}
+          className={`py-10 ${index % 2 === 1 ? "bg-[#F8F8F8]" : ""}`}
+        >
           <div className="max-w-[1400px] mx-auto px-4">
             <div className="flex flex-wrap justify-between items-center">
-
               {/* Image Section */}
               <div className="w-full md:w-[35%]">
-                <Link href={getProductDetailUrl(product)} className="flex items-center justify-center">
+                <Link
+                  href={getProductDetailUrl(product)}
+                  className="flex items-center justify-center"
+                >
                   <div
                     className="p-6 flex items-center justify-center rounded-[10px]"
                     style={{ backgroundColor: product.bgColor }}
@@ -96,32 +110,43 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
                     />
                   </div>
                 </Link>
-                {Array.isArray(product.image_all) && product.image_all.length > 1 && (
-                  <div className="mt-3 flex gap-2 flex-wrap items-center justify-center">
-                    {product.image_all.slice(0, 5).map((img, idx) => (
-                      <div key={idx} className="w-14 h-14 border rounded-md overflow-hidden bg-white flex items-center justify-center">
-                        <Image
-                          src={img}
-                          alt={`${product.name} additional view ${idx + 1}`}
-                          width={56}
-                          height={56}
-                          className="object-contain"
-                          loading="lazy"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {Array.isArray(product.image_all) &&
+                  product.image_all.length > 1 && (
+                    <div className="mt-3 flex gap-2 flex-wrap items-center justify-center">
+                      {product.image_all.slice(0, 5).map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="w-14 h-14 border rounded-md overflow-hidden bg-white flex items-center justify-center"
+                        >
+                          <Image
+                            src={img}
+                            alt={`${product.name} additional view ${idx + 1}`}
+                            width={56}
+                            height={56}
+                            className="object-contain"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
               </div>
 
               {/* Text Section */}
               <div className="w-full md:w-[65%]">
                 <div className="flex flex-col">
-                  <Link href={getProductDetailUrl(product)} className="flex items-center justify-start">
-                    <h2 className="text-[#1A2819] hover:text-[#057A37] hover:cursor-pointer font-[Grafiels] text-[25px] leading-tight mb-4">{product.name}</h2>
+                  <Link
+                    href={getProductDetailUrl(product)}
+                    className="flex items-center justify-start"
+                  >
+                    <h2 className="text-[#1A2819] hover:text-[#057A37] hover:cursor-pointer font-[Grafiels] text-[25px] leading-tight mb-4">
+                      {product.name}
+                    </h2>
                   </Link>
                   <div>
-                    <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">{product.tagline}</p>
+                    <p className="inline-flex border border-black rounded-[5px] py-2 px-2 mb-3">
+                      {product.tagline}
+                    </p>
                   </div>
                   {/* <div className="flex flex-wrap gap-2 items-center mb-3 text-[12px] text-[#555]">
                     {product.brand && <span className="px-2 py-1 border rounded">Brand: {product.brand}</span>}
@@ -145,12 +170,20 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
                     </div>
                   )} */}
                   {product.description.map((desc, i) => (
-                    <p key={i} className="text-[15px] mb-3">{desc}</p>
+                    <p key={i} className="text-[15px] mb-3">
+                      {desc}
+                    </p>
                   ))}
-                  <h3 className="text-[#1A2819] text-[25px] mb-3 font-semibold leading-tight">₹{formatINR(product.price)}</h3>
+                  <h3 className="text-[#1A2819] text-[25px] mb-3 font-semibold leading-tight">
+                    ₹{formatINR(product.price)}
+                  </h3>
                   <p className="text-[15px] mb-4">
-                    <span className="line-through text-gray-500 text-[12px]">₹{formatINR(product.originalPrice)}</span>{" "}
-                    <span className="text-[#057A37] font-semibold">{product.discount}</span>
+                    <span className="line-through text-gray-500 text-[12px]">
+                      ₹{formatINR(product.originalPrice)}
+                    </span>{" "}
+                    <span className="text-[#057A37] font-semibold">
+                      {product.discount}
+                    </span>
                   </p>
 
                   {/* {(() => {
@@ -192,7 +225,6 @@ const ProductsLists = React.memo(function ProductsLists({ products }: ProductsLi
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </section>

@@ -1,7 +1,7 @@
-import React from 'react'
-import { Splide, SplideSlide } from '@splidejs/react-splide'
-import Image from 'next/image'
-import { fallbackProducts } from "@/app/data/fallbackProducts"
+import React from "react";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
+import Image from "next/image";
+import { fallbackProducts } from "@/app/data/fallbackProducts";
 
 interface ResProductImgProps {
   images?: string[]; // Optional, will be ignored - using fallback data instead
@@ -10,11 +10,13 @@ interface ResProductImgProps {
 
 const ResProductImg = ({ designType }: ResProductImgProps) => {
   // Get images ONLY from fallbackProducts.ts based on design type
-  const localProduct = fallbackProducts.find((p) => p.design_type === designType);
+  const localProduct = fallbackProducts.find(
+    (p) => p.design_type === designType,
+  );
   const images = localProduct?.images || [];
 
   return (
-    <div className='pb-10'>
+    <div className="pb-10">
       <Splide
         options={{
           perPage: 1,
@@ -43,7 +45,7 @@ const ResProductImg = ({ designType }: ResProductImgProps) => {
         ))}
       </Splide>
     </div>
-  )
-}
+  );
+};
 
-export default ResProductImg
+export default ResProductImg;

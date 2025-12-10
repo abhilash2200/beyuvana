@@ -6,16 +6,13 @@
 import { apiFetch, ApiResponse } from "./core";
 import { buildAuthHeaders } from "../api-utils";
 import { ordersApi } from "./orders";
-import type {
-  ProductReviewRequest,
-  ReviewsListResponse,
-} from "./types";
+import type { ProductReviewRequest, ReviewsListResponse } from "./types";
 
 export const reviewApi = {
   canUserReview: async (
     productId: string | number,
     userId: string | number,
-    sessionKey?: string
+    sessionKey?: string,
   ): Promise<{ canReview: boolean; reason?: string; orderStatus?: string }> => {
     try {
       const response = await ordersApi.getOrderList(sessionKey, String(userId));
@@ -30,18 +27,19 @@ export const reviewApi = {
       const productIdStr = String(productId);
 
       const productOrders = response.data.filter(
-        (order) => order.product_id === productIdStr
+        (order) => order.product_id === productIdStr,
       );
 
       if (productOrders.length === 0) {
         return {
           canReview: false,
-          reason: "You can only review products you have ordered. Please purchase this product first.",
+          reason:
+            "You can only review products you have ordered. Please purchase this product first.",
         };
       }
 
       const deliveredOrders = productOrders.filter(
-        (order) => order.status === "DELIVERED" || order.status === "COMPLETED"
+        (order) => order.status === "DELIVERED" || order.status === "COMPLETED",
       );
 
       if (deliveredOrders.length > 0) {
@@ -52,27 +50,37 @@ export const reviewApi = {
       }
 
       const cancelledOrders = productOrders.filter(
-        (order) => order.status === "CANCELLED" || order.status === "ORDER_RETURN" || order.status === "NOT_DELIVERED"
+        (order) =>
+          order.status === "CANCELLED" ||
+          order.status === "ORDER_RETURN" ||
+          order.status === "NOT_DELIVERED",
       );
 
       if (cancelledOrders.length === productOrders.length) {
         return {
           canReview: false,
-          reason: "Reviews are not allowed for cancelled or failed orders. Please place a new order.",
+          reason:
+            "Reviews are not allowed for cancelled or failed orders. Please place a new order.",
           orderStatus: "cancelled",
         };
       }
 
       return {
         canReview: false,
-        reason: "You can only review products after your order has been delivered. Please wait for delivery.",
+        reason:
+          "You can only review products after your order has been delivered. Please wait for delivery.",
         orderStatus: "arriving",
       };
     } catch (error) {
-      import("@/lib/logger").then(({ logger }) => {
-        logger.error("Error checking review eligibility", error, "reviewsApi");
-      }).catch(() => {
-      });
+      import("@/lib/logger")
+        .then(({ logger }) => {
+          logger.error(
+            "Error checking review eligibility",
+            error,
+            "reviewsApi",
+          );
+        })
+        .catch(() => {});
 
       return {
         canReview: false,
@@ -81,7 +89,10 @@ export const reviewApi = {
     }
   },
 
-  addReview: async (reviewData: ProductReviewRequest, sessionKey?: string): Promise<ApiResponse> => {
+  addReview: async (
+    reviewData: ProductReviewRequest,
+    sessionKey?: string,
+  ): Promise<ApiResponse> => {
     try {
       return await apiFetch("/product-reviews/add/v1/", {
         method: "POST",
@@ -95,7 +106,7 @@ export const reviewApi = {
 
   getReviews: async (
     productId: number,
-    sessionKey?: string
+    sessionKey?: string,
   ): Promise<ApiResponse<ReviewsListResponse>> => {
     try {
       const { cachedApiCall } = await import("../api-cache");
@@ -114,7 +125,7 @@ export const reviewApi = {
             ttl: 2 * 60 * 1000,
           },
           requestOptions,
-        }
+        },
       );
     } catch {
       return {
@@ -125,4 +136,3 @@ export const reviewApi = {
     }
   },
 };
-

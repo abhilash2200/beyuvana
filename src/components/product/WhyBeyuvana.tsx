@@ -4,7 +4,11 @@ import { useState } from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import Image from "next/image";
-import { WhyItem as WhyItemType, Product, fallbackProducts } from "@/app/data/fallbackProducts";
+import {
+  WhyItem as WhyItemType,
+  Product,
+  fallbackProducts,
+} from "@/app/data/fallbackProducts";
 import { useParams } from "next/navigation";
 
 interface WhyBeyuvanaProps {
@@ -59,7 +63,7 @@ const WhyBeyuvana = ({ product }: WhyBeyuvanaProps) => {
           const isHovered = hoveredId === item.id;
           const { bgColor, headingColor, paraColor, imgFilter } = getItemStyles(
             item,
-            isHovered
+            isHovered,
           );
 
           return (
@@ -72,7 +76,9 @@ const WhyBeyuvana = ({ product }: WhyBeyuvanaProps) => {
               >
                 <div
                   className="rounded-full p-3 mb-2 transition-all duration-300"
-                  style={{ backgroundColor: isHovered ? "#FFFFFF" : "transparent" }}
+                  style={{
+                    backgroundColor: isHovered ? "#FFFFFF" : "transparent",
+                  }}
                 >
                   <Image
                     src={item.img}

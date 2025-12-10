@@ -1,10 +1,10 @@
 import { Star } from "lucide-react";
 
 interface StarRatingProps {
-    rating: number;
-    maxRating?: number;
-    size?: number;
-    className?: string;
+  rating: number;
+  maxRating?: number;
+  size?: number;
+  className?: string;
 }
 
 /**
@@ -15,22 +15,22 @@ interface StarRatingProps {
  * @param className - Additional CSS classes
  */
 export const StarRating: React.FC<StarRatingProps> = ({
-    rating,
-    maxRating = 5,
-    size = 18,
-    className = "",
+  rating,
+  maxRating = 5,
+  size = 18,
+  className = "",
 }) => {
-    return (
-        <div className={`flex gap-1 ${className}`}>
-            {Array.from({ length: maxRating }).map((_, index) => (
-                <Star
-                    key={index}
-                    size={size}
-                    fill={index < rating ? "gold" : "none"}
-                    stroke="gold"
-                    className="text-yellow-500"
-                />
-            ))}
-        </div>
-    );
+  return (
+    <div className={`flex gap-1 ${className}`}>
+      {Array.from({ length: maxRating }).map((_, index) => (
+        <Star
+          key={index}
+          size={size}
+          fill={index < rating ? "gold" : "none"}
+          stroke="gold"
+          className="text-yellow-500"
+        />
+      ))}
+    </div>
+  );
 };

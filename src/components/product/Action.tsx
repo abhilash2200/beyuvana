@@ -44,7 +44,9 @@ const Action = ({ product }: { product: Product }) => {
                 <h2
                   className="font-[Grafiels] text-[22px] leading-tight mb-3 transition-colors duration-300"
                   style={{
-                    color: isHovered ? item.hoverHeadingColor : item.headingColor,
+                    color: isHovered
+                      ? item.hoverHeadingColor
+                      : item.headingColor,
                   }}
                 >
                   {item.title}
@@ -52,7 +54,9 @@ const Action = ({ product }: { product: Product }) => {
                 <p
                   className="text-[15px] transition-colors duration-300"
                   style={{
-                    color: isHovered ? item.hoverParagraphColor : item.paragraphColor,
+                    color: isHovered
+                      ? item.hoverParagraphColor
+                      : item.paragraphColor,
                   }}
                 >
                   {item.description}

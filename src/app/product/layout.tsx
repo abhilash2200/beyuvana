@@ -1,19 +1,15 @@
-import { Metadata } from "next"
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Products',
-  description: 'Explore BEYUVANA™ plant-powered products for glow and wellness.',
-}
-
+  title: "Products",
+  description:
+    "Explore BEYUVANA™ plant-powered products for glow and wellness.",
+};
 
 export default function ProductLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return (
-    <>
-      {children}
-    </>
-  )
+  return <>{children}</>;
 }

@@ -1,21 +1,15 @@
-import { Metadata } from "next"
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: 'Contact BEYUVANA™',
-    description: 'Get in touch with BEYUVANA™ support for orders, products, and partnerships.',
-}
-
+  title: "Contact BEYUVANA™",
+  description:
+    "Get in touch with BEYUVANA™ support for orders, products, and partnerships.",
+};
 
 export default function ContactLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode
+  children: React.ReactNode;
 }) {
-    return (
-        <>
-            {children}
-        </>
-    )
+  return <>{children}</>;
 }
-
-

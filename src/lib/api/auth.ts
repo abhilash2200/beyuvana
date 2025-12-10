@@ -6,9 +6,7 @@
 
 import { apiFetch, ApiResponse } from "./core";
 import { buildAuthHeaders } from "../api-utils";
-import type {
-  SendOtpRequest,
-} from "./types";
+import type { SendOtpRequest } from "./types";
 
 export const authApi = {
   sendOtp: async (otpData: SendOtpRequest): Promise<ApiResponse> => {
@@ -20,8 +18,10 @@ export const authApi = {
 
       return response;
     } catch (error: unknown) {
-
-      if ((error as Error)?.message && (error as Error).message.includes("API error:")) {
+      if (
+        (error as Error)?.message &&
+        (error as Error).message.includes("API error:")
+      ) {
         try {
           const errorText = (error as Error).message.split(" - ")[1];
           const errorData = JSON.parse(errorText);
@@ -34,30 +34,41 @@ export const authApi = {
       }
 
       throw new Error(
-        "Failed to send OTP. Please check your internet connection and try again."
+        "Failed to send OTP. Please check your internet connection and try again.",
       );
     }
   },
 
-  register: async (userData: { fullname: string; email: string; phonenumber: string; otp: string }): Promise<ApiResponse> => {
+  register: async (userData: {
+    fullname: string;
+    email: string;
+    phonenumber: string;
+    otp: string;
+  }): Promise<ApiResponse> => {
     try {
       const apiData = {
         fullname: userData.fullname,
         email: userData.email,
         phonenumber: userData.phonenumber,
-        otp_code: userData.otp
+        otp_code: userData.otp,
       };
 
       // Log registration attempt (without sensitive data)
-      import("@/lib/logger").then(({ logger, sanitizeForLogging }) => {
-        logger.debug("Sending registration request to backend", sanitizeForLogging({
-          fullname: apiData.fullname,
-          email: apiData.email,
-          phonenumber: apiData.phonenumber,
-        }), "authApi");
-      }).catch(() => {
-        // Fallback if logger import fails
-      });
+      import("@/lib/logger")
+        .then(({ logger, sanitizeForLogging }) => {
+          logger.debug(
+            "Sending registration request to backend",
+            sanitizeForLogging({
+              fullname: apiData.fullname,
+              email: apiData.email,
+              phonenumber: apiData.phonenumber,
+            }),
+            "authApi",
+          );
+        })
+        .catch(() => {
+          // Fallback if logger import fails
+        });
 
       const response = await apiFetch("/signup/v1/", {
         method: "POST",
@@ -67,16 +78,19 @@ export const authApi = {
       return response;
     } catch {
       throw new Error(
-        "Registration failed. Please check your internet connection and try again."
+        "Registration failed. Please check your internet connection and try again.",
       );
     }
   },
 
-  login: async (loginData: { phonenumber: string; otp: string }): Promise<ApiResponse> => {
+  login: async (loginData: {
+    phonenumber: string;
+    otp: string;
+  }): Promise<ApiResponse> => {
     try {
       const apiData = {
         phonenumber: loginData.phonenumber,
-        otp_code: loginData.otp
+        otp_code: loginData.otp,
       };
 
       return await apiFetch("/login/v1/", {
@@ -85,7 +99,7 @@ export const authApi = {
       });
     } catch {
       throw new Error(
-        "Login failed. Please check your internet connection and try again."
+        "Login failed. Please check your internet connection and try again.",
       );
     }
   },
@@ -101,9 +115,8 @@ export const authApi = {
       return response;
     } catch {
       throw new Error(
-        "Logout failed. Please check your internet connection and try again."
+        "Logout failed. Please check your internet connection and try again.",
       );
     }
   },
 };
-

@@ -35,7 +35,9 @@ interface DisplayProduct {
 const ProductsList = React.memo(() => {
   const { addToCart, loading, openCart } = useCart();
 
-  const [selectedPacks, setSelectedPacks] = useState<Record<string, 1 | 2 | 4>>({});
+  const [selectedPacks, setSelectedPacks] = useState<Record<string, 1 | 2 | 4>>(
+    {},
+  );
   const [displayProducts, setDisplayProducts] = useState<DisplayProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,11 +56,17 @@ const ProductsList = React.memo(() => {
             sort: { id: "DESC" },
             page: 1,
             limit: 1,
-          })
+          }),
         ]);
 
-        const greenList = greenResponse.data && Array.isArray(greenResponse.data) ? greenResponse.data : [];
-        const pinkList = pinkResponse.data && Array.isArray(pinkResponse.data) ? pinkResponse.data : [];
+        const greenList =
+          greenResponse.data && Array.isArray(greenResponse.data)
+            ? greenResponse.data
+            : [];
+        const pinkList =
+          pinkResponse.data && Array.isArray(pinkResponse.data)
+            ? pinkResponse.data
+            : [];
         const combinedList = [...greenList, ...pinkList];
 
         // Filter: Keep products with valid design_type (GREEN/PINK), exclude combo products that don't have design_type
@@ -66,13 +74,16 @@ const ProductsList = React.memo(() => {
         const filteredList = combinedList.filter((product: Product) => {
           const productType = product.product_type;
           const designType = product.design_type;
-          const isCombo = productType && typeof productType === "string" && productType.toLowerCase() === "combo";
+          const isCombo =
+            productType &&
+            typeof productType === "string" &&
+            productType.toLowerCase() === "combo";
 
           // Check if product has a valid design_type (GREEN or PINK)
-          const hasValidDesignType = designType && (
-            designType.toString().toUpperCase() === "GREEN" ||
-            designType.toString().toUpperCase() === "PINK"
-          );
+          const hasValidDesignType =
+            designType &&
+            (designType.toString().toUpperCase() === "GREEN" ||
+              designType.toString().toUpperCase() === "PINK");
 
           // Include if:
           // 1. Has valid design_type (GREEN/PINK) - these should always show
@@ -86,38 +97,51 @@ const ProductsList = React.memo(() => {
           const detailedProducts = await Promise.all(
             filteredList.map(async (apiProduct: Product) => {
               // Map to original position: green is 0, pink is 1
-              const originalIdx = greenList.some(p => p.id === apiProduct.id) ? 0 : 1;
+              const originalIdx = greenList.some((p) => p.id === apiProduct.id)
+                ? 0
+                : 1;
 
               try {
-                const detailsResponse = await productsApi.getDetails(apiProduct.id);
+                const detailsResponse = await productsApi.getDetails(
+                  apiProduct.id,
+                );
                 if (!detailsResponse.data) {
                   return null;
                 }
 
                 const productDetails = detailsResponse.data;
-                const tiers: PriceTier[] = Array.isArray(productDetails.prices) ? productDetails.prices : [];
+                const tiers: PriceTier[] = Array.isArray(productDetails.prices)
+                  ? productDetails.prices
+                  : [];
 
                 const getTierData = (qty: 1 | 2 | 4) => {
                   const tier = tiers.find((t) => Number(t.qty) === Number(qty));
                   const result = {
-                    price: tier ? Math.round(parseFloat(tier.final_price) || 0) : 0,
+                    price: tier
+                      ? Math.round(parseFloat(tier.final_price) || 0)
+                      : 0,
                     mrp: tier ? Math.round(parseFloat(tier.mrp) || 0) : 0,
                     discount: tier ? tier.discount_off_inpercent || "0%" : "0%",
-                    product_price_id: tier ? tier.product_price_id : ""
+                    product_price_id: tier ? tier.product_price_id : "",
                   };
 
                   return result;
                 };
 
-                const mainImage = Array.isArray(productDetails.image) && productDetails.image.length > 0
-                  ? productDetails.image[0]
-                  : "/assets/img/green-product.png";
+                const mainImage =
+                  Array.isArray(productDetails.image) &&
+                  productDetails.image.length > 0
+                    ? productDetails.image[0]
+                    : "/assets/img/green-product.png";
 
                 const productData = {
                   id: productDetails.id,
                   name: productDetails.product_name,
                   shortdescription: productDetails.short_description || "",
-                  description: productDetails.product_description || productDetails.short_description || "",
+                  description:
+                    productDetails.product_description ||
+                    productDetails.short_description ||
+                    "",
                   descriptiontext: productDetails.short_description || "",
                   price: {
                     1: getTierData(1).price,
@@ -148,11 +172,12 @@ const ProductsList = React.memo(() => {
               } catch (error) {
                 return null;
               }
-            })
+            }),
           );
 
-          const validProducts = detailedProducts.filter((product): product is DisplayProduct =>
-            product !== null && product.product_id !== undefined
+          const validProducts = detailedProducts.filter(
+            (product): product is DisplayProduct =>
+              product !== null && product.product_id !== undefined,
           );
 
           setDisplayProducts(validProducts);
@@ -179,16 +204,19 @@ const ProductsList = React.memo(() => {
   const handleAddToCart = async (product: DisplayProduct) => {
     const selectedPack: 1 | 2 | 4 = selectedPacks[product.id] ?? 1;
 
-
     if (!product.product_price_ids) {
-      toast.error("Unable to add to cart: Product data incomplete. Please refresh and try again.");
+      toast.error(
+        "Unable to add to cart: Product data incomplete. Please refresh and try again.",
+      );
       return;
     }
 
     const productPriceId = product.product_price_ids[selectedPack];
 
     if (!productPriceId || productPriceId.trim() === "") {
-      toast.error("Unable to add to cart: Missing price information. Please try again.");
+      toast.error(
+        "Unable to add to cart: Missing price information. Please try again.",
+      );
       return;
     }
 
@@ -206,7 +234,6 @@ const ProductsList = React.memo(() => {
       short_description: product.shortdescription,
     };
 
-
     await addToCart(cartItem);
   };
 
@@ -218,7 +245,9 @@ const ProductsList = React.memo(() => {
   const getProductDetailUrl = (product: DisplayProduct): string => {
     const productIdNum = parseInt(product.product_id, 10);
     const designSlug = productDesignSlugs[productIdNum];
-    return designSlug ? `/product/${designSlug}` : `/product/${slugify(product.name)}`;
+    return designSlug
+      ? `/product/${designSlug}`
+      : `/product/${slugify(product.name)}`;
   };
 
   if (isLoading) {
@@ -242,11 +271,15 @@ const ProductsList = React.memo(() => {
             className={`px-4 ${index % 2 !== 0 ? "w-full bg-[#FAFAFA]" : ""}`}
           >
             <div
-              className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${index % 2 !== 0 ? "flex-row-reverse" : ""
-                }`}
+              className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${
+                index % 2 !== 0 ? "flex-row-reverse" : ""
+              }`}
             >
               <div className="w-full md:w-[28%]">
-                <Link href={getProductDetailUrl(product)} className="flex items-center justify-center">
+                <Link
+                  href={getProductDetailUrl(product)}
+                  className="flex items-center justify-center"
+                >
                   <Image
                     src={product.mainImage}
                     width={418}
@@ -264,13 +297,11 @@ const ProductsList = React.memo(() => {
                   </h2>
                 </Link>
 
-                
-                  <div>
-                    <p className="inline-flex border border-black rounded-[5px] py-2 px-2 font-light">
-                      {product.shortdescription}
-                    </p>
-                  </div>
-                
+                <div>
+                  <p className="inline-flex border border-black rounded-[5px] py-2 px-2 font-light">
+                    {product.shortdescription}
+                  </p>
+                </div>
 
                 <p className="font-light">{product.description}</p>
 
@@ -284,16 +315,24 @@ const ProductsList = React.memo(() => {
                   {product.benefits.map((b, i) => (
                     <div
                       key={i}
-                      className={`md:w-[20%] w-[45%] ${i !== product.benefits.length - 1
-                        ? "md:border-r md:border-black"
-                        : ""
-                        } ${i !== product.benefits.length - 1 && !(i === 1 || i === 3)
+                      className={`md:w-[20%] w-[45%] ${
+                        i !== product.benefits.length - 1
+                          ? "md:border-r md:border-black"
+                          : ""
+                      } ${
+                        i !== product.benefits.length - 1 &&
+                        !(i === 1 || i === 3)
                           ? "border-r border-black"
                           : ""
-                        } pr-2`}
+                      } pr-2`}
                     >
                       <div className="flex flex-col items-center gap-2 text-center">
-                        <Image src={b.img} width={83} height={83} alt={`Benefit ${i + 1}`} />
+                        <Image
+                          src={b.img}
+                          width={83}
+                          height={83}
+                          alt={`Benefit ${i + 1}`}
+                        />
                         <p className="text-[12px]">{b.text}</p>
                       </div>
                     </div>
@@ -315,22 +354,30 @@ const ProductsList = React.memo(() => {
 
                       const colors = isEven
                         ? {
-                          selected: "bg-[#057A37] text-white border-[#057A37] w-28 md:w-36",
-                          unselected: "bg-[#DFF5E6] text-[#057A37] border-[#057A37] w-28 md:w-36",
-                        }
+                            selected:
+                              "bg-[#057A37] text-white border-[#057A37] w-28 md:w-36",
+                            unselected:
+                              "bg-[#DFF5E6] text-[#057A37] border-[#057A37] w-28 md:w-36",
+                          }
                         : {
-                          selected: "bg-[#B00404] text-white border-[#B00404] w-28 md:w-36",
-                          unselected: "bg-[#F5DADA] text-[#B00404] border-[#B00404] w-28 md:w-36",
-                        };
+                            selected:
+                              "bg-[#B00404] text-white border-[#B00404] w-28 md:w-36",
+                            unselected:
+                              "bg-[#F5DADA] text-[#B00404] border-[#B00404] w-28 md:w-36",
+                          };
 
                       return (
                         <Button
                           key={pack}
                           onClick={() => handleSelectPack(product.id, pack)}
-                          className={`rounded-[10px] py-2 px-4 border font-semibold transition-colors ${isSelected ? colors.selected : colors.unselected
-                            }`}
+                          className={`rounded-[10px] py-2 px-4 border font-semibold transition-colors ${
+                            isSelected ? colors.selected : colors.unselected
+                          }`}
                         >
-                          <span className="text-[10px] md:pr-3 pr-2">Pack {pack}</span> ₹
+                          <span className="text-[10px] md:pr-3 pr-2">
+                            Pack {pack}
+                          </span>{" "}
+                          ₹
                           <div className="text-center text-[13px] md:text-[16px]">
                             {Math.round(product.price[pack]).toLocaleString()}
                           </div>

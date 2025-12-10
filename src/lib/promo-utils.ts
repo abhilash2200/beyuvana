@@ -10,12 +10,12 @@ import { PROMO_CONFIG } from "./constants";
  * @returns Promo code string, or empty string if disabled
  */
 export function getPrepaidPromoCode(): string {
-    // Return empty string if auto-apply is disabled
-    if (!PROMO_CONFIG.AUTO_APPLY_PROMO) {
-        return "";
-    }
+  // Return empty string if auto-apply is disabled
+  if (!PROMO_CONFIG.AUTO_APPLY_PROMO) {
+    return "";
+  }
 
-    return PROMO_CONFIG.PREPAID_PROMO_CODE || "";
+  return PROMO_CONFIG.PREPAID_PROMO_CODE || "";
 }
 
 /**
@@ -23,6 +23,5 @@ export function getPrepaidPromoCode(): string {
  * @returns true if promo code should be applied
  */
 export function isPromoCodeEnabled(): boolean {
-    return PROMO_CONFIG.AUTO_APPLY_PROMO && !!PROMO_CONFIG.PREPAID_PROMO_CODE;
+  return PROMO_CONFIG.AUTO_APPLY_PROMO && !!PROMO_CONFIG.PREPAID_PROMO_CODE;
 }
-

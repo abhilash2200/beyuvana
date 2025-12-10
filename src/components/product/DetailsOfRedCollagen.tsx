@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useMemo } from "react"
-import Image from "next/image"
-import ImageGalleryDialogWithPdf from "@/components/ui/ImageGalleryDialogWithPdf"
-import { Product } from "@/app/data/fallbackProducts"
-import { mapCertificateImagesToGallery } from "@/lib/productGalleryUtils"
+import { useMemo } from "react";
+import Image from "next/image";
+import ImageGalleryDialogWithPdf from "@/components/ui/ImageGalleryDialogWithPdf";
+import { Product } from "@/app/data/fallbackProducts";
+import { mapCertificateImagesToGallery } from "@/lib/productGalleryUtils";
 
 const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
   const coreActivities = [
@@ -48,19 +48,21 @@ const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
       title: "Promotes natural glow",
       desc: "All 18 actives synergize to restore youthful, glowing skin from within",
     },
-  ]
+  ];
 
-  const certificateImg = product?.certificateImg
-  const certificateImages = product?.certificateImages
-  const triggerImg = certificateImg ?? (certificateImages && certificateImages[0])
+  const certificateImg = product?.certificateImg;
+  const certificateImages = product?.certificateImages;
+  const triggerImg =
+    certificateImg ?? (certificateImages && certificateImages[0]);
 
   // Map certificate images to gallery items with PDFs
   const certificateGalleryItems = useMemo(() => {
-    const images = certificateImages ?? (certificateImg ? [certificateImg] : [])
-    if (images.length === 0) return []
+    const images =
+      certificateImages ?? (certificateImg ? [certificateImg] : []);
+    if (images.length === 0) return [];
     // Product ID 2 = PINK design type
-    return mapCertificateImagesToGallery(images, "PINK", product?.name)
-  }, [certificateImages, certificateImg, product?.name])
+    return mapCertificateImagesToGallery(images, "PINK", product?.name);
+  }, [certificateImages, certificateImg, product?.name]);
 
   return (
     <div>
@@ -71,11 +73,17 @@ const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
               WHY CHOOSE BEYUVANA™ Glow Essence
             </h2>
             <p className="text-white mb-2 leading-relaxed font-light">
-              BEYUVANA™ Glow Essence is India&apos;s 1st sachet-based glow therapy powered by 18 elite plant actives. It brightens skin, reduces pigmentation, and supports collagen with Glutathione, Vitamin C & Bamboo. Amla, Inulin, and Guava Leaf help heal your gut—because glow starts from within.
+              BEYUVANA™ Glow Essence is India&apos;s 1st sachet-based glow
+              therapy powered by 18 elite plant actives. It brightens skin,
+              reduces pigmentation, and supports collagen with Glutathione,
+              Vitamin C & Bamboo. Amla, Inulin, and Guava Leaf help heal your
+              gut—because glow starts from within.
             </p>
             <p className="text-white mb-6 leading-relaxed font-light">
-              Ashwagandha and Turmeric calm stress and fight inflammation, while Black Pepper boosts absorption.
-              Each sugar-free, vegetarian sachet is your daily dose of skin radiance, gut vitality, and inner balance.
+              Ashwagandha and Turmeric calm stress and fight inflammation, while
+              Black Pepper boosts absorption. Each sugar-free, vegetarian sachet
+              is your daily dose of skin radiance, gut vitality, and inner
+              balance.
             </p>
             <Image
               src="/assets/img/product-details/pink-1.webp"
@@ -90,9 +98,20 @@ const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
                   items={certificateGalleryItems}
                   title="Lab Certificates"
                   trigger={
-                    <button type="button" className="flex items-center gap-2 group hover:cursor-pointer hover:no-underline">
-                      <Image src={triggerImg} alt="certificate" width={40} height={40} className="w-auto h-auto" />
-                      <p className="text-sm text-gray-200 group-hover:underline">View Lab Certificates</p>
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 group hover:cursor-pointer hover:no-underline"
+                    >
+                      <Image
+                        src={triggerImg}
+                        alt="certificate"
+                        width={40}
+                        height={40}
+                        className="w-auto h-auto"
+                      />
+                      <p className="text-sm text-gray-200 group-hover:underline">
+                        View Lab Certificates
+                      </p>
                     </button>
                   }
                   onPdfOpen={() => {
@@ -126,7 +145,7 @@ const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DetailsOfRedCollagen
+export default DetailsOfRedCollagen;

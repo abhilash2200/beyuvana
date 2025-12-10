@@ -20,4 +20,3 @@ export { invoiceApi } from "./invoice";
 
 // Type exports
 export type * from "./types";
-

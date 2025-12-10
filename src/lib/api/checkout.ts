@@ -8,7 +8,10 @@ import { buildAuthHeaders } from "../api-utils";
 import type { CheckoutRequest, CheckoutResponseData } from "./types";
 
 export const checkoutApi = {
-  processCheckout: async (checkoutData: CheckoutRequest, sessionKey?: string): Promise<ApiResponse<CheckoutResponseData>> => {
+  processCheckout: async (
+    checkoutData: CheckoutRequest,
+    sessionKey?: string,
+  ): Promise<ApiResponse<CheckoutResponseData>> => {
     try {
       return await apiFetch<CheckoutResponseData>("/api/checkout/", {
         method: "POST",
@@ -23,4 +26,3 @@ export const checkoutApi = {
     }
   },
 };
-

@@ -32,7 +32,7 @@ export function calculateRatingStats(reviews: ReviewItem[]): RatingStats {
     return {
       averageRating: 0,
       totalReviews: 0,
-      ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+      ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
     };
   }
 
@@ -40,16 +40,17 @@ export function calculateRatingStats(reviews: ReviewItem[]): RatingStats {
   const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   let validReviews = 0;
 
-  reviews.forEach(review => {
+  reviews.forEach((review) => {
     // Handle both string and number ratings
-    const rating = typeof review.star_ratting === 'string' 
-      ? parseFloat(review.star_ratting) 
-      : review.star_ratting;
+    const rating =
+      typeof review.star_ratting === "string"
+        ? parseFloat(review.star_ratting)
+        : review.star_ratting;
 
     if (!isNaN(rating) && rating >= 1 && rating <= 5) {
       totalRating += rating;
       validReviews++;
-      
+
       // Round to nearest integer for distribution
       const roundedRating = Math.round(rating);
       if (roundedRating >= 1 && roundedRating <= 5) {
@@ -63,7 +64,7 @@ export function calculateRatingStats(reviews: ReviewItem[]): RatingStats {
   return {
     averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place
     totalReviews: validReviews,
-    ratingDistribution: distribution
+    ratingDistribution: distribution,
   };
 }
 
@@ -106,7 +107,9 @@ export function getRatingColor(rating: number): string {
  * @param distribution Object with star counts
  * @returns Rating statistics
  */
-export function calculateRatingFromDistribution(distribution: { [key: number]: number }): RatingStats {
+export function calculateRatingFromDistribution(distribution: {
+  [key: number]: number;
+}): RatingStats {
   let totalRating = 0;
   let totalReviews = 0;
   const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
@@ -114,12 +117,14 @@ export function calculateRatingFromDistribution(distribution: { [key: number]: n
   // Process each star rating
   Object.entries(distribution).forEach(([star, count]) => {
     const starNum = parseInt(star);
-    const reviewCount = typeof count === 'number' ? count : parseInt(String(count));
-    
+    const reviewCount =
+      typeof count === "number" ? count : parseInt(String(count));
+
     if (starNum >= 1 && starNum <= 5 && reviewCount > 0) {
       totalRating += starNum * reviewCount;
       totalReviews += reviewCount;
-      ratingDistribution[starNum as keyof typeof ratingDistribution] = reviewCount;
+      ratingDistribution[starNum as keyof typeof ratingDistribution] =
+        reviewCount;
     }
   });
 
@@ -128,6 +133,6 @@ export function calculateRatingFromDistribution(distribution: { [key: number]: n
   return {
     averageRating: Math.round(averageRating * 10) / 10,
     totalReviews,
-    ratingDistribution
+    ratingDistribution,
   };
 }

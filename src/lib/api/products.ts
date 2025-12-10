@@ -12,7 +12,9 @@ import type {
 } from "./types";
 
 export const productsApi = {
-  getList: async (params: ProductsListRequest = {}): Promise<ApiResponse<Product[]>> => {
+  getList: async (
+    params: ProductsListRequest = {},
+  ): Promise<ApiResponse<Product[]>> => {
     try {
       const { cachedApiCall } = await import("../api-cache");
       const endpoint = "/products/lists/v1/";
@@ -34,14 +36,17 @@ export const productsApi = {
             ttl: 5 * 60 * 1000,
           },
           requestOptions,
-        }
+        },
       );
     } catch {
       throw new Error("Failed to fetch products. Please try again later.");
     }
   },
-  
-  getDetails: async (productId: string | number, userId?: string | number): Promise<ApiResponse<ProductDetailsResponse>> => {
+
+  getDetails: async (
+    productId: string | number,
+    userId?: string | number,
+  ): Promise<ApiResponse<ProductDetailsResponse>> => {
     try {
       const { cachedApiCall } = await import("../api-cache");
       const endpoint = "/products/details/v1/";
@@ -61,10 +66,12 @@ export const productsApi = {
             ttl: 5 * 60 * 1000,
           },
           requestOptions,
-        }
+        },
       );
     } catch {
-      throw new Error("Failed to fetch product details. Please try again later.");
+      throw new Error(
+        "Failed to fetch product details. Please try again later.",
+      );
     }
   },
 };
@@ -77,9 +84,10 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
       ? apiProduct.image_all[0]
       : "/assets/img/green-product.png");
 
-  const firstTier = Array.isArray(apiProduct.prices) && apiProduct.prices.length > 0
-    ? apiProduct.prices[0]
-    : undefined;
+  const firstTier =
+    Array.isArray(apiProduct.prices) && apiProduct.prices.length > 0
+      ? apiProduct.prices[0]
+      : undefined;
 
   const price = firstTier
     ? Math.round(parseFloat(firstTier.final_price))
@@ -96,7 +104,9 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
   const normalizedDesign = (() => {
     const dt = apiProduct.design_type;
     if (!dt) return undefined;
-    const lower = (typeof dt === "string" ? dt.toLowerCase() : "") as "green" | "pink";
+    const lower = (typeof dt === "string" ? dt.toLowerCase() : "") as
+      | "green"
+      | "pink";
     return lower === "green" || lower === "pink" ? lower : undefined;
   })();
 
@@ -126,4 +136,3 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
     product_type: apiProduct.product_type,
   };
 };
-

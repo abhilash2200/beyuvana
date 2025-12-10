@@ -1,21 +1,14 @@
-import { Metadata } from "next"
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: 'My Orders',
-    description: 'View and track your BEYUVANA™ orders.',
-}
-
+  title: "My Orders",
+  description: "View and track your BEYUVANA™ orders.",
+};
 
 export default function OrderLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode
+  children: React.ReactNode;
 }) {
-    return (
-        <>
-            {children}
-        </>
-    )
+  return <>{children}</>;
 }
-
-

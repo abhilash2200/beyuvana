@@ -13,7 +13,9 @@ interface AdvancedPlantProps {
 const AdvancedPlant = ({ product }: AdvancedPlantProps) => {
   const params = useParams();
   const routeId = typeof params?.id === "string" ? params.id : undefined;
-  const resolvedProduct: Product | undefined = product ? product : fallbackProducts.find(p => p.id.toString() === routeId);
+  const resolvedProduct: Product | undefined = product
+    ? product
+    : fallbackProducts.find((p) => p.id.toString() === routeId);
   const plants: Plant[] = resolvedProduct?.plants || [];
 
   if (!plants.length) return null;
@@ -37,7 +39,10 @@ const AdvancedPlant = ({ product }: AdvancedPlantProps) => {
         aria-label="Advanced Plant Slider"
       >
         {plants.map((plant) => (
-          <SplideSlide key={plant.id} className="flex items-center justify-center">
+          <SplideSlide
+            key={plant.id}
+            className="flex items-center justify-center"
+          >
             <PlantCard
               title={plant.title}
               description={plant.description}

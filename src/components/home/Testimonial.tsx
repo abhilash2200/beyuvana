@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import { Splide, SplideSlide } from "@/components/common/DynamicSplide";
-import { testimonialsData, type TestimonialData } from "@/app/data/testimonials";
+import {
+  testimonialsData,
+  type TestimonialData,
+} from "@/app/data/testimonials";
 import { StarRating } from "@/components/ui/StarRating";
 
 const SLIDER_CONFIG = {
@@ -39,7 +42,9 @@ const SLIDER_CONFIG = {
 const CUSTOMER_IMAGE_SIZE = { width: 103, height: 103 };
 const PRODUCT_IMAGE_SIZE = { width: 48, height: 65 };
 
-const CustomerHeader: React.FC<{ testimonial: TestimonialData }> = ({ testimonial }) => (
+const CustomerHeader: React.FC<{ testimonial: TestimonialData }> = ({
+  testimonial,
+}) => (
   <div className="flex flex-wrap items-center gap-x-4 mb-6">
     <Image
       src={testimonial.customerImage}
@@ -67,7 +72,9 @@ const TestimonialText: React.FC<{ text: string }> = ({ text }) => (
   </div>
 );
 
-const ProductInfo: React.FC<{ testimonial: TestimonialData }> = ({ testimonial }) => (
+const ProductInfo: React.FC<{ testimonial: TestimonialData }> = ({
+  testimonial,
+}) => (
   <div className="flex flex-wrap gap-x-2 items-center md:px-4 px-0">
     <Image
       src={testimonial.productImage}
@@ -82,7 +89,9 @@ const ProductInfo: React.FC<{ testimonial: TestimonialData }> = ({ testimonial }
   </div>
 );
 
-const TestimonialCard: React.FC<{ testimonial: TestimonialData }> = ({ testimonial }) => (
+const TestimonialCard: React.FC<{ testimonial: TestimonialData }> = ({
+  testimonial,
+}) => (
   <div className="px-6 h-auto md:py-14 rounded-2xl text-left border border-transparent transition-all duration-300 ease-out hover:border-black hover:bg-white hover:shadow-lg">
     <CustomerHeader testimonial={testimonial} />
     <TestimonialText text={testimonial.testimonialText} />
