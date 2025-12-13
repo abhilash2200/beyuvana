@@ -94,35 +94,35 @@ const CustomerReviews = memo(
           const byIncludesName = byExactName
             ? undefined
             : list.find(
-                (p: Product) =>
-                  (p as Product & { product_name?: string })?.product_name
-                    ?.toLowerCase?.()
-                    .includes(nameLower) && nameLower.length > 0,
-              );
+              (p: Product) =>
+                (p as Product & { product_name?: string })?.product_name
+                  ?.toLowerCase?.()
+                  .includes(nameLower) && nameLower.length > 0,
+            );
           const byCategoryKey =
             byExactName || byIncludesName
               ? undefined
               : list.find(
-                  (p: Product) =>
-                    (
-                      p as Product & { categorykey?: string }
-                    )?.categorykey?.toLowerCase?.() === slugLower &&
-                    slugLower.length > 0,
-                );
+                (p: Product) =>
+                  (
+                    p as Product & { categorykey?: string }
+                  )?.categorykey?.toLowerCase?.() === slugLower &&
+                  slugLower.length > 0,
+              );
           const byDesignType =
             byExactName || byIncludesName || byCategoryKey
               ? undefined
               : list.find((p: Product) => {
-                  const dt = (p as Product & { design_type?: string })
-                    ?.design_type;
-                  if (!dt) return false;
-                  const dtLower = String(dt).toLowerCase();
-                  return (
-                    (slugLower.includes("green") &&
-                      dtLower.includes("green")) ||
-                    (slugLower.includes("pink") && dtLower.includes("pink"))
-                  );
-                });
+                const dt = (p as Product & { design_type?: string })
+                  ?.design_type;
+                if (!dt) return false;
+                const dtLower = String(dt).toLowerCase();
+                return (
+                  (slugLower.includes("green") &&
+                    dtLower.includes("green")) ||
+                  (slugLower.includes("pink") && dtLower.includes("pink"))
+                );
+              });
           const candidate =
             byExactName || byIncludesName || byCategoryKey || byDesignType;
           if ((candidate as Product | undefined)?.id) {
@@ -134,7 +134,7 @@ const CustomerReviews = memo(
               resolvedId = parsed;
             }
           }
-        } catch {}
+        } catch { }
 
         if (!resolvedId && productId && !Number.isNaN(Number(productId))) {
           resolvedId = productId;
@@ -214,7 +214,13 @@ const CustomerReviews = memo(
     }, [productId, productName, designSlug, sessionKey]);
 
     const displayedReviews = useMemo(() => {
-      return showAllReviews ? reviews : reviews.slice(0, 5);
+      // Sort reviews by created_at in descending order (newest first)
+      const sortedReviews = [...reviews].sort((a, b) => {
+        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return dateB - dateA; // Descending order (newest first)
+      });
+      return showAllReviews ? sortedReviews : sortedReviews.slice(0, 5);
     }, [reviews, showAllReviews]);
 
     const content = useMemo(() => {
@@ -279,9 +285,8 @@ const CustomerReviews = memo(
             {displayedReviews.map((r, index) => (
               <div
                 key={r.id}
-                className={`bg-white rounded-lg p-4 border-b border-dashed last:border-b-0 border-gray-500 hover:shadow-md transition-all duration-300 ease-in-out ${
-                  index >= 5 && !showAllReviews ? "hidden" : ""
-                }`}
+                className={`bg-white rounded-lg p-4 border-b border-dashed last:border-b-0 border-gray-500 hover:shadow-md transition-all duration-300 ease-in-out ${index >= 5 && !showAllReviews ? "hidden" : ""
+                  }`}
                 style={{
                   animationDelay: `${index * 100}ms`,
                   animation: showAllReviews
