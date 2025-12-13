@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "cross-env NODE_ENV=production next build --turbopack",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js",
     "build:analyze": "cross-env ANALYZE=true NODE_ENV=production next build",
-    "start": "cross-env NODE_ENV=production next start",
     "lint": "eslint",
     "clean": "npx rimraf .next && npx rimraf node_modules/.cache",
     "clean:next": "npx rimraf .next"
