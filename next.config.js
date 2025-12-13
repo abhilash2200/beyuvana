@@ -1,24 +1,9 @@
-import bundleAnalyzer from "@next/bundle-analyzer";
-
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-});
-
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  compress: true,
 
   experimental: {
-    optimizePackageImports: [
-      "lucide-react",
-      "react-icons",
-      "@radix-ui/react-dialog",
-      "@radix-ui/react-dropdown-menu",
-      "@radix-ui/react-tooltip",
-      "@radix-ui/react-accordion",
-      "@radix-ui/react-tabs",
-      "@radix-ui/react-alert-dialog",
-    ],
+    turbo: false
   },
 
   images: {
@@ -125,4 +110,4 @@ const nextConfig = {
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+module.exports = nextConfig;
