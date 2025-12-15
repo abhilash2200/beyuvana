@@ -45,7 +45,7 @@ export const testimonialsData: TestimonialData[] = [
   {
     id: "arjun-mehta",
     customerName: "Arjun Mehta",
-    customerImage: "/assets/img/ramesh.png",
+    customerImage: "/assets/img/arjun.png",
     testimonialText:
       "Naturally flavored with plant extracts and stevia for a refreshing taste—no artificial sweeteners or additives. Clean, light flavor powered by nature. Just the right hint of sweetness, naturally derived.",
     productImage: "/assets/img/pink-box.png",
