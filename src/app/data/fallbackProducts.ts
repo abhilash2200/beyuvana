@@ -1896,7 +1896,7 @@ export const fallbackProducts: Product[] = [
           "Serums provide surface-level glow without correcting internal skin dysfunction.",
         ],
       },
-      image: "/assets/img/product-details/compare-glow-pink.png",
+      image: "/assets/img/product-details/compare-glow-pink.webp",
     },
   },
 ];
