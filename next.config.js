@@ -9,7 +9,7 @@ const nextConfig = {
   images: {
     unoptimized: false,
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 86400, // 1 day cache (24 hours * 60 minutes * 60 seconds)
+    minimumCacheTTL: 0, // 1 day cache (24 hours * 60 minutes * 60 seconds)
     remotePatterns: [
       {
         protocol: "https",
