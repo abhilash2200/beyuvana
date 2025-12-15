@@ -71,9 +71,8 @@ export default function OtpVerifyForm({
 
     try {
       if (isRegistration && userData) {
-        const data = await authApi.register({
-          fullname: userData.name,
-          email: userData.email,
+        // For registration flow: Account is already created, just verify OTP and login
+        const data = await authApi.login({
           phonenumber: phone,
           otp: otp,
         });
@@ -82,38 +81,65 @@ export default function OtpVerifyForm({
 
         if (apiData.status === false) {
           const errorMessage = String(
-            apiData.message || "Registration failed. Please try again.",
+            apiData.message || "Login failed. Please try again.",
           );
 
           if (
-            errorMessage.toLowerCase().includes("already exists") ||
-            errorMessage.toLowerCase().includes("already registered")
+            errorMessage.includes("Phone No. or OTP Not Found") ||
+            errorMessage.includes("OTP Not Found")
           ) {
             toast.error(
-              "This phone number is already registered. Please try logging in instead.",
+              "Invalid OTP or phone number. Please check your OTP and try again, or the OTP may have expired.",
+            );
+          } else if (
+            errorMessage.includes("expired") ||
+            errorMessage.includes("timeout")
+          ) {
+            toast.error("OTP has expired. Please request a new OTP.");
+          } else if (
+            errorMessage.includes("invalid") ||
+            errorMessage.includes("incorrect")
+          ) {
+            toast.error(
+              "Invalid OTP. Please check the 6-digit code and try again.",
+            );
+          } else if (
+            errorMessage.includes("network") ||
+            errorMessage.includes("connection")
+          ) {
+            toast.error(
+              "Network error. Please check your internet connection and try again.",
             );
           } else {
-            toast.error(errorMessage);
+            toast.error("Login failed. Please try again.");
           }
           return;
         }
 
         const rawUser = apiData.user || apiData.data || apiData;
 
-        const normalizedUser = {
-          id: String(
-            (rawUser as Record<string, unknown>)?.userid ||
-              (rawUser as Record<string, unknown>)?.id ||
-              "",
-          ),
-          name: userData.name,
-          email: userData.email,
-          phone: String(
-            (rawUser as Record<string, unknown>)?.phone ||
-              (rawUser as Record<string, unknown>)?.phonenumber ||
-              phone,
-          ),
-        };
+        const normalizedUser = rawUser
+          ? {
+              id: String(
+                (rawUser as Record<string, unknown>).userid ||
+                  (rawUser as Record<string, unknown>).id ||
+                  "",
+              ),
+              name: String(
+                (rawUser as Record<string, unknown>).name ||
+                  (rawUser as Record<string, unknown>).fullname ||
+                  userData.name,
+              ),
+              email: String(
+                (rawUser as Record<string, unknown>).email || userData.email,
+              ),
+              phone: String(
+                (rawUser as Record<string, unknown>).phone ||
+                  (rawUser as Record<string, unknown>).phonenumber ||
+                  phone,
+              ),
+            }
+          : null;
 
         const sessionKey =
           apiData.session_key ||
@@ -132,34 +158,39 @@ export default function OtpVerifyForm({
             : null) ||
           null;
 
-        setUser(normalizedUser);
-        if (sessionKey) {
-          setSessionKey(String(sessionKey));
-          // Session key is set but not logged for security
-          logger.debug(
-            "Registration successful - session key set",
-            undefined,
-            "OtpVerifyForm",
-          );
-        }
-
-        try {
-          if (typeof window !== "undefined") {
-            localStorage.setItem("user", JSON.stringify(normalizedUser));
-            if (sessionKey)
-              localStorage.setItem("session_key", String(sessionKey));
+        if (normalizedUser) {
+          setUser(normalizedUser);
+          if (sessionKey) {
+            setSessionKey(String(sessionKey));
+            // Log login success without exposing session key
+            logger.info(
+              "Registration verification successful - user logged in",
+              { userId: normalizedUser.id },
+              "OtpVerifyForm",
+            );
           }
-        } catch (err) {
-          logger.warn(
-            "Failed to save user in localStorage",
-            err,
-            "OtpVerifyForm",
-          );
-        }
 
-        toast.success(
-          `Welcome to BEYUVANA, ${normalizedUser.name}! Your account has been created successfully.`,
-        );
+          try {
+            if (typeof window !== "undefined") {
+              localStorage.setItem("user", JSON.stringify(normalizedUser));
+              if (sessionKey)
+                localStorage.setItem("session_key", String(sessionKey));
+            }
+          } catch (err) {
+            logger.warn(
+              "Failed to save user in localStorage",
+              err,
+              "OtpVerifyForm",
+            );
+          }
+
+          toast.success(
+            `Welcome to BEYUVANA, ${normalizedUser.name}! Your account has been created and you are now logged in.`,
+          );
+        } else {
+          toast.error("Login failed. Please try again.");
+          return;
+        }
       } else {
         const data = await authApi.login({
           phonenumber: phone,
@@ -307,7 +338,10 @@ export default function OtpVerifyForm({
         </h2>
         <hr className="w-32 h-0.5 mb-4 bg-[#057A37]" />
         <p className="text-sm text-[#118200]">
-          We&apos;ve sent a 6-digit OTP to {phone}
+          {isRegistration
+            ? "Account created! We've sent a 6-digit OTP to"
+            : "We've sent a 6-digit OTP to"}{" "}
+          {phone}
         </p>
         <form onSubmit={handleSubmit} className="space-y-3 my-4" noValidate>
           <div>

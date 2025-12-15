@@ -55,10 +55,34 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
     setLoading(true);
 
     try {
-      const response = await authApi.sendOtp({ phonenumber: cleanPhone });
+      // Step 1: Register the user account first (without OTP)
+      const registerResponse = await authApi.registerWithoutOtp({
+        fullname: form.name,
+        email: form.email,
+        phonenumber: cleanPhone,
+      });
 
-      if (response.status === false) {
-        const errorMsg = response.message || "OTP send failed";
+      if (registerResponse.status === false) {
+        const errorMsg = registerResponse.message || "Registration failed";
+
+        // Handle specific error cases
+        if (
+          errorMsg.toLowerCase().includes("already exists") ||
+          errorMsg.toLowerCase().includes("already registered")
+        ) {
+          throw new Error(
+            "This phone number is already registered. Please try logging in instead.",
+          );
+        }
+
+        throw new Error(errorMsg);
+      }
+
+      // Step 2: If registration successful, send OTP to the phone number
+      const otpResponse = await authApi.sendOtp({ phonenumber: cleanPhone });
+
+      if (otpResponse.status === false) {
+        const errorMsg = otpResponse.message || "OTP send failed";
         throw new Error(errorMsg);
       }
 
@@ -71,15 +95,15 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
       onOtpSent?.(cleanPhone, userDataToPass);
 
       toast.success(
-        "OTP sent to your phone number. Please verify to complete registration.",
+        "Account created successfully! OTP sent to your phone number. Please verify to login.",
       );
     } catch (err: unknown) {
       const appError = handleError(err, {
         context: "RegisterForm",
-        userMessage: "Failed to send OTP. Please try again later.",
+        userMessage: "Registration failed. Please try again later.",
       });
       setError(
-        appError.userMessage || "Failed to send OTP. Please try again later.",
+        appError.userMessage || "Registration failed. Please try again later.",
       );
     } finally {
       setLoading(false);
@@ -173,12 +197,11 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
           <Button
             type="submit"
             disabled={loading}
-            className={`w-full text-white bg-green-700 hover:bg-green-800 rounded-[5px] py-2 font-light flex items-center justify-center gap-2 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`w-full text-white bg-green-700 hover:bg-green-800 rounded-[5px] py-2 font-light flex items-center justify-center gap-2 ${loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
             {loading && <LoadingSpinner size="sm" className="!flex-row" />}
-            {loading ? "Sending OTP..." : "Send OTP"}
+            {loading ? "Registering..." : "Register"}
           </Button>
         </form>
       </div>

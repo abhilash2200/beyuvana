@@ -39,6 +39,52 @@ export const authApi = {
     }
   },
 
+  /**
+   * Register user account without OTP (initial registration)
+   * After successful registration, OTP will be sent to the phone number
+   */
+  registerWithoutOtp: async (userData: {
+    fullname: string;
+    email: string;
+    phonenumber: string;
+  }): Promise<ApiResponse> => {
+    try {
+      const apiData = {
+        fullname: userData.fullname,
+        email: userData.email,
+        phonenumber: userData.phonenumber,
+      };
+
+      // Log registration attempt (without sensitive data)
+      import("@/lib/logger")
+        .then(({ logger, sanitizeForLogging }) => {
+          logger.debug(
+            "Sending initial registration request to backend",
+            sanitizeForLogging({
+              fullname: apiData.fullname,
+              email: apiData.email,
+              phonenumber: apiData.phonenumber,
+            }),
+            "authApi",
+          );
+        })
+        .catch(() => {
+          // Fallback if logger import fails
+        });
+
+      const response = await apiFetch("/signup/v1/", {
+        method: "POST",
+        body: JSON.stringify(apiData),
+      });
+
+      return response;
+    } catch {
+      throw new Error(
+        "Registration failed. Please check your internet connection and try again.",
+      );
+    }
+  },
+
   register: async (userData: {
     fullname: string;
     email: string;

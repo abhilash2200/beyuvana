@@ -100,7 +100,10 @@ export default function AuthDialog() {
             <div className="space-y-4">
               <div className="text-center">
                 <p className="text-sm text-gray-600">
-                  We&apos;ve sent a 6-digit OTP to {otpData.phone}
+                  {otpData.isRegistration
+                    ? "Account created! We've sent a 6-digit OTP to"
+                    : "We've sent a 6-digit OTP to"}{" "}
+                  {otpData.phone}
                 </p>
               </div>
               <OtpVerifyForm
