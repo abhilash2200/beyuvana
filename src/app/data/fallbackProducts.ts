@@ -147,6 +147,7 @@ export const fallbackProducts: Product[] = [
       "/assets/img/product-details/Green_3.png",
       "/assets/img/product-details/Green_4.png",
       "/assets/img/product-details/Green_5.png",
+      "/assets/img/product-details/extra-green.webp",
     ],
     actionItems: [
       {
@@ -1053,6 +1054,7 @@ export const fallbackProducts: Product[] = [
       "/assets/img/product-details/Artboard_3.png",
       "/assets/img/product-details/Artboard_4.png",
       "/assets/img/product-details/Artboard_5.png",
+      "/assets/img/product-details/extra-pink.webp",
     ],
     actionItems: [
       {

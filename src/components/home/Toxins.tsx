@@ -19,7 +19,7 @@ const toxinItems: ToxinItem[] = [
   { img: "/assets/img/clinically.png", text: "Clinically Researched\nActives" },
   { img: "/assets/img/gmp.png", text: "GMP Certified\nManufacturing" },
   { img: "/assets/img/fssai.png", text: "FSSAI\nApproved" },
-  { img: "/assets/img/vegetarian.png", text: "100% Vegetarian\nwith icon" },
+  { img: "/assets/img/vegetarian.png", text: "100% Vegetarian" },
 ];
 
 const Toxins: React.FC = () => {
