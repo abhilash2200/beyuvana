@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -56,6 +57,7 @@ const links = [
 const MobileNav = () => {
   const pathname = usePathname();
   const { user } = useAuth();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const {
     isLoginOpen,
     isRegisterOpen,
@@ -72,7 +74,7 @@ const MobileNav = () => {
 
   return (
     <div className="sticky top-0 z-50 w-full bg-white px-3 py-2 flex items-center justify-between">
-      <Sheet>
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetTrigger className="p-2 rounded-md hover:bg-gray-100">
           <RiMenu2Fill className="text-2xl text-[#1E2C1E]" />
         </SheetTrigger>
@@ -199,11 +201,11 @@ const MobileNav = () => {
                 <Link
                   href={link.href}
                   key={link.href}
+                  onClick={() => setIsSheetOpen(false)}
                   className={`flex items-center gap-3 transition-colors px-2 py-1 rounded-md capitalize
-                    ${
-                      pathname === link.href
-                        ? "decoration-[1.5px] decoration-[#1E2C1E] text-[#1E2C1E]"
-                        : "hover:decoration-[1.5px] hover:decoration-[#1E2C1E] hover:text-[#1E2C1E] text-black"
+                    ${pathname === link.href
+                      ? "decoration-[1.5px] decoration-[#1E2C1E] text-[#1E2C1E]"
+                      : "hover:decoration-[1.5px] hover:decoration-[#1E2C1E] hover:text-[#1E2C1E] text-black"
                     }`}
                 >
                   {link.icon}
@@ -213,11 +215,11 @@ const MobileNav = () => {
               {user && (
                 <Link
                   href="/orders"
+                  onClick={() => setIsSheetOpen(false)}
                   className={`flex items-center gap-3 transition-colors px-2 py-1 rounded-md capitalize
-                    ${
-                      pathname === "/orders"
-                        ? "underline underline-offset-8 decoration-[1.5px] decoration-[#1E2C1E] text-[#1E2C1E]"
-                        : "hover:underline hover:underline-offset-8 hover:decoration-[1.5px] hover:decoration-[#1E2C1E] hover:text-[#1E2C1E] text-black"
+                    ${pathname === "/orders"
+                      ? "underline underline-offset-8 decoration-[1.5px] decoration-[#1E2C1E] text-[#1E2C1E]"
+                      : "hover:underline hover:underline-offset-8 hover:decoration-[1.5px] hover:decoration-[#1E2C1E] hover:text-[#1E2C1E] text-black"
                     }`}
                 >
                   <RiFileList2Line className="text-lg" />
