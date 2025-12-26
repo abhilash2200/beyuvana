@@ -5,10 +5,13 @@
 import { useState, useCallback } from "react";
 import { promoApi } from "@/lib/api/promo";
 import { getPrepaidPromoCode, isPromoCodeEnabled } from "@/lib/promo-utils";
+import { hasTrialPack } from "@/lib/cart-utils";
+import type { LocalCartItem } from "@/context/cart/types";
 
 interface UseCartPromoProps {
   user: { id: string } | null;
   sessionKey: string | null;
+  cartItems?: LocalCartItem[];
 }
 
 interface UseCartPromoReturn {
@@ -21,12 +24,23 @@ interface UseCartPromoReturn {
 export function useCartPromo({
   user,
   sessionKey,
+  cartItems = [],
 }: UseCartPromoProps): UseCartPromoReturn {
   const [promoValue, setPromoValue] = useState<number>(0);
   const [promoCode, setPromoCode] = useState<string>("");
 
   const handlePrepaidClick = useCallback(async () => {
     if (!user?.id || !sessionKey) {
+      setPromoValue(0);
+      setPromoCode("");
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("promo_code");
+      }
+      return;
+    }
+
+    // Skip promo code if cart contains trial pack
+    if (hasTrialPack(cartItems)) {
       setPromoValue(0);
       setPromoCode("");
       if (typeof window !== "undefined") {
@@ -103,7 +117,7 @@ export function useCartPromo({
         localStorage.removeItem("promo_code");
       }
     }
-  }, [user?.id, sessionKey]);
+  }, [user?.id, sessionKey, cartItems]);
 
   const handleCODClick = useCallback(() => {
     setPromoValue(0);

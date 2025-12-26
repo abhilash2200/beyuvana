@@ -28,6 +28,7 @@ import { useCheckout } from "@/hooks/useCheckout";
 import { calculateCartTotals } from "@/lib/cart-utils";
 import { handleError } from "@/lib/error-handling";
 import { useCartPromo } from "@/hooks/useCartPromo";
+import { hasTrialPack } from "@/lib/cart-utils";
 import { CartErrorDisplay } from "./CartErrorDisplay";
 
 export default function MobileCart() {
@@ -55,6 +56,7 @@ export default function MobileCart() {
     useCartPromo({
       user,
       sessionKey,
+      cartItems,
     });
 
   const total = React.useMemo(() => {
@@ -71,14 +73,31 @@ export default function MobileCart() {
     sessionKey,
     clearCart,
     setCartError,
-    promoCode: selectedPayment === "prepaid" ? promoCode : "",
-    promoAmount: selectedPayment === "prepaid" ? promoValue : 0,
-    discountedTotal:
-      selectedPayment === "prepaid" && promoValue > 0 ? total : undefined,
+    promoCode: hasTrialPack(cartItems)
+      ? ""
+      : selectedPayment === "prepaid"
+      ? promoCode
+      : "",
+    promoAmount: hasTrialPack(cartItems)
+      ? 0
+      : selectedPayment === "prepaid"
+      ? promoValue
+      : 0,
+    discountedTotal: hasTrialPack(cartItems)
+      ? undefined
+      : selectedPayment === "prepaid" && promoValue > 0
+      ? total
+      : undefined,
   });
 
   const handleSheetOpenChange = (open: boolean) => {
     setCartOpen(open);
+    // Reset payment and address selection when cart is closed
+    if (!open) {
+      setSelectedPayment(null);
+      setSelectedAddress(null);
+      handleCODClick(); // Reset promo code
+    }
   };
 
   const handlePrepaidSelection = async () => {
@@ -113,6 +132,15 @@ export default function MobileCart() {
     }
     await processCheckout(selectedPayment, selectedAddress);
   };
+
+  // Reset payment and address selection when cart opens
+  React.useEffect(() => {
+    if (isCartOpen) {
+      setSelectedPayment(null);
+      setSelectedAddress(null);
+      handleCODClick(); // Reset promo code
+    }
+  }, [isCartOpen]);
 
   return (
     <Sheet open={isCartOpen} onOpenChange={handleSheetOpenChange}>

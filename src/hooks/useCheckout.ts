@@ -13,6 +13,8 @@ import {
   calculateCartTotals,
   transformCartItemsForCheckout,
   getPaymentRedirectUrl,
+  hasTrialPack,
+  hasTrialPackMixedWithOthers,
 } from "@/lib/cart-utils";
 import { PAYMENT_METHODS, ROUTES } from "@/lib/constants";
 
@@ -68,6 +70,15 @@ export function useCheckout({
         return;
       }
 
+      // Check if trial pack is mixed with other products
+      if (hasTrialPackMixedWithOthers(cartItems)) {
+        toast.error(
+          "You cannot purchase any other product along with the Trial product."
+        );
+        setIsProcessingCheckout(false);
+        return;
+      }
+
       setIsProcessingCheckout(true);
       setCartError?.(null);
 
@@ -76,12 +87,19 @@ export function useCheckout({
         const { total, grossAmount, discountAmount, totalQty } =
           calculateCartTotals(cartItems);
 
+        // Ensure no promo code is applied to trial pack orders
+        const finalPromoCode = hasTrialPack(cartItems) ? "" : promoCode;
+        const finalPromoAmount = hasTrialPack(cartItems) ? 0 : promoAmount;
+        const finalDiscountedTotal = hasTrialPack(cartItems)
+          ? undefined
+          : discountedTotal;
+
         // Use discounted total if provided (for prepaid with promo), otherwise use calculated total
         const finalPaidAmount =
-          discountedTotal !== undefined ? discountedTotal : total;
+          finalDiscountedTotal !== undefined ? finalDiscountedTotal : total;
 
         // Calculate total discount including promo discount
-        const totalDiscountWithPromo = discountAmount + promoAmount;
+        const totalDiscountWithPromo = discountAmount + finalPromoAmount;
 
         // Transform cart items using utility function
         const checkoutCartItems = transformCartItemsForCheckout(cartItems);
@@ -105,9 +123,9 @@ export function useCheckout({
           paid_amount: Math.round(finalPaidAmount),
           discount_amount: discountAmount,
           gross_amount: Math.round(grossAmount),
-          promo_amount: Math.round(promoAmount),
+          promo_amount: Math.round(finalPromoAmount),
           total_discount: Math.round(totalDiscountWithPromo),
-          promo_code: promoCode || "",
+          promo_code: finalPromoCode || "",
           pay_mode:
             selectedPayment === PAYMENT_METHODS.PREPAID ? "Online" : "COD",
           address_id: selectedAddress.id,

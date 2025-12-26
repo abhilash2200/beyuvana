@@ -93,3 +93,66 @@ export function getPaymentRedirectUrl(): string {
   // Server-side: use environment variable or fallback
   return `${ENV_CONFIG.SITE_URL}/payment-initiate`;
 }
+
+/**
+ * Check if a cart item is a trial pack (1 PC / Pack)
+ * Trial packs are identified by unit_name === "Pc"
+ *
+ * @param item - The cart item to check
+ * @returns true if the item is a trial pack, false otherwise
+ *
+ * @example
+ * const item = { unit_name: "Pc", ... };
+ * isTrialPackItem(item); // returns true
+ */
+export function isTrialPackItem(item: LocalCartItem): boolean {
+  return item.unit_name === "Pc";
+}
+
+/**
+ * Check if cart contains any trial pack items
+ *
+ * @param cartItems - Array of cart items
+ * @returns true if at least one item is a trial pack
+ *
+ * @example
+ * const cart = [
+ *   { unit_name: "Pc", ... },
+ *   { unit_name: "Pack of", ... }
+ * ];
+ * hasTrialPack(cart); // returns true
+ */
+export function hasTrialPack(cartItems: LocalCartItem[]): boolean {
+  return cartItems.some(isTrialPackItem);
+}
+
+/**
+ * Check if cart has trial pack mixed with other products
+ * Returns true if cart has both trial pack and non-trial pack items
+ *
+ * This is the key validation function used at checkout to prevent
+ * mixing trial packs with regular products.
+ *
+ * @param cartItems - Array of cart items
+ * @returns true if cart contains both trial pack and regular products
+ *
+ * @example
+ * const mixedCart = [
+ *   { unit_name: "Pc", ... },      // Trial pack
+ *   { unit_name: "Pack of", ... } // Regular product
+ * ];
+ * hasTrialPackMixedWithOthers(mixedCart); // returns true
+ *
+ * const trialOnlyCart = [
+ *   { unit_name: "Pc", ... },
+ *   { unit_name: "Pc", ... }
+ * ];
+ * hasTrialPackMixedWithOthers(trialOnlyCart); // returns false
+ */
+export function hasTrialPackMixedWithOthers(
+  cartItems: LocalCartItem[]
+): boolean {
+  const trialPackCount = cartItems.filter(isTrialPackItem).length;
+  const nonTrialPackCount = cartItems.filter((item) => !isTrialPackItem).length;
+  return trialPackCount > 0 && nonTrialPackCount > 0;
+}

@@ -10,6 +10,7 @@ import { CART_CONFIG } from "@/lib/constants";
 import type { LocalCartItem } from "./types";
 import { logger } from "@/lib/logger";
 import { handleError } from "@/lib/error-handling";
+import { isTrialPackItem, hasTrialPack } from "@/lib/cart-utils";
 
 interface UseCartOperationsParams {
   cartItems: LocalCartItem[];
@@ -97,6 +98,31 @@ export function useCartOperations({
           return;
         }
 
+        // Check if trying to add trial pack when cart has other products
+        const isNewItemTrialPack = isTrialPackItem(item);
+        const hasOtherProducts = cartItems.some(
+          (existingItem) => !isTrialPackItem(existingItem)
+        );
+
+        if (isNewItemTrialPack && hasOtherProducts) {
+          toast.error(
+            "You cannot purchase any other product along with the Trial product."
+          );
+          setLoading(false);
+          return;
+        }
+
+        // Check if trying to add regular product when cart has trial pack
+        const hasTrialPackInCart = hasTrialPack(cartItems);
+
+        if (!isNewItemTrialPack && hasTrialPackInCart) {
+          toast.error(
+            "You cannot purchase any other product along with the Trial product."
+          );
+          setLoading(false);
+          return;
+        }
+
         try {
           const cartData = {
             product_id: item.product_id,
@@ -128,7 +154,7 @@ export function useCartOperations({
         setLoading(false);
       }
     },
-    [user, sessionKey, setLoading, syncWithServer],
+    [user, sessionKey, setLoading, syncWithServer, cartItems],
   );
 
   const increaseItemQuantity = useCallback(

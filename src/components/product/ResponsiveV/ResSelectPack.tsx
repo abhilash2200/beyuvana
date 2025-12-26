@@ -292,6 +292,7 @@ const ResSelectPack = ({
       pack_qty: selectedPack.qty,
       product_price_id: selectedPack.product_price_id,
       short_description: product.short_description,
+      unit_name: selectedPack.unit_name,
     });
   };
 

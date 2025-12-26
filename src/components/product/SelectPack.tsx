@@ -302,6 +302,7 @@ const SelectPack = ({
         mrp_price: selectedPack.originalPrice,
         discount_percent: discountPercent,
         short_description: product.short_description,
+        unit_name: selectedPack.unit_name,
       });
     } catch (error) {
       // Add to cart error

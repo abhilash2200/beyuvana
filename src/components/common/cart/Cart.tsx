@@ -27,6 +27,7 @@ import DeliveryAddress from "../address/DeliveryAddress";
 import AddAddressSheet from "../address/AddAddressSheet";
 import { useCartPromo } from "@/hooks/useCartPromo";
 import { useCartConfetti } from "@/hooks/useCartConfetti";
+import { hasTrialPack } from "@/lib/cart-utils";
 
 export default function Cart() {
   const {
@@ -58,6 +59,7 @@ export default function Cart() {
     useCartPromo({
       user,
       sessionKey,
+      cartItems,
     });
 
   // Use confetti hook
@@ -77,10 +79,21 @@ export default function Cart() {
     sessionKey,
     clearCart,
     setCartError,
-    promoCode: selectedPayment === "prepaid" ? promoCode : "",
-    promoAmount: selectedPayment === "prepaid" ? promoValue : 0,
-    discountedTotal:
-      selectedPayment === "prepaid" && promoValue > 0 ? total : undefined,
+    promoCode: hasTrialPack(cartItems)
+      ? ""
+      : selectedPayment === "prepaid"
+      ? promoCode
+      : "",
+    promoAmount: hasTrialPack(cartItems)
+      ? 0
+      : selectedPayment === "prepaid"
+      ? promoValue
+      : 0,
+    discountedTotal: hasTrialPack(cartItems)
+      ? undefined
+      : selectedPayment === "prepaid" && promoValue > 0
+      ? total
+      : undefined,
   });
 
   // Mobile detection
@@ -95,8 +108,23 @@ export default function Cart() {
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
+  // Reset payment and address selection when cart opens
+  React.useEffect(() => {
+    if (isCartOpen) {
+      setSelectedPayment(null);
+      setSelectedAddress(null);
+      handleCODClick(); // Reset promo code
+    }
+  }, [isCartOpen]);
+
   const handleSheetOpenChange = (open: boolean) => {
     setCartOpen(open);
+    // Reset payment and address selection when cart is closed
+    if (!open) {
+      setSelectedPayment(null);
+      setSelectedAddress(null);
+      handleCODClick(); // Reset promo code
+    }
   };
 
   const handleIncreaseQuantity = async (itemId: string) => {
