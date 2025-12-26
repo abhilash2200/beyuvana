@@ -73,7 +73,7 @@ function InvoicePageContent() {
             } else {
               throw new Error(
                 orderDetailsResponse?.message ||
-                  "Failed to fetch order details. Please check the order ID.",
+                "Failed to fetch order details. Please check the order ID.",
               );
             }
           } catch (orderError) {
