@@ -169,7 +169,7 @@ const page = () => {
 
       <section className="md:py-10 py-6">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-evenly items-center gap-y-4">
+          <div className="flex flex-wrap justify-between items-center gap-y-4">
             <div className="w-full md:w-[45%]">
               <div className="flex flex-col gap-y-3">
                 <Image
@@ -182,7 +182,7 @@ const page = () => {
                 <h2 className="text-[#122014] font-[Grafiels] text-[25px]">
                   Mission
                 </h2>
-                <p className="w-full md:max-w-[80%]">
+                <p className="w-full md:max-w-[100%]">
                   Our mission is to create honest, science-backed inner-beauty
                   nutrition that helps people feel confident, healthy, and
                   naturally radiant from within. We are committed to clean,
@@ -206,7 +206,7 @@ const page = () => {
                 <h2 className="text-[#122014] font-[Grafiels] text-[25px]">
                   Vision
                 </h2>
-                <p className="w-full md:max-w-[80%]">
+                <p className="w-full md:max-w-[100%]">
                   Our vision is to redefine beauty from the inside out. We aim
                   to become India’s most trusted inner-beauty brand — known for
                   purity, innovation, and heartfelt care. Through clean
