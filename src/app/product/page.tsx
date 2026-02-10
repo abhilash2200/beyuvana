@@ -1,11 +1,44 @@
+import { Suspense, lazy } from "react";
 import ProductsLists from "@/components/product/ProductsLists";
 import { productsApi, convertToLegacyProduct } from "@/lib/api/products";
-import React from "react";
 import { handleError } from "@/lib/error-handling";
-import ComboProduct, {
-  type ComboProductData,
-} from "@/components/product/ComboProduct";
+import type { ComboProductData } from "@/components/product/ComboProduct";
 import type { Product, PriceTier } from "@/lib/api/types";
+
+// Lazy load ComboProduct component (below the fold)
+const ComboProduct = lazy(() => import("@/components/product/ComboProduct"));
+
+// Loading skeleton components
+const ProductsLoader = () => (
+  <div className="animate-pulse space-y-8 py-10">
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="max-w-[1400px] mx-auto px-4">
+        <div className="flex flex-wrap justify-between items-center gap-8">
+          <div className="w-full md:w-[35%] h-96 bg-gray-200 rounded-lg"></div>
+          <div className="w-full md:w-[60%] space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-12 bg-gray-200 rounded w-32"></div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+const ComboLoader = () => (
+  <div className="animate-pulse py-10">
+    <div className="max-w-[1400px] mx-auto px-4">
+      <div className="h-8 bg-gray-200 rounded w-64 mb-8 mx-auto"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[1, 2].map((i) => (
+          <div key={i} className="h-96 bg-gray-200 rounded-lg"></div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 async function fetchProducts() {
   try {
@@ -120,11 +153,11 @@ async function fetchComboProducts(): Promise<ComboProductData[]> {
 
           const mainImage =
             Array.isArray(productDetails.image) &&
-            productDetails.image.length > 0
+              productDetails.image.length > 0
               ? productDetails.image[0]
               : apiProduct.image_single ||
-                apiProduct.image ||
-                "/assets/img/collagen-green-product.png";
+              apiProduct.image ||
+              "/assets/img/collagen-green-product.png";
 
           const productData: ComboProductData = {
             id: productDetails.id,
@@ -132,13 +165,13 @@ async function fetchComboProducts(): Promise<ComboProductData[]> {
             price: firstTier
               ? Math.round(parseFloat(firstTier.final_price) || 0)
               : Math.round(
-                  parseFloat(productDetails.discount_price || "0") || 0,
-                ),
+                parseFloat(productDetails.discount_price || "0") || 0,
+              ),
             mrp_price: firstTier
               ? Math.round(parseFloat(firstTier.mrp) || 0)
               : Math.round(
-                  parseFloat(productDetails.product_price || "0") || 0,
-                ),
+                parseFloat(productDetails.product_price || "0") || 0,
+              ),
             image: mainImage,
             product_id: productDetails.id,
             product_price_id: firstTier ? firstTier.product_price_id : "",
@@ -172,16 +205,30 @@ async function fetchComboProducts(): Promise<ComboProductData[]> {
   }
 }
 
-const Page = async () => {
-  const [products, comboProducts] = await Promise.all([
-    fetchProducts(),
-    fetchComboProducts(),
-  ]);
+// Separate component for products list with its own data fetching
+async function ProductsSection() {
+  const products = await fetchProducts();
+  return <ProductsLists products={products} />;
+}
 
+// Separate component for combo products with its own data fetching
+async function ComboSection() {
+  const comboProducts = await fetchComboProducts();
+  return <ComboProduct comboProducts={comboProducts} />;
+}
+
+const Page = () => {
   return (
     <div>
-      <ProductsLists products={products} />
-      <ComboProduct comboProducts={comboProducts} />
+      {/* Products load independently with streaming */}
+      <Suspense fallback={<ProductsLoader />}>
+        <ProductsSection />
+      </Suspense>
+
+      {/* Combo products load independently (below the fold) */}
+      <Suspense fallback={<ComboLoader />}>
+        <ComboSection />
+      </Suspense>
     </div>
   );
 };

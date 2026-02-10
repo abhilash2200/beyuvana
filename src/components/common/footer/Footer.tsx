@@ -172,7 +172,7 @@ const Footer: React.FC = () => {
         <hr className="my-6 border-white/20" />
         <div className="flex items-center justify-between md:flex-row flex-col gap-y-4">
           <p className="text-center text-white text-sm">
-            © {new Date().getFullYear()} @beyuvana2025 • All rights reserved
+            © {new Date().getFullYear()} beyuvana • All rights reserved
           </p>
           <p className="text-center capitalize text-white text-sm">
             design and developed by{" "}

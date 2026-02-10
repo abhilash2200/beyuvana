@@ -1,8 +1,18 @@
 "use client";
-import WhatMakes from "@/components/about/WhatMakes";
+
+import { lazy, Suspense } from "react";
 import HeaderText from "@/components/common/HeaderText";
 import Image from "next/image";
-import React from "react";
+
+// Lazy load below-the-fold component
+const WhatMakes = lazy(() => import("@/components/about/WhatMakes"));
+
+// Loading skeleton component
+const SectionLoader = () => (
+  <div className="animate-pulse">
+    <div className="h-64 bg-gray-200 rounded-lg"></div>
+  </div>
+);
 
 const page = () => {
   return (
@@ -68,6 +78,7 @@ const page = () => {
           src="/assets/img/about-bg.png"
           alt="about"
           fill
+          loading="lazy"
           className="object-cover object-center -z-10"
         />
         <div className="container mx-auto px-4 relative z-10">
@@ -105,7 +116,9 @@ const page = () => {
             heading="What Makes Us Different?"
             textcolor="text-[#1A2819]"
           />
-          <WhatMakes />
+          <Suspense fallback={<SectionLoader />}>
+            <WhatMakes />
+          </Suspense>
         </div>
       </section>
 
@@ -177,6 +190,7 @@ const page = () => {
                   width={463}
                   height={406}
                   alt="misison"
+                  loading="lazy"
                   className="mb-3"
                 />
                 <h2 className="text-[#122014] font-[Grafiels] text-[25px]">
@@ -201,6 +215,7 @@ const page = () => {
                   width={463}
                   height={406}
                   alt="vision"
+                  loading="lazy"
                   className="mb-3"
                 />
                 <h2 className="text-[#122014] font-[Grafiels] text-[25px]">

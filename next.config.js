@@ -2,10 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
 
-  experimental: {
-    turbo: false
-  },
-
   images: {
     unoptimized: false,
     formats: ["image/avif", "image/webp"],
@@ -14,6 +10,24 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: process.env.NEXT_PUBLIC_IMAGE_HOSTNAME || "beyuvana.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.beyuvana.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: process.env.NEXT_PUBLIC_IMAGE_HOSTNAME || "beyuvana.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "*.beyuvana.com",
         port: "",
         pathname: "/**",
       },

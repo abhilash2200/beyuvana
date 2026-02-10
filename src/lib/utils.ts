@@ -71,3 +71,66 @@ export function formatCurrency(amount: number): string {
 export function formatINR(amount: number): string {
   return `₹${formatCurrency(Math.round(amount))}`;
 }
+
+/**
+ * Normalizes image URLs for Next.js Image component
+ * Converts relative URLs to absolute URLs and ensures proper protocol
+ * 
+ * @param imageUrl - The image URL (can be relative or absolute)
+ * @param apiBaseUrl - Optional API base URL (defaults to NEXT_PUBLIC_API_BASE_URL)
+ * @returns Normalized absolute image URL
+ * 
+ * @example
+ * normalizeImageUrl("/uploads/image.jpg") // Returns "https://beyuvana.com/uploads/image.jpg"
+ * normalizeImageUrl("https://cdn.beyuvana.com/image.jpg") // Returns as-is
+ * normalizeImageUrl("//beyuvana.com/image.jpg") // Returns "https://beyuvana.com/image.jpg"
+ */
+export function normalizeImageUrl(
+  imageUrl: string | undefined | null,
+  apiBaseUrl?: string
+): string {
+  if (!imageUrl) return "/assets/img/green-product.png";
+
+  // If it's already a full URL with protocol, return as-is
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    return imageUrl;
+  }
+
+  // If it starts with //, add https protocol
+  if (imageUrl.startsWith("//")) {
+    return `https:${imageUrl}`;
+  }
+
+  // If it's a relative path, we need to make it absolute
+  // Try to get base URL from environment or current origin
+  let baseUrl: string;
+  
+  if (apiBaseUrl) {
+    // If API base URL is provided, extract the domain
+    try {
+      const url = new URL(apiBaseUrl);
+      baseUrl = `${url.protocol}//${url.host}`;
+    } catch {
+      baseUrl = apiBaseUrl.replace("/api", "").replace(/\/$/, "");
+    }
+  } else if (typeof window !== "undefined") {
+    // Client-side: use current origin
+    baseUrl = window.location.origin;
+  } else {
+    // Server-side: use environment variable or default
+    const envApiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api";
+    try {
+      const url = new URL(envApiUrl);
+      baseUrl = `${url.protocol}//${url.host}`;
+    } catch {
+      baseUrl = envApiUrl.replace("/api", "").replace(/\/$/, "") || "https://beyuvana.com";
+    }
+  }
+
+  // Remove trailing slash from base URL
+  const cleanBaseUrl = baseUrl.replace(/\/$/, "");
+  // Ensure image path starts with /
+  const cleanImagePath = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
+
+  return `${cleanBaseUrl}${cleanImagePath}`;
+}

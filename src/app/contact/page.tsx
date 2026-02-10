@@ -1,8 +1,25 @@
 "use client";
-import React from "react";
+
+import { lazy, Suspense } from "react";
 import HeaderText from "@/components/common/HeaderText";
 import { Phone, Mail, MapPin } from "lucide-react";
-import ContactForm from "@/components/contact/ContactForm";
+
+// Lazy load ContactForm (contains form validation and API logic)
+const ContactForm = lazy(() => import("@/components/contact/ContactForm"));
+
+// Loading skeleton for the form
+const FormLoader = () => (
+  <div className="animate-pulse">
+    <div className="bg-white rounded-lg shadow-lg p-6 space-y-4">
+      <div className="h-10 bg-gray-200 rounded"></div>
+      <div className="h-10 bg-gray-200 rounded"></div>
+      <div className="h-10 bg-gray-200 rounded"></div>
+      <div className="h-10 bg-gray-200 rounded"></div>
+      <div className="h-32 bg-gray-200 rounded"></div>
+      <div className="h-12 bg-gray-200 rounded"></div>
+    </div>
+  </div>
+);
 
 const page = () => {
   return (
@@ -76,7 +93,9 @@ const page = () => {
               </div>
             </div>
             <div className="w-full md:w-[38%]">
-              <ContactForm />
+              <Suspense fallback={<FormLoader />}>
+                <ContactForm />
+              </Suspense>
             </div>
           </div>
         </div>

@@ -1,16 +1,26 @@
 "use client";
 
+import { lazy, Suspense } from "react";
 import HeaderText from "@/components/common/HeaderText";
-import CashBack from "@/components/home/CashBack";
 import Choose from "@/components/home/Choose";
-import HomeAccordion from "@/components/home/HomeAccordion";
-// import InfluencerVideo from "@/components/home/InfluencerVideo"
-import ProductsList from "@/components/home/ProductsList";
-import Testimonial from "@/components/home/Testimonial";
-import Toxins from "@/components/home/Toxins";
 import Video from "@/components/home/Video";
-import WhyNeed from "@/components/home/WhyNeed";
 import Image from "next/image";
+
+// Lazy load below-the-fold components for better performance
+const Toxins = lazy(() => import("@/components/home/Toxins"));
+const ProductsList = lazy(() => import("@/components/home/ProductsList"));
+const InfluencerVideo = lazy(() => import("@/components/home/InfluencerVideo"));
+const WhyNeed = lazy(() => import("@/components/home/WhyNeed"));
+const Testimonial = lazy(() => import("@/components/home/Testimonial"));
+const CashBack = lazy(() => import("@/components/home/CashBack"));
+const HomeAccordion = lazy(() => import("@/components/home/HomeAccordion"));
+
+// Loading skeleton component
+const SectionLoader = () => (
+  <div className="animate-pulse">
+    <div className="h-64 bg-gray-200 rounded-lg"></div>
+  </div>
+);
 
 const page = () => {
   return (
@@ -50,7 +60,7 @@ const page = () => {
             src="/assets/img/choose-bg.png"
             alt="Decorative background"
             fill
-            priority
+            loading="lazy"
             className="object-cover"
           />
         </div>
@@ -66,17 +76,21 @@ const page = () => {
 
       <section className="py-10 bg-[#A9B528]">
         <div className="container mx-auto px-4">
-          <Toxins />
+          <Suspense fallback={<SectionLoader />}>
+            <Toxins />
+          </Suspense>
         </div>
       </section>
 
       <section className="md:py-10 py-6">
         <div className="mx-auto">
-          <ProductsList />
+          <Suspense fallback={<SectionLoader />}>
+            <ProductsList />
+          </Suspense>
         </div>
       </section>
 
-      {/* <section className="md:py-10 py-6">
+      <section className="md:py-10 py-6">
         <div className="container mx-auto md:ps-20 lg:ps-8">
           <div className="flex flex-col items-center justify-center gap-y-2">
             <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
@@ -84,9 +98,11 @@ const page = () => {
           </div>
         </div>
         <div className="md:pt-12 pt-6 ms-auto">
-          <InfluencerVideo />
+          <Suspense fallback={<SectionLoader />}>
+            <InfluencerVideo />
+          </Suspense>
         </div>
-      </section> */}
+      </section>
 
       <section className="md:py-10 py-6">
         <div className="container mx-auto px-4">
@@ -101,7 +117,9 @@ const page = () => {
               naturally:
             </p>
           </div>
-          <WhyNeed />
+          <Suspense fallback={<SectionLoader />}>
+            <WhyNeed />
+          </Suspense>
           <div className="relative mt-10">
             <div className="flex flex-col justify-center items-center">
               <Image
@@ -109,6 +127,7 @@ const page = () => {
                 width={1400}
                 height={180}
                 alt="port"
+                loading="lazy"
                 className="w-auto h-[180px] md:w-full md:h-auto"
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-2">
@@ -136,13 +155,17 @@ const page = () => {
               textcolor="text-[#057A37]"
             />
           </div>
-          <Testimonial />
+          <Suspense fallback={<SectionLoader />}>
+            <Testimonial />
+          </Suspense>
         </div>
       </section>
 
       <section className="md:pt-10 pt-12 pb-20">
         <div className="container mx-auto px-4">
-          <CashBack />
+          <Suspense fallback={<SectionLoader />}>
+            <CashBack />
+          </Suspense>
         </div>
       </section>
 
@@ -156,6 +179,7 @@ const page = () => {
                   width={474}
                   height={474}
                   alt="money back"
+                  loading="lazy"
                   className="w-[385px] h-[385px] hidden md:block"
                 />
               </div>
@@ -182,7 +206,9 @@ const page = () => {
 
       <section className="pb-10 md:pt-20 pt-10">
         <div className="container mx-auto px-4">
-          <HomeAccordion />
+          <Suspense fallback={<SectionLoader />}>
+            <HomeAccordion />
+          </Suspense>
         </div>
       </section>
     </>

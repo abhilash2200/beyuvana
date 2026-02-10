@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { slugify } from "@/lib/utils";
+import { slugify, normalizeImageUrl } from "@/lib/utils";
 import type { PriceTier } from "@/lib/api/types";
 import { productDesignSlugs } from "@/app/data/productConfigs";
 import ProductRating from "./ProductRating";
@@ -100,7 +100,7 @@ const ProductsLists = React.memo(function ProductsLists({
                     style={{ backgroundColor: product.bgColor }}
                   >
                     <Image
-                      src={product.image || "/assets/img/green-product.png"}
+                      src={normalizeImageUrl(product.image)}
                       width={332}
                       height={382}
                       alt={`${product.name} product image`}
@@ -119,7 +119,7 @@ const ProductsLists = React.memo(function ProductsLists({
                           className="w-14 h-14 border rounded-md overflow-hidden bg-white flex items-center justify-center"
                         >
                           <Image
-                            src={img}
+                            src={normalizeImageUrl(img)}
                             alt={`${product.name} additional view ${idx + 1}`}
                             width={56}
                             height={56}
