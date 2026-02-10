@@ -398,7 +398,8 @@ const ResSelectPack = ({
         </p>
       </div>
 
-      <div className="flex gap-4 items-center my-2 justify-center">
+      {/* <div className="h-24"></div>? */}
+      <div className="flex gap-4 items-center justify-center fixed bottom-0 left-0 right-0 z-50 bg-white p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
         <Button
           onClick={handleShopNow}
           className="flex items-center gap-2 rounded-[10px] py-2 px-4 bg-[#057A37] text-white w-42"

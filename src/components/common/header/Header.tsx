@@ -61,7 +61,7 @@ const Header = () => {
         </Link>
       </div>
 
-      <div className="bg-white px-4 shadow-lg">
+      <div className="bg-white shadow-lg">
         <div className="container mx-auto px-4">
           <div className="hidden lg:flex items-center justify-between gap-6 py-2">
             <Nav />
