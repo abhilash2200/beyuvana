@@ -10,36 +10,17 @@ import { toast } from "react-toastify";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { productsApi } from "@/lib/api/products";
 import { useAuth } from "@/context/AuthProvider";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 // Optimized dynamic imports with better loading states
 const Product1Layout = dynamic(
   () => import("@/components/product/Product1Layout"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#057A37] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading Green Product...</p>
-        </div>
-      </div>
-    ),
-  },
+  { ssr: false },
 );
 
 const Product2Layout = dynamic(
   () => import("@/components/product/Product2Layout"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D95959] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading Pink Product...</p>
-        </div>
-      </div>
-    ),
-  },
+  { ssr: false },
 );
 
 // Cache for design type detection to avoid repeated API calls
@@ -280,6 +261,15 @@ const ProductDetailPage = () => {
         return;
       }
 
+      // Preload the layout component to avoid double loading spinners
+      // We initiate the import here so it runs in parallel with the API calls below
+      let layoutPromise: Promise<any> | undefined;
+      if (designType === "GREEN") {
+        layoutPromise = import("@/components/product/Product1Layout");
+      } else if (designType === "PINK") {
+        layoutPromise = import("@/components/product/Product2Layout");
+      }
+
       // Step 2: Get local fallback product for rich content (FAQs, action items, etc.)
       const localProduct =
         fallbackProducts.find((p) => p.design_type === designType) || null;
@@ -355,6 +345,12 @@ const ProductDetailPage = () => {
         convertedApiProducts,
       );
 
+      // Wait for layout component to load if it's still pending
+      // This ensures we merge the data loading and code loading into a single spinner
+      if (layoutPromise) {
+        await layoutPromise;
+      }
+
       setProduct(mergedProduct);
     } catch (err) {
       const errorMessage =
@@ -378,11 +374,12 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#057A37] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading product...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-[70vh]">
+        <LoadingSpinner
+          size="lg"
+          color="#057A37"
+          text="Loading product..."
+        />
       </div>
     );
   }

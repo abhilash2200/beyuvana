@@ -15,24 +15,30 @@ export function LoadingSpinner({
   className,
   text,
   fullScreen = false,
-}: LoadingSpinnerProps) {
+  color = "#057A37",
+}: LoadingSpinnerProps & { color?: string }) {
   const sizeClasses = {
-    sm: "w-4 h-4",
-    md: "w-6 h-6",
-    lg: "w-8 h-8",
+    sm: "w-6 h-6 border-b-2",
+    md: "w-8 h-8 border-b-2",
+    lg: "w-12 h-12 border-b-2",
+    xl: "w-16 h-16 border-b-4",
   };
 
   const spinner = (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-2",
+        "flex flex-col items-center justify-center gap-4",
         className,
       )}
     >
-      <RefreshCw
-        className={cn("animate-spin text-[#057A37]", sizeClasses[size])}
-      />
-      {text && <p className="text-gray-600 text-sm">{text}</p>}
+      <div
+        className={cn(
+          "animate-spin rounded-full mx-auto",
+          sizeClasses[size] || sizeClasses.md
+        )}
+        style={{ borderColor: color, borderRightColor: "transparent", borderTopColor: "transparent", borderLeftColor: "transparent" }}
+      ></div>
+      {text && <p className="text-gray-600 text-sm font-medium">{text}</p>}
     </div>
   );
 

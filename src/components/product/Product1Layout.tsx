@@ -16,6 +16,7 @@ import { sanitizeHTML } from "@/lib/security";
 import Toxins from "../home/Toxins";
 
 // Lazy load heavy below-the-fold components
+const InfluencerVideos = lazy(() => import("./InfluencerVideos"));
 const WhyBeyuvana = lazy(() => import("./WhyBeyuvana"));
 const Compare = lazy(() => import("./Compare"));
 const Builder = lazy(() => import("./Builder"));
@@ -184,6 +185,13 @@ export default function Product1Layout({ product }: { product: Product }) {
             </div>
 
             <div className="container mx-auto px-4">
+
+                <Suspense fallback={<SectionLoader />}>
+                    <div className="md:py-10 py-6">
+                        <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
+                        <InfluencerVideos />
+                    </div>
+                </Suspense>
                 <div className="md:py-10 py-6 bg-[#F8FFF9] rounded-[20px]">
                     <div className="flex flex-col">
                         <div className="relative px-4">
