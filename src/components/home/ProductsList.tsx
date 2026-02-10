@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthDialogContext } from "@/context/AuthDialogProvider";
 import { useState, useEffect } from "react";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { productsApi } from "@/lib/api/products";
@@ -34,6 +36,8 @@ interface DisplayProduct {
 
 const ProductsList = React.memo(() => {
   const { addToCart, loading, openCart } = useCart();
+  const { user } = useAuth();
+  const { setIsLoginOpen } = useAuthDialogContext();
 
   const [selectedPacks, setSelectedPacks] = useState<Record<string, 1 | 2 | 4>>(
     {},
@@ -130,7 +134,7 @@ const ProductsList = React.memo(() => {
 
                 const mainImage =
                   Array.isArray(productDetails.image) &&
-                  productDetails.image.length > 0
+                    productDetails.image.length > 0
                     ? productDetails.image[0]
                     : "/assets/img/green-product.png";
 
@@ -202,6 +206,10 @@ const ProductsList = React.memo(() => {
   };
 
   const handleAddToCart = async (product: DisplayProduct) => {
+    if (!user) {
+      setIsLoginOpen(true);
+      return;
+    }
     const selectedPack: 1 | 2 | 4 = selectedPacks[product.id] ?? 1;
 
     if (!product.product_price_ids) {
@@ -238,6 +246,10 @@ const ProductsList = React.memo(() => {
   };
 
   const handleShopNow = async (product: DisplayProduct) => {
+    if (!user) {
+      setIsLoginOpen(true);
+      return;
+    }
     await handleAddToCart(product);
     openCart();
   };
@@ -271,9 +283,8 @@ const ProductsList = React.memo(() => {
             className={`px-4 ${index % 2 !== 0 ? "w-full bg-[#FAFAFA]" : ""}`}
           >
             <div
-              className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${
-                index % 2 !== 0 ? "flex-row-reverse" : ""
-              }`}
+              className={`flex flex-wrap justify-between items-center gap-6 max-w-[1400px] mx-auto py-6 ${index % 2 !== 0 ? "flex-row-reverse" : ""
+                }`}
             >
               <div className="w-full md:w-[28%]">
                 <Link
@@ -315,16 +326,14 @@ const ProductsList = React.memo(() => {
                   {product.benefits.map((b, i) => (
                     <div
                       key={i}
-                      className={`md:w-[20%] w-[45%] ${
-                        i !== product.benefits.length - 1
-                          ? "md:border-r md:border-black"
-                          : ""
-                      } ${
-                        i !== product.benefits.length - 1 &&
-                        !(i === 1 || i === 3)
+                      className={`md:w-[20%] w-[45%] ${i !== product.benefits.length - 1
+                        ? "md:border-r md:border-black"
+                        : ""
+                        } ${i !== product.benefits.length - 1 &&
+                          !(i === 1 || i === 3)
                           ? "border-r border-black"
                           : ""
-                      } pr-2`}
+                        } pr-2`}
                     >
                       <div className="flex flex-col items-center gap-2 text-center">
                         <Image
@@ -354,25 +363,24 @@ const ProductsList = React.memo(() => {
 
                       const colors = isEven
                         ? {
-                            selected:
-                              "bg-[#057A37] text-white border-[#057A37] w-28 md:w-36",
-                            unselected:
-                              "bg-[#DFF5E6] text-[#057A37] border-[#057A37] w-28 md:w-36",
-                          }
+                          selected:
+                            "bg-[#057A37] text-white border-[#057A37] w-28 md:w-36",
+                          unselected:
+                            "bg-[#DFF5E6] text-[#057A37] border-[#057A37] w-28 md:w-36",
+                        }
                         : {
-                            selected:
-                              "bg-[#B00404] text-white border-[#B00404] w-28 md:w-36",
-                            unselected:
-                              "bg-[#F5DADA] text-[#B00404] border-[#B00404] w-28 md:w-36",
-                          };
+                          selected:
+                            "bg-[#B00404] text-white border-[#B00404] w-28 md:w-36",
+                          unselected:
+                            "bg-[#F5DADA] text-[#B00404] border-[#B00404] w-28 md:w-36",
+                        };
 
                       return (
                         <Button
                           key={pack}
                           onClick={() => handleSelectPack(product.id, pack)}
-                          className={`rounded-[10px] py-2 px-4 border font-semibold transition-colors ${
-                            isSelected ? colors.selected : colors.unselected
-                          }`}
+                          className={`rounded-[10px] py-2 px-4 border font-semibold transition-colors ${isSelected ? colors.selected : colors.unselected
+                            }`}
                         >
                           <span className="text-[10px] md:pr-3 pr-2">
                             Pack {pack}

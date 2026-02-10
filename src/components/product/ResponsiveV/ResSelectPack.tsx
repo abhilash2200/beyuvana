@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthDialogContext } from "@/context/AuthDialogProvider";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
@@ -81,25 +83,25 @@ function buildPacksFromPrices(
 
   const trialPack: Pack | null = trialPackTier
     ? (() => {
-        const qty = Number(trialPackTier.qty);
-        const mrp = parseFloat(trialPackTier.mrp || "0");
-        const final = parseFloat(trialPackTier.final_price || "0");
-        const discountPercent = parseFloat(
-          trialPackTier.discount_off_inpercent || "0",
-        );
+      const qty = Number(trialPackTier.qty);
+      const mrp = parseFloat(trialPackTier.mrp || "0");
+      const final = parseFloat(trialPackTier.final_price || "0");
+      const discountPercent = parseFloat(
+        trialPackTier.discount_off_inpercent || "0",
+      );
 
-        return {
-          qty,
-          sachets: 5,
-          price: Math.round(final),
-          originalPrice: Math.round(mrp),
-          discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
-          tagline: "Free Trial",
-          product_price_id: trialPackTier.product_price_id,
-          unit_name: trialPackTier.unit_name,
-          isTrialPack: true,
-        } as Pack;
-      })()
+      return {
+        qty,
+        sachets: 5,
+        price: Math.round(final),
+        originalPrice: Math.round(mrp),
+        discount: discountPercent > 0 ? `${discountPercent}% Off` : "",
+        tagline: "Free Trial",
+        product_price_id: trialPackTier.product_price_id,
+        unit_name: trialPackTier.unit_name,
+        isTrialPack: true,
+      } as Pack;
+    })()
     : null;
 
   const regularPacks = regularPacksTiers
@@ -134,6 +136,8 @@ const ResSelectPack = ({
   designType?: "green" | "pink";
 }) => {
   const { addToCart, openCart } = useCart();
+  const { user } = useAuth();
+  const { setIsLoginOpen } = useAuthDialogContext();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
@@ -155,8 +159,8 @@ const ResSelectPack = ({
         const { data } = await productsApi.getList({
           filter: designTypeFilter
             ? {
-                design_type: designTypeFilter,
-              }
+              design_type: designTypeFilter,
+            }
             : {},
           sort: { id: "DESC" },
           page: 1,
@@ -259,6 +263,10 @@ const ResSelectPack = ({
   }, [productId, designType]);
 
   const handleAddToCart = async () => {
+    if (!user) {
+      setIsLoginOpen(true);
+      return;
+    }
     if (!product || !selectedPack) {
       toast.warning("Please select a pack size first!");
       return;
@@ -297,6 +305,10 @@ const ResSelectPack = ({
   };
 
   const handleShopNow = async () => {
+    if (!user) {
+      setIsLoginOpen(true);
+      return;
+    }
     if (!product || !selectedPack) {
       toast.warning("Please select a pack size first!");
       return;
@@ -332,7 +344,7 @@ const ResSelectPack = ({
               ? selectedPack.product_price_id && pack.product_price_id
                 ? selectedPack.product_price_id === pack.product_price_id
                 : selectedPack.qty === pack.qty &&
-                  selectedPack.isTrialPack === pack.isTrialPack
+                selectedPack.isTrialPack === pack.isTrialPack
               : false;
 
             return (
@@ -341,11 +353,10 @@ const ResSelectPack = ({
               >
                 <div
                   onClick={() => setSelectedPack(pack)}
-                  className={`p-3 rounded-md border cursor-pointer transition ${
-                    isSelected
-                      ? "border-2 border-[#057A37] bg-[#F0FFF5]"
-                      : "border-gray-300"
-                  }`}
+                  className={`p-3 rounded-md border cursor-pointer transition ${isSelected
+                    ? "border-2 border-[#057A37] bg-[#F0FFF5]"
+                    : "border-gray-300"
+                    }`}
                 >
                   <p className="text-sm font-normal text-[#1A2819] leading-tight">
                     {pack.isTrialPack ? "Trial Pack" : `${pack.qty} Pack`}{" "}

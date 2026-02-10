@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartProvider";
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthDialogContext } from "@/context/AuthDialogProvider";
 import { toast } from "react-toastify";
 import { productsApi } from "@/lib/api/products";
 import type { Product as ApiProduct, PriceTier } from "@/lib/api/types";
@@ -82,29 +84,29 @@ function buildPacksFromPrices(
   // Build trial pack if it exists
   const trialPack: Pack | null = trialPackTier
     ? (() => {
-        const qty = Number(trialPackTier.qty);
-        const mrp = parseFloat(trialPackTier.mrp || "0");
-        const final = parseFloat(trialPackTier.final_price || "0");
-        const percent =
-          trialPackTier.discount_off_inpercent || trialPackTier.discount || "";
-        const discount = percent
-          ? `${String(percent).replace(/%/g, "").trim()}% Off`
-          : mrp > 0 && final > 0
-            ? `${Math.round(((mrp - final) / mrp) * 100)}% Off`
-            : "";
+      const qty = Number(trialPackTier.qty);
+      const mrp = parseFloat(trialPackTier.mrp || "0");
+      const final = parseFloat(trialPackTier.final_price || "0");
+      const percent =
+        trialPackTier.discount_off_inpercent || trialPackTier.discount || "";
+      const discount = percent
+        ? `${String(percent).replace(/%/g, "").trim()}% Off`
+        : mrp > 0 && final > 0
+          ? `${Math.round(((mrp - final) / mrp) * 100)}% Off`
+          : "";
 
-        return {
-          qty,
-          sachets: 5,
-          price: Math.round(isNaN(final) ? 0 : final),
-          originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
-          discount,
-          tagline: "Free Trial",
-          product_price_id: trialPackTier.product_price_id,
-          unit_name: trialPackTier.unit_name,
-          isTrialPack: true,
-        } as Pack;
-      })()
+      return {
+        qty,
+        sachets: 5,
+        price: Math.round(isNaN(final) ? 0 : final),
+        originalPrice: Math.round(isNaN(mrp) ? 0 : mrp),
+        discount,
+        tagline: "Free Trial",
+        product_price_id: trialPackTier.product_price_id,
+        unit_name: trialPackTier.unit_name,
+        isTrialPack: true,
+      } as Pack;
+    })()
     : null;
 
   const regularPacks = regularPacksTiers
@@ -144,6 +146,8 @@ const SelectPack = ({
   designType?: "green" | "pink";
 }) => {
   const { addToCart, openCart } = useCart();
+  const { user } = useAuth();
+  const { setIsLoginOpen } = useAuthDialogContext();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
@@ -165,8 +169,8 @@ const SelectPack = ({
         const { data } = await productsApi.getList({
           filter: designTypeFilter
             ? {
-                design_type: designTypeFilter,
-              }
+              design_type: designTypeFilter,
+            }
             : {},
           sort: { id: "DESC" },
           page: 1,
@@ -268,6 +272,10 @@ const SelectPack = ({
   }, [productId, designType]);
 
   const handleAddToCart = async () => {
+    if (!user) {
+      setIsLoginOpen(true);
+      return;
+    }
     if (!product || !selectedPack) {
       toast.warning("Please select a pack size first!");
       return;
@@ -310,6 +318,10 @@ const SelectPack = ({
   };
 
   const handleShopNow = async () => {
+    if (!user) {
+      setIsLoginOpen(true);
+      return;
+    }
     if (!product || !selectedPack) {
       toast.warning("Please select a pack size first!");
       return;
@@ -349,7 +361,7 @@ const SelectPack = ({
           ? selectedPack.product_price_id && pack.product_price_id
             ? selectedPack.product_price_id === pack.product_price_id
             : selectedPack.qty === pack.qty &&
-              selectedPack.isTrialPack === pack.isTrialPack
+            selectedPack.isTrialPack === pack.isTrialPack
           : false;
 
         return (

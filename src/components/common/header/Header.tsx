@@ -30,7 +30,7 @@ import Cart from "../cart/Cart";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { TbSettings2 } from "react-icons/tb";
 import { TbUserSquareRounded } from "react-icons/tb";
-import { useAuthDialog } from "@/hooks/useAuthDialog";
+import { useAuthDialogContext } from "@/context/AuthDialogProvider";
 
 const Header = () => {
   const { user } = useAuth();
@@ -46,7 +46,7 @@ const Header = () => {
     handleLoginOtpVerified,
     handleRegisterOtpSent,
     handleRegisterOtpVerified,
-  } = useAuthDialog();
+  } = useAuthDialogContext();
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -172,7 +172,7 @@ const Header = () => {
                       <Link
                         href="/orders"
                         className="w-full block"
-                        onClick={() => {}}
+                        onClick={() => { }}
                       >
                         My Orders
                       </Link>

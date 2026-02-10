@@ -5,6 +5,7 @@ import ConditionalLayout from "@/components/common/ConditionalLayout";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { AuthProvider } from "@/context/AuthProvider";
 import { CartProvider } from "@/context/CartProvider";
+import { AuthDialogProvider } from "@/context/AuthDialogProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { EnvValidator } from "@/components/common/EnvValidator";
 import { ModeLogger } from "@/components/common/ModeLogger";
@@ -57,10 +58,12 @@ export default function RootLayout({
         <TooltipProvider>
           <ErrorBoundary>
             <AuthProvider>
-              <CartProvider>
-                <ToastContainerWrapper />
-                <ConditionalLayout>{children}</ConditionalLayout>
-              </CartProvider>
+              <AuthDialogProvider>
+                <CartProvider>
+                  <ToastContainerWrapper />
+                  <ConditionalLayout>{children}</ConditionalLayout>
+                </CartProvider>
+              </AuthDialogProvider>
             </AuthProvider>
           </ErrorBoundary>
         </TooltipProvider>

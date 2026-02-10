@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthDialogContext } from "@/context/AuthDialogProvider";
 import { toast } from "react-toastify";
 import ProductRating from "./ProductRating";
 import { useState, useEffect } from "react";
@@ -30,6 +32,8 @@ const ComboProduct = ({
   comboProducts: initialComboProducts,
 }: ComboProductProps) => {
   const { addToCart, loading, openCart } = useCart();
+  const { user } = useAuth();
+  const { setIsLoginOpen } = useAuthDialogContext();
   const [comboProducts, setComboProducts] = useState<ComboProductData[]>(
     initialComboProducts || [],
   );
@@ -72,11 +76,11 @@ const ComboProduct = ({
 
                 const mainImage =
                   Array.isArray(productDetails.image) &&
-                  productDetails.image.length > 0
+                    productDetails.image.length > 0
                     ? productDetails.image[0]
                     : apiProduct.image_single ||
-                      apiProduct.image ||
-                      "/assets/img/collagen-green-product.png";
+                    apiProduct.image ||
+                    "/assets/img/collagen-green-product.png";
 
                 const productData: ComboProductData = {
                   id: productDetails.id,
@@ -84,13 +88,13 @@ const ComboProduct = ({
                   price: firstTier
                     ? Math.round(parseFloat(firstTier.final_price) || 0)
                     : Math.round(
-                        parseFloat(productDetails.discount_price || "0") || 0,
-                      ),
+                      parseFloat(productDetails.discount_price || "0") || 0,
+                    ),
                   mrp_price: firstTier
                     ? Math.round(parseFloat(firstTier.mrp) || 0)
                     : Math.round(
-                        parseFloat(productDetails.product_price || "0") || 0,
-                      ),
+                      parseFloat(productDetails.product_price || "0") || 0,
+                    ),
                   image: mainImage,
                   product_id: productDetails.id,
                   product_price_id: firstTier ? firstTier.product_price_id : "",
@@ -125,6 +129,10 @@ const ComboProduct = ({
   }, [initialComboProducts]);
 
   const handleAddToCart = async (product: ComboProductData) => {
+    if (!user) {
+      setIsLoginOpen(true);
+      return;
+    }
     if (!product.product_price_id) {
       toast.error(
         "Unable to add to cart: Missing price information. Please try again.",
@@ -149,6 +157,10 @@ const ComboProduct = ({
   };
 
   const handleShopNow = async (product: ComboProductData) => {
+    if (!user) {
+      setIsLoginOpen(true);
+      return;
+    }
     await handleAddToCart(product);
     openCart();
   };
@@ -222,7 +234,7 @@ const ComboProduct = ({
                         {Math.round(
                           ((product.mrp_price - product.price) /
                             product.mrp_price) *
-                            100,
+                          100,
                         )}
                         % Off
                       </span>
