@@ -115,9 +115,15 @@ const ProductsList = React.memo(() => {
                 }
 
                 const productDetails = detailsResponse.data;
-                const tiers: PriceTier[] = Array.isArray(productDetails.prices)
+                const allPrices: PriceTier[] = Array.isArray(productDetails.prices)
                   ? productDetails.prices
                   : [];
+                // Exclude trial prices – only use tiers that are not price_category "trial"
+                const tiers: PriceTier[] = allPrices.filter(
+                  (t) =>
+                    !t.price_category ||
+                    t.price_category.toLowerCase() !== "trial",
+                );
 
                 const getTierData = (qty: 1 | 2 | 4) => {
                   const tier = tiers.find((t) => Number(t.qty) === Number(qty));
@@ -133,11 +139,13 @@ const ProductsList = React.memo(() => {
                   return result;
                 };
 
+                // Thumbnail: use image_single from list API (/products/lists/v1/), then details image, then placeholder
                 const mainImage =
-                  Array.isArray(productDetails.image) &&
+                  apiProduct.image_single ||
+                  (Array.isArray(productDetails.image) &&
                     productDetails.image.length > 0
                     ? productDetails.image[0]
-                    : "/assets/img/green-product.png";
+                    : "/assets/img/green-product.png");
 
                 const designType =
                   apiProduct.design_type?.toString().toUpperCase() ||

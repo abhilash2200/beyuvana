@@ -142,20 +142,27 @@ async function fetchComboProducts(): Promise<ComboProductData[]> {
           if (!detailsResponse.data) return null;
 
           const productDetails = detailsResponse.data;
-          const tiers: PriceTier[] = Array.isArray(productDetails.prices)
+          const allPrices: PriceTier[] = Array.isArray(productDetails.prices)
             ? productDetails.prices
             : [];
+          // Exclude trial prices
+          const tiers: PriceTier[] = allPrices.filter(
+            (t) =>
+              !t.price_category ||
+              t.price_category.toLowerCase() !== "trial",
+          );
 
           // Get the first available tier (usually pack of 1)
           const firstTier = tiers.length > 0 ? tiers[0] : null;
 
+          // Thumbnail: use image_single from list API, then details image, then fallback
           const mainImage =
-            Array.isArray(productDetails.image) &&
-              productDetails.image.length > 0
+            apiProduct.image_single ||
+            (Array.isArray(productDetails.image) &&
+            productDetails.image.length > 0
               ? productDetails.image[0]
-              : apiProduct.image_single ||
-              apiProduct.image ||
-              "/assets/img/collagen-green-product.png";
+              : apiProduct.image ||
+              "/assets/img/collagen-green-product.png");
 
           const productData: ComboProductData = {
             id: productDetails.id,

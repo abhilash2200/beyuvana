@@ -190,9 +190,12 @@ const ProductsLists = React.memo(function ProductsLists({
                   </p>
 
                   {/* {(() => {
-                    const packPrices = Array.isArray(product.prices)
-                      ? product.prices.filter(tier => tier.unit_name === "Pack of")
+                    const nonTrialPrices = Array.isArray(product.prices)
+                      ? product.prices.filter(
+                          (t) => !t.price_category || t.price_category.toLowerCase() !== "trial",
+                        )
                       : [];
+                    const packPrices = nonTrialPrices.filter((tier) => tier.unit_name === "Pack of");
                     return packPrices.length > 0 ? (
                       <div className="mb-4">
                         <div className="text-[13px] text-[#1A2819] font-semibold mb-2">Available options</div>

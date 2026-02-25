@@ -20,6 +20,7 @@ export interface PriceTier {
   discount_amount: number;
   sale_price: string;
   final_price: string;
+  price_category?: string; // e.g. "trial" – exclude when showing product list prices
 }
 
 // Product Types

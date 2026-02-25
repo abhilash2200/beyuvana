@@ -14,7 +14,6 @@ import {
   transformCartItemsForCheckout,
   getPaymentRedirectUrl,
   hasTrialPack,
-  hasTrialPackMixedWithOthers,
 } from "@/lib/cart-utils";
 import { PAYMENT_METHODS, ROUTES } from "@/lib/constants";
 
@@ -67,15 +66,6 @@ export function useCheckout({
       }
       if (!user || !sessionKey) {
         toast.warning("Please login to proceed!");
-        return;
-      }
-
-      // Check if trial pack is mixed with other products
-      if (hasTrialPackMixedWithOthers(cartItems)) {
-        toast.error(
-          "You cannot purchase any other product along with the Trial product."
-        );
-        setIsProcessingCheckout(false);
         return;
       }
 

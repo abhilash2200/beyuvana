@@ -84,10 +84,16 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
       ? apiProduct.image_all[0]
       : "/assets/img/green-product.png");
 
+  // Exclude trial prices – use only tiers that are not price_category "trial"
+  const nonTrialPrices = Array.isArray(apiProduct.prices)
+    ? apiProduct.prices.filter(
+        (t) =>
+          !t.price_category || t.price_category.toLowerCase() !== "trial",
+      )
+    : [];
+
   const firstTier =
-    Array.isArray(apiProduct.prices) && apiProduct.prices.length > 0
-      ? apiProduct.prices[0]
-      : undefined;
+    nonTrialPrices.length > 0 ? nonTrialPrices[0] : undefined;
 
   const price = firstTier
     ? Math.round(parseFloat(firstTier.final_price))
@@ -132,7 +138,7 @@ export const convertToLegacyProduct = (apiProduct: Product): LegacyProduct => {
     in_stock: apiProduct.in_stock,
     image_single: apiProduct.image_single,
     image_all: apiProduct.image_all,
-    prices: apiProduct.prices,
+    prices: nonTrialPrices,
     product_type: apiProduct.product_type,
   };
 };
