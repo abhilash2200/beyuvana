@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Mail, Package, Home, ShoppingBag } from "lucide-react";
-import Confetti from "react-confetti";
+import { CheckCircle, Package, Home, ShoppingBag } from "lucide-react";
+
+const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
 
 export default function PaymentSuccessPage() {
   const router = useRouter();
@@ -57,7 +59,7 @@ export default function PaymentSuccessPage() {
             <CheckCircle className="w-12 h-12 text-[#057A37]" />
           </div>
           <h1 className="font-[Grafiels] text-[#1A2819] md:text-[42px] text-[32px] mb-4 leading-tight">
-            Payment Successful!
+            Thank you for your order!
           </h1>
           <p className="text-[#3B3B3B] md:text-[20px] text-[17px] font-medium mb-3">
             Your order has been confirmed and payment has been received.
@@ -65,41 +67,18 @@ export default function PaymentSuccessPage() {
         </div>
 
         <div className="bg-white rounded-[20px] p-6 md:p-8 mb-8 shadow-sm border border-gray-100">
-          <p className="text-[#222222] font-light md:text-[16px] text-[15px] mb-6 leading-relaxed">
-            Thank you for your purchase! Your order is being processed and you
-            will receive a confirmation email shortly.
-          </p>
-
-          <div className="space-y-4 text-left">
-            <div className="flex items-start gap-4 p-4 bg-[#F2F9F3] rounded-[10px]">
-              <div className="flex-shrink-0 mt-1">
-                <Mail className="w-5 h-5 text-[#057A37]" />
-              </div>
-              <div>
-                <p className="font-medium text-[#1A2819] text-[15px] mb-1">
-                  Check Your Email
-                </p>
-                <p className="text-[#3B3B3B] font-light text-[14px]">
-                  We&apos;ve sent a confirmation email with your order details
-                  and tracking information.
-                </p>
-              </div>
+          <div className="flex items-start gap-4 p-4 bg-[#F2F9F3] rounded-[10px] justify-center">
+            <div className="flex-shrink-0 mt-1">
+              <Package className="w-5 h-5 text-[#057A37]" />
             </div>
-
-            <div className="flex items-start gap-4 p-4 bg-[#F2F9F3] rounded-[10px]">
-              <div className="flex-shrink-0 mt-1">
-                <Package className="w-5 h-5 text-[#057A37]" />
-              </div>
-              <div>
-                <p className="font-medium text-[#1A2819] text-[15px] mb-1">
-                  Order Processing
-                </p>
-                <p className="text-[#3B3B3B] font-light text-[14px]">
-                  Your order will be carefully packed and shipped within 2-3
-                  business days. You&apos;ll receive tracking updates via email
-                  and SMS.
-                </p>
-              </div>
+            <div>
+              <p className="font-medium text-[#1A2819] text-[15px] mb-1">
+                Order Processing
+              </p>
+              <p className="text-[#3B3B3B] font-light text-[14px]">
+                Your order will be carefully packed and shipped within 2-3
+                business days.
+              </p>
             </div>
           </div>
         </div>

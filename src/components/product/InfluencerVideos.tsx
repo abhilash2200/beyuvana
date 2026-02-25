@@ -2,18 +2,9 @@
 
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
+import { influencerVideos } from "@/data/influencerVideos";
 
-const videos = [
-  { src: "/assets/videos/influencer1.mp4", title: "Influencer 1" },
-  // { src: "/assets/videos/influencer2.mp4", title: "Influencer 2" },
-  // { src: "/assets/videos/influencer3.mp4", title: "Influencer 3" },
-  // { src: "/assets/videos/influencer4.mp4", title: "Influencer 4" },
-  // { src: "/assets/videos/influencer5.mp4", title: "Influencer 5" },
-  // { src: "/assets/videos/influencer6.mp4", title: "Influencer 6" },
-  // { src: "/assets/videos/influencer7.mp4", title: "Influencer 7" },
-];
-
-const InfluencerVideos = () => {
+export default function InfluencerVideos() {
   return (
     <div className="w-full">
       <Splide
@@ -40,15 +31,18 @@ const InfluencerVideos = () => {
         }}
         className="custom-splide"
       >
-        {videos.map((video, idx) => (
+        {influencerVideos.map((video, idx) => (
           <SplideSlide key={idx}>
             <div className="flex flex-col items-center">
-              <div className="w-full h-[250px] bg-black rounded-xl overflow-hidden">
+              <div className="w-full h-[650px] bg-black rounded-xl overflow-hidden">
                 <video
                   src={video.src}
-                  autoPlay
+                  title={video.title}
+                  preload="metadata"
                   muted
+                  loop
                   playsInline
+                  autoPlay
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -58,6 +52,4 @@ const InfluencerVideos = () => {
       </Splide>
     </div>
   );
-};
-
-export default InfluencerVideos;
+}

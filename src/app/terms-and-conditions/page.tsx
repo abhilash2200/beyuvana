@@ -1,8 +1,6 @@
-"use client";
-
 import HeaderText from "@/components/common/HeaderText";
 
-const Page = () => {
+export default function Page() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 text-[#1A2819] leading-relaxed">
       <HeaderText
@@ -156,6 +154,4 @@ const Page = () => {
       </p>
     </div>
   );
-};
-
-export default Page;
+}

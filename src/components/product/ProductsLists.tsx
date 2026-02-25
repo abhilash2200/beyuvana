@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { slugify, normalizeImageUrl } from "@/lib/utils";
 import type { PriceTier } from "@/lib/api/types";
-import { productDesignSlugs } from "@/app/data/productConfigs";
+import { productDesignSlugs, designTypeToSlug } from "@/app/data/productConfigs";
 import ProductRating from "./ProductRating";
 
 export interface Product {
@@ -48,7 +48,10 @@ const ProductsLists = React.memo(function ProductsLists({
   };
 
   const getProductDetailUrl = (product: Product): string => {
-    const designSlug = productDesignSlugs[product.id];
+    const designSlug =
+      product.design_type && designTypeToSlug[product.design_type]
+        ? designTypeToSlug[product.design_type]
+        : productDesignSlugs[product.id];
     return designSlug
       ? `/product/${designSlug}`
       : `/product/${slugify(product.name)}`;

@@ -12,7 +12,7 @@ const Video = () => {
       <div className="max-w-6xl w-full grid grid-cols-1 gap-6 rounded-2xl overflow-hidden shadow-lg">
         <div className="relative h-auto w-full md:h-[33vw] overflow-hidden">
           <video
-            src="/assets/videos/banner-video.mov"
+            src="/assets/videos/banner-video.mp4"
             autoPlay
             loop
             muted

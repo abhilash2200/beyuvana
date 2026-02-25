@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,10 +13,11 @@ import {
 } from "@/components/ui/dialog";
 import Nav from "./Nav";
 import MobileNav from "./MobileNav";
-import RegisterForm from "@/app/auth/RegisterForm";
-import LoginForm from "@/app/auth/LoginForm";
-import OtpVerifyForm from "@/app/auth/OtpVerifyForm";
 import { useAuth } from "@/context/AuthProvider";
+
+const LoginForm = dynamic(() => import("@/app/auth/LoginForm"));
+const RegisterForm = dynamic(() => import("@/app/auth/RegisterForm"));
+const OtpVerifyForm = dynamic(() => import("@/app/auth/OtpVerifyForm"));
 import {
   DropdownMenu,
   DropdownMenuContent,

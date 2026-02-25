@@ -46,8 +46,6 @@ async function fetchProducts() {
       productsApi.getList({
         filter: {
           design_type: ["green", "GREEN"],
-          // Exclude combo products - if product_type exists and is "combo", exclude it
-          // Note: This assumes the API supports filtering by product_type
         },
         sort: { id: "DESC" },
         page: 1,

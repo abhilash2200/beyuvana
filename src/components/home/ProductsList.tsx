@@ -14,7 +14,7 @@ import type { Product, PriceTier } from "@/lib/api/types";
 import { products as staticProducts } from "@/app/data/products";
 import { toast } from "react-toastify";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { productDesignSlugs } from "@/app/data/productConfigs";
+import { productDesignSlugs, designTypeToSlug } from "@/app/data/productConfigs";
 import { slugify } from "@/lib/utils";
 
 const packs = [1, 2, 4] as const;
@@ -32,6 +32,7 @@ interface DisplayProduct {
   mainImage: string;
   product_id: string;
   product_price_ids: { 1: string; 2: string; 4: string };
+  design_type?: string; // "GREEN" | "PINK" or "green" | "pink" – used to build correct detail URL
 }
 
 const ProductsList = React.memo(() => {
@@ -138,7 +139,10 @@ const ProductsList = React.memo(() => {
                     ? productDetails.image[0]
                     : "/assets/img/green-product.png";
 
-                const productData = {
+                const designType =
+                  apiProduct.design_type?.toString().toUpperCase() ||
+                  (originalIdx === 0 ? "GREEN" : "PINK");
+                const productData: DisplayProduct = {
                   id: productDetails.id,
                   name: productDetails.product_name,
                   shortdescription: productDetails.short_description || "",
@@ -170,6 +174,7 @@ const ProductsList = React.memo(() => {
                   benefits: staticProducts[originalIdx]?.benefits || [],
                   mainImage,
                   product_id: productDetails.id,
+                  design_type: designType,
                 };
 
                 return productData;
@@ -255,8 +260,10 @@ const ProductsList = React.memo(() => {
   };
 
   const getProductDetailUrl = (product: DisplayProduct): string => {
-    const productIdNum = parseInt(product.product_id, 10);
-    const designSlug = productDesignSlugs[productIdNum];
+    const designSlug =
+      product.design_type && designTypeToSlug[product.design_type]
+        ? designTypeToSlug[product.design_type]
+        : productDesignSlugs[parseInt(product.product_id, 10)];
     return designSlug
       ? `/product/${designSlug}`
       : `/product/${slugify(product.name)}`;

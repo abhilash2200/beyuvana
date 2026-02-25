@@ -1050,11 +1050,13 @@ export const fallbackProducts: Product[] = [
     ],
     images: [
       "/assets/img/product-details/Artboard_1.webp",
-      "/assets/img/product-details/Artboard_2.png",
-      "/assets/img/product-details/Artboard_3.png",
-      "/assets/img/product-details/Artboard_4.png",
-      "/assets/img/product-details/Artboard_5.png",
-      "/assets/img/product-details/extra-pink.webp",
+      "/assets/img/product-details/Artboard_2.webp",
+      "/assets/img/product-details/Artboard_3.webp",
+      "/assets/img/product-details/Artboard_4.webp",
+      "/assets/img/product-details/Artboard_5.webp",
+      "/assets/img/product-details/Artboard_6.webp",
+      "/assets/img/product-details/Artboard_7.webp",
+      "/assets/img/product-details/Artboard_8.webp",
     ],
     actionItems: [
       {

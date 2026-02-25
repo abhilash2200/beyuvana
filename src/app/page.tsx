@@ -60,7 +60,7 @@ const page = () => {
             src="/assets/img/choose-bg.png"
             alt="Decorative background"
             fill
-            loading="lazy"
+            priority
             className="object-cover"
           />
         </div>
