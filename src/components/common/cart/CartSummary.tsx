@@ -23,11 +23,13 @@ export function CartSummary({
     <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
       <div>
         <p className="text-lg font-bold">{formatINR(total)}</p>
+        {/* COD temporarily disabled
         {selectedPayment === "cod" && (
           <p className="text-[10px] text-gray-300">
             Delivery charges may apply on COD
           </p>
         )}
+        */}
         {selectedPayment === "prepaid" && (
           <p className="text-[10px] text-gray-300">
             Free gifts added + ₹150 off

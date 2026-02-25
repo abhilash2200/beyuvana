@@ -46,7 +46,7 @@ export default function Cart() {
   const cartTotals = calculateCartTotals(cartItems);
   const [selectedPayment, setSelectedPayment] = React.useState<
     "prepaid" | "cod" | null
-  >(null);
+  >("prepaid");
   const [selectedAddress, setSelectedAddress] =
     React.useState<SavedAddress | null>(null);
   const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
@@ -108,22 +108,21 @@ export default function Cart() {
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  // Reset payment and address selection when cart opens
+  // When cart opens: set Prepaid as selected and run Prepaid API (promo) on initial load
   React.useEffect(() => {
     if (isCartOpen) {
-      setSelectedPayment(null);
+      setSelectedPayment("prepaid");
       setSelectedAddress(null);
-      handleCODClick(); // Reset promo code
+      void handlePrepaidClick();
     }
-  }, [isCartOpen]);
+  }, [isCartOpen, handlePrepaidClick]);
 
   const handleSheetOpenChange = (open: boolean) => {
     setCartOpen(open);
-    // Reset payment and address selection when cart is closed
+    // Reset address selection when cart is closed (COD temporarily disabled, Prepaid stays default)
     if (!open) {
-      setSelectedPayment(null);
       setSelectedAddress(null);
-      handleCODClick(); // Reset promo code
+      // handleCODClick(); // COD temporarily disabled
     }
   };
 
@@ -213,10 +212,11 @@ export default function Cart() {
     setSelectedPayment("prepaid");
   };
 
-  const handleCODSelection = () => {
-    handleCODClick();
-    setSelectedPayment("cod");
-  };
+  // COD temporarily disabled
+  // const handleCODSelection = () => {
+  //   handleCODClick();
+  //   setSelectedPayment("cod");
+  // };
 
   const handleCheckout = async () => {
     if (!selectedPayment || !selectedAddress) {
@@ -296,7 +296,7 @@ export default function Cart() {
                   <PaymentMethodSelector
                     selectedPayment={selectedPayment}
                     onSelectPrepaid={handlePrepaidSelection}
-                    onSelectCOD={handleCODSelection}
+                    onSelectCOD={() => {}}
                   />
                 </div>
 

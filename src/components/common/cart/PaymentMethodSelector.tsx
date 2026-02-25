@@ -34,6 +34,7 @@ export function PaymentMethodSelector({
         >
           Prepaid
         </button>
+        {/* COD temporarily disabled
         <button
           type="button"
           className={`px-3 py-1 rounded-full border leading-tight text-[13px] transition-colors focus:outline-none focus:ring-0 focus:ring-[#057A37] focus:ring-offset-0 ${
@@ -48,6 +49,7 @@ export function PaymentMethodSelector({
         >
           COD
         </button>
+        */}
       </div>
 
       {selectedPayment === "prepaid" && (
@@ -60,6 +62,7 @@ export function PaymentMethodSelector({
           />
         </div>
       )}
+      {/* COD temporarily disabled
       {selectedPayment === "cod" && (
         <div className="flex justify-center">
           <Image
@@ -70,6 +73,7 @@ export function PaymentMethodSelector({
           />
         </div>
       )}
+      */}
     </div>
   );
 }

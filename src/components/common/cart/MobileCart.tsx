@@ -44,7 +44,7 @@ export default function MobileCart() {
   const cartTotals = calculateCartTotals(cartItems);
   const [selectedPayment, setSelectedPayment] = React.useState<
     "prepaid" | "cod" | null
-  >(null);
+  >("prepaid");
   const [selectedAddress, setSelectedAddress] =
     React.useState<SavedAddress | null>(null);
   const [isAddAddressOpen, setIsAddAddressOpen] = React.useState(false);
@@ -92,11 +92,10 @@ export default function MobileCart() {
 
   const handleSheetOpenChange = (open: boolean) => {
     setCartOpen(open);
-    // Reset payment and address selection when cart is closed
+    // Reset address selection when cart is closed (COD temporarily disabled, Prepaid stays default)
     if (!open) {
-      setSelectedPayment(null);
       setSelectedAddress(null);
-      handleCODClick(); // Reset promo code
+      // handleCODClick(); // COD temporarily disabled
     }
   };
 
@@ -105,10 +104,11 @@ export default function MobileCart() {
     setSelectedPayment("prepaid");
   };
 
-  const handleCODSelection = () => {
-    handleCODClick();
-    setSelectedPayment("cod");
-  };
+  // COD temporarily disabled
+  // const handleCODSelection = () => {
+  //   handleCODClick();
+  //   setSelectedPayment("cod");
+  // };
 
   const handleRemoveItem = async (itemId: string) => {
     try {
@@ -133,14 +133,14 @@ export default function MobileCart() {
     await processCheckout(selectedPayment, selectedAddress);
   };
 
-  // Reset payment and address selection when cart opens
+  // When cart opens: set Prepaid as selected and run Prepaid API (promo) on initial load
   React.useEffect(() => {
     if (isCartOpen) {
-      setSelectedPayment(null);
+      setSelectedPayment("prepaid");
       setSelectedAddress(null);
-      handleCODClick(); // Reset promo code
+      void handlePrepaidClick();
     }
-  }, [isCartOpen]);
+  }, [isCartOpen, handlePrepaidClick]);
 
   return (
     <Sheet open={isCartOpen} onOpenChange={handleSheetOpenChange}>
@@ -355,6 +355,7 @@ export default function MobileCart() {
                   >
                     Prepaid
                   </button>
+                  {/* COD temporarily disabled
                   <button
                     className={`flex-1 py-2 px-4 rounded-full border text-[12px] font-medium ${
                       selectedPayment === "cod"
@@ -365,6 +366,7 @@ export default function MobileCart() {
                   >
                     COD
                   </button>
+                  */}
                 </div>
 
                 {selectedPayment === "prepaid" && (
@@ -378,6 +380,7 @@ export default function MobileCart() {
                     />
                   </div>
                 )}
+                {/* COD temporarily disabled
                 {selectedPayment === "cod" && (
                   <div className="flex justify-center">
                     <Image
@@ -389,6 +392,7 @@ export default function MobileCart() {
                     />
                   </div>
                 )}
+                */}
               </div>
 
               <div className="mt-2">
@@ -403,11 +407,13 @@ export default function MobileCart() {
             <div className="bg-[#122014] text-white px-4 py-4 w-full flex justify-between items-center shrink-0">
               <div className="flex-1">
                 <p className="text-lg font-bold">{formatINR(total)}</p>
+                {/* COD temporarily disabled
                 {selectedPayment === "cod" && (
                   <p className="text-[10px] text-gray-300">
                     Delivery charges may apply on COD
                   </p>
                 )}
+                */}
                 {selectedPayment === "prepaid" && (
                   <p className="text-[10px] text-gray-300">
                     Free gifts added + ₹150 off
