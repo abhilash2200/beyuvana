@@ -113,10 +113,10 @@ export default function Product1Layout({ product }: { product: Product }) {
                 <div className="flex flex-wrap justify-between gap-y-4">
                     <div className="w-full md:w-[30%]">
                         <div className="hidden md:block">
-                            <ProductImg designType={product.design_type} />
+                            <ProductImg images={product.images} designType={product.design_type} />
                         </div>
                         <div className="block md:hidden">
-                            <ResProductImg designType={product.design_type} />
+                            <ResProductImg images={product.images} designType={product.design_type} />
                         </div>
                     </div>
                     <div className="w-full md:w-[30%]">
@@ -249,7 +249,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                             </h2>
                             <p className="mb-4 leading-relaxed font-normal text-[15px] ">
                                 Our clinical-style progress chart reveals the powerful results
-                                of BEYUVANA™'s advanced anti-ageing formula. Within 10 weeks:
+                                of BEYUVANA™&apos;s advanced anti-ageing formula. Within 10 weeks:
                             </p>
                             <ul>
                                 {benefits.map((item, index) => (
@@ -319,7 +319,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                             textcolor="text-[#1A2819]"
                         />
                         <p className="md:text-center text-left mb-4">
-                            BEYUVANA™ isn't just another supplement — it's a multi-action,
+                            BEYUVANA™ isn&apos;t just another supplement — it&apos;s a multi-action,
                             plant-powered skin nutrition system designed to target the root
                             causes of aging, not just the symptoms. Heres why it delivers real,
                             visible results:
@@ -373,7 +373,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                         />
                         <p className="md:text-center text-left mb-4 max-w-[90%] leading-tight">
                             Stress, pollution, UV exposure, poor sleep, and nutrient
-                            deficiencies silently disrupt your skin's balance — breaking down
+                            deficiencies silently disrupt your skin&apos;s balance — breaking down
                             collagen, dulling glow, and accelerating aging faster than you
                             realize.
                         </p>
@@ -423,8 +423,8 @@ export default function Product1Layout({ product }: { product: Product }) {
                             textcolor="text-[#1A2819]"
                         />
                         <p className="text-center mb-4 md:w-[90%] w-full mx-auto leading-tight px-4">
-                            "Powered by 18 precision-selected plant actives to nourish your
-                            skin, strengthen your gut, and restore emotional balance."
+                            &quot;Powered by 18 precision-selected plant actives to nourish your
+                            skin, strengthen your gut, and restore emotional balance.&quot;
                         </p>
                         <CompareProduct layoutType="green" product={product} />
                     </div>

@@ -174,18 +174,13 @@ const mergeProductData = (
   // - Rich content: Always from LOCAL (actionItems, whyItems, etc.)
   // - ID: Use from API if available (for cart/API operations), otherwise local
 
-  // Combine images: Local images first, then API images (no duplicates)
-  const localImages = localProduct?.images || [];
+  // Images: from product list API image_all only (no local images)
   const apiImages =
     apiProducts.length > 0
       ? apiProducts
         .flatMap((p) => p.images || [])
         .filter((img, idx, arr) => arr.indexOf(img) === idx)
       : [];
-  const combinedImages = [
-    ...localImages,
-    ...apiImages.filter((img) => !localImages.includes(img)),
-  ];
 
   return {
     // ID: Use API product ID if available (for backend operations), otherwise local
@@ -212,10 +207,10 @@ const mergeProductData = (
         ? apiProducts[0].description
         : baseProduct.description || [],
 
-    // Images: Combined LOCAL + API (local first)
+    // Images: from product list API image_all only
     images:
-      combinedImages.length > 0
-        ? combinedImages
+      apiImages.length > 0
+        ? apiImages
         : designType === "GREEN"
           ? ["/assets/img/green-product.png"]
           : ["/assets/img/pink-product.png"],

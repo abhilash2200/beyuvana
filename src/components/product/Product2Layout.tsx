@@ -96,10 +96,10 @@ export default function Product2Layout({ product }: { product: Product }) {
         <div className="flex flex-wrap items-center justify-between gap-x-2">
           <div className="w-full md:w-[30%]">
             <div className="hidden md:block">
-              <ProductImg designType={product.design_type} />
+              <ProductImg images={product.images} designType={product.design_type} />
             </div>
             <div className="block md:hidden">
-              <ResProductImg designType={product.design_type} />
+              <ResProductImg images={product.images} designType={product.design_type} />
             </div>
           </div>
           <div className="w-full md:w-[30%]">

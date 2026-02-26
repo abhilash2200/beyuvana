@@ -113,7 +113,7 @@ const ProductsLists = React.memo(function ProductsLists({
                     />
                   </div>
                 </Link>
-                {Array.isArray(product.image_all) &&
+                {/* {Array.isArray(product.image_all) &&
                   product.image_all.length > 1 && (
                     <div className="mt-3 flex gap-2 flex-wrap items-center justify-center">
                       {product.image_all.slice(0, 5).map((img, idx) => (
@@ -132,7 +132,7 @@ const ProductsLists = React.memo(function ProductsLists({
                         </div>
                       ))}
                     </div>
-                  )}
+                  )} */}
               </div>
 
               {/* Text Section */}

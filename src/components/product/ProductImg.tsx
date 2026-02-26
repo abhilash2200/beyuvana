@@ -7,33 +7,34 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import { Lens } from "@/components/ui/lens";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { fallbackProducts } from "@/app/data/fallbackProducts";
 
 interface ProductImgProps {
-  images?: string[]; // Optional, will be ignored - using fallback data instead
-  designType?: "GREEN" | "PINK"; // Design type to find correct product
+  /** Images from product list API image_all – no local/fallback images */
+  images?: string[];
+  designType?: "GREEN" | "PINK";
 }
 
+const FALLBACK_IMG =
+  "/assets/img/green-product.png";
+
 const ProductImg = React.memo(function ProductImg({
-  designType,
+  images: imagesProp = [],
 }: ProductImgProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const splideRef = useRef<{
     splide: { go: (direction: string | number) => void; index: number };
   } | null>(null);
 
-  // Get images ONLY from fallbackProducts.ts based on design type
-  const localProduct = fallbackProducts.find(
-    (p) => p.design_type === designType,
-  );
-  const images = localProduct?.images || [];
+  const images = Array.isArray(imagesProp) && imagesProp.length > 0
+    ? imagesProp
+    : [FALLBACK_IMG];
 
   return (
     <div className="w-full mx-auto flex flex-col items-center space-y-6">
       <div className="w-full flex items-center justify-center">
         <Lens>
           <Image
-            src={images[selectedIndex] || "/assets/img/green-product.png"}
+            src={images[selectedIndex] || FALLBACK_IMG}
             alt={`Product image ${selectedIndex + 1} of ${images.length}`}
             width={600}
             height={600}

@@ -1,19 +1,20 @@
 import React from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import Image from "next/image";
-import { fallbackProducts } from "@/app/data/fallbackProducts";
 
 interface ResProductImgProps {
-  images?: string[]; // Optional, will be ignored - using fallback data instead
-  designType?: "GREEN" | "PINK"; // Design type to find correct product
+  /** Images from product list API image_all – no local/fallback images */
+  images?: string[];
+  designType?: "GREEN" | "PINK";
 }
 
-const ResProductImg = ({ designType }: ResProductImgProps) => {
-  // Get images ONLY from fallbackProducts.ts based on design type
-  const localProduct = fallbackProducts.find(
-    (p) => p.design_type === designType,
-  );
-  const images = localProduct?.images || [];
+const FALLBACK_IMG = "/assets/img/green-product.png";
+
+const ResProductImg = ({ images: imagesProp = [] }: ResProductImgProps) => {
+  const images =
+    Array.isArray(imagesProp) && imagesProp.length > 0
+      ? imagesProp
+      : [FALLBACK_IMG];
 
   return (
     <div className="pb-10">
