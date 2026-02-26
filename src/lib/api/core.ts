@@ -10,6 +10,7 @@ import {
   calculateRetryDelay,
   sleep,
 } from "../api-utils";
+import { handleSessionExpired } from "../session-expired";
 
 export interface ApiResponse<T = unknown> {
   data?: T;
@@ -87,7 +88,24 @@ export async function apiFetch<T = unknown>(
           `API error: ${response.status} ${response.statusText} - ${errorText}`,
         );
 
-        // Check if we should retry this error
+        // 401: session expired – clear auth state and redirect to login (do not retry)
+        if (response.status === 401 && isBrowser) {
+          let message: string | undefined;
+          try {
+            const parsed = JSON.parse(errorText) as { message?: string };
+            message =
+              parsed?.message && typeof parsed.message === "string"
+                ? parsed.message
+                : errorText?.trim() || undefined;
+          } catch {
+            message = errorText?.trim() || undefined;
+          }
+          handleSessionExpired(
+            message || "Session expired. Please log in again.",
+          );
+        }
+
+        // Check if we should retry this error (401 is not retried)
         if (
           attempt < maxAttempts - 1 &&
           shouldRetry(error, attempt, retryConfig)

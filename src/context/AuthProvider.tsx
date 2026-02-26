@@ -9,6 +9,7 @@ import React, {
   useRef,
 } from "react";
 import { logger } from "@/lib/logger";
+import { registerSessionExpiredHandler } from "@/lib/session-expired";
 
 type User = { id: string; name: string; email: string; phone: string } | null;
 
@@ -171,6 +172,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSessionKey(null);
     }
   };
+
+  // When any API returns 401, clear auth state and redirect to login
+  useEffect(() => {
+    registerSessionExpiredHandler(() => {
+      if (typeof window === "undefined") return;
+      logger.info(
+        "Session expired (401), clearing auth state and redirecting to login",
+        undefined,
+        "AuthProvider",
+      );
+      localStorage.removeItem("user");
+      localStorage.removeItem("session_key");
+      setUser(null);
+      setSessionKey(null);
+      window.location.href = "/auth";
+    });
+  }, []);
 
   return (
     <AuthContext.Provider

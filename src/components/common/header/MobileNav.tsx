@@ -56,7 +56,8 @@ const links = [
 
 const MobileNav = () => {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, isSessionValidating } = useAuth();
+  const showLoggedIn = Boolean(user && !isSessionValidating);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const {
     isLoginOpen,
@@ -191,7 +192,7 @@ const MobileNav = () => {
                 </div>
               ) : (
                 <span className="font-semibold text-[#1E2C1E]">
-                  Hello, {user.name || "User"}
+                  Hello, {user?.name || "User"}
                 </span>
               )}
             </div>
@@ -212,7 +213,7 @@ const MobileNav = () => {
                   {link.label}
                 </Link>
               ))}
-              {user && (
+              {showLoggedIn && (
                 <Link
                   href="/orders"
                   onClick={() => setIsSheetOpen(false)}
@@ -229,7 +230,7 @@ const MobileNav = () => {
             </nav>
           </div>
 
-          {user && (
+          {showLoggedIn && (
             <div className="mt-6 border-t border-gray-200 pt-4">
               <LogoutButton>
                 <Button

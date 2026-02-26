@@ -35,7 +35,8 @@ import { TbUserSquareRounded } from "react-icons/tb";
 import { useAuthDialogContext } from "@/context/AuthDialogProvider";
 
 const Header = () => {
-  const { user } = useAuth();
+  const { user, isSessionValidating } = useAuth();
+  const showLoggedIn = Boolean(user && !isSessionValidating);
   const {
     isLoginOpen,
     isRegisterOpen,
@@ -71,7 +72,7 @@ const Header = () => {
             <div className="flex items-center gap-x-4">
               <Cart />
 
-              {!user ? (
+              {!showLoggedIn ? (
                 <>
                   <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                     <DialogTrigger asChild>
@@ -158,13 +159,13 @@ const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       className="inline-flex gap-x-2 rounded-full shadow px-4 font-normal py-2 capitalize bg-[#1A2819] text-white text-[12px]"
-                      aria-label={`User menu for ${user.name || "User"}`}
+                      aria-label={`User menu for ${user?.name || "User"}`}
                     >
                       <TbUserSquareRounded
                         className="w-5 h-5"
                         aria-hidden="true"
                       />
-                      {user.name || "User"}
+                      {user?.name || "User"}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-38">
