@@ -15,31 +15,31 @@ interface WhyNeedItem {
 
 const items: WhyNeedItem[] = [
   {
-    img: "/assets/img/lysine.png",
+    img: "/assets/img/lysine.webp",
     title1: "L-Lysine",
     title2: "L-Proline",
     desc: "Core collagen \namino acids",
   },
   {
-    img: "/assets/img/amla.png",
+    img: "/assets/img/amla.webp",
     title1: "Amla",
     title2: "Vitamin C",
     desc: "Essential for \ncollagen synthesis",
   },
   {
-    img: "/assets/img/bambo.png",
+    img: "/assets/img/bambo.webp",
     title1: "Bamboo Silica",
     title2: "Glutathione",
     desc: "Natural \nantioxidants",
   },
   {
-    img: "/assets/img/biotin.png",
+    img: "/assets/img/biotin.webp",
     title1: "Biotin",
     title2: "Hyaluronic Acid",
     desc: "Bone health \nsupport",
   },
   {
-    img: "/assets/img/gotu.png",
+    img: "/assets/img/gotu.webp",
     title1: "Ashwagandha",
     title2: "Gotu Kola",
     desc: "Minerals for \nconnective tissue",

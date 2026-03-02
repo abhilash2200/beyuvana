@@ -134,12 +134,12 @@ export const fallbackProducts: Product[] = [
     ],
     certificateImg: "/assets/img/product-details/certificate.png",
     certificateImages: [
-      "/assets/img/product-details/pdf1.png",
-      "/assets/img/product-details/pdf2.png",
-      "/assets/img/product-details/pdf3.png",
-      "/assets/img/product-details/pdf4.png",
-      "/assets/img/product-details/pdf5.png",
-      "/assets/img/product-details/pdf6.png",
+      "/assets/img/product-details/pdf1.webp",
+      "/assets/img/product-details/pdf2.webp",
+      "/assets/img/product-details/pdf3.webp",
+      "/assets/img/product-details/pdf4.webp",
+      "/assets/img/product-details/pdf5.webp",
+      "/assets/img/product-details/pdf6.webp",
     ],
     images: [
       "/assets/img/product-details/Green_1.webp",
@@ -348,7 +348,7 @@ export const fallbackProducts: Product[] = [
     compare: [
       {
         id: 1,
-        img: "/assets/img/product-details/compare-11.png",
+        img: "/assets/img/product-details/compare-11.webp",
         title: "Lines that used to stay... started to fade.",
         desc: "I noticed the difference by week 4. My skin felt tighter, especially around the eyes and mouth. Now, even without makeup, the fine lines are visibly reduced.",
         bgColor: "#122014",
@@ -357,7 +357,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/compare-13.png",
+        img: "/assets/img/product-details/compare-13.webp",
         title: "Lines that used to stay... started to fade.",
         desc: "I noticed the difference by week 4. My skin felt tighter, especially around the eyes and mouth. Now, even without makeup, the fine lines are visibly reduced.",
         bgColor: "#122014",
@@ -368,7 +368,7 @@ export const fallbackProducts: Product[] = [
     builder: [
       {
         id: 1,
-        img: "/assets/img/product-details/green-who/1.png",
+        img: "/assets/img/product-details/green-who/1.webp",
         title: "Noticing early signs of aging",
         desc: "Fine lines, dryness, and dullness are common after 25. BEYUVANA™ delivers Glutathione, Hyaluronic Acid, and CoQ10 to deeply hydrate, support collagen, and visibly improve texture. ",
         bgColor: "#CFE9D3",
@@ -377,7 +377,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/green-who/2.png",
+        img: "/assets/img/product-details/green-who/2.webp",
         title:
           "Young Professionals dealing with stress, screen time & pollution",
         desc: "Ashwagandha, Green Tea, and Astaxanthin combat oxidative stress, pollution damage, and fatigue-related skin aging — while balancing internal stress hormones.",
@@ -387,7 +387,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 3,
-        img: "/assets/img/product-details/green-who/3.png",
+        img: "/assets/img/product-details/green-who/3.webp",
         title: "Vegetarians avoiding animal collagen",
         desc: "Formulated with L-Lysine, Vitamin C, and Bamboo Extract, BEYUVANA™ stimulates your natural collagen production — no bovine or marine collagen needed.",
         bgColor: "#CFE9D3",
@@ -396,7 +396,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 4,
-        img: "/assets/img/product-details/green-who/4.png",
+        img: "/assets/img/product-details/green-who/4.webp",
         title: "Wellness Seekers focused on holistic skin health",
         desc: "Adaptogens, antioxidants, and gut-friendly herbs like Amla and Aloe Vera support the gutskin axis, hormone balance, and full-body skin glow from within.",
         bgColor: "#CFE9D3",
@@ -405,7 +405,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 5,
-        img: "/assets/img/product-details/green-who/5.png",
+        img: "/assets/img/product-details/green-who/5.webp",
         title: "Moms & Busy Individuals needing easy, smart self-care",
         desc: "One sachet a day delivers 21 synergistic actives including Licorice, Grape Seed Extract, and Hyaluronic Acid — making glow and firmness part of your daily routine.",
         bgColor: "#CFE9D3",
@@ -414,7 +414,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 6,
-        img: "/assets/img/product-details/green-who/6.png",
+        img: "/assets/img/product-details/green-who/6.webp",
         title: "Anyone avoiding, sugar, or animal-based products",
         desc: "Enriched with plant-based actives, sugar-free, and gelatin-free — every ingredient is purposeful, and designed to nourish your skin at every level. ",
         bgColor: "#CFE9D3",
@@ -423,7 +423,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 7,
-        img: "/assets/img/product-details/green-who/7.png",
+        img: "/assets/img/product-details/green-who/7.webp",
         title: "Those Seeking a Natural, Lasting Glow",
         desc: "Glutathione, Amla, and Astaxanthin work together to brighten dull skin, enhance radiance, and promote even skin tone — naturally and gently. ",
         bgColor: "#CFE9D3",
@@ -432,7 +432,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 8,
-        img: "/assets/img/product-details/green-who/8.png",
+        img: "/assets/img/product-details/green-who/8.webp",
         title: "Those Battling Pigmentation & Uneven Tone",
         desc: "Licorice, Grape Seed Extract, and Vitamin C help reduce hyperpigmentation, sun damage, and dark spots — supporting a more even, luminous complexion over time.",
         bgColor: "#CFE9D3",
@@ -441,7 +441,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 9,
-        img: "/assets/img/product-details/green-who/9.png",
+        img: "/assets/img/product-details/green-who/9.webp",
         title: "Those with Gut Issues Affecting Skin Health",
         desc: "Amla, and adaptogenic herbs support the gut-skin axis by reducing inflammation, improving digestion, and promoting clearer, healthier-looking skin from within ",
         bgColor: "#CFE9D3",
@@ -456,7 +456,7 @@ export const fallbackProducts: Product[] = [
         label: "Aging",
         description:
           "With age, your skin’s natural production of collagen and hyaluronic acid begins to decline — quietly reducing firmness, suppleness, and radiance. The result? Fine lines, sagging, and a visible loss of youthful glow. ",
-        img: "/assets/img/product-details/aging-1.png",
+        img: "/assets/img/product-details/aging-1.webp",
         stats: [
           {
             value: "25%",
@@ -481,7 +481,7 @@ export const fallbackProducts: Product[] = [
         label: "Stress",
         description:
           "High cortisol levels from stress quietly slow down your skin’s ability to heal, break down collagen faster, and reduce glow — leading to visible aging and loss of youthful firmness.",
-        img: "/assets/img/product-details/mstress.png",
+        img: "/assets/img/product-details/mstress.webp",
         stats: [
           {
             value: "43.5%",
@@ -506,7 +506,7 @@ export const fallbackProducts: Product[] = [
         label: "Pollution",
         description:
           "Pollution silently accelerates skin aging by triggering oxidative stress, chronic inflammation, and weakening the skin’s protective barrier — leading to dullness, sensitivity, and premature loss of firmness and radiance. ",
-        img: "/assets/img/product-details/mpollution.png",
+        img: "/assets/img/product-details/mpollution.webp",
         stats: [
           {
             value: "20%",
@@ -532,7 +532,7 @@ export const fallbackProducts: Product[] = [
         label: "UV Radiation",
         description:
           "UV Radiation deeply damages the skin by breaking down collagen and elastin — resulting in premature wrinkles, loss of firmness, and uneven tone that dulls your natural radiance over time. ",
-        img: "/assets/img/product-details/uv-radiation.png",
+        img: "/assets/img/product-details/uv-radiation.webp",
         stats: [
           {
             value: "80%",
@@ -557,7 +557,7 @@ export const fallbackProducts: Product[] = [
         label: "Disrupted Sleep Pattern",
         description:
           "Disrupted sleep patterns impair the skin’s overnight renewal cycle, increasing cortisol and accelerating collagen loss — leading to visible dullness, dryness, and early signs of aging. ",
-        img: "/assets/img/product-details/disruptive-sleep-pattern.png",
+        img: "/assets/img/product-details/disruptive-sleep-pattern.webp",
         stats: [
           {
             value: "35%",
@@ -582,7 +582,7 @@ export const fallbackProducts: Product[] = [
         label: "Poor Gut Health",
         description:
           "An imbalanced gut disrupts nutrient absorption, triggers inflammation, and weakens the skin barrier — leading to breakouts, uneven tone, and loss of natural glow from within.",
-        img: "/assets/img/product-details/poor-gut-health.png",
+        img: "/assets/img/product-details/poor-gut-health.webp",
         stats: [
           {
             value: "40%",
@@ -1041,12 +1041,12 @@ export const fallbackProducts: Product[] = [
     ],
     certificateImg: "/assets/img/product-details/certificate.png",
     certificateImages: [
-      "/assets/img/product-details/pdf1.png",
-      "/assets/img/product-details/pdf2.png",
-      "/assets/img/product-details/pdf3.png",
-      "/assets/img/product-details/pdf4.png",
-      "/assets/img/product-details/pdf5.png",
-      "/assets/img/product-details/pdf6.png",
+      "/assets/img/product-details/pdf1.webp",
+      "/assets/img/product-details/pdf2.webp",
+      "/assets/img/product-details/pdf3.webp",
+      "/assets/img/product-details/pdf4.webp",
+      "/assets/img/product-details/pdf5.webp",
+      "/assets/img/product-details/pdf6.webp",
     ],
     images: [
       "/assets/img/product-details/Artboard_1.webp",
@@ -1277,7 +1277,7 @@ export const fallbackProducts: Product[] = [
     builder: [
       {
         id: 1,
-        img: "/assets/img/product-details/pink-who/1.png",
+        img: "/assets/img/product-details/pink-who/1.webp",
         title: "If you’re tired of dark spots, tanning, or uneven skin tone",
         desc: "Glow Essence targets pigmentation from the root, giving visibly brighter, even-toned skin. Glutathione, Amla, Licorice, and Vitamin C reduce melanin and fade stubborn pigmentation. This blend helps restore a more luminous complexion without needing harsh creams or peels.",
         bgColor: "#B00404",
@@ -1286,7 +1286,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 2,
-        img: "/assets/img/product-details/pink-who/2.png",
+        img: "/assets/img/product-details/pink-who/2.webp",
         title: "If your skin looks dull and lacks glow",
         desc: "For those who feel their skin looks tired or lifeless — this restores that fresh, healthy glow. Guava Leaf, Lemon Powder, and Niacinamide work together to increase natural radiance.They boost cellular energy and circulation, helping your skin glow from within. ",
         bgColor: "#B00404",
@@ -1295,7 +1295,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 3,
-        img: "/assets/img/product-details/pink-who/3.png",
+        img: "/assets/img/product-details/pink-who/3.webp",
         title: "If you struggle with acne, redness, or breakouts",
         desc: "This is for people facing active acne, clogged pores, or hormonal skin flare-ups. Neem, Green Tea, Curcuma, and Guava Leaf fight acne-causing bacteria and soothe inflammation. They purify the skin internally, helping prevent future breakouts while calming existing ones. ",
         bgColor: "#B00404",
@@ -1304,7 +1304,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 4,
-        img: "/assets/img/product-details/pink-who/4.png",
+        img: "/assets/img/product-details/pink-who/4.webp",
         title: "If your skin feels dry, flaky, or dehydrated",
         desc: "If your skin lacks moisture and feels tight — this deeply hydrates from within. Hyaluronic Acid, Bamboo Extract, and Inulin replenish hydration at a cellular level. They lock in moisture and restore your skin barrier, making your skin soft and plump. ",
         bgColor: "#B00404",
@@ -1313,7 +1313,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 5,
-        img: "/assets/img/product-details/pink-who/5.png",
+        img: "/assets/img/product-details/pink-who/5.webp",
         title: "If your gut health is affecting your skin",
         desc: "For those dealing with hormonal acne, inflammation, or poor digestion-linked skin issues. Inulin, Ashwagandha, and Lemon Powder restore gut balance and reduce internal stressors. This improves nutrient absorption and skin clarity through the gut-skin axis. ",
         bgColor: "#B00404",
@@ -1322,7 +1322,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 6,
-        img: "/assets/img/product-details/pink-who/6.png",
+        img: "/assets/img/product-details/pink-who/6.webp",
         title: "If you want real results without relying on creams or filters",
         desc: "For those who want long-term visible improvement instead of temporary coverups. This is a daily drink that works from within — targeting the root of your skin concerns.It gives you healthier, more radiant skin naturally — without the need for makeup filters. ",
         bgColor: "#B00404",
@@ -1331,7 +1331,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 7,
-        img: "/assets/img/product-details/pink-who/7.png",
+        img: "/assets/img/product-details/pink-who/7.webp",
         title: "If stress or lifestyle is ruining your skin",
         desc: "Designed for modern lifestyles — work stress, lack of sleep, or hormonal imbalances. Adaptogens like Ashwagandha and Curcuma reduce cortisol and fight internal inflammation.They calm skin stress, reduce flare-ups, and support hormonal balance.",
         bgColor: "#B00404",
@@ -1340,7 +1340,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 8,
-        img: "/assets/img/product-details/pink-who/8.png",
+        img: "/assets/img/product-details/pink-who/8.webp",
         title:
           "If you want better nutrient absorption for faster skin transformation",
         desc: "Because even the best actives won’t work if your body can’t absorb them well. Piper Nigrum (Black Pepper Extract) enhances bioavailability of key nutrients. This ensures faster, more visible results — maximizing every ingredient’s power.",
@@ -1381,7 +1381,7 @@ export const fallbackProducts: Product[] = [
         label: "Chronic Inflammation",
         description:
           "Internal inflammation from stress or lifestyle triggers acne, redness, and uneven skin tone. Ingredients like Aloe Vera, Green Tea , and Ashwagandha in your formula help calm inflammation from within. ",
-        img: "/assets/img/product-details/chronic-inflammation.png",
+        img: "/assets/img/product-details/chronic-inflammation.webp",
         stats: [
           {
             value: "Up to 35%",
@@ -1406,7 +1406,7 @@ export const fallbackProducts: Product[] = [
         label: "Dehydrated Skin",
         description:
           "When skin lacks moisture, it looks rough, tired, and flaky. Glow Essence contains Hyaluronic Acid and Aloe Vera that hydrate the skin from deep inside.",
-        img: "/assets/img/product-details/dehydrated-skin.png",
+        img: "/assets/img/product-details/dehydrated-skin.webp",
         stats: [
           {
             value: "29%",
@@ -1431,7 +1431,7 @@ export const fallbackProducts: Product[] = [
         label: "Weak Skin Barrier",
         description:
           "A damaged barrier lets in toxins and bacteria, leading to breakouts and sensitivity. Zinc, Biotin, and Vitamin E in your blend help strengthen the skin’s natural protective layer.",
-        img: "/assets/img/product-details/weak-skin-barrier.png",
+        img: "/assets/img/product-details/weak-skin-barrier.webp",
         stats: [
           {
             value: "",
@@ -1701,7 +1701,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 5,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/plant.webp",
         title: "Liquorice Extract",
         description:
           "Naturally brightens skin, reduces dark spots, and calms inflammation.",
@@ -1761,7 +1761,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 10,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/plant.webp",
         title: "Curcuma Longa (Turmeric)",
         description:
           "Fights inflammation and pigmentation, helping brighten and even out skin tone.",
@@ -1773,7 +1773,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 11,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/plant.webp",
         title: "Piper Nigrum (Black Pepper)",
         description:
           "Enhances the bioavailability of nutrients for better absorption and effectiveness.",
@@ -1785,7 +1785,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 12,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/plant.webp",
         title: "Steviol Glycosides",
         description:
           "A natural plant-based sweetener with zero calories and no blood sugar spikes.",
@@ -1846,7 +1846,7 @@ export const fallbackProducts: Product[] = [
       },
       {
         id: 17,
-        img: "/assets/img/product-details/plant.png",
+        img: "/assets/img/product-details/plant.webp",
         title: "Vitamin B3 (Niacinamide)",
         description:
           "Improves skin texture, reduces enlarged pores, and enhances skin brightness.",

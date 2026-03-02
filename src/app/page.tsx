@@ -57,7 +57,7 @@ const page = () => {
       <section className="relative">
         <div className="absolute inset-0">
           <Image
-            src="/assets/img/choose-bg.png"
+            src="/assets/img/choose-bg.webp"
             alt="Decorative background"
             fill
             priority

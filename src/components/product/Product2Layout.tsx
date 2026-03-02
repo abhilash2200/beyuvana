@@ -191,7 +191,7 @@ export default function Product2Layout({ product }: { product: Product }) {
                 <div className="w-full md:w-[50%] hidden md:block">
                   <div className="absolute bottom-0.5 right-0">
                     <Image
-                      src="/assets/img/product-details/action-pink.png"
+                      src="/assets/img/product-details/action-pink.webp"
                       alt="action"
                       width={448}
                       height={368}

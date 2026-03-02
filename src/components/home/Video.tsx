@@ -18,7 +18,7 @@ const Video = () => {
             muted
             playsInline
             className="md:w-full md:h-full w-full h-[250px] object-cover"
-            poster="/assets/img/fallback-banner.png"
+            poster="/assets/img/fallback-banner.webp"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/100 via-black/40 to-transparent hidden md:block"></div>
           <div className="absolute bottom-6 left-6 max-w-md hidden md:block">

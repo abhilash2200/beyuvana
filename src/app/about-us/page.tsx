@@ -63,7 +63,7 @@ const page = () => {
             </div>
             <div className="w-full md:w-[33%] order-1 md:order-2 md:mb-0 mb-6">
               <Image
-                src="/assets/img/about-logo.png"
+                src="/assets/img/about-logo.webp"
                 width={537}
                 height={537}
                 alt="BEYUVANA"
@@ -211,7 +211,7 @@ const page = () => {
             <div className="w-full md:w-[45%]">
               <div className="flex flex-col gap-y-3">
                 <Image
-                  src="/assets/img/vision.png"
+                  src="/assets/img/vision.webp"
                   width={463}
                   height={406}
                   alt="vision"

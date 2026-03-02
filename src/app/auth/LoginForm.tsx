@@ -87,7 +87,7 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
     <div className="flex flex-col md:flex-row overflow-hidden">
       <div className="w-full md:w-1/2 hidden md:block">
         <Image
-          src="/assets/img/login-img.png"
+          src="/assets/img/login-img.webp"
           width={491}
           height={780}
           alt="Login Illustration"

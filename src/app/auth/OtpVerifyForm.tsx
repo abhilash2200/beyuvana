@@ -325,7 +325,7 @@ export default function OtpVerifyForm({
     <div className="flex flex-col md:flex-row overflow-hidden">
       <div className="w-full md:w-1/2 hidden md:block">
         <Image
-          src="/assets/img/otp-img.png"
+          src="/assets/img/otp-img.webp"
           width={491}
           height={780}
           alt="OTP Illustration"
