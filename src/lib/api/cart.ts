@@ -109,15 +109,47 @@ export const cartApi = {
     }
   },
 
-  decreaseQuantity: async (
+  /** Remove one unit (e.g. decrease quantity). Use full payload when removing a line item. */
+  removeOne: async (
     productId: string,
     sessionKey?: string,
+    userId?: string | number,
+    cartId?: string,
   ): Promise<ApiResponse<CartItem[]>> => {
     try {
+      const payload: Record<string, number | undefined> = {
+        product_id: Number(productId),
+        user_id: userId != null ? Number(userId) : undefined,
+        cart_id: cartId != null ? Number(cartId) : undefined,
+      };
       return await apiFetch<CartItem[]>("/cart/removeone/v1/", {
         method: "POST",
         headers: buildAuthHeaders(sessionKey),
-        body: JSON.stringify({ product_id: productId }),
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      throw new Error(
+        "Failed to remove one from cart. Please try again later.",
+      );
+    }
+  },
+
+  decreaseQuantity: async (
+    productId: string,
+    sessionKey?: string,
+    userId?: string | number,
+    cartId?: string,
+  ): Promise<ApiResponse<CartItem[]>> => {
+    try {
+      const payload: Record<string, number | undefined> = {
+        product_id: Number(productId),
+        user_id: userId != null ? Number(userId) : undefined,
+        cart_id: cartId != null ? Number(cartId) : undefined,
+      };
+      return await apiFetch<CartItem[]>("/cart/removeone/v1/", {
+        method: "POST",
+        headers: buildAuthHeaders(sessionKey),
+        body: JSON.stringify(payload),
       });
     } catch {
       throw new Error("Failed to decrease quantity. Please try again later.");

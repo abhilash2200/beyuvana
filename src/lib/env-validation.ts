@@ -73,7 +73,7 @@ const ENV_VAR_CONFIGS: EnvVarConfig[] = [
   {
     name: "NEXT_PUBLIC_PROXY_URL",
     required: false,
-    defaultValue: "/api/proxy",
+    defaultValue: "/proxy",
     description:
       "Proxy URL for API requests (used when API_BASE_URL is not set)",
     validator: (value) => {

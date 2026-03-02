@@ -10,6 +10,7 @@ import { CART_CONFIG } from "@/lib/constants";
 import type { LocalCartItem } from "./types";
 import { logger } from "@/lib/logger";
 import { handleError } from "@/lib/error-handling";
+import { mapServerCartToLocal } from "./useCartSync";
 
 interface UseCartOperationsParams {
   cartItems: LocalCartItem[];
@@ -254,8 +255,9 @@ export function useCartOperations({
         }
 
         try {
+          let response;
           if (item.quantity <= 1) {
-            await cartApi.removeFromCart(
+            response = await cartApi.removeFromCart(
               item.product_id!,
               sessionKey,
               user.id,
@@ -263,11 +265,20 @@ export function useCartOperations({
             );
             toast.success(`${item.name} removed from cart!`);
           } else {
-            await cartApi.decreaseQuantity(item.product_id!, sessionKey);
+            response = await cartApi.decreaseQuantity(
+              item.product_id!,
+              sessionKey,
+              user.id,
+              item.cart_id,
+            );
           }
 
           if (!abortController.signal.aborted) {
-            await syncWithServer();
+            if (response?.data != null && Array.isArray(response.data)) {
+              setCartItems(mapServerCartToLocal(response.data));
+            } else {
+              await syncWithServer();
+            }
           }
         } catch (error) {
           if (abortController.signal.aborted) {
@@ -408,24 +419,45 @@ export function useCartOperations({
       const item = cartItems.find((i) => i.id === id);
       if (!item || !user || !sessionKey || !item.product_id) return;
 
+      savePreviousState();
+
+      setCartItems((prev) => prev.filter((i) => i.id !== id));
+
       setLoading(true);
       try {
-        await cartApi.removeFromCart(
+        const response = await cartApi.removeFromCart(
           item.product_id,
           sessionKey,
           user.id,
           item.cart_id,
         );
+
+        if (response?.data != null && Array.isArray(response.data)) {
+          const nextItems = mapServerCartToLocal(response.data);
+          setCartItems(nextItems);
+        } else {
+          await syncWithServer();
+        }
+
         toast.success(`${item.name} removed from cart!`);
-        await syncWithServer();
       } catch (error) {
         logger.error("Failed to remove from cart", error, "useCartOperations");
+        rollbackState();
         toast.error("Failed to remove item. Please try again.");
       } finally {
         setLoading(false);
       }
     },
-    [cartItems, user, sessionKey, setLoading, syncWithServer],
+    [
+      cartItems,
+      user,
+      sessionKey,
+      setCartItems,
+      setLoading,
+      syncWithServer,
+      savePreviousState,
+      rollbackState,
+    ],
   );
 
   const clearCart = useCallback(async () => {

@@ -116,6 +116,12 @@ const nextConfig = {
     // Remove trailing slash if present to avoid double slashes
     const baseUrl = apiBaseUrl.replace(/\/$/, "");
     return [
+      // Send /api/proxy to our Next.js proxy route (avoids 404 when client still uses /api/proxy).
+      {
+        source: "/api/proxy",
+        destination: "/proxy",
+      },
+      // Rewrite all other /api/* to backend.
       {
         source: "/api/:path*",
         destination: `${baseUrl}/:path*`,

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 /**
- * Next.js Middleware
+ * Next.js Proxy (formerly middleware)
  * Adds essential security headers for frontend protection
  */
-export function middleware() {
+export function proxy() {
   const response = NextResponse.next();
 
   // Essential security headers (lightweight, no performance impact)

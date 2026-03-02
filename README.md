@@ -43,7 +43,7 @@ See **[ENV_SETUP_GUIDE.md](./ENV_SETUP_GUIDE.md)** for detailed instructions.
 **Available Environment Variables:**
 
 - `NEXT_PUBLIC_API_BASE_URL` - Base URL for the API backend (default: `https://beyuvana.com/api`)
-- `NEXT_PUBLIC_PROXY_URL` - Proxy URL for API requests (default: `/api/proxy`)
+- `NEXT_PUBLIC_PROXY_URL` - Proxy URL for API requests (default: `/proxy`)
 - `NEXT_PUBLIC_SITE_URL` - Base URL of the website (default: `http://localhost:3000`)
 - `NEXT_PUBLIC_PREPAID_PROMO_CODE` - Promo code for prepaid orders (default: `TEST150`)
 - `NEXT_PUBLIC_AUTO_APPLY_PROMO` - Auto-apply promo code (default: `true`)

@@ -23,7 +23,7 @@ export const PHONE_CONFIG = {
 export const ENV_CONFIG = {
   API_BASE_URL:
     process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api",
-  PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL || "/api/proxy",
+  PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL || "/proxy",
   SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
 
   NODE_ENV: process.env.NODE_ENV || "development",

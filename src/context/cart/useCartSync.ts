@@ -7,6 +7,66 @@ import { useCallback } from "react";
 import { cartApi } from "@/lib/api/cart";
 import type { ServerCartItem, LocalCartItem } from "./types";
 
+/**
+ * Maps server cart response to local cart items. Shared so mutation responses
+ * (e.g. remove/update) can update state without a separate refetch (avoids race/stale data).
+ */
+export function mapServerCartToLocal(
+  data: unknown[],
+): LocalCartItem[] {
+  if (!Array.isArray(data) || data.length === 0) {
+    return [];
+  }
+  const mapped = (data as ServerCartItem[])
+    .map((item) => {
+      const mappedItem: LocalCartItem = {
+        id:
+          item.cart_id ||
+          item.id ||
+          `${item.product_id}-${item.qty || 1}`,
+        name:
+          item.price_unit_name ||
+          item.name ||
+          item.product_name ||
+          "Unknown Product",
+        price: Math.round(
+          parseFloat(
+            String(item.final_price || item.sale_price || 0),
+          ) || 0,
+        ),
+        quantity:
+          typeof item.qty === "number"
+            ? item.qty
+            : parseInt(String(item.qty || 1)) || 1,
+        image: item.image || item.product_image || "/placeholder.png",
+        product_id: item.product_id || item.id,
+        cart_id: item.cart_id,
+        mrp_price: Math.round(parseFloat(String(item.mrp || 0)) || 0),
+        discount_percent:
+          item.discount_off_inpercent || item.discount_percent,
+        short_description:
+          item.short_description || item.product_description,
+        product_description: item.product_description,
+        in_stock: item.in_stock,
+        pack_qty:
+          item.pack_qty || parseFloat(String(item.unit_qty || 1)) || 1,
+        unit_name: item.unit_name || "Pack of",
+        product_price_id: item.product_price_id,
+      };
+      return mappedItem;
+    })
+    .filter((item: LocalCartItem) => {
+      return (
+        item &&
+        item.id &&
+        item.name &&
+        typeof item.quantity === "number" &&
+        item.quantity > 0
+      );
+    });
+  return mapped;
+}
+
 interface UseCartSyncParams {
   user: { id: string } | null;
   sessionKey: string | null;
@@ -42,64 +102,13 @@ export function useCartSync({
 
       if (Array.isArray(response.data)) {
         if (response.data.length > 0) {
-          const serverCartItems: LocalCartItem[] = response.data
-            .map((item: ServerCartItem) => {
-              const mappedItem: LocalCartItem = {
-                id:
-                  item.cart_id ||
-                  item.id ||
-                  `${item.product_id}-${item.qty || 1}`,
-                name:
-                  item.price_unit_name ||
-                  item.name ||
-                  item.product_name ||
-                  "Unknown Product",
-                price: Math.round(
-                  parseFloat(
-                    String(item.final_price || item.sale_price || 0),
-                  ) || 0,
-                ),
-                quantity:
-                  typeof item.qty === "number"
-                    ? item.qty
-                    : parseInt(String(item.qty || 1)) || 1,
-                image: item.image || item.product_image || "/placeholder.png",
-                product_id: item.product_id || item.id,
-                cart_id: item.cart_id,
-                mrp_price: Math.round(parseFloat(String(item.mrp || 0)) || 0),
-                discount_percent:
-                  item.discount_off_inpercent || item.discount_percent,
-                short_description:
-                  item.short_description || item.product_description,
-                product_description: item.product_description,
-                in_stock: item.in_stock,
-                pack_qty:
-                  item.pack_qty || parseFloat(String(item.unit_qty || 1)) || 1,
-                unit_name: item.unit_name || "Pack of",
-                product_price_id: item.product_price_id,
-              };
-
-              return mappedItem;
-            })
-            .filter((item: LocalCartItem) => {
-              const isValid =
-                item &&
-                item.id &&
-                item.name &&
-                typeof item.quantity === "number" &&
-                item.quantity > 0;
-
-              return isValid;
-            });
-
+          const serverCartItems = mapServerCartToLocal(response.data);
           if (serverCartItems.length > 0) {
             setCartItems(serverCartItems);
           } else {
-            // Server returned items but they were filtered out - set empty cart
             setCartItems([]);
           }
         } else {
-          // Server returned empty array - clear the cart
           setCartItems([]);
         }
       }
