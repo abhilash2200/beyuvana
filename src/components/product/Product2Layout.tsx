@@ -137,7 +137,7 @@ export default function Product2Layout({ product }: { product: Product }) {
           <div className="flex flex-wrap justify-between items-center text-center gap-y-10">
             {data.map((item, i) => (
               <div key={i} className="w-[45%] md:w-[28%] relative">
-                <div className="flex flex-wrap items-center justify-center gap-x-4">
+                <div className="flex flex-col items-center justify-center gap-y-4">
                   <Image
                     src={item.img}
                     alt="certificate"
@@ -146,7 +146,7 @@ export default function Product2Layout({ product }: { product: Product }) {
                     loading={i > 2 ? "lazy" : "eager"}
                   />
                   <p
-                    className="text-sm text-gray-900 text-left max-w-[80%]"
+                    className="text-sm text-gray-900 text-center max-w-[80%]"
                     dangerouslySetInnerHTML={{
                       __html: sanitizeHTML(item.text),
                     }}

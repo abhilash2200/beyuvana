@@ -86,7 +86,7 @@ const DetailsOfRedCollagen = ({ product }: { product?: Product }) => {
               balance.
             </p>
             <Image
-              src="/assets/img/product-details/pink-1.webp"
+              src="/assets/img/product-details/Artboard_1.webp"
               width={772}
               height={500}
               alt="detail info"
