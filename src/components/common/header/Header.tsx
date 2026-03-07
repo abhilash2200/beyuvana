@@ -106,6 +106,10 @@ const Header = () => {
                         <LoginForm
                           onClose={() => setIsLoginOpen(false)}
                           onOtpSent={handleLoginOtpSent}
+                          onSwitchToRegister={() => {
+                            setIsLoginOpen(false);
+                            setIsRegisterOpen(true);
+                          }}
                         />
                       )}
                     </DialogContent>
@@ -149,6 +153,10 @@ const Header = () => {
                         <RegisterForm
                           onClose={() => setIsRegisterOpen(false)}
                           onOtpSent={handleRegisterOtpSent}
+                          onSwitchToLogin={() => {
+                            setIsRegisterOpen(false);
+                            setIsLoginOpen(true);
+                          }}
                         />
                       )}
                     </DialogContent>

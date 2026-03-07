@@ -20,9 +20,13 @@ interface RegisterFormProps {
     phone: string,
     userData: { name: string; email: string; phone: string },
   ) => void;
+  onSwitchToLogin?: () => void;
 }
 
-export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
+export default function RegisterForm({
+  onOtpSent,
+  onSwitchToLogin,
+}: RegisterFormProps) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [error, setError] = useState("");
@@ -204,6 +208,17 @@ export default function RegisterForm({ onOtpSent }: RegisterFormProps) {
             {loading ? "Registering..." : "Register"}
           </Button>
         </form>
+
+        <p className="text-[14px] mt-4 text-gray-500">
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="text-[#057A37] underline hover:no-underline focus:outline-none font-medium"
+          >
+            Login
+          </button>
+        </p>
       </div>
     </div>
   );

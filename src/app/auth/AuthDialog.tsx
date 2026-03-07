@@ -132,10 +132,17 @@ export default function AuthDialog() {
               </TabsList>
 
               <TabsContent value="login">
-                <LoginForm onOtpSent={handleOtpSent} />
+                <LoginForm
+                  onOtpSent={handleOtpSent}
+                  onSwitchToRegister={() => setStep("register")}
+                />
               </TabsContent>
               <TabsContent value="register">
-                <RegisterForm key="register-form" onOtpSent={handleOtpSent} />
+                <RegisterForm
+                  key="register-form"
+                  onOtpSent={handleOtpSent}
+                  onSwitchToLogin={() => setStep("login")}
+                />
               </TabsContent>
             </Tabs>
           )}

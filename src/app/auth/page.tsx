@@ -119,10 +119,16 @@ export default function AuthPage() {
                 <TabsTrigger value="register">Register</TabsTrigger>
               </TabsList>
               <TabsContent value="login" className="mt-0">
-                <LoginForm onOtpSent={handleLoginOtpSent} />
+                <LoginForm
+                onOtpSent={handleLoginOtpSent}
+                onSwitchToRegister={() => setStep("register")}
+              />
               </TabsContent>
               <TabsContent value="register" className="mt-0">
-                <RegisterForm onOtpSent={handleRegisterOtpSent} />
+                <RegisterForm
+                onOtpSent={handleRegisterOtpSent}
+                onSwitchToLogin={() => setStep("login")}
+              />
               </TabsContent>
             </Tabs>
           </>

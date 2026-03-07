@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "react-toastify";
 import Image from "next/image";
 import { authApi } from "@/lib/api/auth";
 import { validatePhone } from "@/lib/validation";
@@ -13,9 +12,13 @@ import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 interface LoginFormProps {
   onClose?: () => void;
   onOtpSent?: (phone: string) => void;
+  onSwitchToRegister?: () => void;
 }
 
-export default function LoginForm({ onOtpSent }: LoginFormProps) {
+export default function LoginForm({
+  onOtpSent,
+  onSwitchToRegister,
+}: LoginFormProps) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ phone: "" });
   const [error, setError] = useState("");
@@ -43,12 +46,10 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
       }
 
       onOtpSent?.(cleanPhone);
-
-      toast.success("OTP sent to your phone number. Please verify to login.");
     } catch (err: unknown) {
       const appError = handleError(err, {
         context: "LoginForm",
-        userMessage: "Failed to send OTP. Please try again later.",
+        userMessage: "Please register before login.",
       });
       let errorMessage =
         appError.userMessage || "Failed to send OTP. Please try again later.";
@@ -77,7 +78,6 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
       }
 
       setError(errorMessage);
-      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -147,6 +147,18 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
             {loading ? "Sending OTP..." : "Send OTP"}
           </Button>
         </form>
+
+
+        <p className="text-[14px] mt-4 text-gray-500">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            onClick={onSwitchToRegister}
+            className="text-[#057A37] underline hover:no-underline focus:outline-none font-medium"
+          >
+            Register
+          </button>
+        </p>
       </div>
     </div>
   );

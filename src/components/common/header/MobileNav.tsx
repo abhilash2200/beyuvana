@@ -132,6 +132,10 @@ const MobileNav = () => {
                         <LoginForm
                           onClose={() => setIsLoginOpen(false)}
                           onOtpSent={handleLoginOtpSent}
+                          onSwitchToRegister={() => {
+                            setIsLoginOpen(false);
+                            setIsRegisterOpen(true);
+                          }}
                         />
                       )}
                     </DialogContent>
@@ -185,6 +189,10 @@ const MobileNav = () => {
                         <RegisterForm
                           onClose={() => setIsRegisterOpen(false)}
                           onOtpSent={handleRegisterOtpSent}
+                          onSwitchToLogin={() => {
+                            setIsRegisterOpen(false);
+                            setIsLoginOpen(true);
+                          }}
                         />
                       )}
                     </DialogContent>
