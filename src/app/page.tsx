@@ -97,16 +97,11 @@ export default function HomePage() {
         </section>
       </LazySection>
 
-      <LazySection
-        rootMargin="200px"
-        skeleton={<SectionSkeleton height={280} />}
-      >
         <section className="py-10 bg-[#A9B528]">
           <div className="container mx-auto px-4">
             <Toxins />
           </div>
         </section>
-      </LazySection>
 
       <LazySection
         rootMargin="200px"

@@ -144,8 +144,17 @@
   border-radius: 8px;
 }
 
-.sheet-scroll::-webkit-scrollbar-thumb:hover {
+ .sheet-scroll::-webkit-scrollbar-thumb:hover {
   background-color: #2f4f2f;
+}
+
+/* Hide scrollbar for toxins slider while keeping scroll functionality */
+.toxins-slider {
+  scrollbar-width: none; /* Firefox */
+}
+
+.toxins-slider::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 .why_pagination {
