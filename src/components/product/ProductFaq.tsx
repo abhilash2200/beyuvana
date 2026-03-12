@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { fallbackProducts } from "@/app/data/fallbackProducts";
+import type { Product } from "@/app/data/productTypes";
 import {
   Accordion,
   AccordionContent,
@@ -11,26 +11,27 @@ import {
 import { cn } from "@/lib/utils";
 
 interface ProductFaqProps {
-  productId: number;
+  product?: Product;
+  productId?: number;
 }
 
-const ProductFaq = ({ productId }: ProductFaqProps) => {
-  const product = fallbackProducts.find((p) => p.id === productId);
-  const faqData = product?.customFaq || [];
-  const colors = {
-    1: {
+const ProductFaq = ({ product: productProp, productId }: ProductFaqProps) => {
+  const faqData = productProp?.customFaq ?? [];
+  const designType = productProp?.design_type ?? "GREEN";
+  const colorsByDesign = {
+    GREEN: {
       bgColor: "#E9F8EE",
       iconColor: "text-green-700",
       borderColor: "border-[#000]",
     },
-    2: {
+    PINK: {
       bgColor: "#FFE7E7",
       iconColor: "text-red-700",
       borderColor: "border-[#000]",
     },
-  };
+  } as const;
 
-  const currentColors = colors[productId as keyof typeof colors] || colors[1];
+  const currentColors = colorsByDesign[designType];
   return (
     <div className="md:w-[80%] w-full mx-auto py-10">
       <Accordion
@@ -43,7 +44,7 @@ const ProductFaq = ({ productId }: ProductFaqProps) => {
           <AccordionItem
             key={faq.id}
             value={faq.id}
-            className="rounded-2xl px-6 py-4 !border-0"
+            className="rounded-2xl px-6 py-4 border-0!"
             style={{ backgroundColor: currentColors.bgColor }}
           >
             <AccordionTrigger

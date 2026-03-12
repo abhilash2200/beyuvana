@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import "react-toastify/dist/ReactToastify.css";
 
-// Dynamically import ToastContainer to reduce initial bundle size
 const ToastContainer = dynamic(
   () => import("react-toastify").then((mod) => mod.ToastContainer),
   {

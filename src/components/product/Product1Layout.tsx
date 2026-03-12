@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Product } from "@/app/data/fallbackProducts";
+import type { Product } from "@/app/data/productTypes";
 import ProductImg from "./ProductImg";
 import { productDesignSlugs } from "@/app/data/productConfigs";
 import { slugify } from "@/lib/utils";
@@ -14,6 +14,8 @@ import ResSelectPack from "./ResponsiveV/ResSelectPack";
 import { backendProductIdMap } from "@/app/data/productConfigs";
 import { sanitizeHTML } from "@/lib/security";
 import Toxins from "../home/Toxins";
+import { LazySection } from "../common/LazySection";
+import { SectionSkeleton } from "../home/SectionSkeleton";
 
 // Lazy load heavy below-the-fold components
 const InfluencerVideosGreen = lazy(() => import("./InfluencerVideosGreen"));
@@ -28,17 +30,8 @@ const CustomerReviews = lazy(() => import("./CustomerReviews"));
 const ProductFaq = lazy(() => import("./ProductFaq"));
 const CompareProduct = lazy(() => import("./CompareProduct"));
 
-// Loading skeleton for sections
-const SectionLoader = () => (
-    <div className="animate-pulse space-y-4 py-6">
-        <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto"></div>
-        <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-            <div className="h-64 bg-gray-200 rounded"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
-        </div>
-    </div>
-);
+// Loading skeleton for sections (reuses shared SectionSkeleton)
+const SectionLoader = () => <SectionSkeleton height={420} />;
 
 const data = [
     {
@@ -185,13 +178,21 @@ export default function Product1Layout({ product }: { product: Product }) {
             </div>
 
             <div className="container mx-auto px-4">
-
-                <Suspense fallback={<SectionLoader />}>
-                    <div className="md:py-10 py-6">
-                        <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
-                        <InfluencerVideosGreen />
-                    </div>
-                </Suspense>
+                <LazySection
+                    rootMargin="200px"
+                    skeleton={<SectionSkeleton height={420} />}
+                >
+                    <Suspense fallback={<SectionLoader />}>
+                        <div className="md:py-10 py-6">
+                            <HeaderText
+                                textalign="text-center"
+                                heading="Our Influencer Videos"
+                                textcolor="text-[#1A2819]"
+                            />
+                            <InfluencerVideosGreen />
+                        </div>
+                    </Suspense>
+                </LazySection>
                 <div className="md:py-10 py-6 bg-[#F8FFF9] rounded-[20px]">
                     <div className="flex flex-col">
                         <div className="relative px-4">
@@ -456,7 +457,7 @@ export default function Product1Layout({ product }: { product: Product }) {
                             heading="Frequently Asked Questions"
                             textcolor="text-[#1A2819]"
                         />
-                        <ProductFaq productId={1} />
+                        <ProductFaq product={product} />
                     </div>
                 </div>
             </Suspense>

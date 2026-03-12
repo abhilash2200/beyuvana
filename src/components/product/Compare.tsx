@@ -3,24 +3,14 @@
 import Image from "next/image";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
-import { useParams } from "next/navigation";
-import {
-  Product,
-  fallbackProducts,
-  Compare as CompareItem,
-} from "@/app/data/fallbackProducts";
+import type { Product, Compare as CompareItem } from "@/app/data/productTypes";
 
 interface CompareProps {
-  product?: Product;
+  product: Product;
 }
 
 const Compare = ({ product }: CompareProps) => {
-  const params = useParams();
-  const routeId = typeof params?.id === "string" ? params.id : undefined;
-  const resolvedProduct: Product | undefined = product
-    ? product
-    : fallbackProducts.find((p) => p.id.toString() === routeId);
-  const slides: CompareItem[] = resolvedProduct?.compare || [];
+  const slides: CompareItem[] = product?.compare ?? [];
 
   const containerBg = slides[0]?.bgColor || "#122014";
   const containerHeading = slides[0]?.headingColor || "#FFFFFF";

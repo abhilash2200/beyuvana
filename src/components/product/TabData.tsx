@@ -3,27 +3,17 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Image from "next/image";
 import { CiCircleCheck } from "react-icons/ci";
-import {
-  fallbackProducts,
-  TabItem,
-  Product,
-} from "@/app/data/fallbackProducts";
+import type { TabItem, Product } from "@/app/data/productTypes";
 import { useState } from "react";
 
 interface TabDataProps {
-  productId?: number;
-  product?: Product; // Accept product object directly
+  product: Product;
 }
 
-const TabData = ({ productId, product: productProp }: TabDataProps) => {
+const TabData = ({ product }: TabDataProps) => {
   const [active, setActive] = useState<string>("");
 
-  // Use product from props if provided, otherwise find by ID
-  const product =
-    productProp ||
-    (productId ? fallbackProducts.find((p) => p.id === productId) : null);
-
-  if (!product || !product.tabItems || product.tabItems.length === 0) {
+  if (!product?.tabItems?.length) {
     return null; // Return null instead of error message for cleaner UI
   }
 

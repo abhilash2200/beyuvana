@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { FaRegCheckCircle, FaRegTimesCircle } from "react-icons/fa";
-import { fallbackProducts, type Product } from "@/app/data/fallbackProducts";
+import type { Product } from "@/app/data/productTypes";
 
 interface CompareProductProps {
   layoutType?: "pink" | "green";
-  product?: Product;
+  product: Product;
 }
 
 const CompareProduct = ({
@@ -14,20 +14,7 @@ const CompareProduct = ({
   product,
 }: CompareProductProps) => {
   const bgColor = layoutType === "pink" ? "#FFF6F6" : "#EBFCEE";
-
-  // Get product from prop or fetch from fallbackProducts based on layoutType
-  let resolvedProduct: Product | undefined = product;
-
-  if (!resolvedProduct) {
-    // Map layoutType to design_type
-    const designType = layoutType === "pink" ? "PINK" : "GREEN";
-    resolvedProduct = fallbackProducts.find(
-      (p) => p.design_type === designType,
-    );
-  }
-
-  // Get compare product data from resolved product
-  const compareData = resolvedProduct?.compareProduct;
+  const compareData = product?.compareProduct;
 
   // If no compare data is available, don't render the component
   if (!compareData) {

@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
-import { fallbackProducts } from "../../data/fallbackProducts";
 import { designSlugToProductId } from "../../data/productConfigs";
-import { slugify } from "@/lib/utils";
 
 /**
- * Generate metadata for product pages
+ * Generate metadata for product pages. Loads fallback product data only when
+ * needed (dynamic import) to avoid pulling the full dataset into the initial bundle.
  */
-export function generateProductMetadata(designType: string): Metadata {
+export async function generateProductMetadata(designType: string): Promise<Metadata> {
   const slug = String(designType || "");
-  const mappedProductId = designSlugToProductId[slug];
-  const product = mappedProductId
-    ? fallbackProducts.find((p) => p.id === mappedProductId)
-    : fallbackProducts.find((p) => slugify(p.name) === slug);
+  const productId = designSlugToProductId[slug];
+
+  if (productId == null) {
+    return {
+      title: "Product | BEYUVANA™",
+      description: "Explore BEYUVANA™ plant-powered skin nutrition.",
+    };
+  }
+
+  const { fallbackProducts } = await import("../../data/fallbackProducts");
+  const product = fallbackProducts.find((p) => p.id === productId);
 
   if (!product) {
     return {
@@ -23,12 +29,9 @@ export function generateProductMetadata(designType: string): Metadata {
   const productName = product.name;
   const description =
     product.tagline ||
-    (product.description && product.description[0]) ||
+    (product.description?.[0]) ||
     `${productName} - Premium plant-based wellness supplement from BEYUVANA™`;
-  const image =
-    product.images && product.images[0]
-      ? product.images[0]
-      : "/assets/img/logo.png";
+  const image = product.images?.[0] ?? "/assets/img/logo.png";
 
   return {
     title: `${productName} | BEYUVANA™`,
@@ -41,19 +44,14 @@ export function generateProductMetadata(designType: string): Metadata {
       "skin wellness",
       "collagen builder",
       "natural supplements",
-      product.design_type?.toLowerCase() || "",
+      product.design_type?.toLowerCase() ?? "",
     ].filter(Boolean),
     openGraph: {
       title: `${productName} | BEYUVANA™`,
       description,
       type: "website",
       images: [
-        {
-          url: image,
-          width: 600,
-          height: 600,
-          alt: `${productName} product image`,
-        },
+        { url: image, width: 600, height: 600, alt: `${productName} product image` },
       ],
     },
     twitter: {

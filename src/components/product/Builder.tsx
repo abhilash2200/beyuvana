@@ -3,7 +3,7 @@
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import Image from "next/image";
-import { Product } from "@/app/data/fallbackProducts";
+import type { Product } from "@/app/data/productTypes";
 
 const Builder = ({ product }: { product: Product }) => {
   const slides = product?.builder || [];

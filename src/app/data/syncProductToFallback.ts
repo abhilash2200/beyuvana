@@ -4,7 +4,7 @@
  */
 
 import type { ProductDetailsResponse } from "@/lib/api/types";
-import type { Product } from "./fallbackProducts";
+import type { Product } from "./productTypes";
 
 /**
  * Converts ProductDetailsResponse from API to a Product object that can be added to fallbackProducts

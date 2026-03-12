@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { LazyVideo } from "@/components/common/LazyVideo";
 
 interface ContentItem {
   title: string;
@@ -108,12 +109,15 @@ const Choose: React.FC = () => {
         ))}
 
         <div className="relative w-[350px] md:w-[450px] h-[300px] md:h-[400px] overflow-hidden rounded-[30px] shadow-lg">
-          <video
-            src="/assets/videos/Sqaure-video.mov"
+          <LazyVideo
+            src="/assets/videos/Sqaure-video.mp4"
+            width={450}
+            height={400}
             autoPlay
             loop
             muted
             playsInline
+            preload="metadata"
             className="w-full h-full object-cover"
             poster="/assets/img/about-logo.webp"
           />

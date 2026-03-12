@@ -2,7 +2,7 @@
 
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
-import type { Product } from "@/app/data/fallbackProducts";
+import type { Product } from "@/app/data/productTypes";
 import { useState } from "react";
 
 const Action = ({ product }: { product: Product }) => {

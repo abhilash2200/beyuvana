@@ -5,36 +5,25 @@ import Image from "next/image";
 import { CiCircleCheck } from "react-icons/ci";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
-import {
-  fallbackProducts,
-  TabItem,
-  Product,
-} from "@/app/data/fallbackProducts";
+import type { TabItem, Product } from "@/app/data/productTypes";
 
 interface ResDropdownProps {
-  productId?: number;
-  product?: Product; // Accept product object directly
+  product: Product;
 }
 
-const ResDropdown = ({ productId, product: productProp }: ResDropdownProps) => {
+const ResDropdown = ({ product }: ResDropdownProps) => {
   const [active, setActive] = useState<string>("");
   const splideRef = useRef<{
     splide: { go: (index: number) => void; index: number };
   } | null>(null);
 
-  // Use product from props if provided, otherwise find by ID
-  const product =
-    productProp ||
-    (productId ? fallbackProducts.find((p) => p.id === productId) : null);
-
-  // Initialize active state with first item
   useEffect(() => {
-    if (product?.tabItems && product.tabItems.length > 0 && !active) {
+    if (product?.tabItems?.length && !active) {
       setActive(product.tabItems[0].id);
     }
   }, [product, active]);
 
-  if (!product || !product.tabItems || product.tabItems.length === 0) {
+  if (!product?.tabItems?.length) {
     return null; // Return null instead of error message for cleaner UI
   }
 

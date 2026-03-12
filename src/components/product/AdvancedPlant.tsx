@@ -3,20 +3,14 @@
 import PlantCard from "./PlantCard";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
-import { useParams } from "next/navigation";
-import { Product, fallbackProducts, Plant } from "@/app/data/fallbackProducts";
+import type { Product, Plant } from "@/app/data/productTypes";
 
 interface AdvancedPlantProps {
-  product?: Product;
+  product: Product;
 }
 
 const AdvancedPlant = ({ product }: AdvancedPlantProps) => {
-  const params = useParams();
-  const routeId = typeof params?.id === "string" ? params.id : undefined;
-  const resolvedProduct: Product | undefined = product
-    ? product
-    : fallbackProducts.find((p) => p.id.toString() === routeId);
-  const plants: Plant[] = resolvedProduct?.plants || [];
+  const plants: Plant[] = product?.plants ?? [];
 
   if (!plants.length) return null;
 

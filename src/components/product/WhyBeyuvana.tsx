@@ -4,15 +4,10 @@ import { useState } from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import Image from "next/image";
-import {
-  WhyItem as WhyItemType,
-  Product,
-  fallbackProducts,
-} from "@/app/data/fallbackProducts";
-import { useParams } from "next/navigation";
+import type { WhyItem as WhyItemType, Product } from "@/app/data/productTypes";
 
 interface WhyBeyuvanaProps {
-  product?: Product;
+  product: Product;
 }
 
 const sliderOptions = {
@@ -49,11 +44,7 @@ function getItemStyles(item: WhyItemType, isHovered: boolean) {
 }
 
 const WhyBeyuvana = ({ product }: WhyBeyuvanaProps) => {
-  const params = useParams();
-  const routeId = typeof params?.id === "string" ? params.id : undefined;
-  const resolvedProduct: Product | undefined =
-    product ?? fallbackProducts.find((p) => p.id.toString() === routeId);
-  const items: WhyItemType[] = resolvedProduct?.whyItems || [];
+  const items: WhyItemType[] = product?.whyItems ?? [];
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   return (

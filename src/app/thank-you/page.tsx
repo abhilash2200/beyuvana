@@ -5,7 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Package, Mail, Home, ShoppingBag } from "lucide-react";
-import Confetti from "react-confetti";
+import dynamic from "next/dynamic";
+
+const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
 
 function ThankYouContent() {
   const router = useRouter();
@@ -42,7 +44,7 @@ function ThankYouContent() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F2F9F3] to-white flex items-center justify-center py-12 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-b from-[#F2F9F3] to-white flex items-center justify-center py-12 px-4 relative overflow-hidden">
       {showConfetti && windowSize.width > 0 && (
         <Confetti
           width={windowSize.width}
@@ -84,7 +86,7 @@ function ThankYouContent() {
 
           <div className="space-y-4 text-left">
             <div className="flex items-start gap-4 p-4 bg-[#F2F9F3] rounded-[10px]">
-              <div className="flex-shrink-0 mt-1">
+              <div className="shrink-0 mt-1">
                 <Mail className="w-5 h-5 text-[#057A37]" />
               </div>
               <div>
@@ -99,7 +101,7 @@ function ThankYouContent() {
             </div>
 
             <div className="flex items-start gap-4 p-4 bg-[#F2F9F3] rounded-[10px]">
-              <div className="flex-shrink-0 mt-1">
+              <div className="shrink-0 mt-1">
                 <Package className="w-5 h-5 text-[#057A37]" />
               </div>
               <div>
@@ -165,7 +167,7 @@ export default function ThankYouPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-b from-[#F2F9F3] to-white flex items-center justify-center py-12 px-4">
+        <div className="min-h-screen bg-linear-to-b from-[#F2F9F3] to-white flex items-center justify-center py-12 px-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#057A37]"></div>
         </div>
       }

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import ImageGalleryDialogWithPdf from "@/components/ui/ImageGalleryDialogWithPdf";
-import { Product } from "@/app/data/fallbackProducts";
+import type { Product } from "@/app/data/productTypes";
 import { mapCertificateImagesToGallery } from "@/lib/productGalleryUtils";
 
 const DetailsOfGreenCollagen = ({ product }: { product?: Product }) => {

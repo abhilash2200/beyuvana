@@ -3,16 +3,19 @@
 import { useParams } from "next/navigation";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { fallbackProducts, Product } from "../../data/fallbackProducts";
-import { designSlugToProductId } from "../../data/productConfigs";
+import type { Product } from "../../data/productTypes";
+import {
+  designSlugToProductId,
+  designSlugToDesignType,
+} from "../../data/productConfigs";
 import { slugify } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { productsApi } from "@/lib/api/products";
-import { useAuth } from "@/context/AuthProvider";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { LazySection } from "@/components/common/LazySection";
+import { SkeletonProductCard } from "@/components/common/SkeletonLoader";
 
-// Optimized dynamic imports with better loading states
 const Product1Layout = dynamic(
   () => import("@/components/product/Product1Layout"),
   { ssr: false },
@@ -23,34 +26,25 @@ const Product2Layout = dynamic(
   { ssr: false },
 );
 
-// Cache for design type detection to avoid repeated API calls
 const designTypeCache = new Map<string, "GREEN" | "PINK" | null>();
 
 /**
- * Optimized: Determines design type from URL slug with caching
- * Returns "GREEN" or "PINK" based on slug or product mapping
+ * Determines design type from URL slug. Uses lightweight config first;
+ * loads fallbackProducts only when necessary (unknown slug or API fallback).
  */
 const getDesignTypeFromSlug = async (
   slug: string,
 ): Promise<"GREEN" | "PINK" | null> => {
-  // Check cache first
   if (designTypeCache.has(slug)) {
     return designTypeCache.get(slug)!;
   }
 
-  // Check if slug maps to a known product ID (fastest path)
-  const mappedProductId = designSlugToProductId[slug];
-  if (mappedProductId) {
-    const fallbackProduct = fallbackProducts.find(
-      (p) => p.id === mappedProductId,
-    );
-    if (fallbackProduct?.design_type) {
-      designTypeCache.set(slug, fallbackProduct.design_type);
-      return fallbackProduct.design_type;
-    }
+  const designType = designSlugToDesignType[slug];
+  if (designType) {
+    designTypeCache.set(slug, designType);
+    return designType;
   }
 
-  // Check if slug contains design type keywords (second fastest)
   const lowerSlug = slug.toLowerCase();
   if (lowerSlug.includes("green") || lowerSlug.includes("collagen-green")) {
     designTypeCache.set(slug, "GREEN");
@@ -65,42 +59,39 @@ const getDesignTypeFromSlug = async (
     return "PINK";
   }
 
-  // Try to find in fallbackProducts by slugified name
-  const fallbackProduct = fallbackProducts.find(
-    (p) => slugify(p.name) === slug,
-  );
-  if (fallbackProduct?.design_type) {
-    designTypeCache.set(slug, fallbackProduct.design_type);
-    return fallbackProduct.design_type;
+  if (
+    lowerSlug.includes("collagen") ||
+    lowerSlug.includes("builder") ||
+    lowerSlug.includes("anti-aging")
+  ) {
+    designTypeCache.set(slug, "GREEN");
+    return "GREEN";
+  }
+  if (lowerSlug.includes("essence") || lowerSlug.includes("radiance")) {
+    designTypeCache.set(slug, "PINK");
+    return "PINK";
   }
 
-  // OPTIMIZED: Only fetch from API as last resort, and fetch less data
   try {
-    // Instead of fetching 200 products, try to infer from common patterns first
-    if (
-      lowerSlug.includes("collagen") ||
-      lowerSlug.includes("builder") ||
-      lowerSlug.includes("anti-aging")
-    ) {
-      designTypeCache.set(slug, "GREEN");
-      return "GREEN";
-    }
-    if (lowerSlug.includes("essence") || lowerSlug.includes("radiance")) {
-      designTypeCache.set(slug, "PINK");
-      return "PINK";
+    const { fallbackProducts } = await import("../../data/fallbackProducts");
+    const fallbackProduct = fallbackProducts.find(
+      (p) => slugify(p.name) === slug,
+    );
+    if (fallbackProduct?.design_type) {
+      designTypeCache.set(slug, fallbackProduct.design_type);
+      return fallbackProduct.design_type;
     }
 
-    // Only if absolutely necessary, fetch from API with smaller limit
     const [greenResponse, pinkResponse] = await Promise.all([
       productsApi.getList({
         filter: { design_type: ["green", "GREEN"] },
         page: 1,
-        limit: 20, // Reduced from 100
+        limit: 20,
       }),
       productsApi.getList({
         filter: { design_type: ["pink", "PINK"] },
         page: 1,
-        limit: 20, // Reduced from 100
+        limit: 20,
       }),
     ]);
 
@@ -112,10 +103,8 @@ const getDesignTypeFromSlug = async (
       pinkResponse.data && Array.isArray(pinkResponse.data)
         ? pinkResponse.data
         : [];
-    const allProducts = [...greenList, ...pinkList];
 
-    // Try to find product by slugified name
-    const matchingProduct = allProducts.find((p) => {
+    const matchingProduct = [...greenList, ...pinkList].find((p) => {
       const productSlug = slugify(p.product_name || "");
       return (
         productSlug === slug ||
@@ -126,12 +115,12 @@ const getDesignTypeFromSlug = async (
 
     if (matchingProduct?.design_type) {
       const dt = matchingProduct.design_type.toString().toUpperCase();
-      const result = dt === "GREEN" || dt === "PINK" ? (dt as "GREEN" | "PINK") : null;
-      designTypeCache.set(slug, result);
+      const result =
+        dt === "GREEN" || dt === "PINK" ? (dt as "GREEN" | "PINK") : null;
+      if (result) designTypeCache.set(slug, result);
       return result;
     }
 
-    // If product found but no design_type, check which list it came from
     if (greenList.some((p) => slugify(p.product_name || "") === slug)) {
       designTypeCache.set(slug, "GREEN");
       return "GREEN";
@@ -140,12 +129,10 @@ const getDesignTypeFromSlug = async (
       designTypeCache.set(slug, "PINK");
       return "PINK";
     }
-  } catch (error) {
-    // Error fetching products to determine design type
-    console.error("Error determining design type:", error);
+  } catch {
+    // Fall through to null
   }
 
-  // Default to null if we can't determine
   designTypeCache.set(slug, null);
   return null;
 };
@@ -235,18 +222,15 @@ const mergeProductData = (
 const ProductDetailPage = () => {
   const { design_type } = useParams() as { design_type?: string };
   const slug = String(design_type || "");
-  const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Memoize the fetch function to prevent recreating on every render
   const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Step 1: Determine design type from slug (now cached)
       const designType = await getDesignTypeFromSlug(slug);
 
       if (!designType) {
@@ -256,16 +240,14 @@ const ProductDetailPage = () => {
         return;
       }
 
-      // Preload the layout component to avoid double loading spinners
-      // We initiate the import here so it runs in parallel with the API calls below
-      let layoutPromise: Promise<any> | undefined;
+      let layoutPromise: Promise<unknown> | undefined;
       if (designType === "GREEN") {
         layoutPromise = import("@/components/product/Product1Layout");
       } else if (designType === "PINK") {
         layoutPromise = import("@/components/product/Product2Layout");
       }
 
-      // Step 2: Get local fallback product for rich content (FAQs, action items, etc.)
+      const { fallbackProducts } = await import("../../data/fallbackProducts");
       const localProduct =
         fallbackProducts.find((p) => p.design_type === designType) || null;
 
@@ -355,7 +337,7 @@ const ProductDetailPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [slug]); // Removed user?.id to prevent unnecessary refetches
+  }, [slug]);
 
   useEffect(() => {
     fetchProduct();
@@ -394,7 +376,13 @@ const ProductDetailPage = () => {
 
   return (
     <ErrorBoundary>
-      <LayoutComponent product={product} />
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SkeletonProductCard count={1} />}
+        className="bg-white"
+      >
+        <LayoutComponent product={product} />
+      </LazySection>
     </ErrorBoundary>
   );
 };

@@ -1,30 +1,48 @@
 "use client";
 
-import { lazy, Suspense } from "react";
+import dynamic from "next/dynamic";
 import HeaderText from "@/components/common/HeaderText";
-import Choose from "@/components/home/Choose";
 import Video from "@/components/home/Video";
 import Image from "next/image";
+import { LazySection } from "@/components/common/LazySection";
+import { SectionSkeleton } from "@/components/home/SectionSkeleton";
 
-// Lazy load below-the-fold components for better performance
-const Toxins = lazy(() => import("@/components/home/Toxins"));
-const ProductsList = lazy(() => import("@/components/home/ProductsList"));
-const InfluencerVideo = lazy(() => import("@/components/home/InfluencerVideo"));
-const WhyNeed = lazy(() => import("@/components/home/WhyNeed"));
-const Testimonial = lazy(() => import("@/components/home/Testimonial"));
-const CashBack = lazy(() => import("@/components/home/CashBack"));
-const HomeAccordion = lazy(() => import("@/components/home/HomeAccordion"));
+const Choose = dynamic(() => import("@/components/home/Choose"), {
+  loading: () => <SectionSkeleton height={360} />,
+});
 
-// Loading skeleton component
-const SectionLoader = () => (
-  <div className="animate-pulse">
-    <div className="h-64 bg-gray-200 rounded-lg"></div>
-  </div>
-);
+const Toxins = dynamic(() => import("@/components/home/Toxins"), {
+  loading: () => <SectionSkeleton height={280} />,
+});
 
-const page = () => {
+const ProductsList = dynamic(() => import("@/components/home/ProductsList"), {
+  loading: () => <SectionSkeleton height={400} />,
+});
+
+const InfluencerVideo = dynamic(() => import("@/components/home/InfluencerVideo"), {
+  loading: () => <SectionSkeleton height={420} />,
+});
+
+const WhyNeed = dynamic(() => import("@/components/home/WhyNeed"), {
+  loading: () => <SectionSkeleton height={320} />,
+});
+
+const Testimonial = dynamic(() => import("@/components/home/Testimonial"), {
+  loading: () => <SectionSkeleton height={380} />,
+});
+
+const CashBack = dynamic(() => import("@/components/home/CashBack"), {
+  loading: () => <SectionSkeleton height={200} />,
+});
+
+const HomeAccordion = dynamic(() => import("@/components/home/HomeAccordion"), {
+  loading: () => <SectionSkeleton height={300} />,
+});
+
+export default function HomePage() {
   return (
     <>
+      {/* Hero: critical content, loads immediately */}
       <section className="py-10">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center">
@@ -54,120 +72,145 @@ const page = () => {
         </div>
       </section>
 
-      <section className="relative">
-        <div className="absolute inset-0">
-          <Image
-            src="/assets/img/choose-bg.webp"
-            alt="Decorative background"
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
-        <div className="container mx-auto px-4 py-10 relative">
-          <HeaderText
-            textalign="text-center"
-            heading="Why Choose BEYUVANA™"
-            textcolor="text-[#1A2819]"
-          />
-          <Choose />
-        </div>
-      </section>
-
-      <section className="py-10 bg-[#A9B528]">
-        <div className="container mx-auto px-4">
-          <Suspense fallback={<SectionLoader />}>
-            <Toxins />
-          </Suspense>
-        </div>
-      </section>
-
-      <section className="md:py-10 py-6">
-        <div className="mx-auto">
-          <Suspense fallback={<SectionLoader />}>
-            <ProductsList />
-          </Suspense>
-        </div>
-      </section>
-
-      <section className="md:py-10 py-6">
-        <div className="container mx-auto md:ps-20 lg:ps-8">
-          <div className="flex flex-col items-center justify-center gap-y-2">
-            <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
-            <p className="w-full md:max-w-[60vw] font-light text-center">Crafted with 21 synergistic, clinically studied botanicals that work from within. Each precision-dosed sachet supports skin elasticity, deep hydration, and youthful glow. Stimulates natural collagen with Amla, Bamboo Silica, L-Lysine, and Hyaluronic Acid.</p>
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SectionSkeleton height={360} />}
+      >
+        <section className="relative">
+          <div className="absolute inset-0">
+            <Image
+              src="/assets/img/choose-bg.webp"
+              alt="Decorative background"
+              fill
+              priority
+              className="object-cover"
+            />
           </div>
-        </div>
-        <div className="md:pt-12 pt-6 ms-auto">
-          <Suspense fallback={<SectionLoader />}>
-            <InfluencerVideo />
-          </Suspense>
-        </div>
-      </section>
-
-      <section className="md:py-10 py-6">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center gap-y-2">
+          <div className="container mx-auto px-4 py-10 relative">
             <HeaderText
               textalign="text-center"
-              heading="Why You Need BEYUVANA — Right Now"
+              heading="Why Choose BEYUVANA™"
               textcolor="text-[#1A2819]"
             />
-            <p className="md:max-w-[60vw] w-full font-light text-center">
-              BEYUVANA gives your body everything it needs to rebuild collagen
-              naturally:
-            </p>
+            <Choose />
           </div>
-          <Suspense fallback={<SectionLoader />}>
-            <WhyNeed />
-          </Suspense>
-          <div className="relative mt-10">
-            <div className="flex flex-col justify-center items-center">
-              <Image
-                src="/assets/img/port1.webp"
-                width={1400}
-                height={180}
-                alt="port"
-                loading="lazy"
-                className="w-auto h-[180px] md:w-full md:h-auto"
+        </section>
+      </LazySection>
+
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SectionSkeleton height={280} />}
+      >
+        <section className="py-10 bg-[#A9B528]">
+          <div className="container mx-auto px-4">
+            <Toxins />
+          </div>
+        </section>
+      </LazySection>
+
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SectionSkeleton height={400} />}
+      >
+        <section className="md:py-10 py-6">
+          <div className="mx-auto">
+            <ProductsList />
+          </div>
+        </section>
+      </LazySection>
+
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SectionSkeleton height={420} />}
+      >
+        <section className="md:py-10 py-6">
+          <div className="container mx-auto md:ps-20 lg:ps-8">
+            <div className="flex flex-col items-center justify-center gap-y-2">
+              <HeaderText textalign="text-center" heading="Our Influencer Videos" textcolor="text-[#1A2819]" />
+              <p className="w-full md:max-w-[60vw] font-light text-center">
+                Crafted with 21 synergistic, clinically studied botanicals that work from within. Each precision-dosed sachet supports skin elasticity, deep hydration, and youthful glow. Stimulates natural collagen with Amla, Bamboo Silica, L-Lysine, and Hyaluronic Acid.
+              </p>
+            </div>
+          </div>
+          <div className="md:pt-12 pt-6 ms-auto">
+            <InfluencerVideo />
+          </div>
+        </section>
+      </LazySection>
+
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SectionSkeleton height={320} />}
+      >
+        <section className="md:py-10 py-6">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col items-center justify-center gap-y-2">
+              <HeaderText
+                textalign="text-center"
+                heading="Why You Need BEYUVANA — Right Now"
+                textcolor="text-[#1A2819]"
               />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-2">
-                <h2 className="text-[#FFF] font-[Grafiels] md:text-[30px] text-[20px]">
-                  One sachet a day{" "}
-                  <span className="text-[#DFC362]">
-                    = inner healing + outer glow
-                  </span>
-                </h2>
-                <p className="text-[15px] md:text-[20px] text-white">
-                  Start early. Stay youthful longer.
-                </p>
+              <p className="md:max-w-[60vw] w-full font-light text-center">
+                BEYUVANA gives your body everything it needs to rebuild collagen
+                naturally:
+              </p>
+            </div>
+            <WhyNeed />
+            <div className="relative mt-10">
+              <div className="flex flex-col justify-center items-center">
+                <Image
+                  src="/assets/img/port1.webp"
+                  width={1400}
+                  height={180}
+                  alt="port"
+                  loading="lazy"
+                  className="w-auto h-[180px] md:w-full md:h-auto"
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-2">
+                  <h2 className="text-[#FFF] font-[Grafiels] md:text-[30px] text-[20px]">
+                    One sachet a day{" "}
+                    <span className="text-[#DFC362]">
+                      = inner healing + outer glow
+                    </span>
+                  </h2>
+                  <p className="text-[15px] md:text-[20px] text-white">
+                    Start early. Stay youthful longer.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </LazySection>
 
-      <section className="md:py-10 py-6">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center mb-6">
-            <HeaderText
-              textalign="text-center"
-              heading="Customer Testimonials"
-              textcolor="text-[#057A37]"
-            />
-          </div>
-          <Suspense fallback={<SectionLoader />}>
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SectionSkeleton height={380} />}
+      >
+        <section className="md:py-10 py-6">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col items-center justify-center mb-6">
+              <HeaderText
+                textalign="text-center"
+                heading="Customer Testimonials"
+                textcolor="text-[#057A37]"
+              />
+            </div>
             <Testimonial />
-          </Suspense>
-        </div>
-      </section>
+          </div>
+        </section>
+      </LazySection>
 
-      <section className="md:pt-10 pt-12 pb-20">
-        <div className="container mx-auto px-4">
-          <Suspense fallback={<SectionLoader />}>
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SectionSkeleton height={200} />}
+      >
+        <section className="md:pt-10 pt-12 pb-20">
+          <div className="container mx-auto px-4">
             <CashBack />
-          </Suspense>
-        </div>
-      </section>
+          </div>
+        </section>
+      </LazySection>
 
       <section className="bg-[#F8F8F8] md:py-20 py-10 overflow-hidden">
         <div className="container mx-auto px-4">
@@ -194,7 +237,7 @@ const page = () => {
                 <p className="text-[#222222] font-light">
                   At BEYUVANA™, your trust means everything to us. We stand by
                   the quality of our plant-powered formulations, and we want you
-                  to feel completely confident on your wellnes journey. That’s
+                  to feel completely confident on your wellnes journey. That's
                   why we offer a 90-Day Money-Back Promise on your first
                   purchase, exclusively from our website.
                 </p>
@@ -204,15 +247,16 @@ const page = () => {
         </div>
       </section>
 
-      <section className="pb-10 md:pt-20 pt-10">
-        <div className="container mx-auto px-4">
-          <Suspense fallback={<SectionLoader />}>
+      <LazySection
+        rootMargin="200px"
+        skeleton={<SectionSkeleton height={300} />}
+      >
+        <section className="pb-10 md:pt-20 pt-10">
+          <div className="container mx-auto px-4">
             <HomeAccordion />
-          </Suspense>
-        </div>
-      </section>
+          </div>
+        </section>
+      </LazySection>
     </>
   );
-};
-
-export default page;
+}
