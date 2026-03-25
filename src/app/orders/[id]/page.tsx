@@ -381,6 +381,7 @@ const OrderDetailPage = () => {
             </Button>
           </div>
         </div>
+       
 
         <div className="py-4">
           <ProductReview
@@ -396,14 +397,25 @@ const OrderDetailPage = () => {
           orderDetails={orderDetails || undefined}
         />
 
-        <div className="mt-4 bg-[#F2F9F3] md:p-6 p-4 rounded-[20px] shadow-sm flex items-center justify-center">
+        <div className="mt-4 bg-[#F2F9F3] md:p-6 p-2 rounded-[20px] shadow-sm flex items-center justify-center">
           <Button
             variant="link"
-            className="text-black underline hover:cursor-pointer border border-black px-16 py-4"
+            className="text-black underline hover:cursor-pointer md:border border-black md:px-16 px-4 py-4"
             onClick={() => router.push("/contact")}
           >
             Need Help?
           </Button>
+          <div className="flex items-center justify-end gap-2 md:hidden">
+            <Button
+              onClick={handleDownloadInvoice}
+              variant="ghost"
+              className="flex items-center gap-2 text-gray-700 md:text-[18px] text-[16px] hover:cursor-pointer text-right
+                            p-2 rounded-md transition-colors hover:bg-transparent hover:text-gray-700"
+            >
+              <PiFilePdfBold size={22} />
+              Download Invoice
+            </Button>
+          </div>
         </div>
       </div>
     </ErrorBoundary>

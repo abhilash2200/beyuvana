@@ -49,6 +49,7 @@ See **[ENV_SETUP_GUIDE.md](./ENV_SETUP_GUIDE.md)** for detailed instructions.
 - `NEXT_PUBLIC_AUTO_APPLY_PROMO` - Auto-apply promo code (default: `true`)
 - `NEXT_PUBLIC_BUILD_ID` - Build ID for cache busting (optional)
 - `NODE_ENV` - Node environment (usually set automatically)
+- `NEXT_PUBLIC_MAILFORM_URL` or `MAILFORM_URL` - Base URL for the contact form PHP script (default: `http://localhost:8080`). The form is sent to `/api/contact`, which proxies to `MAILFORM_URL/mailform.php`. For **local dev**, run a PHP server in the project root (e.g. `php -S localhost:8080`) so the contact form works.
 
 **Note:** Environment variables are automatically validated at startup. See `src/lib/env-validation.ts` for validation rules.
 

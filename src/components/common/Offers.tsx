@@ -6,7 +6,7 @@ const Offers = () => {
       <div className="container mx-auto px-4 text-center">
         <div className="flex items-center justify-center">
           <p className="text-[14px] text-white">
-            Join the Beyuvana Tribe — Get 20% Off Your First Order and Glow from
+            Join the Beyuvana Tribe — Get Rs 100/- Off on Your First Order and Glow from
             Within.
           </p>
         </div>

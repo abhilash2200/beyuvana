@@ -1,4 +1,10 @@
 /** @type {import('next').NextConfig} */
+let nodeVersion = () => {
+  console.log("Node version:", process.version);
+}
+
+nodeVersion();
+
 const nextConfig = {
   reactStrictMode: true,
 
@@ -116,10 +122,15 @@ const nextConfig = {
     // Remove trailing slash if present to avoid double slashes
     const baseUrl = apiBaseUrl.replace(/\/$/, "");
     return [
-      // Send /api/proxy to our Next.js proxy route (avoids 404 when client still uses /api/proxy).
+      // Keep legacy proxy mapping.
       {
         source: "/api/proxy",
         destination: "/proxy",
+      },
+      // Let Next.js handle the contact API route so it can proxy to sendmail.php.
+      {
+        source: "/api/contact",
+        destination: "/api/contact",
       },
       // Rewrite all other /api/* to backend.
       {

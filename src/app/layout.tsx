@@ -12,6 +12,8 @@ import { ModeLogger } from "@/components/common/ModeLogger";
 import ToastContainerWrapper from "@/components/common/ToastContainerWrapper";
 import { SkipLink } from "@/components/common/SkipLink";
 import { ENV_CONFIG } from "@/lib/constants";
+import { MetaPixel } from "@/components/common/MetaPixel";
+import { GoogleTagHead, GoogleTagBody } from "@/components/common/GoogleTag";
 
 // Log mode on server startup
 if (ENV_CONFIG.IS_PRODUCTION) {
@@ -48,10 +50,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <MetaPixel />
+        <GoogleTagHead />
+      </head>
       <body
         className={`${beVietnamPro.variable} antialiased`}
         suppressHydrationWarning={true}
       >
+        <GoogleTagBody />
         <SkipLink />
         <ModeLogger />
         <EnvValidator />

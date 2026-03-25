@@ -36,10 +36,10 @@ const legalLinks: LinkItem[] = [
 ];
 
 const socialLinks: SocialItem[] = [
-  { icon: <FaFacebookF />, href: "#", label: "Facebook" },
-  { icon: <FaWhatsapp />, href: "#", label: "Whatsapp" },
-  { icon: <FaInstagram />, href: "#", label: "Instagram" },
-  { icon: <FaTwitter />, href: "#", label: "Twitter" },
+  { icon: <FaFacebookF />, href: "https://www.facebook.com/share/17rVNqww2j/?mibextid=wwXIfr", label: "Facebook" },
+  { icon: <FaWhatsapp />, href: "https://wa.me/918777377060?text=Hello, I have a question about the product", label: "Whatsapp" },
+  { icon: <FaInstagram />, href: "https://www.instagram.com/beyuvana?igsh=MWRqczFlcDcwcXN0ZA%3D%3D&utm_source=qr", label: "Instagram" },
+  // { icon: <FaTwitter />, href: "#", label: "Twitter" },
 ];
 
 const contactInfo = [

@@ -25,6 +25,11 @@ export const ENV_CONFIG = {
     process.env.NEXT_PUBLIC_API_BASE_URL || "https://beyuvana.com/api",
   PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL || "/proxy",
   SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  /** Base URL for the PHP handler (e.g. http://localhost:8080 for dev, https://beyuvana.com for prod). Proxied endpoint is MAILFORM_URL/sendmail.php */
+  MAILFORM_URL:
+    process.env.NEXT_PUBLIC_MAILFORM_URL ||
+    process.env.MAILFORM_URL ||
+    "http://localhost:8080",
 
   NODE_ENV: process.env.NODE_ENV || "development",
   IS_PRODUCTION: process.env.NODE_ENV === "production",

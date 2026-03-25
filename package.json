@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:mailform": "php -S localhost:8080 sendmail.php",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js",
+    "start": "cross-env NODE_ENV=production node server.js",
     "build:analyze": "cross-env ANALYZE=true NODE_ENV=production next build",
     "lint": "eslint",
     "clean": "npx rimraf .next && npx rimraf node_modules/.cache",

@@ -94,7 +94,8 @@ const ContactForm: React.FC = () => {
     } catch (error) {
       handleError(error, {
         context: "ContactForm",
-        userMessage: "Failed to submit form. Please try again.",
+        userMessage:
+          (error as Error)?.message || "Failed to submit form. Please try again.",
       });
     } finally {
       setLoading(false);

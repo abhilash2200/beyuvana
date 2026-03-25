@@ -417,7 +417,7 @@ const SelectPack = ({
             height={20}
           />
           <p className="text-[12px] text-[#1A2819]">
-            Get Extra 5% off on Prepaid orders
+            Get Rs 100/- off on Prepaid orders
           </p>
         </div>
       </div>
